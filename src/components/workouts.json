@@ -1,0 +1,82 @@
+[
+  {
+    "muscle": "biceps",
+    "MV": "4",
+    "MEV": "4-6",
+    "MAV": "4-12",
+    "MRV": "20-30",
+    "restPeriod": 1
+  },
+  {
+    "muscle": "back",
+    "MV": "6",
+    "MEV": "10",
+    "MAV": "4-12",
+    "MRV": "20-35",
+    "restPeriod": 2
+  },
+  {
+    "muscle": "traps",
+    "MV": "0",
+    "MEV": "4",
+    "MAV": "4-12",
+    "MRV": "35-40",
+    "restPeriod": 1
+  },
+  {
+    "muscle": "triceps",
+    "MV": "4",
+    "MEV": "6",
+    "MAV": "4-12",
+    "MRV": "16-30",
+    "restPeriod": 1
+  },
+  {
+    "muscle": "chest",
+    "MV": "4",
+    "MEV": "6",
+    "MAV": "4-12",
+    "MRV": "20-30",
+    "restPeriod": 2
+  },
+  {
+    "muscle": "quads",
+    "MV": "6",
+    "MEV": "8",
+    "MAV": "4-12",
+    "MRV": "18-30",
+    "restPeriod": 2
+  },
+  {
+    "muscle": "hamstrings",
+    "MV": "3",
+    "MEV": "4",
+    "MAV": "4-12",
+    "MRV": "12-18",
+    "restPeriod": 2
+  },
+  {
+    "muscle": "glutes",
+    "MV": "0",
+    "MEV": "0",
+    "MAV": "4-12",
+    "MRV": "12-25",
+    "restPeriod": 2
+  },
+  {
+    "muscle": "delts (side)",
+    "MV": "6",
+    "MEV": "8",
+    "MAV": "4-12",
+    "MRV": "25-40",
+    "restPeriod": 1
+  },
+  {
+    "muscle": "delts (rear)",
+    "MV": "0",
+    "MEV": "8",
+    "MAV": "4-12",
+    "MRV": "18-35",
+    "restPeriod": 1
+  }
+]
