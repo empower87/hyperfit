@@ -4,16 +4,40 @@ type WorkoutCardProps = {
   sets: ListTuple[];
 };
 
+const AVERAGE_SET_DURATION = 20;
+const REST_PERIOD = 60;
+
+const getEstimatedWorkoutDuration = (sets: number) => {
+  const setTime = sets * AVERAGE_SET_DURATION;
+  const restTime = sets * REST_PERIOD;
+
+  const totalMinutes = (setTime + restTime) / 60;
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = Math.round(totalMinutes % 60);
+
+  const hoursText = hours > 0 ? `${hours} hrs` : "";
+  const minutesText = minutes > 0 ? `${minutes} minutes` : "";
+
+  if (hoursText && minutesText) {
+    return `${hoursText} and ${minutesText}`;
+  } else {
+    return hoursText || minutesText;
+  }
+};
+
 export default function WorkoutCard({ day, session, sets }: WorkoutCardProps) {
   const textcolor = session === "upper" ? "text-red-500" : "text-blue-500";
+  const totalSets = sets.reduce((total, [, number]) => total + number, 0);
+
+  const totalWorkoutTime = getEstimatedWorkoutDuration(totalSets);
+
   return (
-    <div>
+    <div className="m-4">
       <h2>Workout: {day} </h2>
       <h3>
         Split: <span className={`${textcolor}`}>{session}</span>{" "}
       </h3>
       <ul>
-        <li>{console.log(sets, "WHAT THIS LOOK LIKE?")}</li>
         {sets.map((each) => {
           return (
             <li>
@@ -21,34 +45,11 @@ export default function WorkoutCard({ day, session, sets }: WorkoutCardProps) {
             </li>
           );
         })}
-        {/* <li>4 sets: biceps</li>
-        <li>4 sets: biceps</li>
-        <li>4 sets: back</li>
-        <li>4 sets: back</li>
-        <li>4 sets: rear delts</li>
-        <li>4 sets: traps</li> */}
       </ul>
+      <h4>~{totalWorkoutTime}</h4>
     </div>
   );
 }
-
-25;
-
-4;
-4;
-4;
-
-21;
-17;
-13;
-
-8;
-8;
-8;
-
-9;
-5;
-1;
 
 type ListTuple = [string, number];
 

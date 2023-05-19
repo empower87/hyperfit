@@ -8,6 +8,14 @@
     "restPeriod": 1
   },
   {
+    "muscle": "abs",
+    "MV": "0",
+    "MEV": "0-6",
+    "MAV": "4-12",
+    "MRV": "25",
+    "restPeriod": 1
+  },
+  {
     "muscle": "back",
     "MV": "6",
     "MEV": "10",
@@ -64,6 +72,14 @@
     "restPeriod": 2
   },
   {
+    "muscle": "delts (front)",
+    "MV": "0",
+    "MEV": "0",
+    "MAV": "4-12",
+    "MRV": "12-16",
+    "restPeriod": 2
+  },
+  {
     "muscle": "delts (side)",
     "MV": "6",
     "MEV": "8",
@@ -77,6 +93,30 @@
     "MEV": "8",
     "MAV": "4-12",
     "MRV": "18-35",
+    "restPeriod": 1
+  },
+  {
+    "muscle": "calves",
+    "MV": "6",
+    "MEV": "8",
+    "MAV": "4-12",
+    "MRV": "16-35",
+    "restPeriod": 1
+  },
+  {
+    "muscle": "forearms",
+    "MV": "0",
+    "MEV": "2",
+    "MAV": "4-12",
+    "MRV": "15-25",
+    "restPeriod": 1
+  },
+  {
+    "muscle": "neck",
+    "MV": "0",
+    "MEV": "2",
+    "MAV": "4-12",
+    "MRV": "15-25",
     "restPeriod": 1
   }
 ]
