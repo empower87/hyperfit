@@ -1,3 +1,5 @@
+import Lift, { LiftTable } from "./Lift";
+
 type WorkoutCardProps = {
   day: number;
   session: string;
@@ -37,15 +39,13 @@ export default function WorkoutCard({ day, session, sets }: WorkoutCardProps) {
       <h3>
         Split: <span className={`${textcolor}`}>{session}</span>{" "}
       </h3>
-      <ul>
+      <LiftTable>
         {sets.map((each) => {
           return (
-            <li>
-              {each[1]} sets: {each[0]}
-            </li>
+            <Lift sets={each[1]} category={each[0]} lift={"Bent-Over Rows"} />
           );
         })}
-      </ul>
+      </LiftTable>
       <h4>~{totalWorkoutTime}</h4>
     </div>
   );
