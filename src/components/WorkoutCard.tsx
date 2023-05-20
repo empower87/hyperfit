@@ -1,3 +1,4 @@
+import { BACK_EXERCISES } from "~/constants/exercises";
 import Lift, { LiftTable } from "./Lift";
 
 type WorkoutCardProps = {
@@ -17,36 +18,60 @@ const getEstimatedWorkoutDuration = (sets: number) => {
   const hours = Math.floor(totalMinutes / 60);
   const minutes = Math.round(totalMinutes % 60);
 
-  const hoursText = hours > 0 ? `${hours} hrs` : "";
-  const minutesText = minutes > 0 ? `${minutes} minutes` : "";
+  const hoursText = hours === 1 ? `${hours}hr` : hours > 0 ? `${hours}hrs` : "";
+  const minutesText = minutes > 0 ? `${minutes}min` : "";
 
   if (hoursText && minutesText) {
-    return `${hoursText} and ${minutesText}`;
+    return `${hoursText} ${minutesText}`;
   } else {
     return hoursText || minutesText;
   }
 };
 
-export default function WorkoutCard({ day, session, sets }: WorkoutCardProps) {
+function Header({ day, session }: Pick<WorkoutCardProps, "day" | "session">) {
   const textcolor = session === "upper" ? "text-red-500" : "text-blue-500";
+  const capitalizedSession = session === "upper" ? "Upper" : "Lower";
+
+  return (
+    <div className="flex justify-center bg-slate-700">
+      <h2 className="p-1 text-sm font-medium text-white">Day {day}: </h2>
+      <h2 className={`${textcolor} p-1 text-sm font-medium`}>
+        {capitalizedSession}
+      </h2>
+    </div>
+  );
+}
+
+function Footer({ time }: { time: string }) {
+  return (
+    <div className="w-full bg-slate-300">
+      <h2 className="p-1 text-xs font-medium text-slate-500">
+        Total Workout Duration: {time}
+      </h2>
+    </div>
+  );
+}
+
+export default function WorkoutCard({ day, session, sets }: WorkoutCardProps) {
   const totalSets = sets.reduce((total, [, number]) => total + number, 0);
 
   const totalWorkoutTime = getEstimatedWorkoutDuration(totalSets);
 
   return (
     <div className="m-4">
-      <h2>Workout: {day} </h2>
-      <h3>
-        Split: <span className={`${textcolor}`}>{session}</span>{" "}
-      </h3>
+      <Header day={day} session={session} />
       <LiftTable>
-        {sets.map((each) => {
+        {sets.map((each, index) => {
           return (
-            <Lift sets={each[1]} category={each[0]} lift={"Bent-Over Rows"} />
+            <Lift
+              sets={each[1]}
+              category={each[0]}
+              exercise={BACK_EXERCISES[index].name}
+            />
           );
         })}
       </LiftTable>
-      <h4>~{totalWorkoutTime}</h4>
+      <Footer time={totalWorkoutTime} />
     </div>
   );
 }

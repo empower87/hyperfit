@@ -3,7 +3,7 @@ import { ReactNode } from "react";
 type LiftProps = {
   sets: number;
   category: string;
-  lift: string;
+  exercise: string;
 };
 
 // not as elegant or reuseable lol but whatever
@@ -29,16 +29,25 @@ const splitSets = (sets: number) => {
   }
 };
 
-export default function Lift({ sets, category, lift }: LiftProps) {
-  const lifts = splitSets(sets);
+export default function Lift({ sets, category, exercise }: LiftProps) {
+  const setList = splitSets(sets);
   return (
     <>
-      {lifts.map((each) => {
+      {setList.map((each) => {
         return (
-          <tr>
-            <td>{each}</td>
-            <td>{category}</td>
-            <td>{lift}</td>
+          <tr className="whitespace-break-spaces text-xs">
+            <td style={{ width: "30px" }} className="overflow-hidden break-all">
+              {each}
+            </td>
+            <td
+              style={{ width: "150px" }}
+              className="overflow-hidden break-all"
+            >
+              {exercise}
+            </td>
+            <td style={{ width: "75px" }} className="overflow-hidden break-all">
+              {category}
+            </td>
           </tr>
         );
       })}
@@ -48,17 +57,23 @@ export default function Lift({ sets, category, lift }: LiftProps) {
 
 export function LiftTable({ children }: { children: ReactNode }) {
   return (
-    <li>
-      <table>
-        <thead>
-          <tr>
-            <th>Sets</th>
-            <th>Category</th>
-            <th>Lift</th>
+    <div className="">
+      <table className="bg-slate-100 shadow">
+        <thead className="rounded-md border-2 border-r-2 border-slate-700 bg-slate-400">
+          <tr className="text-xs text-white ">
+            <th style={{ width: "30px" }} className="p-1 text-start">
+              Sets
+            </th>
+            <th style={{ width: "150px" }} className="p-1 text-start">
+              Exercise
+            </th>
+            <th style={{ width: "75px" }} className="p-1 text-start">
+              Category
+            </th>
           </tr>
         </thead>
-        <tbody>{children}</tbody>
+        <tbody className="">{children}</tbody>
       </table>
-    </li>
+    </div>
   );
 }
