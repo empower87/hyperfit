@@ -1,3 +1,7 @@
+// -- Notes -- //
+// -- Add in logic for supersets and staggering rest time instead of jumping back to back into exercises
+// -- supersets should be antagonist muscles. ie. bicep curls > tricep extensions .. bench press > bent-over row .. etc.
+
 export const BACK_EXERCISES = [
   {
     name: "Barbell Row",
@@ -72,6 +76,86 @@ export const BACK_EXERCISES = [
   {
     name: "Lat Pulldown (One-Arm)",
     muscle: "back",
+    specification: "lat",
+    requirements: ["machine"],
+    variations: [],
+  },
+];
+
+export const TRICEPS_EXERCISES = [
+  {
+    name: "Incline Dumbbell Kickback",
+    muscle: "triceps",
+    specification: "upper",
+    requirements: ["barbell"],
+    variations: [],
+  },
+  {
+    name: "Overhead Triceps Extension",
+    muscle: "triceps",
+    specification: "upper",
+    requirements: ["barbell", "dumbbell", "dumbbells", "cable"],
+    variations: ["barbell", "dumbbell", "dumbbells", "cable"],
+  },
+  {
+    name: "Incline Triceps Extension",
+    muscle: "triceps",
+    specification: "upper",
+    requirements: ["barbell"],
+    variations: [],
+  },
+  {
+    name: "Skullcrusher",
+    muscle: "triceps",
+    specification: "upper",
+    requirements: ["dumbbell", "bench"],
+    variations: [],
+  },
+  {
+    name: "Triceps Pushdown",
+    muscle: "triceps",
+    specification: "upper",
+    requirements: ["dumbbell", "bench"],
+    variations: [],
+  },
+  {
+    name: "Close-Grip Bench Press",
+    muscle: "triceps",
+    specification: "upper",
+    requirements: ["dumbbell", "bench"],
+    variations: [],
+  },
+  {
+    name: "Dumbbell Row",
+    muscle: "triceps",
+    specification: "upper",
+    requirements: ["dumbbell"],
+    variations: [],
+  },
+  {
+    name: "Barbell Row (Lat-Focused)",
+    muscle: "triceps",
+    specification: "lat",
+    requirements: ["barbell"],
+    variations: [],
+  },
+  {
+    name: "Seated Row (Lat-Focused)",
+    muscle: "triceps",
+    specification: "lat",
+    requirements: ["machine"],
+    variations: ["neutral-grip", "pronated-grip"],
+  },
+  {
+    name: "Dumbbell Lat Row",
+    muscle: "triceps",
+    specification: "lat",
+    requirements: ["dumbbell", "bench"],
+    variations: ["Chest-Supported"],
+  },
+  {
+    name: "Lat Pulldown (One-Arm)",
+    muscle: "triceps",
     specification: "lat",
     requirements: ["machine"],
     variations: [],

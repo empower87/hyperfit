@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import { useDrag } from "react-dnd";
 
 type LiftProps = {
   sets: number;
@@ -31,11 +32,24 @@ const splitSets = (sets: number) => {
 
 export default function Lift({ sets, category, exercise }: LiftProps) {
   const setList = splitSets(sets);
+
+  const [{ isDragging }, drag, dragPreview] = useDrag(() => ({
+    type: "ROW",
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
+  }));
+
   return (
     <>
-      {setList.map((each) => {
+      {setList.map((each, index) => {
         return (
-          <tr className="whitespace-break-spaces text-xs">
+          <tr
+            ref={drag}
+            role="Handle"
+            key={`#${each}_${index}`}
+            className="whitespace-break-spaces text-xs"
+          >
             <td style={{ width: "30px" }} className="overflow-hidden break-all">
               {each}
             </td>

@@ -64,6 +64,7 @@ export default function WorkoutCard({ day, session, sets }: WorkoutCardProps) {
         {sets.map((each, index) => {
           return (
             <Lift
+              key={`${each[1]}_${index}}`}
               sets={each[1]}
               category={each[0]}
               exercise={BACK_EXERCISES[index].name}

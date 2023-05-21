@@ -22,6 +22,19 @@ const SORTED_PRIORITY_LIST: ListTuple[] = [
   ["glutes", 12],
 ];
 
+const WORKOUT_PRIORITY_LIST = [
+  {
+    rank: 1,
+    muscle: "back",
+    splitSets: ["horizontal", "vertical"],
+    totalSets: 35,
+    totalSessions: 3,
+    restDays: 1,
+    sessionTypes: ["upper", "pull", "full", "back"],
+    includedExercises: [],
+  },
+];
+
 const getWorkoutOrder = (list: ListTuple[]) => {
   if (!list.length) return "ODD";
   const firstIndex = list[0] as ListTuple;
@@ -39,6 +52,8 @@ const Home: NextPage = () => {
 
   const [splitList, setSplitList] = useState<Workout[]>([]);
 
+  const [priority, setPriority] = useState<"upper" | "lower">("upper");
+
   const handleSelectChange = (value: string) => {
     setSelectedOption(value);
   };
@@ -48,7 +63,7 @@ const Home: NextPage = () => {
     let even = Math.floor(list.length / 2);
 
     if (list.length % 2 > 0) {
-      if (list[0]?.session === "upper") {
+      if (priority === "upper") {
         return [even + 1, even];
       } else {
         return [even, even + 1];
@@ -86,16 +101,18 @@ const Home: NextPage = () => {
       const startIndex = index + 1;
       const split = splitStart;
 
-      if (startIndex % 2 > 0) {
+      let upperIsEven = priority === "upper" ? true : false;
+
+      if (upperIsEven) {
         return {
           day: startIndex,
-          session: split === "ODD" ? "upper" : "lower",
+          session: index % 2 === 0 ? "upper" : "lower",
           sets: [],
         };
       } else {
         return {
           day: startIndex,
-          session: split === "EVEN" ? "upper" : "lower",
+          session: index % 2 === 0 ? "lower" : "upper",
           sets: [],
         };
       }
@@ -156,13 +173,18 @@ const Home: NextPage = () => {
     }
 
     setSplitList(copyList);
-  }, [selectedOption]);
+  }, [selectedOption, priority]);
+
+  const priorityHandler = (type: "upper" | "lower") => {
+    setPriority(type);
+  };
 
   return (
     <>
       <div className="m-2 flex h-full w-full flex-col justify-center">
         <Title />
         <PromptCard options={NUMBERS} onChange={handleSelectChange} />
+        <PickPriority sessions={selectedOption} onClick={priorityHandler} />
         <p>Selected option: {selectedOption}</p>
       </div>
 
@@ -183,20 +205,34 @@ const Home: NextPage = () => {
 
 export default Home;
 
-const PriorityPicker = () => {
-  return (
-    <div className="flex rounded border-2 border-gray-600">
-      <h1 className="">
-        Priority: Please select your priority for this cycle.
-      </h1>
-      {/* 
-      <select onChange={handleSelectChange}>
-        {options.map((option) => (
-          <option key={option} value={option}>
-            {option}
-          </option>
-        ))}
-      </select> */}
-    </div>
-  );
+const PickPriority = ({
+  sessions,
+  onClick,
+}: {
+  sessions: string;
+  onClick: (type: "upper" | "lower") => void;
+}) => {
+  const [isOdd, setIsOdd] = useState<boolean>(false);
+
+  const onClickHandler = (type: "upper" | "lower") => {
+    onClick(type);
+    setIsOdd(false);
+  };
+
+  useEffect(() => {
+    const isOdd = parseInt(sessions) % 2 > 0 ? true : false;
+    setIsOdd(isOdd);
+  }, [sessions]);
+
+  if (isOdd) {
+    return (
+      <div>
+        <p>Would you like to prioritize your upper body or lower body?</p>
+        <div>
+          <button onClick={() => onClickHandler("upper")}>Upper</button>
+          <button onClick={() => onClickHandler("lower")}>Lower</button>
+        </div>
+      </div>
+    );
+  } else return null;
 };
