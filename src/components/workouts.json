@@ -2,7 +2,7 @@
   {
     "muscle": "biceps",
     "MV": "4",
-    "MEV": "4-6",
+    "MEV": 6,
     "MAV": "4-12",
     "MRV": [10, 20, 25, 30, 35],
     "restPeriod": 1
@@ -10,7 +10,7 @@
   {
     "muscle": "abs",
     "MV": "0",
-    "MEV": "0-6",
+    "MEV": 6,
     "MAV": "4-12",
     "MRV": [12, 25, 25, 25, 25],
     "restPeriod": 1
@@ -18,7 +18,7 @@
   {
     "muscle": "back",
     "MV": "6",
-    "MEV": "10",
+    "MEV": 10,
     "MAV": "4-12",
     "MRV": [10, 20, 25, 30, 35],
     "restPeriod": 2
@@ -26,7 +26,7 @@
   {
     "muscle": "traps",
     "MV": "0",
-    "MEV": "4",
+    "MEV": 4,
     "MAV": "4-12",
     "MRV": [10, 20, 25, 30, 35],
     "restPeriod": 1
@@ -34,7 +34,7 @@
   {
     "muscle": "triceps",
     "MV": "4",
-    "MEV": "6",
+    "MEV": 6,
     "MAV": "4-12",
     "MRV": [8, 16, 20, 25, 35],
     "restPeriod": 1
@@ -42,7 +42,7 @@
   {
     "muscle": "chest",
     "MV": "4",
-    "MEV": "6",
+    "MEV": 6,
     "MAV": "4-12",
     "MRV": [10, 20, 25, 30, 35],
     "restPeriod": 2
@@ -50,7 +50,7 @@
   {
     "muscle": "quads",
     "MV": "6",
-    "MEV": "8",
+    "MEV": 8,
     "MAV": "4-12",
     "MRV": [9, 18, 22, 26, 30],
     "restPeriod": 2
@@ -58,7 +58,7 @@
   {
     "muscle": "hamstrings",
     "MV": "3",
-    "MEV": "4",
+    "MEV": 4,
     "MAV": "4-12",
     "MRV": [6, 12, 16, 18, 18],
     "restPeriod": 2
@@ -66,31 +66,31 @@
   {
     "muscle": "glutes",
     "MV": "0",
-    "MEV": "0",
+    "MEV": 0,
     "MAV": "4-12",
     "MRV": [6, 12, 18, 25, 30],
     "restPeriod": 2
   },
   {
-    "muscle": "delts (front)",
+    "muscle": "delts_front",
     "MV": "0",
-    "MEV": "0",
+    "MEV": 0,
     "MAV": "4-12",
     "MRV": [6, 12, 16, 16, 16],
     "restPeriod": 2
   },
   {
-    "muscle": "delts (side)",
+    "muscle": "delts_side",
     "MV": "6",
-    "MEV": "8",
+    "MEV": 8,
     "MAV": "4-12",
     "MRV": [12, 25, 30, 35, 40],
     "restPeriod": 1
   },
   {
-    "muscle": "delts (rear)",
+    "muscle": "delts_rear",
     "MV": "0",
-    "MEV": "8",
+    "MEV": 8,
     "MAV": "4-12",
     "MRV": [9, 18, 25, 30, 35],
     "restPeriod": 1
@@ -98,7 +98,7 @@
   {
     "muscle": "calves",
     "MV": "6",
-    "MEV": "8",
+    "MEV": 8,
     "MAV": "4-12",
     "MRV": [8, 16, 20, 25, 35],
     "restPeriod": 1
@@ -106,7 +106,7 @@
   {
     "muscle": "forearms",
     "MV": "0",
-    "MEV": "2",
+    "MEV": 2,
     "MAV": "4-12",
     "MRV": [8, 15, 20, 25, 25],
     "restPeriod": 1
@@ -114,7 +114,7 @@
   {
     "muscle": "neck",
     "MV": "0",
-    "MEV": "2",
+    "MEV": 2,
     "MAV": "4-12",
     "MRV": [8, 15, 20, 25, 25],
     "restPeriod": 1

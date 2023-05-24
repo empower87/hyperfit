@@ -1,6 +1,7 @@
 import { type NextPage } from "next";
 import { useEffect, useState } from "react";
 import { UPPER_MUSCLES } from "src/constants/workoutSplits";
+import PrioritizeFocus, { PickPriority } from "~/components/PrioritizeFocus";
 import PromptCard from "~/components/Prompt";
 import Title from "~/components/Title";
 import WorkoutCard from "~/components/WorkoutCard";
@@ -9,41 +10,77 @@ const NUMBERS = [1, 2, 3, 4, 5, 6, 7];
 
 type ListTuple = [string, number];
 
-const SORTED_PRIORITY_LIST: ListTuple[] = [
-  ["back", 35],
-  ["triceps", 30],
-  ["delts (side)", 25],
-  ["delts (rear)", 25],
-  ["traps", 12],
-  ["chest", 8],
-  ["biceps", 8],
-  ["quads", 30],
-  ["hamstrings", 18],
-  ["glutes", 12],
-];
+export type SortObj = {
+  id: string;
+  muscle: string;
+  sets: number;
+};
 
-const WORKOUT_PRIORITY_LIST = [
+export const SORTED_PRIORITY_LIST_2: SortObj[] = [
   {
-    rank: 1,
+    id: "back-002",
     muscle: "back",
-    splitSets: ["horizontal", "vertical"],
-    totalSets: 35,
-    totalSessions: 3,
-    restDays: 1,
-    sessionTypes: ["upper", "pull", "full", "back"],
-    includedExercises: [],
+    sets: 10,
+  },
+  {
+    id: "biceps-003",
+    muscle: "biceps",
+    sets: 6,
+  },
+  {
+    id: "chest-005",
+    muscle: "chest",
+    sets: 6,
+  },
+  {
+    id: "delts_rear-007",
+    muscle: "delts_rear",
+    sets: 8,
+  },
+  {
+    id: "delts_side-008",
+    muscle: "delts_side",
+    sets: 8,
+  },
+  {
+    id: "glutes-010",
+    muscle: "glutes",
+    sets: 0,
+  },
+  {
+    id: "hamstrings-011",
+    muscle: "hamstrings",
+    sets: 4,
+  },
+  {
+    id: "quads-013",
+    muscle: "quads",
+    sets: 8,
+  },
+  {
+    id: "traps-014",
+    muscle: "traps",
+    sets: 4,
+  },
+  {
+    id: "triceps-015",
+    muscle: "triceps",
+    sets: 6,
   },
 ];
 
-const getWorkoutOrder = (list: ListTuple[]) => {
-  if (!list.length) return "ODD";
-  const firstIndex = list[0] as ListTuple;
-  if (UPPER_MUSCLES.includes(firstIndex[0])) {
-    return "ODD";
-  } else {
-    return "EVEN";
-  }
-};
+const SORTED_PRIORITY_LIST: ListTuple[] = [
+  ["back", 10],
+  ["triceps", 6],
+  ["delts_side", 8],
+  ["delts_rear", 8],
+  ["traps", 4],
+  ["chest", 6],
+  ["biceps", 6],
+  ["quads", 8],
+  ["hamstrings", 4],
+  ["glutes", 2],
+];
 
 type Workout = { day: number; session: string; sets: ListTuple[] };
 
@@ -51,6 +88,10 @@ const Home: NextPage = () => {
   const [selectedOption, setSelectedOption] = useState("");
 
   const [splitList, setSplitList] = useState<Workout[]>([]);
+
+  const [priorityList, setPriorityList] = useState<ListTuple[]>([
+    ...SORTED_PRIORITY_LIST,
+  ]);
 
   const [priority, setPriority] = useState<"upper" | "lower">("upper");
 
@@ -95,11 +136,9 @@ const Home: NextPage = () => {
     const SELECTED_NUMBERS = NUMBERS.filter(
       (each) => each <= parseInt(selectedOption)
     );
-    const splitStart = getWorkoutOrder(SORTED_PRIORITY_LIST);
 
     const createList: Workout[] = SELECTED_NUMBERS.map((each, index) => {
       const startIndex = index + 1;
-      const split = splitStart;
 
       let upperIsEven = priority === "upper" ? true : false;
 
@@ -121,7 +160,7 @@ const Home: NextPage = () => {
     if (!createList.length) return;
 
     let copyList = [...createList];
-    let copyPriorityList = [...SORTED_PRIORITY_LIST];
+    let copyPriorityList = [...priorityList];
 
     if (!copyPriorityList.length) return;
 
@@ -136,6 +175,8 @@ const Home: NextPage = () => {
 
       if (UPPER_MUSCLES.includes(muscleAndSets[0])) {
         let upperSplit = divideSetsAmongDays(blah[0] as number, totalSets);
+
+        console.log(upperSplit, "error is occuring here...a ugaldk");
 
         let counter = 0;
 
@@ -173,7 +214,7 @@ const Home: NextPage = () => {
     }
 
     setSplitList(copyList);
-  }, [selectedOption, priority]);
+  }, [selectedOption, priority, priorityList]);
 
   const priorityHandler = (type: "upper" | "lower") => {
     setPriority(type);
@@ -181,17 +222,24 @@ const Home: NextPage = () => {
 
   return (
     <>
-      <div className="m-2 flex h-full w-full flex-col justify-center">
-        <Title />
+      <Title />
+      <div className="flex h-full w-full flex-col justify-center p-2">
         <PromptCard options={NUMBERS} onChange={handleSelectChange} />
         <PickPriority sessions={selectedOption} onClick={priorityHandler} />
+        <PrioritizeFocus
+          splitList={splitList}
+          list={priorityList}
+          setList={setPriorityList}
+        />
         <p>Selected option: {selectedOption}</p>
       </div>
 
       <div className="flex h-full w-full flex-wrap justify-center">
-        {splitList.map((each) => {
+        {splitList.map((each, index) => {
+          console.log(each, "during splitList mapping");
           return (
             <WorkoutCard
+              key={`${each.day}x${index}`}
               day={each.day}
               session={each.session}
               sets={each.sets}
@@ -204,35 +252,3 @@ const Home: NextPage = () => {
 };
 
 export default Home;
-
-const PickPriority = ({
-  sessions,
-  onClick,
-}: {
-  sessions: string;
-  onClick: (type: "upper" | "lower") => void;
-}) => {
-  const [isOdd, setIsOdd] = useState<boolean>(false);
-
-  const onClickHandler = (type: "upper" | "lower") => {
-    onClick(type);
-    setIsOdd(false);
-  };
-
-  useEffect(() => {
-    const isOdd = parseInt(sessions) % 2 > 0 ? true : false;
-    setIsOdd(isOdd);
-  }, [sessions]);
-
-  if (isOdd) {
-    return (
-      <div>
-        <p>Would you like to prioritize your upper body or lower body?</p>
-        <div>
-          <button onClick={() => onClickHandler("upper")}>Upper</button>
-          <button onClick={() => onClickHandler("lower")}>Lower</button>
-        </div>
-      </div>
-    );
-  } else return null;
-};
