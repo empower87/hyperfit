@@ -11,7 +11,7 @@ import {
   Droppable,
   DroppableProps,
 } from "react-beautiful-dnd";
-import { UPPER_MUSCLES } from "~/constants/workoutSplits";
+import { LOWER_MUSCLES, UPPER_MUSCLES } from "~/constants/workoutSplits";
 import { SORTED_PRIORITY_LIST_2, SortObj } from "~/pages";
 import workouts from "./workouts.json";
 
@@ -37,6 +37,7 @@ type PrioritizeFocusProps = {
   list: ListTuple[];
   setList: Dispatch<SetStateAction<ListTuple[]>>;
   splitList: Workout[];
+  setPriority: (type: "upper" | "lower") => void;
 };
 
 export const PickPriority = ({
@@ -106,6 +107,7 @@ export default function PrioritizeFocus({
   list,
   setList,
   splitList,
+  setPriority,
 }: PrioritizeFocusProps) {
   // const list = [...SORTED_PRIORITY_LIST];
   const filteredUpper = splitList.filter((each) => each.session === "upper");
@@ -206,7 +208,16 @@ export default function PrioritizeFocus({
       }
     }
     setList(items);
+    setPriority(split[0] >= split[1] ? "upper" : "lower");
   };
+
+  const [split, setSplit] = useState<number[]>([]);
+
+  useEffect(() => {
+    const sessions = splitList.length;
+    const split = handleUpperLowerSplit(newList, sessions);
+    setSplit(split);
+  }, [splitList, newList]);
 
   return (
     <>
@@ -246,7 +257,23 @@ export default function PrioritizeFocus({
           )}
         </StrictModeDroppable>
       </DragDropContext>
-      <button onClick={() => onClickHandler()}>Set Priority</button>
+      <div className="flex">
+        <div className="mx-1 flex-col">
+          <h3>frequency: {splitList.length}</h3>
+          {split[0] >= split[1] ? (
+            <>
+              <p className="text-red-500">upper set: {split[0]}</p>
+              <p className="text-blue-500">lower set: {split[1]}</p>
+            </>
+          ) : (
+            <>
+              <p className="text-blue-500">lower set: {split[1]}</p>
+              <p className="text-red-500">upper set: {split[0]}</p>
+            </>
+          )}
+        </div>
+        <button onClick={() => onClickHandler()}>Set Priority</button>
+      </div>
     </>
   );
 }
@@ -265,4 +292,108 @@ const Muscle = ({
       {index + 1} {muscle} - {sets}
     </li>
   );
+};
+
+// 1 2 3 4 5 6 7
+// 1 0 1 0 1 0 0
+// 0 0 1 0 0 1 0
+
+// lower should have at most 3 workouts seeing that it takes at least one day in between to recover
+
+const handleUpperLowerSplit = (list: SortObj[], sessions: number) => {
+  const lowerPriority = getLowerPosition(list);
+  console.log(
+    lowerPriority,
+    "WHAT IS THIS VALUE IN HANDLE UPPER LOWER SPLIT??"
+  );
+  switch (sessions) {
+    case 2:
+      return [1, 1];
+    case 3:
+      // if top 3 are all lower then return [1, 2]
+      // else return [2, 1]
+      // if lower is in bottom 4 then probably do a upper upper, full
+      if (lowerPriority === "top") {
+        return [1, 2];
+      } else return [2, 1];
+    case 4:
+      if (lowerPriority === "top") {
+        return [1, 3];
+      } else if (lowerPriority === "bottom") {
+        return [3, 1];
+      } else {
+        return [2, 2];
+      }
+    // if top 3 are all upper then return [3, 1]
+    // if top 3 are all lower then return [2, 2]
+    // if top 3 are 2x upper and 1x lower [2, 2]
+    // if top 3 are 2x lower and 1x upper. Move to 4th priority and if its a lower then [3, 1] else [2, 2]
+    case 5:
+      if (lowerPriority === "top") {
+        return [2, 3];
+      } else if (lowerPriority === "bottom") {
+        return [4, 1];
+      } else {
+        return [3, 2];
+      }
+    case 6:
+      // priority has legs in 3 out of 4 top
+      if (lowerPriority === "top") {
+        return [3, 3];
+      } else if (lowerPriority === "bottom") {
+        return [5, 1];
+      } else {
+        return [4, 2];
+      }
+    case 7:
+      if (lowerPriority === "top") {
+        return [4, 3];
+      } else if (lowerPriority === "bottom") {
+        return [5, 2];
+      } else {
+        return [4, 3];
+      }
+    default:
+      // case === 1 here
+      // regardless gonna have to do a full body workout
+      return [1, 0];
+  }
+};
+
+const getLowerPosition = (list: SortObj[]) => {
+  let top = [];
+  let bottom = [];
+
+  for (let i = 0; i < list.length; i++) {
+    if (i < 4) {
+      if (LOWER_MUSCLES.includes(list[i].muscle)) {
+        top.push(1);
+      } else {
+        top.push(0);
+      }
+    }
+
+    if (i >= list.length - 4) {
+      if (LOWER_MUSCLES.includes(list[i].muscle)) {
+        bottom.push(1);
+      } else {
+        top.push(0);
+      }
+    }
+  }
+
+  const topSum = top.reduce((total, number) => total + number, 0);
+  const bottomSum = bottom.reduce((total, number) => total + number, 0);
+
+  console.log(topSum, bottomSum, "WHAT DISS??");
+
+  if (topSum === 3) {
+    return "top";
+  }
+
+  if (bottomSum === 3) {
+    return "bottom";
+  }
+
+  return "mid";
 };

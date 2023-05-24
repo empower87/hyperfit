@@ -230,6 +230,7 @@ const Home: NextPage = () => {
           splitList={splitList}
           list={priorityList}
           setList={setPriorityList}
+          setPriority={priorityHandler}
         />
         <p>Selected option: {selectedOption}</p>
       </div>
