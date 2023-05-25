@@ -2,11 +2,11 @@ export default function PromptCard({
   options,
   onChange,
 }: {
-  options: string[] | number[];
-  onChange: (value: string) => void;
+  options: number[];
+  onChange: (value: number) => void;
 }) {
   const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedValue = event.target.value;
+    const selectedValue = parseInt(event.target.value);
     onChange(selectedValue);
   };
 

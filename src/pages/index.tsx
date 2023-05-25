@@ -1,7 +1,7 @@
 import { type NextPage } from "next";
 import { useEffect, useState } from "react";
 import { UPPER_MUSCLES } from "src/constants/workoutSplits";
-import PrioritizeFocus, { PickPriority } from "~/components/PrioritizeFocus";
+import PrioritizeFocus from "~/components/PrioritizeFocus";
 import PromptCard from "~/components/Prompt";
 import Title from "~/components/Title";
 import WorkoutCard from "~/components/WorkoutCard";
@@ -10,13 +10,13 @@ const NUMBERS = [1, 2, 3, 4, 5, 6, 7];
 
 type ListTuple = [string, number];
 
-export type SortObj = {
+export type MusclePriorityType = {
   id: string;
   muscle: string;
   sets: number;
 };
 
-export const SORTED_PRIORITY_LIST_2: SortObj[] = [
+export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
   {
     id: "back-002",
     muscle: "back",
@@ -82,10 +82,10 @@ const SORTED_PRIORITY_LIST: ListTuple[] = [
   ["glutes", 2],
 ];
 
-type Workout = { day: number; session: string; sets: ListTuple[] };
+export type Workout = { day: number; session: string; sets: ListTuple[] };
 
 const Home: NextPage = () => {
-  const [selectedOption, setSelectedOption] = useState("");
+  const [selectedOption, setSelectedOption] = useState<number>(0);
 
   const [splitList, setSplitList] = useState<Workout[]>([]);
 
@@ -95,7 +95,9 @@ const Home: NextPage = () => {
 
   const [priority, setPriority] = useState<"upper" | "lower">("upper");
 
-  const handleSelectChange = (value: string) => {
+  const [splitTuple, setSplitTuple] = useState<number[] | null>(null);
+
+  const handleSelectChange = (value: number) => {
     setSelectedOption(value);
   };
 
@@ -133,9 +135,7 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     if (!selectedOption) return;
-    const SELECTED_NUMBERS = NUMBERS.filter(
-      (each) => each <= parseInt(selectedOption)
-    );
+    const SELECTED_NUMBERS = NUMBERS.filter((each) => each <= selectedOption);
 
     const createList: Workout[] = SELECTED_NUMBERS.map((each, index) => {
       const startIndex = index + 1;
@@ -220,33 +220,42 @@ const Home: NextPage = () => {
     setPriority(type);
   };
 
+  const [musclePriority, setMusclePriority] = useState<MusclePriorityType[]>(
+    []
+  );
+
   return (
     <>
       <Title />
       <div className="flex h-full w-full flex-col justify-center p-2">
         <PromptCard options={NUMBERS} onChange={handleSelectChange} />
-        <PickPriority sessions={selectedOption} onClick={priorityHandler} />
-        <PrioritizeFocus
-          splitList={splitList}
-          list={priorityList}
-          setList={setPriorityList}
-          setPriority={priorityHandler}
-        />
-        <p>Selected option: {selectedOption}</p>
+        {/* <PickPriority sessions={selectedOption} onClick={priorityHandler} /> */}
+        {selectedOption > 0 ? (
+          <PrioritizeFocus
+            totalSessions={selectedOption}
+            list={priorityList}
+            setList={setPriorityList}
+            setPriority={priorityHandler}
+            setSplitTuple={setSplitTuple}
+          />
+        ) : null}
+        {/* <p>Selected option: {selectedOption}</p> */}
       </div>
 
       <div className="flex h-full w-full flex-wrap justify-center">
-        {splitList.map((each, index) => {
-          console.log(each, "during splitList mapping");
-          return (
-            <WorkoutCard
-              key={`${each.day}x${index}`}
-              day={each.day}
-              session={each.session}
-              sets={each.sets}
-            />
-          );
-        })}
+        {splitTuple
+          ? splitList.map((each, index) => {
+              console.log(each, "during splitList mapping");
+              return (
+                <WorkoutCard
+                  key={`${each.day}x${index}`}
+                  day={each.day}
+                  session={each.session}
+                  sets={each.sets}
+                />
+              );
+            })
+          : null}
       </div>
     </>
   );

@@ -10,11 +10,11 @@ export const FULL_BODY_MUSCLES = [
   "forearms",
   "glutes",
   "hamstrings",
-  "neck",
   "quads",
   "traps",
   "triceps",
 ];
+
 export type MusclesType =
   | "traps"
   | "delts_front"
@@ -28,7 +28,6 @@ export type MusclesType =
   | "quads"
   | "hamstrings"
   | "forearms"
-  | "neck"
   | "abs"
   | "calves";
 
@@ -61,4 +60,4 @@ export const PULL_MUSCLES = [
   "traps",
 ];
 
-export const PERIPHERAL_MUSCLES = ["forearms", "neck", "abs", "calves"];
+export const PERIPHERAL_MUSCLES = ["forearms", "abs", "calves"];

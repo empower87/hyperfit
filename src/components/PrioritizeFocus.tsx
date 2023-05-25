@@ -12,39 +12,26 @@ import {
   DroppableProps,
 } from "react-beautiful-dnd";
 import { LOWER_MUSCLES, UPPER_MUSCLES } from "~/constants/workoutSplits";
-import { SORTED_PRIORITY_LIST_2, SortObj } from "~/pages";
+import { MUSCLE_PRIORITY_LIST, MusclePriorityType, Workout } from "~/pages";
 import workouts from "./workouts.json";
 
 type ListTuple = [string, number];
 
-const SORTED_PRIORITY_LIST: ListTuple[] = [
-  ["back", 25],
-  ["triceps", 20],
-  ["delts_side", 25],
-  ["delts_rear", 25],
-  ["traps", 12],
-  ["chest", 8],
-  ["biceps", 8],
-  ["quads", 30],
-  ["hamstrings", 18],
-  ["glutes", 12],
-];
-type Workout = { day: number; session: string; sets: ListTuple[] };
-
 type PrioritizeFocusProps = {
-  // totalSessions: 1 | 2 | 3 | 4 | 5 | 6 | 7;
-  // priority: "upper" | "lower";
+  totalSessions: number;
   list: ListTuple[];
   setList: Dispatch<SetStateAction<ListTuple[]>>;
-  splitList: Workout[];
   setPriority: (type: "upper" | "lower") => void;
+  setSplitTuple: Dispatch<SetStateAction<number[] | null>>;
+  splitList: Workout[];
+  setSplitList: Dispatch<SetStateAction<Workout[]>>;
 };
 
 export const PickPriority = ({
   sessions,
   onClick,
 }: {
-  sessions: string;
+  sessions: number;
   onClick: (type: "upper" | "lower") => void;
 }) => {
   const [isOdd, setIsOdd] = useState<boolean>(false);
@@ -55,7 +42,7 @@ export const PickPriority = ({
   };
 
   useEffect(() => {
-    const isOdd = parseInt(sessions) % 2 > 0 ? true : false;
+    const isOdd = sessions % 2 > 0 ? true : false;
     setIsOdd(isOdd);
   }, [sessions]);
 
@@ -97,83 +84,90 @@ export const StrictModeDroppable = ({ children, ...props }: DroppableProps) => {
   return <Droppable {...props}>{children}</Droppable>;
 };
 
-// 1 - 3 MRV
-// 4 - 6 MRV - 4 per
-// 7 - 10 MEV
-
 export default function PrioritizeFocus({
-  // totalSessions,
-  // priority,
+  totalSessions,
   list,
   setList,
-  splitList,
   setPriority,
+  setSplitTuple,
+  splitList,
+  setSplitList,
 }: PrioritizeFocusProps) {
-  // const list = [...SORTED_PRIORITY_LIST];
-  const filteredUpper = splitList.filter((each) => each.session === "upper");
-  const upperFrequency = filteredUpper.length;
-  const lowerFrequency = splitList.length - upperFrequency;
+  // const filteredUpper = splitList.filter((each) => each.session === "upper");
+  // const upperFrequency = filteredUpper.length;
+  // const lowerFrequency = splitList.length - upperFrequency;
 
-  const [newList, setNewList] = useState<SortObj[]>([]);
+  const [newList, setNewList] = useState<MusclePriorityType[]>([]);
+  const [split, setSplit] = useState<number[]>([]);
 
   useEffect(() => {
-    setNewList([...SORTED_PRIORITY_LIST_2]);
+    setNewList([...MUSCLE_PRIORITY_LIST]);
   }, []);
 
-  const updateNewList = (items: SortObj[]) => {
-    let newList: SortObj[] = [];
+  useEffect(() => {
+    const sessions = totalSessions;
+    const split = handleUpperLowerSplit(newList, sessions);
+    setSplit(split);
+  }, [totalSessions, newList]);
+
+  const updateNewList = (
+    items: MusclePriorityType[],
+    splitFrequency: number[]
+  ) => {
+    let newList: MusclePriorityType[] = [];
 
     for (let i = 0; i < items.length; i++) {
       const getMuscleObj = workouts.filter(
         (each) => each.muscle === items[i].muscle
       );
 
-      const { muscle, MEV, MRV } = getMuscleObj[0];
+      const { muscle, MEV, MRV, featureMatrix } = getMuscleObj[0];
 
       if (UPPER_MUSCLES.includes(muscle)) {
-        const getMRV = MRV[upperFrequency - 1];
-        let totalSets = 0;
+        // const getMRV = MRV[upperFrequency - 1];
+        // let totalSets = 0;
 
-        if (i <= 2) {
-          totalSets = getMRV;
-        } else if (i > 2 && i <= 6) {
-          totalSets = getMRV - 4;
-        } else {
-          totalSets = MEV;
-        }
+        // if (i <= 2) {
 
-        console.log(
-          i,
-          items.length,
-          muscle,
-          MEV,
-          getMRV,
-          upperFrequency,
-          totalSets,
-          "LETS TAKE A DEEPER LOOK"
-        );
+        //   totalSets = featureMatrix[i][upperFrequency - 1];
+        // } else if (i > 2 && i <= 6) {
+        //   totalSets = getMRV - 4;
+        // } else {
+        //   totalSets = MEV;
+        // }
+
+        // console.log(
+        //   i,
+        //   items.length,
+        //   muscle,
+        //   MEV,
+        //   getMRV,
+        //   upperFrequency,
+        //   totalSets,
+        //   "LETS TAKE A DEEPER LOOK"
+        // );
 
         newList.push({
           id: items[i].id,
           muscle: items[i].muscle,
-          sets: totalSets,
+          sets: featureMatrix[i][splitFrequency[0] - 1],
         });
       } else {
-        const getMRV = MRV[lowerFrequency - 1];
-        let totalSets = 0;
+        // const getMRV = MRV[lowerFrequency - 1];
+        // let totalSets = 0;
 
-        if (i <= 2) {
-          totalSets = getMRV;
-        } else if (i > 2 && i <= 6) {
-          totalSets = getMRV - 4;
-        } else {
-          totalSets = MEV;
-        }
+        // if (i <= 2) {
+        //   totalSets = getMRV;
+        // } else if (i > 2 && i <= 6) {
+        //   totalSets = getMRV - 4;
+        // } else {
+        //   totalSets = MEV;
+        // }
 
         newList.push({
           id: items[i].id,
           muscle: items[i].muscle,
-          sets: totalSets,
+          sets: featureMatrix[i][splitFrequency[1] - 1],
         });
       }
     }
@@ -188,7 +182,7 @@ export default function PrioritizeFocus({
       const items = [...newList];
       const [removed] = items.splice(result.source.index, 1);
       items.splice(result.destination.index, 0, removed);
-      const newestList = updateNewList([...items]);
+      const newestList = updateNewList([...items], split);
       console.log(items, newestList, "OK LETS SEE WHAT ITS DOING");
       setNewList(newestList);
       // updateNewList(items);
@@ -196,28 +190,52 @@ export default function PrioritizeFocus({
     [newList]
   );
 
-  const onClickHandler = () => {
-    const items: ListTuple[] = [];
+  const divideSetsAmongDays = (days: number, sets: number): number[] => {
+    const setsPerDay = Math.floor(sets / days); // Number of sets per day (integer division)
+    let remainingSets = sets % days; // Remaining sets after distributing equally
+    const result: number[] = [];
 
-    for (let i = 0; i < list.length; i++) {
-      for (let j = 0; j < newList.length; j++) {
-        if (list[i][0] === newList[j].muscle) {
-          items.push([list[i][0], newList[j].sets]);
-          break;
-        }
+    for (let i = 0; i < days; i++) {
+      if (remainingSets > 0) {
+        result.push(Math.min(setsPerDay + 1, 12)); // Add one set to the day if there are remaining sets
+        remainingSets--;
+      } else {
+        result.push(Math.min(setsPerDay, 12)); // Distribute the sets equally among the days
       }
     }
-    setList(items);
-    setPriority(split[0] >= split[1] ? "upper" : "lower");
+
+    return result;
   };
 
-  const [split, setSplit] = useState<number[]>([]);
+  const onClickHandler = () => {
+    const items: ListTuple[] = newList.map((each) => {
+      return [each.muscle, each.sets];
+    });
 
-  useEffect(() => {
-    const sessions = splitList.length;
-    const split = handleUpperLowerSplit(newList, sessions);
-    setSplit(split);
-  }, [splitList, newList]);
+    // for (let i = 0; i < newList.length; i++) {
+    //   if (split[0] >= split[1]) {
+    //     if (UPPER_MUSCLES.includes(newList[i].muscle)) {
+    //       for (let j = 0; j < splitList.length; j++) {
+    //         if (splitList[j].session === "upper") {
+
+    //         }
+    //       }
+    //       const updateSplitList = splitList.map(each => {
+    //         if (each.session === "upper") {
+
+    //         }
+    //       })
+
+    //     }
+    //   } else {
+
+    //   }
+    // }
+
+    setList(items);
+    setPriority(split[0] >= split[1] ? "upper" : "lower");
+    setSplitTuple(split);
+  };
 
   return (
     <>
@@ -257,9 +275,10 @@ export default function PrioritizeFocus({
           )}
         </StrictModeDroppable>
       </DragDropContext>
+
       <div className="flex">
         <div className="mx-1 flex-col">
-          <h3>frequency: {splitList.length}</h3>
+          <h3>frequency: {totalSessions}</h3>
           {split[0] >= split[1] ? (
             <>
               <p className="text-red-500">upper set: {split[0]}</p>
@@ -294,13 +313,39 @@ const Muscle = ({
   );
 };
 
-// 1 2 3 4 5 6 7
-// 1 0 1 0 1 0 0
-// 0 0 1 0 0 1 0
+const getLowerPosition = (list: MusclePriorityType[]) => {
+  let top = 0;
+  let bottom = 0;
 
-// lower should have at most 3 workouts seeing that it takes at least one day in between to recover
+  for (let i = 0; i < list.length; i++) {
+    if (i < 4) {
+      if (LOWER_MUSCLES.includes(list[i].muscle)) {
+        top++;
+      }
+    }
 
-const handleUpperLowerSplit = (list: SortObj[], sessions: number) => {
+    if (i >= list.length - 4) {
+      if (LOWER_MUSCLES.includes(list[i].muscle)) {
+        bottom++;
+      }
+    }
+  }
+
+  if (top === 3) {
+    return "top";
+  }
+
+  if (bottom === 3) {
+    return "bottom";
+  }
+
+  return "mid";
+};
+
+const handleUpperLowerSplit = (
+  list: MusclePriorityType[],
+  sessions: number
+) => {
   const lowerPriority = getLowerPosition(list);
   console.log(
     lowerPriority,
@@ -310,9 +355,6 @@ const handleUpperLowerSplit = (list: SortObj[], sessions: number) => {
     case 2:
       return [1, 1];
     case 3:
-      // if top 3 are all lower then return [1, 2]
-      // else return [2, 1]
-      // if lower is in bottom 4 then probably do a upper upper, full
       if (lowerPriority === "top") {
         return [1, 2];
       } else return [2, 1];
@@ -324,10 +366,6 @@ const handleUpperLowerSplit = (list: SortObj[], sessions: number) => {
       } else {
         return [2, 2];
       }
-    // if top 3 are all upper then return [3, 1]
-    // if top 3 are all lower then return [2, 2]
-    // if top 3 are 2x upper and 1x lower [2, 2]
-    // if top 3 are 2x lower and 1x upper. Move to 4th priority and if its a lower then [3, 1] else [2, 2]
     case 5:
       if (lowerPriority === "top") {
         return [2, 3];
@@ -337,7 +375,6 @@ const handleUpperLowerSplit = (list: SortObj[], sessions: number) => {
         return [3, 2];
       }
     case 6:
-      // priority has legs in 3 out of 4 top
       if (lowerPriority === "top") {
         return [3, 3];
       } else if (lowerPriority === "bottom") {
@@ -354,46 +391,96 @@ const handleUpperLowerSplit = (list: SortObj[], sessions: number) => {
         return [4, 3];
       }
     default:
-      // case === 1 here
-      // regardless gonna have to do a full body workout
       return [1, 0];
   }
 };
 
-const getLowerPosition = (list: SortObj[]) => {
-  let top = [];
-  let bottom = [];
+// rear_delts should be trained at least 2x a week at MEV if growth is desired
 
-  for (let i = 0; i < list.length; i++) {
-    if (i < 4) {
-      if (LOWER_MUSCLES.includes(list[i].muscle)) {
-        top.push(1);
-      } else {
-        top.push(0);
-      }
-    }
+// EXERCISES    |    1   |   2   |   3   |   4   |   5   |   6   |   7
+// --------------------------------------------------------------------
+// 1 delts_side |   12   |  24   |  30   |  35   |  40   |  40   |  40
+// 2 delts_side |   11   |  20   |  27   |  31   |  35   |  35   |  35
+// 3 delts_side |   10   |  16   |  24   |  27   |  31   |  31   |  31
+// --------------------------------------------------------------------
+// 4 delts_side |    9   |  14   |  21   |  23   |  25   |  25   |  25
+// 5 delts_side |    8   |  12   |  18   |  19   |  20   |  20   |  20
+// 6 delts_side |    8   |  12   |  18   |  19   |  20   |  20   |  20
+// 7 delts_side |    8   |  10   |  18   |  19   |  20   |  20   |  20
+// --------------------------------------------------------------------
+// 8 delts_side |    8   |   9   |  10   |  10   |  10   |  10   |  10
+// 9 delts_side |    7   |   8   |   8   |   8   |   8   |   8   |   8
+// 0 delts_side |    6   |   6   |   6   |   6   |   6   |   6   |   6
 
-    if (i >= list.length - 4) {
-      if (LOWER_MUSCLES.includes(list[i].muscle)) {
-        bottom.push(1);
-      } else {
-        top.push(0);
-      }
-    }
-  }
+// EXERCISES    |   1   |   2   |   3   |   4   |   5   |   6   |   7
+// -------------------------------------------------------------------
+// 1 hamstrings |   6   |  12   |  16   |  18   |  18   |  18   |  18
+// 2 hamstrings |   6   |  12   |  16   |  18   |  18   |  18   |  18
+// 3 hamstrings |   6   |  12   |  16   |  18   |  18   |  18   |  18
+// -------------------------------------------------------------------
+// 4 hamstrings |   5   |  10   |  12   |  15   |  15   |  16   |  16
+// 5 hamstrings |   5   |  10   |  12   |  15   |  15   |  16   |  16
+// 6 hamstrings |   5   |   8   |   9   |  12   |  12   |  14   |  14
+// 7 hamstrings |   4   |   8   |   9   |  12   |  12   |  14   |  14
+// -------------------------------------------------------------------
+// 8 hamstrings |   4   |   5   |   6   |   6   |   6   |   6   |   6
+// 9 hamstrings |   4   |   4   |   4   |   4   |   4   |   4   |   4
+// 0 hamstrings |   3   |   4   |   4   |   4   |   4   |   4   |   4
 
-  const topSum = top.reduce((total, number) => total + number, 0);
-  const bottomSum = bottom.reduce((total, number) => total + number, 0);
+// EXERCISES    |   1   |   2   |   3   |   4   |   5   |   6   |   7
+// -------------------------------------------------------------------
+// 1 glutes     |   6   |  12   |  16   |  18   |  18   |  18   |  18
+// 2 glutes     |   6   |  12   |  16   |  18   |  18   |  18   |  18
+// 3 glutes     |   6   |  12   |  16   |  18   |  18   |  18   |  18
+// -------------------------------------------------------------------
+// 4 glutes     |   5   |  10   |  12   |  16   |  15   |  16   |  16
+// 5 glutes     |   4   |   8   |  10   |  14   |  15   |  16   |  16
+// 6 glutes     |   3   |   6   |   9   |  12   |  12   |  14   |  14
+// 7 glutes     |   2   |   4   |   8   |  10   |  12   |  14   |  14
+// -------------------------------------------------------------------
+// 8 glutes     |   0   |   0   |   0   |   0   |   0   |   0   |   0
+// 9 glutes     |   0   |   0   |   0   |   0   |   0   |   0   |   0
+// 0 glutes     |   0   |   0   |   0   |   0   |   0   |   0   |   0
 
-  console.log(topSum, bottomSum, "WHAT DISS??");
+// EXERCISES    |   1   |   2   |   3   |   4   |   5   |   6   |   7
+// -------------------------------------------------------------------
+// 1 back       |  10   |  20   |  25   |  30   |  35   |  35   |  35
+// 2 back       |   9   |  18   |  21   |  24   |  30   |  30   |  30
+// 3 back       |   9   |  18   |  21   |  24   |  30   |  30   |  30
+// -------------------------------------------------------------------
+// 4 back       |   8   |  14   |  18   |  20   |  22   |  22   |  22
+// 5 back       |   8   |  13   |  16   |  18   |  20   |  20   |  20
+// 6 back       |   7   |  12   |  14   |  16   |  18   |  18   |  18
+// 7 back       |   7   |  11   |  12   |  14   |  16   |  16   |  16
+// -------------------------------------------------------------------
+// 8 back       |   7   |  11   |  12   |  12   |  12   |  12   |  12
+// 9 back       |   7   |  10   |  10   |  10   |  10   |  10   |  10
+// 0 back       |   6   |   6   |   6   |   6   |   6   |   6   |   6
 
-  if (topSum === 3) {
-    return "top";
-  }
+// EXERCISES    |   1   |   2   |   3   |   4   |   5   |   6   |   7
+// -------------------------------------------------------------------
+// 1 triceps    |   8   |   16  |  21   |  25   |  35   |  35   |  35
+// 2 triceps    |   7   |   14  |  18   |  20   |  25   |  25   |  25
+// 3 triceps    |   7   |   14  |  18   |  20   |  25   |  25   |  25
+// -------------------------------------------------------------------
+// 4 triceps    |   7   |   11  |  15   |  18   |  21   |  21   |  21
+// 5 triceps    |   7   |   10  |  14   |  17   |  20   |  20   |  20
+// 6 triceps    |   6   |   9   |  13   |  16   |  19   |  19   |  19
+// 7 triceps    |   6   |   8   |  12   |  15   |  18   |  18   |  18
+// -------------------------------------------------------------------
+// 8 triceps    |   6   |   7   |   8   |   8   |   8   |   8   |   8
+// 9 triceps    |   6   |   6   |   6   |   6   |   6   |   6   |   6
+// 0 triceps    |   4   |   4   |   4   |   4   |   4   |   4   |   4
 
-  if (bottomSum === 3) {
-    return "bottom";
-  }
-
-  return "mid";
-};
+// EXERCISES   |    1    2    3    4    5    6    7
+// ------------------------------------------------
+//  back       |
+//  biceps     |
+//  chest      |
+//  delts_rear |
+//  delts_side |
+//  glutes     |
+//  hamstrings |
+//  quads      |
+//  traps      |
+//  triceps    |
