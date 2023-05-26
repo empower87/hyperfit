@@ -124,24 +124,7 @@ export default function PrioritizeFocus({
   setWorkoutSplit,
 }: PrioritizeFocusProps) {
   const [newList, setNewList] = useState<MusclePriorityType[]>([]);
-  // const [split, setSplit] = useState<number[]>([1, 0]);
 
-  // const split = handleUpperLowerSplit(musclePriority, totalWorkouts);
-
-  // const newList = musclePriority;
-  // useEffect(() => {
-  //   const split = handleUpperLowerSplit(
-  //     [...MUSCLE_PRIORITY_LIST],
-  //     totalWorkouts
-  //   );
-  //   const setList = updateNewList([...MUSCLE_PRIORITY_LIST], split);
-  //   setNewList(setList);
-  // }, []);
-
-  // useEffect(() => {
-  //   const split = handleUpperLowerSplit(musclePriority, totalWorkouts);
-  //   setSplit(split);
-  // }, [totalWorkouts, musclePriority]);
 
   useEffect(() => {
     const getNewList = updateNewList(musclePriority, split);
@@ -162,7 +145,7 @@ export default function PrioritizeFocus({
         splitList.push({ day: i + 1, split: "lower", sets: [] });
       }
     }
-    console.log(splitList, "HEY HEY WE GOT A LIST NOW???");
+
     setWorkoutSplit(splitList);
   }, [split]);
 
@@ -471,30 +454,27 @@ export const handleUpperLowerSplit = (
 // 9 back       |   7   |  10   |  10   |  10   |  10   |  10   |  10
 // 0 back       |   6   |   6   |   6   |   6   |   6   |   6   |   6
 
+
+
 // EXERCISES    |   1   |   2   |   3   |   4   |   5   |   6   |   7
 // -------------------------------------------------------------------
 // 1 triceps    |   8   |   16  |  21   |  25   |  35   |  35   |  35
-// 2 triceps    |   7   |   14  |  18   |  20   |  25   |  25   |  25
-// 3 triceps    |   7   |   14  |  18   |  20   |  25   |  25   |  25
 // -------------------------------------------------------------------
-// 4 triceps    |   7   |   11  |  15   |  18   |  21   |  21   |  21
-// 5 triceps    |   7   |   10  |  14   |  17   |  20   |  20   |  20
-// 6 triceps    |   6   |   9   |  13   |  16   |  19   |  19   |  19
-// 7 triceps    |   6   |   8   |  12   |  15   |  18   |  18   |  18
+// 2 triceps    |   7   |   12  |  15   |  18   |  21   |  21   |  21
+// 3 triceps    |   7   |   12  |  15   |  18   |  21   |  21   |  21
 // -------------------------------------------------------------------
-// 8 triceps    |   6   |   7   |   8   |   8   |   8   |   8   |   8
-// 9 triceps    |   6   |   6   |   6   |   6   |   6   |   6   |   6
-// 0 triceps    |   4   |   4   |   4   |   4   |   4   |   4   |   4
+// 4 triceps    |   5   |   8   |  12   |  15   |  18   |  18   |  18
+// 5 triceps    |   5   |   10  |  14   |  17   |  20   |  20   |  20
+// 6 triceps    |   5   |   9   |  13   |  16   |  19   |  19   |  19
+// 7 triceps    |   5   |   8   |  12   |  15   |  18   |  18   |  18
+// -------------------------------------------------------------------
+// 8 triceps    |   4   |   6   |   6   |   6   |   6   |   6   |   6
+// 9 triceps    |   4   |   6   |   6   |   6   |   6   |   6   |   6
+// 0 triceps    |   4   |   6   |   6   |   6   |   6   |   6   |   6
+// -------------------------------------------------------------------
+// 1 triceps    |   4   |   4   |   4   |   4   |   4   |   4   |   4
+// 2 triceps    |   4   |   4   |   4   |   4   |   4   |   4   |   4
+// 3 triceps    |   4   |   4   |   4   |   4   |   4   |   4   |   4
+// 4 triceps    |   4   |   4   |   4   |   4   |   4   |   4   |   4
 
-// EXERCISES   |    1    2    3    4    5    6    7
-// ------------------------------------------------
-//  back       |
-//  biceps     |
-//  chest      |
-//  delts_rear |
-//  delts_side |
-//  glutes     |
-//  hamstrings |
-//  quads      |
-//  traps      |
-//  triceps    |
+
