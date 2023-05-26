@@ -3,6 +3,7 @@ import {
   SetStateAction,
   useCallback,
   useEffect,
+  useRef,
   useState,
 } from "react";
 import {
@@ -12,19 +13,16 @@ import {
   DroppableProps,
 } from "react-beautiful-dnd";
 import { LOWER_MUSCLES, UPPER_MUSCLES } from "~/constants/workoutSplits";
-import { MUSCLE_PRIORITY_LIST, MusclePriorityType, Workout } from "~/pages";
+import { MusclePriorityType, SplitType } from "~/pages";
 import workouts from "./workouts.json";
 
-type ListTuple = [string, number];
-
 type PrioritizeFocusProps = {
-  totalSessions: number;
-  list: ListTuple[];
-  setList: Dispatch<SetStateAction<ListTuple[]>>;
-  setPriority: (type: "upper" | "lower") => void;
-  setSplitTuple: Dispatch<SetStateAction<number[] | null>>;
-  splitList: Workout[];
-  setSplitList: Dispatch<SetStateAction<Workout[]>>;
+  totalWorkouts: number;
+  musclePriority: MusclePriorityType[];
+  setMusclePriority: Dispatch<SetStateAction<MusclePriorityType[]>>;
+  split: number[];
+  workoutSplit: SplitType[];
+  setWorkoutSplit: Dispatch<SetStateAction<SplitType[]>>;
 };
 
 export const PickPriority = ({
@@ -84,97 +82,89 @@ export const StrictModeDroppable = ({ children, ...props }: DroppableProps) => {
   return <Droppable {...props}>{children}</Droppable>;
 };
 
+const updateNewList = (
+  items: MusclePriorityType[],
+  splitFrequency: number[]
+) => {
+  let newList: MusclePriorityType[] = [];
+
+  for (let i = 0; i < items.length; i++) {
+    const getMuscleObj = workouts.filter(
+      (each) => each.muscle === items[i].muscle
+    );
+
+    const { muscle, MEV, MRV, featureMatrix } = getMuscleObj[0];
+
+    if (UPPER_MUSCLES.includes(muscle)) {
+      newList.push({
+        id: items[i].id,
+        muscle: items[i].muscle,
+        sets: featureMatrix[i][splitFrequency[0] - 1],
+      });
+    } else {
+      newList.push({
+        id: items[i].id,
+        muscle: items[i].muscle,
+        sets: featureMatrix[i][splitFrequency[1] - 1],
+      });
+    }
+  }
+
+  console.log(newList, "OK IS THIS LIST WAVK?");
+
+  return newList;
+};
+
 export default function PrioritizeFocus({
-  totalSessions,
-  list,
-  setList,
-  setPriority,
-  setSplitTuple,
-  splitList,
-  setSplitList,
+  split,
+  totalWorkouts,
+  workoutSplit,
+  musclePriority,
+  setMusclePriority,
+  setWorkoutSplit,
 }: PrioritizeFocusProps) {
-  // const filteredUpper = splitList.filter((each) => each.session === "upper");
-  // const upperFrequency = filteredUpper.length;
-  // const lowerFrequency = splitList.length - upperFrequency;
-
   const [newList, setNewList] = useState<MusclePriorityType[]>([]);
-  const [split, setSplit] = useState<number[]>([]);
+  // const [split, setSplit] = useState<number[]>([1, 0]);
+
+  // const split = handleUpperLowerSplit(musclePriority, totalWorkouts);
+
+  // const newList = musclePriority;
+  // useEffect(() => {
+  //   const split = handleUpperLowerSplit(
+  //     [...MUSCLE_PRIORITY_LIST],
+  //     totalWorkouts
+  //   );
+  //   const setList = updateNewList([...MUSCLE_PRIORITY_LIST], split);
+  //   setNewList(setList);
+  // }, []);
+
+  // useEffect(() => {
+  //   const split = handleUpperLowerSplit(musclePriority, totalWorkouts);
+  //   setSplit(split);
+  // }, [totalWorkouts, musclePriority]);
 
   useEffect(() => {
-    setNewList([...MUSCLE_PRIORITY_LIST]);
-  }, []);
+    const getNewList = updateNewList(musclePriority, split);
+    setNewList(getNewList);
+  }, [split, musclePriority]);
 
   useEffect(() => {
-    const sessions = totalSessions;
-    const split = handleUpperLowerSplit(newList, sessions);
-    setSplit(split);
-  }, [totalSessions, newList]);
+    const sessions = totalWorkouts;
 
-  const updateNewList = (
-    items: MusclePriorityType[],
-    splitFrequency: number[]
-  ) => {
-    let newList: MusclePriorityType[] = [];
+    const upperOnEven = split[0] >= split[1] ? true : false;
 
-    for (let i = 0; i < items.length; i++) {
-      const getMuscleObj = workouts.filter(
-        (each) => each.muscle === items[i].muscle
-      );
+    let splitList: SplitType[] = [];
 
-      const { muscle, MEV, MRV, featureMatrix } = getMuscleObj[0];
-
-      if (UPPER_MUSCLES.includes(muscle)) {
-        // const getMRV = MRV[upperFrequency - 1];
-        // let totalSets = 0;
-
-        // if (i <= 2) {
-
-        //   totalSets = featureMatrix[i][upperFrequency - 1];
-        // } else if (i > 2 && i <= 6) {
-        //   totalSets = getMRV - 4;
-        // } else {
-        //   totalSets = MEV;
-        // }
-
-        // console.log(
-        //   i,
-        //   items.length,
-        //   muscle,
-        //   MEV,
-        //   getMRV,
-        //   upperFrequency,
-        //   totalSets,
-        //   "LETS TAKE A DEEPER LOOK"
-        // );
-
-        newList.push({
-          id: items[i].id,
-          muscle: items[i].muscle,
-          sets: featureMatrix[i][splitFrequency[0] - 1],
-        });
+    for (let i = 0; i < sessions; i++) {
+      if (upperOnEven && i % 2 === 0) {
+        splitList.push({ day: i + 1, split: "upper", sets: [] });
       } else {
-        // const getMRV = MRV[lowerFrequency - 1];
-        // let totalSets = 0;
-
-        // if (i <= 2) {
-        //   totalSets = getMRV;
-        // } else if (i > 2 && i <= 6) {
-        //   totalSets = getMRV - 4;
-        // } else {
-        //   totalSets = MEV;
-        // }
-
-        newList.push({
-          id: items[i].id,
-          muscle: items[i].muscle,
-          sets: featureMatrix[i][splitFrequency[1] - 1],
-        });
+        splitList.push({ day: i + 1, split: "lower", sets: [] });
       }
     }
-    console.log(newList, "OK IS THIS LIST WAVK?");
-    // setNewList(newList);
-    return newList;
-  };
+    console.log(splitList, "HEY HEY WE GOT A LIST NOW???");
+    setWorkoutSplit(splitList);
+  }, [split]);
 
   const onDragEnd = useCallback(
     (result: any) => {
@@ -182,12 +172,15 @@ export default function PrioritizeFocus({
       const items = [...newList];
       const [removed] = items.splice(result.source.index, 1);
       items.splice(result.destination.index, 0, removed);
-      const newestList = updateNewList([...items], split);
-      console.log(items, newestList, "OK LETS SEE WHAT ITS DOING");
-      setNewList(newestList);
+
+      const split = handleUpperLowerSplit(items, totalWorkouts);
+      const newerList = updateNewList(items, split);
+      console.log(items, split, items, "OK LETS SEE WHAT ITS DOING");
+
+      setMusclePriority(newerList);
       // updateNewList(items);
     },
-    [newList]
+    [newList, split]
   );
 
   const divideSetsAmongDays = (days: number, sets: number): number[] => {
@@ -208,34 +201,55 @@ export default function PrioritizeFocus({
   };
 
   const onClickHandler = () => {
-    const items: ListTuple[] = newList.map((each) => {
-      return [each.muscle, each.sets];
-    });
+    let copyList = [...workoutSplit];
 
-    // for (let i = 0; i < newList.length; i++) {
-    //   if (split[0] >= split[1]) {
-    //     if (UPPER_MUSCLES.includes(newList[i].muscle)) {
-    //       for (let j = 0; j < splitList.length; j++) {
-    //         if (splitList[j].session === "upper") {
+    for (let i = 0; i < newList.length; i++) {
+      if (UPPER_MUSCLES.includes(newList[i].muscle)) {
+        let sessions = divideSetsAmongDays(split[0], newList[i].sets);
 
-    //         }
-    //       }
-    //       const updateSplitList = splitList.map(each => {
-    //         if (each.session === "upper") {
+        console.log(
+          sessions,
+          newList[i].sets,
+          "OK WHY AREN'T THESE ADDING UP??"
+        );
 
-    //         }
-    //       })
+        let count = 0;
+        for (let j = 0; j < copyList.length; j++) {
+          const sets = sessions[count];
 
-    //     }
-    //   } else {
+          if (copyList[j].split === "upper" && sets) {
+            copyList[j].sets.push([newList[i].muscle, sessions[count]]);
+            count++;
+            console.log(
+              sessions,
+              count,
+              copyList[j].sets,
+              newList[i].muscle,
+              "WHAT ARE THESE VALUES IN UPPPER????"
+            );
+          }
+        }
+      } else {
+        let sessions = divideSetsAmongDays(split[1], newList[i].sets);
 
-    //   }
-    // }
+        let count = 0;
 
-    setList(items);
-    setPriority(split[0] >= split[1] ? "upper" : "lower");
-    setSplitTuple(split);
+        for (let j = 0; j < copyList.length; j++) {
+          const sets = sessions[count];
+
+          if (copyList[j].split === "lower" && sets) {
+            copyList[j].sets.push([newList[i].muscle, sessions[count]]);
+            count++;
+          }
+        }
+      }
+    }
+    console.log(copyList, "ok what this look like???");
+    setWorkoutSplit(copyList);
   };
+
+  const renderRef = useRef<number>(0);
+  console.log(renderRef.current++, "<PrioritizeFocus /> render count");
 
   return (
     <>
@@ -278,7 +292,7 @@ export default function PrioritizeFocus({
 
       <div className="flex">
         <div className="mx-1 flex-col">
-          <h3>frequency: {totalSessions}</h3>
+          <h3>frequency: {totalWorkouts}</h3>
           {split[0] >= split[1] ? (
             <>
               <p className="text-red-500">upper set: {split[0]}</p>
@@ -342,7 +356,7 @@ const getLowerPosition = (list: MusclePriorityType[]) => {
   return "mid";
 };
 
-const handleUpperLowerSplit = (
+export const handleUpperLowerSplit = (
   list: MusclePriorityType[],
   sessions: number
 ) => {

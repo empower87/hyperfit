@@ -1,9 +1,11 @@
 import { ReactNode } from "react";
+import { BACK_EXERCISES } from "~/constants/exercises";
 
 type LiftProps = {
+  index: number;
   sets: number;
   category: string;
-  exercise: string;
+  // exercise: string;
 };
 
 // not as elegant or reuseable lol but whatever
@@ -29,9 +31,12 @@ const splitSets = (sets: number) => {
   }
 };
 
-export default function Lift({ sets, category, exercise }: LiftProps) {
+export default function Lift({ index, sets, category }: LiftProps) {
   const setList = splitSets(sets);
 
+  const exercise = BACK_EXERCISES[index]
+    ? BACK_EXERCISES[index].name
+    : BACK_EXERCISES[0].name;
   return (
     <>
       {setList.map((each, index) => {

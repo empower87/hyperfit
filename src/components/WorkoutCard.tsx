@@ -1,9 +1,9 @@
-import { BACK_EXERCISES } from "~/constants/exercises";
+import { useRef } from "react";
 import Lift, { LiftTable } from "./Lift";
 
 type WorkoutCardProps = {
   day: number;
-  session: string;
+  split: string;
   sets: ListTuple[];
 };
 
@@ -28,16 +28,14 @@ const getEstimatedWorkoutDuration = (sets: number) => {
   }
 };
 
-function Header({ day, session }: Pick<WorkoutCardProps, "day" | "session">) {
-  const textcolor = session === "upper" ? "text-red-500" : "text-blue-500";
-  const capitalizedSession = session === "upper" ? "Upper" : "Lower";
+function Header({ day, split }: Pick<WorkoutCardProps, "day" | "split">) {
+  const textcolor = split === "upper" ? "text-red-500" : "text-blue-500";
+  const capSplit = split === "upper" ? "Upper" : "Lower";
 
   return (
     <div className="flex justify-center bg-slate-700">
       <h2 className="p-1 text-sm font-medium text-white">Day {day}: </h2>
-      <h2 className={`${textcolor} p-1 text-sm font-medium`}>
-        {capitalizedSession}
-      </h2>
+      <h2 className={`${textcolor} p-1 text-sm font-medium`}>{capSplit}</h2>
     </div>
   );
 }
@@ -52,22 +50,26 @@ function Footer({ time }: { time: string }) {
   );
 }
 
-export default function WorkoutCard({ day, session, sets }: WorkoutCardProps) {
+export default function WorkoutCard({ day, split, sets }: WorkoutCardProps) {
   const totalSets = sets.reduce((total, [, number]) => total + number, 0);
 
   const totalWorkoutTime = getEstimatedWorkoutDuration(totalSets);
 
+  const renderRef = useRef<number>(0);
+  console.log(renderRef.current++, "<WorkoutCard /> render count");
   return (
     <div className="m-4">
-      <Header day={day} session={session} />
+      <Header day={day} split={split} />
       <LiftTable>
         {sets.map((each, index) => {
           return (
             <Lift
               key={`${each[1]}_${index}}`}
+              index={index}
               sets={each[1]}
               category={each[0]}
-              exercise={BACK_EXERCISES[index].name}
+
+              // exercise={BACK_EXERCISES[index].name}
             />
           );
         })}

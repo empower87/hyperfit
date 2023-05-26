@@ -1,7 +1,8 @@
 import { type NextPage } from "next";
-import { useEffect, useState } from "react";
-import { UPPER_MUSCLES } from "src/constants/workoutSplits";
-import PrioritizeFocus from "~/components/PrioritizeFocus";
+import { useEffect, useRef, useState } from "react";
+import PrioritizeFocus, {
+  handleUpperLowerSplit,
+} from "~/components/PrioritizeFocus";
 import PromptCard from "~/components/Prompt";
 import Title from "~/components/Title";
 import WorkoutCard from "~/components/WorkoutCard";
@@ -69,188 +70,52 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
   },
 ];
 
-const SORTED_PRIORITY_LIST: ListTuple[] = [
-  ["back", 10],
-  ["triceps", 6],
-  ["delts_side", 8],
-  ["delts_rear", 8],
-  ["traps", 4],
-  ["chest", 6],
-  ["biceps", 6],
-  ["quads", 8],
-  ["hamstrings", 4],
-  ["glutes", 2],
-];
-
-export type Workout = { day: number; session: string; sets: ListTuple[] };
+export type SplitType = { day: number; split: string; sets: ListTuple[] };
 
 const Home: NextPage = () => {
-  const [selectedOption, setSelectedOption] = useState<number>(0);
-
-  const [splitList, setSplitList] = useState<Workout[]>([]);
-
-  const [priorityList, setPriorityList] = useState<ListTuple[]>([
-    ...SORTED_PRIORITY_LIST,
+  const [totalWorkouts, setTotalWorkouts] = useState<number>(0);
+  const [workoutSplit, setWorkoutSplit] = useState<SplitType[]>([]);
+  const [musclePriority, setMusclePriority] = useState<MusclePriorityType[]>([
+    ...MUSCLE_PRIORITY_LIST,
   ]);
-
-  const [priority, setPriority] = useState<"upper" | "lower">("upper");
-
-  const [splitTuple, setSplitTuple] = useState<number[] | null>(null);
-
+  const [split, setSplit] = useState<number[]>([1, 0]);
   const handleSelectChange = (value: number) => {
-    setSelectedOption(value);
+    setTotalWorkouts(value);
   };
-
-  const handleUpperLowerSplit = (list: Workout[]) => {
-    if (!list.length) return [0, 0];
-    let even = Math.floor(list.length / 2);
-
-    if (list.length % 2 > 0) {
-      if (priority === "upper") {
-        return [even + 1, even];
-      } else {
-        return [even, even + 1];
-      }
-    } else {
-      return [even, even];
-    }
-  };
-
-  const divideSetsAmongDays = (days: number, sets: number): number[] => {
-    const setsPerDay = Math.floor(sets / days); // Number of sets per day (integer division)
-    let remainingSets = sets % days; // Remaining sets after distributing equally
-    const result: number[] = [];
-
-    for (let i = 0; i < days; i++) {
-      if (remainingSets > 0) {
-        result.push(Math.min(setsPerDay + 1, 12)); // Add one set to the day if there are remaining sets
-        remainingSets--;
-      } else {
-        result.push(Math.min(setsPerDay, 12)); // Distribute the sets equally among the days
-      }
-    }
-
-    return result;
-  };
-
   useEffect(() => {
-    if (!selectedOption) return;
-    const SELECTED_NUMBERS = NUMBERS.filter((each) => each <= selectedOption);
+    const split = handleUpperLowerSplit(musclePriority, totalWorkouts);
+    setSplit(split);
+  }, [totalWorkouts, musclePriority]);
 
-    const createList: Workout[] = SELECTED_NUMBERS.map((each, index) => {
-      const startIndex = index + 1;
-
-      let upperIsEven = priority === "upper" ? true : false;
-
-      if (upperIsEven) {
-        return {
-          day: startIndex,
-          session: index % 2 === 0 ? "upper" : "lower",
-          sets: [],
-        };
-      } else {
-        return {
-          day: startIndex,
-          session: index % 2 === 0 ? "lower" : "upper",
-          sets: [],
-        };
-      }
-    });
-
-    if (!createList.length) return;
-
-    let copyList = [...createList];
-    let copyPriorityList = [...priorityList];
-
-    if (!copyPriorityList.length) return;
-
-    let upperIsOdd = copyList[0]?.session === "upper" ? true : false;
-
-    for (let i = 0; i < copyPriorityList.length; i++) {
-      let muscleAndSets = copyPriorityList[i];
-      if (!muscleAndSets) return;
-      let totalSets = muscleAndSets[1];
-
-      const blah = handleUpperLowerSplit(copyList);
-
-      if (UPPER_MUSCLES.includes(muscleAndSets[0])) {
-        let upperSplit = divideSetsAmongDays(blah[0] as number, totalSets);
-
-        console.log(upperSplit, "error is occuring here...a ugaldk");
-
-        let counter = 0;
-
-        if (upperIsOdd) {
-          counter = 0;
-        } else {
-          counter = 1;
-        }
-
-        for (let i = 0; i <= upperSplit.length; i++) {
-          copyList[counter]?.sets.push([
-            muscleAndSets[0],
-            upperSplit[i] as number,
-          ]);
-          counter = counter + 2;
-        }
-      } else {
-        let lowerSplit = divideSetsAmongDays(blah[1] as number, totalSets);
-        let counter = 0;
-
-        if (upperIsOdd) {
-          counter = 1;
-        } else {
-          counter = 0;
-        }
-
-        for (let i = 0; i <= lowerSplit.length; i++) {
-          copyList[counter]?.sets.push([
-            muscleAndSets[0],
-            lowerSplit[i] as number,
-          ]);
-          counter = counter + 2;
-        }
-      }
-    }
-
-    setSplitList(copyList);
-  }, [selectedOption, priority, priorityList]);
-
-  const priorityHandler = (type: "upper" | "lower") => {
-    setPriority(type);
-  };
-
-  const [musclePriority, setMusclePriority] = useState<MusclePriorityType[]>(
-    []
-  );
-
+  // const split = handleUpperLowerSplit(musclePriority, totalWorkouts);
+  const renderRef = useRef<number>(0);
+  console.log(renderRef.current++, "<Index /> render count");
   return (
     <>
       <Title />
       <div className="flex h-full w-full flex-col justify-center p-2">
-        <PromptCard options={NUMBERS} onChange={handleSelectChange} />
-        {/* <PickPriority sessions={selectedOption} onClick={priorityHandler} /> */}
-        {selectedOption > 0 ? (
+        <PromptCard onChange={handleSelectChange} />
+        {totalWorkouts > 0 ? (
           <PrioritizeFocus
-            totalSessions={selectedOption}
-            list={priorityList}
-            setList={setPriorityList}
-            setPriority={priorityHandler}
-            setSplitTuple={setSplitTuple}
+            split={split}
+            totalWorkouts={totalWorkouts}
+            musclePriority={musclePriority}
+            setMusclePriority={setMusclePriority}
+            setWorkoutSplit={setWorkoutSplit}
+            workoutSplit={workoutSplit}
           />
         ) : null}
-        {/* <p>Selected option: {selectedOption}</p> */}
       </div>
 
       <div className="flex h-full w-full flex-wrap justify-center">
-        {splitTuple
-          ? splitList.map((each, index) => {
+        {workoutSplit.length > 0
+          ? workoutSplit.map((each, index) => {
               console.log(each, "during splitList mapping");
               return (
                 <WorkoutCard
                   key={`${each.day}x${index}`}
                   day={each.day}
-                  session={each.session}
+                  split={each.split}
                   sets={each.sets}
                 />
               );

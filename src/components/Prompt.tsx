@@ -1,8 +1,8 @@
+const TOTAL_WORKOUTS = [1, 2, 3, 4, 5, 6, 7];
+
 export default function PromptCard({
-  options,
   onChange,
 }: {
-  options: number[];
   onChange: (value: number) => void;
 }) {
   const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -17,7 +17,7 @@ export default function PromptCard({
       </h1>
 
       <select onChange={handleSelectChange}>
-        {options.map((option) => (
+        {TOTAL_WORKOUTS.map((option) => (
           <option key={option} value={option}>
             {option}
           </option>
