@@ -37,6 +37,7 @@ export default function Lift({ index, sets, category }: LiftProps) {
   const exercise = BACK_EXERCISES[index]
     ? BACK_EXERCISES[index].name
     : BACK_EXERCISES[0].name;
+
   return (
     <>
       {setList.map((each, index) => {
@@ -45,17 +46,26 @@ export default function Lift({ index, sets, category }: LiftProps) {
             key={`#${each}_${index}`}
             className="whitespace-break-spaces text-xs"
           >
-            <td style={{ width: "30px" }} className="overflow-hidden break-all">
-              {each}
-            </td>
             <td
               style={{ width: "150px" }}
               className="overflow-hidden break-all"
             >
               {exercise}
             </td>
-            <td style={{ width: "75px" }} className="overflow-hidden break-all">
+            <td style={{ width: "45px" }} className="overflow-hidden break-all">
               {category}
+            </td>
+            <td style={{ width: "30px" }} className="overflow-hidden break-all">
+              {each}
+            </td>
+            <td style={{ width: "40px" }} className="overflow-hidden break-all">
+              5-10
+            </td>
+            <td style={{ width: "30px" }} className="overflow-hidden break-all">
+              250
+            </td>
+            <td style={{ width: "30px" }} className="overflow-hidden break-all">
+              3
             </td>
           </tr>
         );
@@ -70,14 +80,23 @@ export function LiftTable({ children }: { children: ReactNode }) {
       <table className="bg-slate-100 shadow">
         <thead className="rounded-md border-2 border-r-2 border-slate-700 bg-slate-400">
           <tr className="text-xs text-white ">
-            <th style={{ width: "30px" }} className="p-1 text-start">
-              Sets
-            </th>
             <th style={{ width: "150px" }} className="p-1 text-start">
               Exercise
             </th>
-            <th style={{ width: "75px" }} className="p-1 text-start">
+            <th style={{ width: "45px" }} className="p-1 text-start">
               Category
+            </th>
+            <th style={{ width: "30px" }} className="p-1 text-start">
+              Sets
+            </th>
+            <th style={{ width: "40px" }} className="p-1 text-start">
+              Reps
+            </th>
+            <th style={{ width: "30px" }} className="p-1 text-start">
+              Weight
+            </th>
+            <th style={{ width: "30px" }} className="p-1 text-start">
+              RIR
             </th>
           </tr>
         </thead>

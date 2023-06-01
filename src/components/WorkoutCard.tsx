@@ -33,19 +33,31 @@ function Header({ day, split }: Pick<WorkoutCardProps, "day" | "split">) {
   const capSplit = split === "upper" ? "Upper" : "Lower";
 
   return (
-    <div className="flex justify-center bg-slate-700">
-      <h2 className="p-1 text-sm font-medium text-white">Day {day}: </h2>
-      <h2 className={`${textcolor} p-1 text-sm font-medium`}>{capSplit}</h2>
+    <div className="flex justify-between bg-slate-700">
+      <div className="flex w-1/2">
+        <h2 className="p-1 text-sm font-medium text-white">Day {day}: </h2>
+        <h2 className={`${textcolor} p-1 text-sm font-medium`}>{capSplit}</h2>
+      </div>
+      <div style={{ width: "150px" }} className="flex text-sm text-white">
+        <h2 className="p-1 text-sm font-medium text-white">Week 1</h2>
+      </div>
     </div>
   );
 }
 
-function Footer({ time }: { time: string }) {
+function Footer({ time, sets }: { time: string; sets: number }) {
   return (
-    <div className="w-full bg-slate-300">
-      <h2 className="p-1 text-xs font-medium text-slate-500">
-        Total Workout Duration: {time}
-      </h2>
+    <div className="flex w-full justify-between bg-slate-300">
+      <div className="flex flex-col">
+        <p className="p-1 text-xs font-medium text-slate-500">Total Sets:</p>
+        <p className="p-1 text-xs text-white"> {sets}</p>
+      </div>
+      <div className="flex flex-col">
+        <p className="p-1 text-xs font-medium text-slate-500">
+          Total Workout Duration:
+        </p>
+        <p className="p-1 text-xs text-white"> {time}</p>
+      </div>
     </div>
   );
 }
@@ -58,7 +70,7 @@ export default function WorkoutCard({ day, split, sets }: WorkoutCardProps) {
   const renderRef = useRef<number>(0);
   console.log(renderRef.current++, "<WorkoutCard /> render count");
   return (
-    <div className="m-4">
+    <div className="mb-2 mr-2">
       <Header day={day} split={split} />
       <LiftTable>
         {sets.map((each, index) => {
@@ -68,13 +80,11 @@ export default function WorkoutCard({ day, split, sets }: WorkoutCardProps) {
               index={index}
               sets={each[1]}
               category={each[0]}
-
-              // exercise={BACK_EXERCISES[index].name}
             />
           );
         })}
       </LiftTable>
-      <Footer time={totalWorkoutTime} />
+      <Footer time={totalWorkoutTime} sets={totalSets} />
     </div>
   );
 }

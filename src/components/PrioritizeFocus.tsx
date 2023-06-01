@@ -13,7 +13,7 @@ import {
   DroppableProps,
 } from "react-beautiful-dnd";
 import { LOWER_MUSCLES, UPPER_MUSCLES } from "~/constants/workoutSplits";
-import { MusclePriorityType, SplitType } from "~/pages";
+import { MUSCLE_PRIORITY_LIST, MusclePriorityType, SplitType } from "~/pages";
 import workouts from "./workouts.json";
 
 type PrioritizeFocusProps = {
@@ -125,7 +125,6 @@ export default function PrioritizeFocus({
 }: PrioritizeFocusProps) {
   const [newList, setNewList] = useState<MusclePriorityType[]>([]);
 
-
   useEffect(() => {
     const getNewList = updateNewList(musclePriority, split);
     setNewList(getNewList);
@@ -185,6 +184,7 @@ export default function PrioritizeFocus({
 
   const onClickHandler = () => {
     let copyList = [...workoutSplit];
+    const newList = [...MUSCLE_PRIORITY_LIST];
 
     for (let i = 0; i < newList.length; i++) {
       if (UPPER_MUSCLES.includes(newList[i].muscle)) {
@@ -274,7 +274,7 @@ export default function PrioritizeFocus({
       </DragDropContext>
 
       <div className="flex">
-        <div className="mx-1 flex-col">
+        <div className="mx-1 w-1/2 flex-col">
           <h3>frequency: {totalWorkouts}</h3>
           {split[0] >= split[1] ? (
             <>
@@ -288,11 +288,35 @@ export default function PrioritizeFocus({
             </>
           )}
         </div>
-        <button onClick={() => onClickHandler()}>Set Priority</button>
+        <div className="flex w-1/2 items-center justify-center">
+          <button
+            className="flex h-6 items-center justify-center rounded-md border-slate-500 bg-slate-700"
+            onClick={() => onClickHandler()}
+          >
+            <p className="m-2 text-sm text-white">Set Priority</p>
+          </button>
+        </div>
       </div>
     </>
   );
 }
+
+const COLORS = [
+  "bg-red-500",
+  "bg-orange-500",
+  "bg-orange-500",
+  "bg-yellow-500",
+  "bg-yellow-500",
+  "bg-yellow-500",
+  "bg-yellow-500",
+  "bg-blue-500",
+  "bg-blue-500",
+  "bg-blue-500",
+  "bg-green-500",
+  "bg-green-500",
+  "bg-green-500",
+  "bg-green-500",
+];
 
 const Muscle = ({
   muscle,
@@ -303,9 +327,17 @@ const Muscle = ({
   sets: number;
   index: number;
 }) => {
+  const bgColor = ` ${COLORS[index]}`;
   return (
-    <li className="mt-1 rounded border-2 border-slate-700 bg-slate-400 p-1 text-xs text-white">
-      {index + 1} {muscle} - {sets}
+    <li
+      className={
+        "mt-1 flex justify-between rounded border-2 border-slate-700 p-1 text-xs text-white" +
+        bgColor
+      }
+    >
+      <div>{index + 1}</div>
+      <div className="font-bold">{muscle}</div>
+      <div className="font-bold">{sets}</div>
     </li>
   );
 };
@@ -394,68 +426,6 @@ export const handleUpperLowerSplit = (
 
 // rear_delts should be trained at least 2x a week at MEV if growth is desired
 
-// EXERCISES    |    1   |   2   |   3   |   4   |   5   |   6   |   7
-// --------------------------------------------------------------------
-// 1 delts_side |   12   |  24   |  30   |  35   |  40   |  40   |  40
-// 2 delts_side |   11   |  20   |  27   |  31   |  35   |  35   |  35
-// 3 delts_side |   10   |  16   |  24   |  27   |  31   |  31   |  31
-// --------------------------------------------------------------------
-// 4 delts_side |    9   |  14   |  21   |  23   |  25   |  25   |  25
-// 5 delts_side |    8   |  12   |  18   |  19   |  20   |  20   |  20
-// 6 delts_side |    8   |  12   |  18   |  19   |  20   |  20   |  20
-// 7 delts_side |    8   |  10   |  18   |  19   |  20   |  20   |  20
-// --------------------------------------------------------------------
-// 8 delts_side |    8   |   9   |  10   |  10   |  10   |  10   |  10
-// 9 delts_side |    7   |   8   |   8   |   8   |   8   |   8   |   8
-// 0 delts_side |    6   |   6   |   6   |   6   |   6   |   6   |   6
-
-// EXERCISES    |   1   |   2   |   3   |   4   |   5   |   6   |   7
-// -------------------------------------------------------------------
-// 1 hamstrings |   6   |  12   |  16   |  18   |  18   |  18   |  18
-// 2 hamstrings |   6   |  12   |  16   |  18   |  18   |  18   |  18
-// 3 hamstrings |   6   |  12   |  16   |  18   |  18   |  18   |  18
-// -------------------------------------------------------------------
-// 4 hamstrings |   5   |  10   |  12   |  15   |  15   |  16   |  16
-// 5 hamstrings |   5   |  10   |  12   |  15   |  15   |  16   |  16
-// 6 hamstrings |   5   |   8   |   9   |  12   |  12   |  14   |  14
-// 7 hamstrings |   4   |   8   |   9   |  12   |  12   |  14   |  14
-// -------------------------------------------------------------------
-// 8 hamstrings |   4   |   5   |   6   |   6   |   6   |   6   |   6
-// 9 hamstrings |   4   |   4   |   4   |   4   |   4   |   4   |   4
-// 0 hamstrings |   3   |   4   |   4   |   4   |   4   |   4   |   4
-
-// EXERCISES    |   1   |   2   |   3   |   4   |   5   |   6   |   7
-// -------------------------------------------------------------------
-// 1 glutes     |   6   |  12   |  16   |  18   |  18   |  18   |  18
-// 2 glutes     |   6   |  12   |  16   |  18   |  18   |  18   |  18
-// 3 glutes     |   6   |  12   |  16   |  18   |  18   |  18   |  18
-// -------------------------------------------------------------------
-// 4 glutes     |   5   |  10   |  12   |  16   |  15   |  16   |  16
-// 5 glutes     |   4   |   8   |  10   |  14   |  15   |  16   |  16
-// 6 glutes     |   3   |   6   |   9   |  12   |  12   |  14   |  14
-// 7 glutes     |   2   |   4   |   8   |  10   |  12   |  14   |  14
-// -------------------------------------------------------------------
-// 8 glutes     |   0   |   0   |   0   |   0   |   0   |   0   |   0
-// 9 glutes     |   0   |   0   |   0   |   0   |   0   |   0   |   0
-// 0 glutes     |   0   |   0   |   0   |   0   |   0   |   0   |   0
-
-// EXERCISES    |   1   |   2   |   3   |   4   |   5   |   6   |   7
-// -------------------------------------------------------------------
-// 1 back       |  10   |  20   |  25   |  30   |  35   |  35   |  35
-// 2 back       |   9   |  18   |  21   |  24   |  30   |  30   |  30
-// 3 back       |   9   |  18   |  21   |  24   |  30   |  30   |  30
-// -------------------------------------------------------------------
-// 4 back       |   8   |  14   |  18   |  20   |  22   |  22   |  22
-// 5 back       |   8   |  13   |  16   |  18   |  20   |  20   |  20
-// 6 back       |   7   |  12   |  14   |  16   |  18   |  18   |  18
-// 7 back       |   7   |  11   |  12   |  14   |  16   |  16   |  16
-// -------------------------------------------------------------------
-// 8 back       |   7   |  11   |  12   |  12   |  12   |  12   |  12
-// 9 back       |   7   |  10   |  10   |  10   |  10   |  10   |  10
-// 0 back       |   6   |   6   |   6   |   6   |   6   |   6   |   6
-
-
-
 // EXERCISES    |   1   |   2   |   3   |   4   |   5   |   6   |   7
 // -------------------------------------------------------------------
 // 1 triceps    |   8   |   16  |  21   |  25   |  35   |  35   |  35
@@ -477,4 +447,48 @@ export const handleUpperLowerSplit = (
 // 3 triceps    |   4   |   4   |   4   |   4   |   4   |   4   |   4
 // 4 triceps    |   4   |   4   |   4   |   4   |   4   |   4   |   4
 
+// prompt user for splits
+// which is higher priority
+// back - chest - legs
+// high - mid - low - maintenance
 
+// frequency 5 legs on backburner
+
+// TRAINING BLOCK
+
+// MESO 1  |  week 1   |   week 2   |   week 3   |   week 4   |  deload    |
+// ========================================================================|
+//         |           |            |            |            |            |
+//  sets   |     5     |     6      |      8     |     10     |            |
+//         |           |            |            |            |            |
+//  sets   |     5     |     6      |      8     |     10     |            |
+
+// MESO 2  |  week 1   |   week 2   |   week 3   |   week 4   |  deload    |
+// ========================================================================|
+//         |           |            |            |            |            |
+//  sets   |           |            |            |            |            |
+//         |           |            |            |            |            |
+//  sets   |           |            |            |            |            |
+//         |           |            |            |            |            |
+//  sets   |           |            |            |            |            |
+
+// MESO 3  |  week 1   |   week 2   |   week 3   |   week 4   |  deload    |
+// ========================================================================|
+//         |           |            |            |            |            |
+//  sets   |           |            |            |            |            |
+//         |           |            |            |            |            |
+//  sets   |           |            |            |            |            |
+//         |           |            |            |            |            |
+//  sets   |           |            |            |            |            |
+//         |           |            |            |            |            |
+//  sets   |           |            |            |            |            |
+
+// resensitization meso
+// MESO 4  |  week 1   |   week 2   |   week 3   |   week 4   |  deload    |
+// ========================================================================|
+//         |           |            |            |            |            |
+//  sets   |           |            |            |            |            |
+//         |           |            |            |            |            |
+//  sets   |           |            |            |            |            |
+//         |           |            |            |            |            |
+//  sets   |           |            |            |            |            |
