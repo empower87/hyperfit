@@ -1,4 +1,9 @@
-import { LOWER_MUSCLES, UPPER_MUSCLES } from "~/constants/workoutSplits";
+import { useEffect, useState } from "react";
+import {
+  LOWER_MUSCLES,
+  MusclesType,
+  UPPER_MUSCLES,
+} from "~/constants/workoutSplits";
 import { MusclePriorityType } from "~/pages";
 import workouts from "./workouts.json";
 
@@ -31,36 +36,6 @@ export default function MesoTable() {
 // TRIS   4
 // EVERY  5
 
-const MRVList = [["back", 30], ["triceps", 25], ["side_delts", 35], []];
-export const LiftTableTesting = ({ sessions }: { sessions: number[] }) => {
-  return (
-    <table>
-      <thead>
-        <tr>
-          <th>Muscle Group</th>
-          {sessions.map((each) => {
-            return <th>{each}</th>;
-          })}
-        </tr>
-      </thead>
-      <tbody>
-        {muscles.map((each) => {
-          return (
-            <tr>
-              <td>{each.muscle}</td>
-              <td>{each.sets}</td>
-            </tr>
-          );
-        })}
-      </tbody>
-    </table>
-  );
-};
-// total
-// 5 total
-// quads MRV
-// back MRV
-
 type SessionType = {
   day: number;
   sets: [string, number][];
@@ -77,7 +52,6 @@ const SESSION: SessionType = {
   split: "full",
 };
 
-const distributeSets = (list: MusclePriorityType[], sessions: number[]) => {};
 // 4 = MAX_MRV
 // 3 = FULL_MRV
 // 2, 2 = FULL_MRV
@@ -113,60 +87,75 @@ const getLowerPosition = (list: MusclePriorityType[]) => {
   }
 
   console.log(priority, "what diss look like?? hehehehe this is funky");
-  if (priority[1] === 4) {
-    return "MAX_MRV";
-  } else if (priority[1] === 3) {
-    return "FULL_MRV";
-  } else if (priority[1] === 2) {
-    if (priority[0] === 2) {
+  switch (priority[1]) {
+    case 4:
+      return "MAX_MRV";
+    case 3:
       return "FULL_MRV";
-    } else if (priority[0] === 1) {
-      return "MRV";
-    } else {
-      return "LOW_MRV";
-    }
-  } else if (priority[1] === 1) {
-    if (priority[0] === 1) {
-      return "LOW_MRV";
-    } else {
-      return "MEV";
-    }
+    case 2:
+      if (priority[0] === 2) {
+        return "FULL_MRV";
+      } else if (priority[0] === 1) {
+        return "MRV";
+      } else {
+        return "LOW_MRV";
+      }
+    case 1:
+      if (priority[0] === 1) {
+        return "LOW_MRV";
+      } else {
+        return "MEV";
+      }
+    default:
+      return "MV";
   }
-
-  return "MV";
 };
+type SplitType = "upper" | "lower" | "full";
 
 const getTrainingSplit = (
   list: MusclePriorityType[],
-  sessions: number[]
-): ("full" | "upper" | "lower")[] => {
+  sessions: number
+): SplitType[] => {
   const lowerRank = getLowerPosition(list);
 
-  switch (sessions.length) {
+  switch (sessions) {
     case 2:
       return ["full", "full"];
     case 3:
       return ["full", "full", "full"];
     case 4:
       return ["upper", "upper", "lower", "lower"];
+
     case 5:
       switch (lowerRank) {
         case "MAX_MRV":
           return ["lower", "lower", "lower", "lower", "full"];
         case "FULL_MRV":
-          return ["upper", "lower", "lower", "full", "full"];
+          return ["upper", "lower", "full", "lower", "full"];
         case "MRV":
-          return ["upper", "upper", "lower", "full", "full"];
+          return ["upper", "lower", "upper", "full", "full"];
         case "LOW_MRV":
-          return ["upper", "upper", "full", "full", "lower"];
+          return ["upper", "lower", "upper", "full", "full"];
         case "MEV":
-          return ["upper", "upper", "upper", "full", "full"];
+          return ["upper", "full", "upper", "full", "upper"];
         default:
-          return ["upper", "upper", "upper", "upper", "full"];
+          return ["upper", "upper", "full", "upper", "upper"];
       }
-
     case 6:
-      return ["upper", "upper", "upper", "lower", "lower", "lower"];
+      switch (lowerRank) {
+        case "MAX_MRV":
+          return ["lower", "lower", "lower", "lower", "full", "upper"];
+        case "FULL_MRV":
+          return ["upper", "lower", "full", "lower", "full", "upper"];
+        case "MRV":
+          return ["upper", "lower", "upper", "full", "full", "upper"];
+        case "LOW_MRV":
+          return ["upper", "lower", "upper", "full", "full", "upper"];
+        case "MEV":
+          return ["upper", "lower", "upper", "full", "upper", "upper"];
+        default:
+          return ["upper", "lower", "upper", "upper", "upper", "upper"];
+      }
     case 7:
       return ["upper", "upper", "upper", "lower", "lower", "lower", "full"];
     default:
@@ -174,77 +163,253 @@ const getTrainingSplit = (
   }
 };
 
-const featureTest = (list: MusclePriorityType[], sessions: number[]) => {
-  const split = getTrainingSplit(list, sessions);
+type SplitAmongSetsType = {
+  split: SplitType[];
+  rank: number;
+  muscle: MusclesType;
+  MRV: number[];
+  MEV: number;
+  MV: number;
+  maxFreq: number;
+};
 
-  let sessionsMRV: SessionType[] = sessions.map((each, index) => {
-    return {
+4;
+// upper upper upper full
+//  9 8 8 5
+// upper upper full full
+// 10 10 5 5
+// upper full full full
+//  10 5 5 5
+// full full full full
+// 6 6 6 6
+
+3;
+// upper upper upper
+// 9 8 8
+// upper upper full
+// 9 9 6
+// upper full full
+// 9 6 6
+// full full full
+// 6 6 6
+
+2;
+// upper upper
+// 9 9
+// upper full
+// 9 7
+// full full
+// 7 7
+
+const splitSetsAmongSessions = ({
+  split,
+  rank,
+  muscle,
+  MRV,
+  MEV,
+  MV,
+  maxFreq,
+}: SplitAmongSetsType) => {
+  let getUpperSessions = split.filter((each) => each === "upper");
+  let getLowerSessions = split.filter((each) => each === "lower");
+  let getFullSessions = split.filter((each) => each === "full");
+
+  let MEVList = [];
+  let MVList = [];
+
+  let UPPER_SESSION_MAX = 9;
+  let LOWER_SESSION_MAX = 9;
+  let FULL_SESSION_MAX =
+    getUpperSessions.length + getFullSessions.length > 3
+      ? 5
+      : getUpperSessions.length + getFullSessions.length < 3
+      ? 7
+      : 6;
+
+  for (let i = 0; i < split.length; i++) {
+    MEVList.push(MEV);
+    MVList.push(MV);
+  }
+
+  let volume = rank < 4 ? MRV : rank < 8 ? MEVList : MVList;
+
+  if (UPPER_MUSCLES.includes(muscle)) {
+    let totalSessions = getUpperSessions.length + getFullSessions.length;
+
+    if (totalSessions > maxFreq) {
+      totalSessions = maxFreq;
+    }
+
+    for (let u = 0; u < split.length; u++) {}
+  } else {
+  }
+};
+
+export const featureTest = (list: MusclePriorityType[], sessions: number) => {
+  const split = getTrainingSplit(list, sessions);
+  let sessionsMRV: SessionType[] = [];
+
+  for (let j = 0; j < sessions; j++) {
+    sessionsMRV.push({
       ...SESSION,
-      day: index + 1,
+      day: j + 1,
       sets: [],
       totalSets: 0,
       maxSets: 30,
-      split: split[index],
-    };
-  });
+      split: split[j],
+    });
+  }
 
   for (let i = 0; i < list.length; i++) {
-    const getUpperSessions = split.filter(
-      (each) => each === "upper" || each === "full"
-    );
+    const getUpperSessions = split.filter((each) => each === "upper");
+    const getFullSessions = split.filter((each) => each === "full");
 
-    const upper = getUpperSessions.length;
-    const lower = sessions.length - upper;
+    const upper = getUpperSessions.length + getFullSessions.length;
 
-    let muscle = workouts.find((each) => list[i].muscle === each.muscle);
+    const lower = sessions - getUpperSessions.length;
+
+    let muscle = workouts.find((each) => list[i].muscle === each.name);
     if (!muscle) return;
 
-    // let sessionsForMuscle = sessions.length
-    // if (muscle.muscle === "quads" || muscle.muscle === "chest" || muscle.muscle === "back") {
-    //   if (sessions.length > 4) {
-    //     sessionsForMuscle = 4
-    //   }
-    // }
-    if (UPPER_MUSCLES.includes(muscle.muscle)) {
+    if (UPPER_MUSCLES.includes(muscle.name)) {
       let getSets = Math.floor(muscle.MRV[upper - 1] / upper);
 
       for (let i = 0; i < sessionsMRV.length; i++) {
         const totalSets = sessionsMRV[i].maxSets;
+
         if (
           sessionsMRV[i].split === "full" ||
           sessionsMRV[i].split === "upper"
         ) {
           if (totalSets - getSets < 0) {
             getSets--;
+          } else {
+            sessionsMRV[i].sets.push([muscle.name, getSets]);
+            sessionsMRV[i].maxSets = sessionsMRV[i].maxSets - getSets;
           }
-          sessionsMRV[i].sets.push([muscle.muscle, getSets]);
         }
       }
     } else {
-    }
+      let getSets = Math.floor(muscle.MRV[lower - 1] / lower);
 
-    for (let i = 0; i < sessionsMRV.length; i++) {
-      if (sessionsMRV[i].split == null) {
-        if (muscle.muscle === "quads") {
-        } else if (muscle.muscle === "back" || muscle.muscle === "chest") {
-        } else {
+      for (let i = 0; i < sessionsMRV.length; i++) {
+        const totalSets = sessionsMRV[i].maxSets;
+
+        if (
+          sessionsMRV[i].split === "full" ||
+          sessionsMRV[i].split === "lower"
+        ) {
+          if (totalSets - getSets < 0) {
+            getSets--;
+          } else {
+            sessionsMRV[i].sets.push([muscle.name, getSets]);
+            sessionsMRV[i].maxSets = sessionsMRV[i].maxSets - getSets;
+          }
         }
       }
     }
-
-    sessionsMRV.map((each) => {
-      return {
-        ...each,
-        sets: each.sets.push([list[i].muscle, muscle.MRV[sessionsForMuscle]]),
-      };
-    });
   }
+  console.log(sessionsMRV, split, "1. sessionsMRV, 2. split array");
+  return sessionsMRV;
 };
 
-// 4   5   6   7
-//
+export const TestTable = ({
+  list,
+  split,
+}: {
+  list: MusclePriorityType[];
+  split: SessionType[];
+}) => {
+  const [rows, setRows] = useState<(string | number)[][]>([]);
 
-//
+  useEffect(() => {
+    let newList = [];
+
+    for (let i = 0; i < list.length; i++) {
+      let pushList: (string | number)[] = [list[i].muscle];
+
+      for (let j = 0; j < split.length; j++) {
+        let sets = split[j].sets;
+        let setsFound = false;
+
+        for (let k = 0; k < sets.length; k++) {
+          if (sets[k].includes(list[i].muscle)) {
+            pushList.push(sets[k][1]);
+            setsFound = true;
+          }
+        }
+
+        if (!setsFound) {
+          pushList.push(0);
+        }
+      }
+
+      newList.push(pushList);
+    }
+
+    setRows(newList);
+  }, [list, split]);
+
+  return (
+    <div className="flex justify-center">
+      <table className="w-300">
+        <thead>
+          <tr className="bg-slate-500">
+            <th className="bg-slate-300 px-1 text-sm text-white">Muscle</th>
+            {split.map((each) => {
+              let color =
+                each.split === "upper"
+                  ? "bg-blue-500"
+                  : each.split === "lower"
+                  ? "bg-red-500"
+                  : "bg-purple-500";
+              return (
+                <th className={color + " px-2 text-sm text-white"}>
+                  {each.split}
+                </th>
+              );
+            })}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((each) => {
+            return (
+              <tr className="text-xs">
+                {each.map((e, i) => {
+                  let bgColor =
+                    i == 0
+                      ? "bg-slate-300"
+                      : e === 0
+                      ? "bg-slate-400"
+                      : split[i - 1]?.split === "upper"
+                      ? "bg-blue-200"
+                      : split[i - 1]?.split === "lower"
+                      ? "bg-red-200"
+                      : "bg-purple-200";
+                  return (
+                    <td className={bgColor + " border border-slate-500 pl-2"}>
+                      {e}
+                    </td>
+                  );
+                })}
+              </tr>
+            );
+          })}
+          <tr>
+            <td className="pl-2">Total</td>
+            {split.map((each) => {
+              let total = each.sets.reduce(
+                (total, [, number]) => total + number,
+                0
+              );
+              return <td className="pl-2 text-xs">{total}</td>;
+            })}
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  );
+};
 
 //          |    1    |    2    |    3    |    4    |    5    |    6
 //   Sun    |   Mon   |   Tue   |   Wed   |   Thu   |   Fri   |   Sat

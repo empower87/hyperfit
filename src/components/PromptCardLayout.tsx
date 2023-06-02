@@ -20,6 +20,7 @@ export const FrequencySelect = ({
     <>
       <p className="p-1 text-slate-700">
         How many days per week will you being lifting?
+        {/* --- this should probably be the max amount of sessions a week so as to progress toward --- */}
       </p>
 
       <select onChange={handleSelectChange}>
@@ -45,3 +46,11 @@ export default function PromptCardLayout({ title, children }: PromptCardProps) {
     </div>
   );
 }
+
+// LOGISTICS 2.0
+
+// 1. Prompt user for total sessions they can commit to a week.
+//    - this will allow to structure the plan to take priority muscle from mev to mrv.
+
+// 2. Check priority list.
+//    Options: allow for user to progressively overload all muscles at the same time.

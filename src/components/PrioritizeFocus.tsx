@@ -13,7 +13,8 @@ import {
   DroppableProps,
 } from "react-beautiful-dnd";
 import { LOWER_MUSCLES, UPPER_MUSCLES } from "~/constants/workoutSplits";
-import { MUSCLE_PRIORITY_LIST, MusclePriorityType, SplitType } from "~/pages";
+import { MusclePriorityType, SessionType, SplitType } from "~/pages";
+import { featureTest } from "./MesoTable";
 import workouts from "./workouts.json";
 
 type PrioritizeFocusProps = {
@@ -23,6 +24,7 @@ type PrioritizeFocusProps = {
   split: number[];
   workoutSplit: SplitType[];
   setWorkoutSplit: Dispatch<SetStateAction<SplitType[]>>;
+  setSplitTest: Dispatch<SetStateAction<SessionType[]>>;
 };
 
 export const PickPriority = ({
@@ -122,6 +124,7 @@ export default function PrioritizeFocus({
   musclePriority,
   setMusclePriority,
   setWorkoutSplit,
+  setSplitTest,
 }: PrioritizeFocusProps) {
   const [newList, setNewList] = useState<MusclePriorityType[]>([]);
 
@@ -161,6 +164,11 @@ export default function PrioritizeFocus({
 
       setMusclePriority(newerList);
       // updateNewList(items);
+      const testSplit = featureTest(items, totalWorkouts);
+      if (testSplit) {
+        console.log(testSplit, "ok what this look like???");
+        setSplitTest(testSplit);
+      }
     },
     [newList, split]
   );
@@ -184,7 +192,7 @@ export default function PrioritizeFocus({
 
   const onClickHandler = () => {
     let copyList = [...workoutSplit];
-    const newList = [...MUSCLE_PRIORITY_LIST];
+    // const newList = [...MUSCLE_PRIORITY_LIST];
 
     for (let i = 0; i < newList.length; i++) {
       if (UPPER_MUSCLES.includes(newList[i].muscle)) {
@@ -227,7 +235,13 @@ export default function PrioritizeFocus({
         }
       }
     }
-    console.log(copyList, "ok what this look like???");
+
+    const testSplit = featureTest(newList, totalWorkouts);
+    if (testSplit) {
+      console.log(testSplit, "ok what this look like???");
+      setSplitTest(testSplit);
+    }
+
     setWorkoutSplit(copyList);
   };
 
