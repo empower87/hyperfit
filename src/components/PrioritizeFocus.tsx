@@ -92,12 +92,12 @@ const updateNewList = (
 
   for (let i = 0; i < items.length; i++) {
     const getMuscleObj = workouts.filter(
-      (each) => each.muscle === items[i].muscle
+      (each) => each.name === items[i].muscle
     );
 
-    const { muscle, MEV, MRV, featureMatrix } = getMuscleObj[0];
+    const { name, MEV, MRV, featureMatrix } = getMuscleObj[0];
 
-    if (UPPER_MUSCLES.includes(muscle)) {
+    if (UPPER_MUSCLES.includes(name)) {
       newList.push({
         id: items[i].id,
         muscle: items[i].muscle,

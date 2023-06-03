@@ -103,6 +103,7 @@ export type SessionType = {
   totalSets: number;
   maxSets: number;
   split: "full" | "upper" | "lower";
+  testSets: [string, number[]][];
 };
 
 export type SplitType = { day: number; split: string; sets: ListTuple[] };

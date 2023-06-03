@@ -1,10 +1,6 @@
 import { useEffect, useState } from "react";
-import {
-  LOWER_MUSCLES,
-  MusclesType,
-  UPPER_MUSCLES,
-} from "~/constants/workoutSplits";
-import { MusclePriorityType } from "~/pages";
+import { LOWER_MUSCLES, UPPER_MUSCLES } from "~/constants/workoutSplits";
+import { MusclePriorityType, SessionType } from "~/pages";
 import workouts from "./workouts.json";
 
 export default function MesoTable() {
@@ -36,20 +32,13 @@ export default function MesoTable() {
 // TRIS   4
 // EVERY  5
 
-type SessionType = {
-  day: number;
-  sets: [string, number][];
-  totalSets: number;
-  maxSets: number;
-  split: "full" | "upper" | "lower";
-};
-
 const SESSION: SessionType = {
   day: 1,
   sets: [],
   totalSets: 0,
   maxSets: 30,
   split: "full",
+  testSets: [],
 };
 
 // 4 = MAX_MRV
@@ -166,11 +155,7 @@ const getTrainingSplit = (
 type SplitAmongSetsType = {
   split: SplitType[];
   rank: number;
-  muscle: MusclesType;
-  MRV: number[];
-  MEV: number;
-  MV: number;
-  maxFreq: number;
+  name: string;
 };
 
 4;
@@ -204,15 +189,19 @@ type SplitAmongSetsType = {
 const splitSetsAmongSessions = ({
   split,
   rank,
-  muscle,
-  MRV,
-  MEV,
-  MV,
-  maxFreq,
-}: SplitAmongSetsType) => {
+  name,
+}: // MRV,
+// MEV,
+// MV,
+// maxFreq,
+SplitAmongSetsType): [string, number[]] => {
   let getUpperSessions = split.filter((each) => each === "upper");
   let getLowerSessions = split.filter((each) => each === "lower");
   let getFullSessions = split.filter((each) => each === "full");
+
+  let muscleObj = workouts.find((each) => name === each.name);
+  if (!muscleObj) return [name, [0, 0, 0, 0, 0]];
+  const { name: muscle, MEV, MRV, MV, frequency_max: maxFreq } = muscleObj;
 
   let MEVList = [];
   let MVList = [];
@@ -240,8 +229,82 @@ const splitSetsAmongSessions = ({
       totalSessions = maxFreq;
     }
 
-    for (let u = 0; u < split.length; u++) {}
+    let totalVolume = volume[totalSessions - 1];
+    let fullSessionVolume = FULL_SESSION_MAX * getFullSessions.length;
+    let upperSessionVolume = totalVolume - fullSessionVolume;
+
+    let upperRemainder = upperSessionVolume % getUpperSessions.length;
+    let upperVolumePerSession = Math.floor(
+      upperSessionVolume / getUpperSessions.length
+    );
+
+    if (upperVolumePerSession > UPPER_SESSION_MAX) {
+      upperVolumePerSession = UPPER_SESSION_MAX;
+    }
+    let setsPerSession: number[] = [];
+    for (let u = 0; u < split.length; u++) {
+      let session = split[u];
+
+      if (session === "upper") {
+        if (
+          upperRemainder > 0 &&
+          upperVolumePerSession + 1 <= UPPER_SESSION_MAX
+        ) {
+          let value = upperVolumePerSession + 1;
+          setsPerSession.push(value);
+          upperRemainder--;
+        } else {
+          setsPerSession.push(upperVolumePerSession);
+        }
+      } else if (session === "full") {
+        setsPerSession.push(FULL_SESSION_MAX);
+      } else {
+        setsPerSession.push(0);
+      }
+    }
+
+    return [muscle, setsPerSession];
   } else {
+    let totalSessions = getLowerSessions.length + getFullSessions.length;
+
+    if (totalSessions > maxFreq) {
+      totalSessions = maxFreq;
+    }
+
+    let totalVolume = volume[totalSessions - 1];
+    let fullSessionVolume = FULL_SESSION_MAX * getFullSessions.length;
+    let lowerSessionVolume = totalVolume - fullSessionVolume;
+
+    let lowerRemainder = lowerSessionVolume % getLowerSessions.length;
+    let lowerVolumePerSession = Math.floor(
+      lowerSessionVolume / getLowerSessions.length
+    );
+
+    if (lowerVolumePerSession > LOWER_SESSION_MAX) {
+      lowerVolumePerSession = LOWER_SESSION_MAX;
+    }
+    let setsPerSession: number[] = [];
+    for (let u = 0; u < split.length; u++) {
+      let session = split[u];
+
+      if (session === "lower") {
+        if (
+          lowerRemainder > 0 &&
+          lowerVolumePerSession + 1 <= LOWER_SESSION_MAX
+        ) {
+          let value = lowerVolumePerSession + 1;
+          setsPerSession.push(value);
+          lowerRemainder--;
+        } else {
+          setsPerSession.push(lowerVolumePerSession);
+        }
+      } else if (session === "full") {
+        setsPerSession.push(FULL_SESSION_MAX);
+      } else {
+        setsPerSession.push(0);
+      }
+    }
+    return [muscle, setsPerSession];
   }
 };
 
@@ -257,10 +320,21 @@ export const featureTest = (list: MusclePriorityType[], sessions: number) => {
       totalSets: 0,
       maxSets: 30,
       split: split[j],
+      testSets: [],
     });
   }
 
   for (let i = 0; i < list.length; i++) {
+    let muscle_name = list[i].muscle;
+    const oneLine = splitSetsAmongSessions({
+      split: split,
+      rank: i,
+      name: muscle_name,
+    });
+    console.log(oneLine, "OH BOY LETS TEST THIS NEW FEATURE!!");
+
+    sessionsMRV[0].testSets.push(oneLine);
+
     const getUpperSessions = split.filter((each) => each === "upper");
     const getFullSessions = split.filter((each) => each === "full");
 
@@ -321,6 +395,13 @@ export const TestTable = ({
   split: SessionType[];
 }) => {
   const [rows, setRows] = useState<(string | number)[][]>([]);
+  const [testRows, setTestRows] = useState<[string, number[]][]>([]);
+
+  useEffect(() => {
+    if (split[0]) {
+      setTestRows(split[0].testSets);
+    }
+  }, [split]);
 
   useEffect(() => {
     let newList = [];
@@ -372,7 +453,29 @@ export const TestTable = ({
           </tr>
         </thead>
         <tbody>
-          {rows.map((each) => {
+          {testRows.map((each) => {
+            return (
+              <tr className="text-xs">
+                <td className="bg-slate-300">{each[0]}</td>
+                {each[1].map((e, i) => {
+                  let bgColor =
+                    e === 0
+                      ? "bg-slate-400"
+                      : split[i - 1]?.split === "upper"
+                      ? "bg-blue-200"
+                      : split[i - 1]?.split === "lower"
+                      ? "bg-red-200"
+                      : "bg-purple-200";
+                  return (
+                    <td className={bgColor + " border border-slate-500 pl-2"}>
+                      {e}
+                    </td>
+                  );
+                })}
+              </tr>
+            );
+          })}
+          {/* {rows.map((each) => {
             return (
               <tr className="text-xs">
                 {each.map((e, i) => {
@@ -394,7 +497,7 @@ export const TestTable = ({
                 })}
               </tr>
             );
-          })}
+          })} */}
           <tr>
             <td className="pl-2">Total</td>
             {split.map((each) => {
