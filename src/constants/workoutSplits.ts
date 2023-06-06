@@ -40,9 +40,10 @@ export const UPPER_MUSCLES = [
   "triceps",
   "chest",
   "back",
+  "forearms",
 ];
 
-export const LOWER_MUSCLES = ["glutes", "quads", "hamstrings"];
+export const LOWER_MUSCLES = ["glutes", "quads", "hamstrings", "calves"];
 
 export const PUSH_MUSCLES = [
   "chest",

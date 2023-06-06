@@ -1,36 +1,8 @@
 import { useEffect, useState } from "react";
 import { LOWER_MUSCLES, UPPER_MUSCLES } from "~/constants/workoutSplits";
 import { MusclePriorityType, SessionType } from "~/pages";
+import { distributeMEVAmongSessions } from "./WorkoutCard";
 import workouts from "./workouts.json";
-
-export default function MesoTable() {
-  return (
-    <div className="">
-      <table className="bg-slate-100 shadow">
-        <thead className="rounded-md border-2 border-r-2 border-slate-700 bg-slate-400">
-          <tr className="text-xs text-white ">
-            <th className="p-1 text-start">Split</th>
-            <th className="p-1 text-start">Week 1</th>
-            <th className="p-1 text-start">Week 2</th>
-            <th className="p-1 text-start">Week 3</th>
-            <th className="p-1 text-start">Week 4</th>
-            <th className="p-1 text-start">Deload</th>
-          </tr>
-        </thead>
-        <tbody className="">{}</tbody>
-      </table>
-    </div>
-  );
-}
-
-// SYSTEMIC_FATIGUE
-// QUADS  1
-// BACK   2
-// CHEST  2
-// HAMS   2
-// GLUTES 3
-// TRIS   4
-// EVERY  5
 
 const SESSION: SessionType = {
   day: 1,
@@ -99,6 +71,7 @@ const getLowerPosition = (list: MusclePriorityType[]) => {
       return "MV";
   }
 };
+
 type SplitType = "upper" | "lower" | "full";
 
 const getTrainingSplit = (
@@ -151,14 +124,10 @@ const getTrainingSplit = (
       return ["full"];
   }
 };
+// upper upper upper upper full
+// 8 8 7 7
+//
 
-type SplitAmongSetsType = {
-  split: SplitType[];
-  rank: number;
-  name: string;
-};
-
-4;
 // upper upper upper full
 //  9 8 8 5
 // upper upper full full
@@ -168,7 +137,6 @@ type SplitAmongSetsType = {
 // full full full full
 // 6 6 6 6
 
-3;
 // upper upper upper
 // 9 8 8
 // upper upper full
@@ -178,7 +146,6 @@ type SplitAmongSetsType = {
 // full full full
 // 6 6 6
 
-2;
 // upper upper
 // 9 9
 // upper full
@@ -186,21 +153,23 @@ type SplitAmongSetsType = {
 // full full
 // 7 7
 
+type SplitAmongSetsType = {
+  split: SplitType[];
+  rank: number;
+  _name: string;
+};
+
 const splitSetsAmongSessions = ({
   split,
   rank,
-  name,
-}: // MRV,
-// MEV,
-// MV,
-// maxFreq,
-SplitAmongSetsType): [string, number[]] => {
+  _name,
+}: SplitAmongSetsType): [string, number[], number] => {
   let getUpperSessions = split.filter((each) => each === "upper");
   let getLowerSessions = split.filter((each) => each === "lower");
   let getFullSessions = split.filter((each) => each === "full");
+  let muscleObj = workouts.find((each) => _name === each.name);
+  if (!muscleObj) return [_name, [0, 0, 0, 0, 0], 0];
 
-  let muscleObj = workouts.find((each) => name === each.name);
-  if (!muscleObj) return [name, [0, 0, 0, 0, 0]];
   const { name: muscle, MEV, MRV, MV, frequency_max: maxFreq } = muscleObj;
 
   let MEVList = [];
@@ -222,6 +191,20 @@ SplitAmongSetsType): [string, number[]] => {
 
   let volume = rank < 4 ? MRV : rank < 8 ? MEVList : MVList;
 
+  if (rank > 3) {
+    const result = distributeMEVAmongSessions(
+      rank,
+      muscle,
+      MEV,
+      MV,
+      split,
+      getLowerSessions.length,
+      getUpperSessions.length,
+      getFullSessions.length
+    );
+    return result;
+  }
+
   if (UPPER_MUSCLES.includes(muscle)) {
     let totalSessions = getUpperSessions.length + getFullSessions.length;
 
@@ -230,7 +213,14 @@ SplitAmongSetsType): [string, number[]] => {
     }
 
     let totalVolume = volume[totalSessions - 1];
+    let skipFullSessions = false;
     let fullSessionVolume = FULL_SESSION_MAX * getFullSessions.length;
+
+    if (totalSessions <= getUpperSessions.length) {
+      skipFullSessions = true;
+      fullSessionVolume = 0;
+    }
+
     let upperSessionVolume = totalVolume - fullSessionVolume;
 
     let upperRemainder = upperSessionVolume % getUpperSessions.length;
@@ -241,9 +231,12 @@ SplitAmongSetsType): [string, number[]] => {
     if (upperVolumePerSession > UPPER_SESSION_MAX) {
       upperVolumePerSession = UPPER_SESSION_MAX;
     }
+
     let setsPerSession: number[] = [];
     for (let u = 0; u < split.length; u++) {
       let session = split[u];
+
+      if (totalSessions <= 0) break;
 
       if (session === "upper") {
         if (
@@ -256,14 +249,19 @@ SplitAmongSetsType): [string, number[]] => {
         } else {
           setsPerSession.push(upperVolumePerSession);
         }
-      } else if (session === "full") {
+        totalSessions--;
+      } else if (session === "full" && !skipFullSessions) {
         setsPerSession.push(FULL_SESSION_MAX);
+        totalSessions--;
       } else {
         setsPerSession.push(0);
       }
     }
-
-    return [muscle, setsPerSession];
+    const totalSets = setsPerSession.reduce(
+      (total, number) => total + number,
+      0
+    );
+    return [muscle, setsPerSession, totalSets];
   } else {
     let totalSessions = getLowerSessions.length + getFullSessions.length;
 
@@ -283,6 +281,7 @@ SplitAmongSetsType): [string, number[]] => {
     if (lowerVolumePerSession > LOWER_SESSION_MAX) {
       lowerVolumePerSession = LOWER_SESSION_MAX;
     }
+
     let setsPerSession: number[] = [];
     for (let u = 0; u < split.length; u++) {
       let session = split[u];
@@ -304,7 +303,11 @@ SplitAmongSetsType): [string, number[]] => {
         setsPerSession.push(0);
       }
     }
-    return [muscle, setsPerSession];
+    const totalSets = setsPerSession.reduce(
+      (total, number) => total + number,
+      0
+    );
+    return [muscle, setsPerSession, totalSets];
   }
 };
 
@@ -329,7 +332,7 @@ export const featureTest = (list: MusclePriorityType[], sessions: number) => {
     const oneLine = splitSetsAmongSessions({
       split: split,
       rank: i,
-      name: muscle_name,
+      _name: muscle_name,
     });
     console.log(oneLine, "OH BOY LETS TEST THIS NEW FEATURE!!");
 
@@ -395,7 +398,7 @@ export const TestTable = ({
   split: SessionType[];
 }) => {
   const [rows, setRows] = useState<(string | number)[][]>([]);
-  const [testRows, setTestRows] = useState<[string, number[]][]>([]);
+  const [testRows, setTestRows] = useState<[string, number[], number][]>([]);
 
   useEffect(() => {
     if (split[0]) {
@@ -450,6 +453,7 @@ export const TestTable = ({
                 </th>
               );
             })}
+            <th className="bg-slate-300 px-1 text-sm text-white">Total</th>
           </tr>
         </thead>
         <tbody>
@@ -466,12 +470,14 @@ export const TestTable = ({
                       : split[i - 1]?.split === "lower"
                       ? "bg-red-200"
                       : "bg-purple-200";
+
                   return (
                     <td className={bgColor + " border border-slate-500 pl-2"}>
                       {e}
                     </td>
                   );
                 })}
+                <td className="bg-slate-400 px-1 text-xs">{each[2]}</td>
               </tr>
             );
           })}
