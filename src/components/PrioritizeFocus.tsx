@@ -12,10 +12,10 @@ import {
   Droppable,
   DroppableProps,
 } from "react-beautiful-dnd";
+import workouts from "src/constants/workouts.json";
 import { LOWER_MUSCLES, UPPER_MUSCLES } from "~/constants/workoutSplits";
 import { MusclePriorityType, SessionType, SplitType } from "~/pages";
 import { featureTest } from "./MesoTable";
-import workouts from "./workouts.json";
 
 type PrioritizeFocusProps = {
   totalWorkouts: number;
