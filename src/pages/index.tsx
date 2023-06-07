@@ -36,7 +36,16 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
     muscle: "triceps",
     sets: 25,
   },
-
+  {
+    id: "hamstrings-011",
+    muscle: "hamstrings",
+    sets: 16,
+  },
+  {
+    id: "quads-012",
+    muscle: "quads",
+    sets: 22,
+  },
   {
     id: "delts_rear-007",
     muscle: "delts_rear",
@@ -78,16 +87,6 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
     id: "abs-001",
     muscle: "abs",
     sets: 0,
-  },
-  {
-    id: "hamstrings-011",
-    muscle: "hamstrings",
-    sets: 16,
-  },
-  {
-    id: "quads-012",
-    muscle: "quads",
-    sets: 22,
   },
   {
     id: "glutes-010",

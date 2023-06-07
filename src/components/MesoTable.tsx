@@ -152,6 +152,192 @@ const getTrainingSplit = (
 // 9 7
 // full full
 // 7 7
+export const distributeUpperMRVSets = (
+  muscle: string,
+  sessions: number,
+  full: number
+) => {
+  const muscleObj = workouts.find((each) => each.name === muscle);
+  if (!muscleObj) return { primarySessions: [], fullSessions: [] };
+  const { MRV, MAV, frequency_max } = muscleObj;
+
+  let sessionSets: number[] = [];
+
+  let loopCount = 0;
+  let index = 0;
+
+  const getFullSets = (volume: number, MAV: number, loopCount: number) => {
+    let fullDistribution = volume - MAV;
+    let fullSetRemainder = fullDistribution % loopCount;
+    let fullSet = Math.floor(fullDistribution / loopCount);
+
+    let array = [];
+    for (let i = 0; i < loopCount; i++) {
+      if (fullSetRemainder > 0) {
+        array.push(fullSet + 1);
+        fullSetRemainder--;
+      } else {
+        array.push(fullSet);
+      }
+    }
+    return array;
+  };
+
+  switch (sessions) {
+    case 0:
+      if (full >= 4) {
+        if (frequency_max >= 5) {
+          index = 4;
+          loopCount = 4;
+        } else {
+          index = 3;
+          loopCount = 3;
+        }
+      } else if (full === 3) {
+        index = 3;
+        loopCount = 3;
+      } else if (full === 2) {
+        index = 2;
+        loopCount = 2;
+      } else if (full === 1) {
+        index = 1;
+        loopCount = 1;
+      }
+
+      let resultio = getFullSets(MRV[index], 0, loopCount);
+
+      return { primarySessions: sessionSets, fullSessions: resultio };
+    case 1:
+      // let loopCount = 0
+      // let index = 0
+
+      if (full >= 4) {
+        if (frequency_max >= 5) {
+          index = 4;
+          loopCount = 4;
+        } else {
+          index = 3;
+          loopCount = 3;
+        }
+      } else if (full === 3) {
+        index = 3;
+        loopCount = 3;
+      } else if (full === 2) {
+        index = 2;
+        loopCount = 2;
+      } else if (full === 1) {
+        index = 1;
+        loopCount = 1;
+      }
+
+      sessionSets.push(MAV);
+
+      let result = getFullSets(MRV[index], MAV, loopCount);
+
+      return { primarySessions: sessionSets, fullSessions: result };
+    case 2:
+      if (full >= 3) {
+        if (frequency_max >= 5) {
+          index = 4;
+          loopCount = 3;
+        } else {
+          index = 3;
+          loopCount = 2;
+        }
+      } else if (full === 2) {
+        index = 3;
+        loopCount = 2;
+      } else if (full === 1) {
+        index = 2;
+        loopCount = 1;
+      } else {
+        // index should = 0, thus no mapping over fullSets
+      }
+
+      sessionSets.push(MAV);
+      sessionSets.push(MAV);
+      let result2 = getFullSets(MRV[index], MAV * 2, loopCount);
+
+      return { primarySessions: sessionSets, fullSessions: result2 };
+    case 3:
+      let fullTotal = 0;
+
+      if (full >= 2) {
+        if (frequency_max >= 5) {
+          index = 4;
+          loopCount = 2;
+          fullTotal = 10;
+        } else {
+          index = 3;
+          loopCount = 1;
+          fullTotal = 6;
+        }
+      } else if (full === 1) {
+        index = 3;
+        loopCount = 1;
+        fullTotal = 6;
+      } else {
+      }
+      let sessions = MRV[index] - fullTotal;
+      let sessionsRemainder = sessions % 3;
+      let sessionsSet = Math.floor(sessions / 3);
+
+      for (let i = 0; i < 3; i++) {
+        if (sessionsRemainder > 0) {
+          sessionSets.push(sessionsSet + 1);
+          sessionsRemainder--;
+        } else {
+          sessionSets.push(sessionsSet);
+        }
+      }
+
+      const fulls = fullTotal === 10 ? [5, 5] : fullTotal === 6 ? [6] : [];
+      return { primarySessions: sessionSets, fullSessions: fulls };
+    case 4:
+      let fullTotal2 = 0;
+
+      if (full >= 1) {
+        if (frequency_max >= 5) {
+          fullTotal = 5;
+        }
+      } else {
+      }
+
+      let sessions2 = MRV[4];
+      let sessionsRemainder2 = sessions2 % 4;
+      let sessionsSet2 = Math.floor(sessions2 / 4);
+
+      for (let i = 0; i < 4; i++) {
+        if (sessionsRemainder2 > 0) {
+          sessionSets.push(sessionsSet2 + 1);
+          sessionsRemainder2--;
+        } else {
+          sessionSets.push(sessionsSet2);
+        }
+      }
+
+      const fulls2 = fullTotal2 > 0 ? [5] : [];
+      return { primarySessions: sessionSets, fullSessions: fulls2 };
+    case 5:
+      let sessions3 = MRV[5];
+      let sessionsRemainder3 = sessions3 % 5;
+      let sessionsSet3 = Math.floor(sessions3 / 5);
+
+      for (let i = 0; i < 4; i++) {
+        if (sessionsRemainder3 > 0) {
+          sessionSets.push(sessionsSet3 + 1);
+          sessionsRemainder3--;
+        } else {
+          sessionSets.push(sessionsSet3);
+        }
+      }
+
+      return { primarySessions: sessionSets, fullSessions: [] };
+    default:
+      return { primarySessions: [], fullSessions: [] };
+    // would mean there are more than 5.
+  }
+};
 
 export const featureTest = (list: MusclePriorityType[], sessions: number) => {
   const split = getTrainingSplit(list, sessions);
