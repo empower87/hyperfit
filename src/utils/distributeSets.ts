@@ -127,8 +127,7 @@ export const splitSetsAmongSessions = ({
   const { primarySessions, fullSessions } = distributeMRVAmongSessions(
     _name,
     sessionSplit === "upper" ? upper : lower,
-    full,
-    rank
+    full
   );
 
   for (let i = 0; i < split.length; i++) {

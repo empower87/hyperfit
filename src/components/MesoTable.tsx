@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import workouts from "src/constants/workouts.json";
 import { splitSetsAmongSessions } from "src/utils/distributeSets";
-import { LOWER_MUSCLES, UPPER_MUSCLES } from "~/constants/workoutSplits";
+import { LOWER_MUSCLES } from "~/constants/workoutSplits";
 import { MusclePriorityType, SessionType } from "~/pages";
 
 const SESSION: SessionType = {
@@ -125,22 +125,48 @@ const getTrainingSplit = (
   }
 };
 
-const getFullSets = (volume: number, MAV: number, loopCount: number) => {
-  let fullDistribution = volume - MAV;
-  let fullSetRemainder = fullDistribution % loopCount;
-  let fullSet = Math.floor(fullDistribution / loopCount);
+const getSessionSets = (
+  primarySessionVolume: number,
+  secondarySessionVolume: number,
+  totalSessions: number
+) => {
+  let totalSets = primarySessionVolume - secondarySessionVolume;
+  let sets = Math.floor(totalSets / totalSessions);
+  let setRemainder = totalSets % totalSessions;
 
-  let array = [];
-  for (let i = 0; i < loopCount; i++) {
-    if (fullSetRemainder > 0) {
-      array.push(fullSet + 1);
-      fullSetRemainder--;
+  let primarySessionSets: number[] = [];
+
+  for (let i = 0; i < totalSessions; i++) {
+    if (setRemainder > 0) {
+      primarySessionSets.push(sets + 1);
+      setRemainder--;
     } else {
-      array.push(fullSet);
+      primarySessionSets.push(sets);
     }
   }
 
-  return array;
+  return primarySessionSets;
+};
+
+const getAllSets = (
+  primaryTotal: number,
+  fullTotal: number,
+  primaryVolume: number,
+  fullVolume: number
+) => {
+  // let primarySets: number[] = []
+  // let fullSets: number[] = []
+
+  let primaryIndex = primaryTotal;
+  let fullIndex = fullTotal;
+
+  let primarySets = getSessionSets(primaryVolume, fullVolume, primaryIndex);
+  let fullSets = getSessionSets(fullVolume, primaryVolume, fullIndex);
+
+  return {
+    primarySessions: primarySets,
+    fullSessions: fullSets,
+  };
 };
 
 export const distributeMRVAmongSessions = (
@@ -153,6 +179,8 @@ export const distributeMRVAmongSessions = (
   if (!muscleObj) return { primarySessions: [], fullSessions: [] };
   const { MRV, MAV, MEV, MV, frequency_max } = muscleObj;
 
+  let maxVolume = rank < 4 ? MRV : rank < 8 ? MEV : MV;
+
   let sessionSets: number[] = [];
   let fullSets: number[] = [];
 
@@ -162,6 +190,74 @@ export const distributeMRVAmongSessions = (
   let volume = 0;
   let primarySessionVolume = 0;
   let resultIsUpper = false;
+
+  const fullBodyCase = (totalSessions: number) => {
+    switch (totalSessions) {
+    }
+  };
+
+  const sessionsStringified =
+    sessions > 5 ? `${sessions}` : `${sessions}-${full}`;
+
+  // let primary: number[] = []
+  switch (sessionsStringified) {
+    case "0-0":
+      break;
+    case "0-1":
+      break;
+    case "0-2":
+      break;
+    case "0-3":
+      break;
+    case "0-4":
+      break;
+    case "0-5":
+      break;
+    case "0-6":
+      break;
+    case "0-7":
+      break;
+
+    case "1-0":
+    case "1-1":
+    case "1-2":
+    case "1-3":
+    case "1-4":
+    case "1-5":
+    case "1-6":
+
+    case "2-0":
+      return getAllSets(2, 0, MRV[1], 0);
+    case "2-1":
+      let full = MRV[2] - MAV * 2;
+      return getAllSets(2, 1, MRV[2], full);
+    case "2-2":
+      let full2 = MRV[3] - MAV * 2;
+      return getAllSets(2, 1, MRV[3], full2);
+    case "2-3":
+
+    case "2-4":
+    case "2-5":
+
+    case "3-0":
+    case "3-1":
+    case "3-2":
+    case "3-3":
+    case "3-4":
+
+    case "4-0":
+    case "4-1":
+    case "4-2":
+    case "4-3":
+
+    case "5-0":
+    case "5-1":
+    case "5-2":
+
+    case "6":
+    case "7":
+    default:
+  }
 
   switch (sessions) {
     case 0:
@@ -208,14 +304,9 @@ export const distributeMRVAmongSessions = (
       }
 
       volume = MRV[index];
-
       primarySessionVolume = MAV;
-
       sessionSets.push(primarySessionVolume);
 
-      // let result = getFullSets(MRV[index], MAV, loopCount);
-
-      // return { primarySessions: sessionSets, fullSessions: result };
       break;
     case 2:
       if (full >= 3) {
@@ -239,9 +330,6 @@ export const distributeMRVAmongSessions = (
       primarySessionVolume = MAV * 2;
       sessionSets = [MAV, MAV];
 
-      // let result2 = getFullSets(MRV[index], MAV * 2, loopCount);
-
-      // return { primarySessions: sessionSets, fullSessions: result2 };
       break;
     case 3:
       let fullTotal = 0;
@@ -263,15 +351,11 @@ export const distributeMRVAmongSessions = (
       } else {
       }
 
-      // const result = getFullSets(MRV[index], fullTotal, 3);
       volume = MRV[index];
-
       primarySessionVolume = fullTotal;
-
       fullSets = fullTotal === 10 ? [5, 5] : fullTotal === 6 ? [6] : [];
-
       resultIsUpper = true;
-      // return { primarySessions: result, fullSessions: fulls };
+
       break;
     case 4:
       let fullTotal2 = 0;
@@ -288,27 +372,21 @@ export const distributeMRVAmongSessions = (
       }
 
       volume = MRV[4];
-
       fullSets = fullTotal2 > 0 ? [5] : [];
-
       resultIsUpper = true;
-      // const result2 = getFullSets(MRV[4], 0, 3);
 
-      // const fulls2 = fullTotal2 > 0 ? [5] : [];
-      // return { primarySessions: result2, fullSessions: fulls2 };
       break;
     case 5:
-      volume = MRV[5];
+      volume = MRV[4];
       resultIsUpper = true;
       loopCount = 5;
-    // const result3 = getFullSets(MRV[5], 0, 5);
-    // return { primarySessions: result3, fullSessions: [] };
+      break;
     default:
     // return { primarySessions: [], fullSessions: [] };
     // would mean there are more than 5.
   }
 
-  let result = getFullSets(volume, primarySessionVolume, loopCount);
+  let result = getSessionSets(volume, primarySessionVolume, loopCount);
 
   return {
     primarySessions: resultIsUpper ? result : sessionSets,
@@ -339,58 +417,58 @@ export const featureTest = (list: MusclePriorityType[], sessions: number) => {
       rank: i,
       _name: muscle_name,
     });
-    console.log(oneLine, "OH BOY LETS TEST THIS NEW FEATURE!!");
 
     sessionsMRV[0].testSets.push(oneLine);
 
-    const getUpperSessions = split.filter((each) => each === "upper");
-    const getFullSessions = split.filter((each) => each === "full");
+    // const getUpperSessions = split.filter((each) => each === "upper");
+    // const getFullSessions = split.filter((each) => each === "full");
 
-    const upper = getUpperSessions.length + getFullSessions.length;
+    // const upper = getUpperSessions.length + getFullSessions.length;
 
-    const lower = sessions - getUpperSessions.length;
+    // const lower = sessions - getUpperSessions.length;
 
-    let muscle = workouts.find((each) => list[i].muscle === each.name);
-    if (!muscle) return;
+    // let muscle = workouts.find((each) => list[i].muscle === each.name);
+    // if (!muscle) return;
 
-    if (UPPER_MUSCLES.includes(muscle.name)) {
-      let getSets = Math.floor(muscle.MRV[upper - 1] / upper);
+    // if (UPPER_MUSCLES.includes(muscle.name)) {
+    //   let getSets = Math.floor(muscle.MRV[upper - 1] / upper);
 
-      for (let i = 0; i < sessionsMRV.length; i++) {
-        const totalSets = sessionsMRV[i].maxSets;
+    //   for (let i = 0; i < sessionsMRV.length; i++) {
+    //     const totalSets = sessionsMRV[i].maxSets;
 
-        if (
-          sessionsMRV[i].split === "full" ||
-          sessionsMRV[i].split === "upper"
-        ) {
-          if (totalSets - getSets < 0) {
-            getSets--;
-          } else {
-            sessionsMRV[i].sets.push([muscle.name, getSets]);
-            sessionsMRV[i].maxSets = sessionsMRV[i].maxSets - getSets;
-          }
-        }
-      }
-    } else {
-      let getSets = Math.floor(muscle.MRV[lower - 1] / lower);
+    //     if (
+    //       sessionsMRV[i].split === "full" ||
+    //       sessionsMRV[i].split === "upper"
+    //     ) {
+    //       if (totalSets - getSets < 0) {
+    //         getSets--;
+    //       } else {
+    //         sessionsMRV[i].sets.push([muscle.name, getSets]);
+    //         sessionsMRV[i].maxSets = sessionsMRV[i].maxSets - getSets;
+    //       }
+    //     }
+    //   }
+    // } else {
+    //   let getSets = Math.floor(muscle.MRV[lower - 1] / lower);
 
-      for (let i = 0; i < sessionsMRV.length; i++) {
-        const totalSets = sessionsMRV[i].maxSets;
+    //   for (let i = 0; i < sessionsMRV.length; i++) {
+    //     const totalSets = sessionsMRV[i].maxSets;
 
-        if (
-          sessionsMRV[i].split === "full" ||
-          sessionsMRV[i].split === "lower"
-        ) {
-          if (totalSets - getSets < 0) {
-            getSets--;
-          } else {
-            sessionsMRV[i].sets.push([muscle.name, getSets]);
-            sessionsMRV[i].maxSets = sessionsMRV[i].maxSets - getSets;
-          }
-        }
-      }
-    }
+    //     if (
+    //       sessionsMRV[i].split === "full" ||
+    //       sessionsMRV[i].split === "lower"
+    //     ) {
+    //       if (totalSets - getSets < 0) {
+    //         getSets--;
+    //       } else {
+    //         sessionsMRV[i].sets.push([muscle.name, getSets]);
+    //         sessionsMRV[i].maxSets = sessionsMRV[i].maxSets - getSets;
+    //       }
+    //     }
+    //   }
+    // }
   }
+
   console.log(sessionsMRV, split, "1. sessionsMRV, 2. split array");
   return sessionsMRV;
 };
@@ -411,33 +489,33 @@ export const TestTable = ({
     }
   }, [split]);
 
-  useEffect(() => {
-    let newList = [];
+  // useEffect(() => {
+  //   let newList = [];
 
-    for (let i = 0; i < list.length; i++) {
-      let pushList: (string | number)[] = [list[i].muscle];
+  //   for (let i = 0; i < list.length; i++) {
+  //     let pushList: (string | number)[] = [list[i].muscle];
 
-      for (let j = 0; j < split.length; j++) {
-        let sets = split[j].sets;
-        let setsFound = false;
+  //     for (let j = 0; j < split.length; j++) {
+  //       let sets = split[j].sets;
+  //       let setsFound = false;
 
-        for (let k = 0; k < sets.length; k++) {
-          if (sets[k].includes(list[i].muscle)) {
-            pushList.push(sets[k][1]);
-            setsFound = true;
-          }
-        }
+  //       for (let k = 0; k < sets.length; k++) {
+  //         if (sets[k].includes(list[i].muscle)) {
+  //           pushList.push(sets[k][1]);
+  //           setsFound = true;
+  //         }
+  //       }
 
-        if (!setsFound) {
-          pushList.push(0);
-        }
-      }
+  //       if (!setsFound) {
+  //         pushList.push(0);
+  //       }
+  //     }
 
-      newList.push(pushList);
-    }
+  //     newList.push(pushList);
+  //   }
 
-    setRows(newList);
-  }, [list, split]);
+  //   setRows(newList);
+  // }, [list, split]);
 
   return (
     <div className="flex justify-center">
