@@ -125,27 +125,23 @@ const getTrainingSplit = (
   }
 };
 
-const getSessionSets = (
-  primarySessionVolume: number,
-  // secondarySessionVolume: number,
-  totalSessions: number
-) => {
-  let totalSets = primarySessionVolume;
+const getSessionSets = (sessionVolume: number, totalSessions: number) => {
+  let totalSets = sessionVolume;
   let sets = Math.floor(totalSets / totalSessions);
   let setRemainder = totalSets % totalSessions;
 
-  let primarySessionSets: number[] = [];
+  let sessionSets: number[] = [];
 
   for (let i = 0; i < totalSessions; i++) {
     if (setRemainder > 0) {
-      primarySessionSets.push(sets + 1);
+      sessionSets.push(sets + 1);
       setRemainder--;
     } else {
-      primarySessionSets.push(sets);
+      sessionSets.push(sets);
     }
   }
 
-  return primarySessionSets;
+  return sessionSets;
 };
 
 const getAllSets = (
@@ -154,9 +150,6 @@ const getAllSets = (
   primaryVolume: number,
   fullVolume: number
 ) => {
-  // let primarySets: number[] = []
-  // let fullSets: number[] = []
-
   let primaryIndex = primaryTotal;
   let fullIndex = fullTotal;
 
@@ -179,30 +172,24 @@ export const distributeMRVAmongSessions = (
   if (!muscleObj) return { primarySessions: [], fullSessions: [] };
   const { MRV, MAV, MEV, MV, frequency_max } = muscleObj;
 
-  let maxVolume = rank < 4 ? MRV : rank < 8 ? MEV : MV;
-
-  let sessionSets: number[] = [];
-  let fullSets: number[] = [];
-
-  let loopCount = 0;
-  let index = 0;
-
-  let volume = 0;
-  let primarySessionVolume = 0;
-  let resultIsUpper = false;
-
-  const fullBodyCase = (totalSessions: number) => {
-    switch (totalSessions) {
-    }
-  };
-
   const sessionsStringified =
     sessions > 5 ? `${sessions}` : `${sessions}-${full}`;
 
-  // let primary: number[] = []
+  let MEVList: number[] = [];
+  let MVList: number[] = [];
+
+  let sessionLength = sessions + full;
+  for (let i = 0; i < sessionLength; i++) {
+    MEVList.push(MEV);
+    MVList.push(MV);
+  }
+
+  let primaryVolume = rank < 4 ? MRV : rank < 8 ? MEVList : MVList;
+
   let fullVolume = 0;
 
   switch (sessionsStringified) {
+    // ZERO PRIMARY
     case "0-0":
       return { primarySessions: [], fullSessions: [] };
     case "0-1":
@@ -210,240 +197,121 @@ export const distributeMRVAmongSessions = (
     case "0-2":
       return { primarySessions: [], fullSessions: [MAV, MAV] };
     case "0-3":
-      fullVolume = MRV[2];
+      fullVolume = primaryVolume[2];
       return getAllSets(0, 3, 0, fullVolume);
     case "0-4":
-      fullVolume = MRV[3];
+      fullVolume = primaryVolume[3];
       return getAllSets(0, 4, 0, fullVolume);
     case "0-5":
-      fullVolume = MRV[frequency_max - 1];
+      fullVolume = primaryVolume[frequency_max - 1];
       return getAllSets(0, 5, 0, fullVolume);
     case "0-6":
-      fullVolume = MRV[frequency_max - 1];
+      fullVolume = primaryVolume[frequency_max - 1];
       return getAllSets(0, 6, 0, fullVolume);
     case "0-7":
-      fullVolume = MRV[frequency_max - 1];
+      fullVolume = primaryVolume[frequency_max - 1];
       return getAllSets(0, 7, 0, fullVolume);
 
+    // ONE PRIMARY
     case "1-0":
-      return getAllSets(1, 0, MRV[1], 0);
+      return getAllSets(1, 0, primaryVolume[1], 0);
     case "1-1":
-      fullVolume = MRV[1] - MAV;
-      return getAllSets(1, 1, MRV[1], fullVolume);
+      fullVolume = primaryVolume[1] - MAV;
+      return getAllSets(1, 1, primaryVolume[1], fullVolume);
     case "1-2":
-      fullVolume = MRV[2] - MAV;
-      return getAllSets(1, 2, MRV[3], fullVolume);
+      fullVolume = primaryVolume[2] - MAV;
+      return getAllSets(1, 2, primaryVolume[3], fullVolume);
     case "1-3":
-      fullVolume = MRV[3] - MAV;
-      return getAllSets(1, 3, MRV[4], fullVolume);
+      fullVolume = primaryVolume[3] - MAV;
+      return getAllSets(1, 3, primaryVolume[4], fullVolume);
     case "1-4":
-      fullVolume = MRV[frequency_max - 1] - MAV;
-      return getAllSets(1, 4, MRV[frequency_max - 1], fullVolume);
+      fullVolume = primaryVolume[frequency_max - 1] - MAV;
+      return getAllSets(1, 4, primaryVolume[frequency_max - 1], fullVolume);
     case "1-5":
-      fullVolume = MRV[frequency_max - 1] - MAV;
-      return getAllSets(1, 5, MRV[frequency_max - 1], fullVolume);
+      fullVolume = primaryVolume[frequency_max - 1] - MAV;
+      return getAllSets(1, 5, primaryVolume[frequency_max - 1], fullVolume);
     case "1-6":
-      fullVolume = MRV[frequency_max - 1] - MAV;
-      return getAllSets(1, 6, MRV[frequency_max - 1], fullVolume);
+      fullVolume = primaryVolume[frequency_max - 1] - MAV;
+      return getAllSets(1, 6, primaryVolume[frequency_max - 1], fullVolume);
 
+    // TWO PRIMARY
     case "2-0":
-      return getAllSets(2, 0, MRV[1], 0);
+      return getAllSets(2, 0, primaryVolume[1], 0);
     case "2-1":
-      fullVolume = MRV[2] - MAV * 2;
-      return getAllSets(2, 1, MRV[2], fullVolume);
+      fullVolume = primaryVolume[2] - MAV * 2;
+      return getAllSets(2, 1, primaryVolume[2], fullVolume);
     case "2-2":
-      fullVolume = MRV[3] - MAV * 2;
-      return getAllSets(2, 2, MRV[3] - fullVolume, fullVolume);
+      fullVolume = primaryVolume[3] - MAV * 2;
+      return getAllSets(2, 2, primaryVolume[3] - fullVolume, fullVolume);
     case "2-3":
-      fullVolume = MRV[4] - MAV * 2;
-      return getAllSets(2, 3, MRV[4], fullVolume);
+      fullVolume = primaryVolume[4] - MAV * 2;
+      return getAllSets(2, 3, primaryVolume[4], fullVolume);
     case "2-4":
-      fullVolume = MRV[4] - MAV * 2;
-      return getAllSets(2, 4, MRV[4], fullVolume);
+      fullVolume = primaryVolume[4] - MAV * 2;
+      return getAllSets(2, 4, primaryVolume[4], fullVolume);
     case "2-5":
-      fullVolume = MRV[4] - MAV * 2;
-      return getAllSets(2, 5, MRV[4], fullVolume);
+      fullVolume = primaryVolume[4] - MAV * 2;
+      return getAllSets(2, 5, primaryVolume[4], fullVolume);
 
+    // THREE PRIMARY
     case "3-0":
-      // fullVolume = MRV[4] - MAV * 2;
-      return getAllSets(3, 0, MRV[2], 0);
+      // fullVolume = primaryVolume[4] - MAV * 2;
+      return getAllSets(3, 0, primaryVolume[2], 0);
     case "3-1":
-      // fullVolume = MRV[3] - MAV * 2;
-      return getAllSets(3, 1, MRV[3], 6);
+      // fullVolume = primaryVolume[3] - MAV * 2;
+      return getAllSets(3, 1, primaryVolume[3], 6);
     case "3-2":
-      fullVolume = MRV[frequency_max - 1] - MAV * 3;
+      fullVolume = primaryVolume[frequency_max - 1] - MAV * 3;
       let lol = frequency_max < 5 ? 1 : 2;
       let newVol = lol * 5;
-      let primVol = MRV[frequency_max - 1] - newVol;
+      let primVol = primaryVolume[frequency_max - 1] - newVol;
+
       return getAllSets(3, lol, primVol, newVol);
     case "3-3":
-      fullVolume = MRV[frequency_max - 1] - MAV * 3;
-      return getAllSets(3, 3, MRV[frequency_max - 1], fullVolume);
+      fullVolume = primaryVolume[frequency_max - 1] - MAV * 3;
+      return getAllSets(3, 3, primaryVolume[frequency_max - 1], fullVolume);
     case "3-4":
-      fullVolume = MRV[frequency_max - 1] - MAV * 3;
-      return getAllSets(3, 4, MRV[frequency_max - 1], fullVolume);
+      fullVolume = primaryVolume[frequency_max - 1] - MAV * 3;
+      return getAllSets(3, 4, primaryVolume[frequency_max - 1], fullVolume);
 
+    // FOUR PRIMARY
     case "4-0":
-      return getAllSets(4, 0, MRV[3], fullVolume);
+      return getAllSets(4, 0, primaryVolume[3], fullVolume);
     case "4-1":
-      return getAllSets(4, 1, MRV[frequency_max - 1], 5);
+      return getAllSets(4, 1, primaryVolume[frequency_max - 1], 5);
     case "4-2":
-      return getAllSets(4, 2, MRV[frequency_max - 1], 10);
+      return getAllSets(4, 2, primaryVolume[frequency_max - 1], 10);
     case "4-3":
-      return getAllSets(4, 3, MRV[frequency_max - 1], 15);
+      return getAllSets(4, 3, primaryVolume[frequency_max - 1], 15);
 
+    // FIVE PRIMARY
     case "5-0":
-      return getAllSets(5, 0, MRV[frequency_max - 1], 0);
+      return getAllSets(5, 0, primaryVolume[frequency_max - 1], 0);
     case "5-1":
-      // fullVolume = MRV[frequency_max - 1] - MAV * 3;
-      return getAllSets(5, 1, MRV[frequency_max - 1], 5);
+      // fullVolume = primaryVolume[frequency_max - 1] - MAV * 3;
+      return getAllSets(5, 1, primaryVolume[frequency_max - 1], 5);
     case "5-2":
-      // fullVolume = MRV[frequency_max - 1] - MAV * 3;
-      return getAllSets(5, 2, MRV[frequency_max - 1], 8);
+      // fullVolume = primaryVolume[frequency_max - 1] - MAV * 3;
+      return getAllSets(5, 2, primaryVolume[frequency_max - 1], 8);
 
+    // SIX PRIMARY
     case "6":
-      fullVolume = MRV[frequency_max - 1] - MAV * 3;
-      return getAllSets(3, 4, MRV[frequency_max - 1], fullVolume);
+      fullVolume = primaryVolume[frequency_max - 1] - MAV * 3;
+      return getAllSets(3, 4, primaryVolume[frequency_max - 1], fullVolume);
+    // SEVEN PRIMARY
     case "7":
-      fullVolume = MRV[frequency_max - 1] - MAV * 3;
-      return getAllSets(3, 4, MRV[frequency_max - 1], fullVolume);
+      fullVolume = primaryVolume[frequency_max - 1] - MAV * 3;
+      return getAllSets(3, 4, primaryVolume[frequency_max - 1], fullVolume);
+    // EIGHT+ -- Not yet determined
     default:
+      console.log(
+        muscle,
+        sessions,
+        full,
+        "EDGE CASE CAUGHT IN SET DISTRIBUTION"
+      );
       return { primarySessions: [], fullSessions: [] };
   }
-
-  // switch (sessions) {
-  //   case 0:
-  //     if (full >= 4) {
-  //       if (frequency_max >= 5) {
-  //         index = 4;
-  //         loopCount = 4;
-  //       } else {
-  //         index = 3;
-  //         loopCount = 3;
-  //       }
-  //     } else if (full === 3) {
-  //       index = 3;
-  //       loopCount = 3;
-  //     } else if (full === 2) {
-  //       index = 2;
-  //       loopCount = 2;
-  //     } else if (full === 1) {
-  //       index = 1;
-  //       loopCount = 1;
-  //     }
-
-  //     volume = MRV[index];
-
-  //     break;
-  //   case 1:
-  //     if (full >= 4) {
-  //       if (frequency_max >= 5) {
-  //         index = 4;
-  //         loopCount = 4;
-  //       } else {
-  //         index = 3;
-  //         loopCount = 3;
-  //       }
-  //     } else if (full === 3) {
-  //       index = 3;
-  //       loopCount = 3;
-  //     } else if (full === 2) {
-  //       index = 2;
-  //       loopCount = 2;
-  //     } else if (full === 1) {
-  //       index = 1;
-  //       loopCount = 1;
-  //     }
-
-  //     volume = MRV[index];
-  //     primarySessionVolume = MAV;
-  //     sessionSets.push(primarySessionVolume);
-
-  //     break;
-  //   case 2:
-  //     if (full >= 3) {
-  //       if (frequency_max >= 5) {
-  //         index = 4;
-  //         loopCount = 3;
-  //       } else {
-  //         index = 3;
-  //         loopCount = 2;
-  //       }
-  //     } else if (full === 2) {
-  //       index = 3;
-  //       loopCount = 2;
-  //     } else if (full === 1) {
-  //       index = 2;
-  //       loopCount = 1;
-  //     } else {
-  //       // index should = 0, thus no mapping over fullSets
-  //     }
-  //     volume = MRV[index];
-  //     primarySessionVolume = MAV * 2;
-  //     sessionSets = [MAV, MAV];
-
-  //     break;
-  //   case 3:
-  //     let fullTotal = 0;
-
-  //     if (full >= 2) {
-  //       if (frequency_max >= 5) {
-  //         index = 4;
-  //         loopCount = 3;
-  //         fullTotal = 10;
-  //       } else {
-  //         index = 3;
-  //         loopCount = 3;
-  //         fullTotal = 6;
-  //       }
-  //     } else if (full === 1) {
-  //       index = 3;
-  //       loopCount = 3;
-  //       fullTotal = 6;
-  //     } else {
-  //     }
-
-  //     volume = MRV[index];
-  //     primarySessionVolume = fullTotal;
-  //     fullSets = fullTotal === 10 ? [5, 5] : fullTotal === 6 ? [6] : [];
-  //     resultIsUpper = true;
-
-  //     break;
-  //   case 4:
-  //     let fullTotal2 = 0;
-
-  //     if (full >= 1) {
-  //       if (frequency_max >= 5) {
-  //         fullTotal2 = 5;
-  //         loopCount = 5;
-  //       } else {
-  //         loopCount = 4;
-  //       }
-  //     } else {
-  //       loopCount = 4;
-  //     }
-
-  //     volume = MRV[4];
-  //     fullSets = fullTotal2 > 0 ? [5] : [];
-  //     resultIsUpper = true;
-
-  //     break;
-  //   case 5:
-  //     volume = MRV[4];
-  //     resultIsUpper = true;
-  //     loopCount = 5;
-  //     break;
-  //   default:
-  //   // return { primarySessions: [], fullSessions: [] };
-  //   // would mean there are more than 5.
-  // }
-
-  // let result = getSessionSets(volume, primarySessionVolume, loopCount);
-
-  // return {
-  //   primarySessions: resultIsUpper ? result : sessionSets,
-  //   fullSessions: !resultIsUpper ? result : fullSets,
-  // };
 };
 
 export const featureTest = (list: MusclePriorityType[], sessions: number) => {

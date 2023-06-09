@@ -106,10 +106,10 @@ export const splitSetsAmongSessions = ({
   let getLowerSessions = split.filter((each) => each === "lower");
   let getFullSessions = split.filter((each) => each === "full");
 
-  if (rank > 3) {
-    const result = distributeMEVAmongSessions(rank, _name, split);
-    return result;
-  }
+  // if (rank > 3) {
+  //   const result = distributeMEVAmongSessions(rank, _name, split);
+  //   return result;
+  // }
 
   let upper = getUpperSessions.length;
   let lower = getLowerSessions.length;
