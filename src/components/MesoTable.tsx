@@ -125,9 +125,38 @@ const getTrainingSplit = (
   }
 };
 
+const requireThreeSetsMin = (
+  volume: number,
+  total1: number,
+  total2: number
+): [number, number] => {
+  let sets = Math.floor(volume / total1 + total2);
+
+  if (sets < 3) {
+    if (total2 > 1) {
+      total2 = total2 - 1;
+      return requireThreeSetsMin(volume, total1, total2); // Recursive call
+    } else if (total1 > 1 && total2 === 0) {
+      total1 = total1 - 1;
+      return requireThreeSetsMin(volume, total1, total2);
+    } else {
+      return [total1, total2]; // If total can no longer be reduced, return the current values
+    }
+  }
+
+  return [total1, total2];
+};
+
 const getSessionSets = (sessionVolume: number, totalSessions: number) => {
   let totalSets = sessionVolume;
   let sets = Math.floor(totalSets / totalSessions);
+
+  // if (sets < 3) {
+  //   let [volume, total] = requireThreeSetsMin(totalSets, totalSessions);
+  //   totalSessions = total;
+  //   sets = Math.floor(totalSets / totalSessions);
+  // }
+
   let setRemainder = totalSets % totalSessions;
 
   let sessionSets: number[] = [];
@@ -153,6 +182,20 @@ const getAllSets = (
   let primaryIndex = primaryTotal;
   let fullIndex = fullTotal;
 
+  let sets = Math.floor(
+    (primaryVolume + fullVolume) / (primaryTotal + fullTotal)
+  );
+
+  if (sets < 3) {
+    let [total1, total2] = requireThreeSetsMin(
+      primaryVolume + fullVolume,
+      primaryTotal,
+      fullTotal
+    );
+    primaryTotal = total1;
+    fullTotal = total2;
+  }
+
   let primarySets = getSessionSets(primaryVolume, primaryIndex);
   let fullSets = getSessionSets(fullVolume, fullIndex);
 
@@ -160,6 +203,22 @@ const getAllSets = (
     primarySessions: primarySets,
     fullSessions: fullSets,
   };
+};
+
+const matchFrequencies = (
+  val1: number,
+  val2: number,
+  max: number
+): [number, number] => {
+  if (max < val1 + val2) {
+    if (val2 - 1 >= 0) {
+      return matchFrequencies(val1, val2 - 1, max);
+    } else if (val1 - 1 >= 0) {
+      return matchFrequencies(val1 - 1, 0, max);
+    }
+  }
+
+  return [val1, val2];
 };
 
 export const distributeMRVAmongSessions = (
@@ -184,9 +243,13 @@ export const distributeMRVAmongSessions = (
     MVList.push(MV);
   }
 
-  let primaryVolume = rank < 4 ? MRV : rank < 8 ? MEVList : MVList;
+  let primaryVolume = rank < 4 ? MRV : rank >= 8 ? MVList : MEVList;
 
+  let max_sessions = rank < 4 ? frequency_max : rank >= 8 ? 2 : 3;
   let fullVolume = 0;
+
+  let uppers = 0;
+  let fulls = 0;
 
   switch (sessionsStringified) {
     // ZERO PRIMARY
@@ -195,7 +258,9 @@ export const distributeMRVAmongSessions = (
     case "0-1":
       return { primarySessions: [], fullSessions: [MAV] };
     case "0-2":
-      return { primarySessions: [], fullSessions: [MAV, MAV] };
+      let pos = primaryVolume[1];
+      let getIt = Math.floor(pos / 2);
+      return { primarySessions: [], fullSessions: [getIt, getIt] };
     case "0-3":
       fullVolume = primaryVolume[2];
       return getAllSets(0, 3, 0, fullVolume);
@@ -217,10 +282,11 @@ export const distributeMRVAmongSessions = (
       return getAllSets(1, 0, primaryVolume[1], 0);
     case "1-1":
       fullVolume = primaryVolume[1] - MAV;
-      return getAllSets(1, 1, primaryVolume[1], fullVolume);
+      let prim = primaryVolume[1] - fullVolume;
+      return getAllSets(1, 1, prim, fullVolume);
     case "1-2":
       fullVolume = primaryVolume[2] - MAV;
-      return getAllSets(1, 2, primaryVolume[3], fullVolume);
+      return getAllSets(1, 2, MAV, fullVolume);
     case "1-3":
       fullVolume = primaryVolume[3] - MAV;
       return getAllSets(1, 3, primaryVolume[4], fullVolume);
@@ -261,12 +327,40 @@ export const distributeMRVAmongSessions = (
       // fullVolume = primaryVolume[3] - MAV * 2;
       return getAllSets(3, 1, primaryVolume[3], 6);
     case "3-2":
-      fullVolume = primaryVolume[frequency_max - 1] - MAV * 3;
-      let lol = frequency_max < 5 ? 1 : 2;
-      let newVol = lol * 5;
-      let primVol = primaryVolume[frequency_max - 1] - newVol;
+      const result = matchFrequencies(3, 2, max_sessions);
+      console.log(
+        result,
+        max_sessions,
+        muscle,
+        "LETS LOOK AT THIS GPT FUNCTION???!!"
+      );
 
-      return getAllSets(3, lol, primVol, newVol);
+      let totVol = primaryVolume[result[0] + result[1]];
+      let total = getSessionSets(totVol, result[0] + result[1]);
+
+      const splitVol = (
+        total: number[],
+        times: number,
+        max: number,
+        min: number
+      ) => {
+        let count = 0;
+        let lastIndex = total.length - 1;
+
+        for (let i = 0; i < total.length; i++) {
+          if (total[i] < max) {
+          }
+        }
+
+        return total;
+      };
+
+      fullVolume = primaryVolume[result[0]] - MAV * 3;
+      let lol = result[1];
+      let newVol = lol * 5;
+      let primVol = primaryVolume[result[0]] - newVol;
+
+      return getAllSets(result[0], result[1], primVol, newVol);
     case "3-3":
       fullVolume = primaryVolume[frequency_max - 1] - MAV * 3;
       return getAllSets(3, 3, primaryVolume[frequency_max - 1], fullVolume);
