@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { MEV_RANK, MRV_RANK } from "src/constants/prioritizeRanks";
 import workouts from "src/constants/workouts.json";
 import { splitSetsAmongSessions } from "src/utils/distributeSets";
 import { LOWER_MUSCLES } from "~/constants/workoutSplits";
@@ -182,19 +183,19 @@ const getAllSets = (
   let primaryIndex = primaryTotal;
   let fullIndex = fullTotal;
 
-  let sets = Math.floor(
-    (primaryVolume + fullVolume) / (primaryTotal + fullTotal)
-  );
+  // let sets = Math.floor(
+  //   (primaryVolume + fullVolume) / (primaryTotal + fullTotal)
+  // );
 
-  if (sets < 3) {
-    let [total1, total2] = requireThreeSetsMin(
-      primaryVolume + fullVolume,
-      primaryTotal,
-      fullTotal
-    );
-    primaryTotal = total1;
-    fullTotal = total2;
-  }
+  // if (sets < 3) {
+  //   let [total1, total2] = requireThreeSetsMin(
+  //     primaryVolume + fullVolume,
+  //     primaryTotal,
+  //     fullTotal
+  //   );
+  //   primaryTotal = total1;
+  //   fullTotal = total2;
+  // }
 
   let primarySets = getSessionSets(primaryVolume, primaryIndex);
   let fullSets = getSessionSets(fullVolume, fullIndex);
@@ -221,6 +222,99 @@ const matchFrequencies = (
   return [val1, val2];
 };
 
+const distributeMEVorMV = (primary: number, full: number, vol: number) => {
+  switch (vol) {
+    case 2:
+      if (primary >= 1) {
+        return getAllSets(1, 0, vol, 0);
+      } else {
+        return getAllSets(0, 1, 0, vol);
+      }
+    case 3:
+      if (primary >= 1) {
+        return getAllSets(1, 0, vol, 0);
+      } else {
+        return getAllSets(0, 1, 0, vol);
+      }
+    case 4:
+      if (primary >= 1) {
+        return getAllSets(1, 0, vol, 0);
+      } else {
+        return getAllSets(0, 1, 0, vol);
+      }
+    case 6:
+      if (primary >= 2) {
+        return getAllSets(2, 0, vol, 0);
+      } else if (primary === 1) {
+        if (full >= 1) {
+          return getAllSets(1, 1, 3, 3);
+        } else {
+          return getAllSets(1, 0, vol, 0);
+        }
+      } else if (primary === 0) {
+        if (full >= 2) {
+          return getAllSets(0, 2, 0, vol);
+        } else {
+          return getAllSets(0, 1, 0, vol);
+        }
+      }
+    case 8:
+      if (primary >= 3) {
+        return getAllSets(3, 0, 9, 0);
+      } else if (primary === 2) {
+        if (full >= 1) {
+          return getAllSets(2, 1, 6, 3);
+        } else {
+          return getAllSets(2, 0, vol, 0);
+        }
+      } else if (primary === 1) {
+        if (full >= 2) {
+          return getAllSets(1, 2, 3, 6);
+        } else if (full === 1) {
+          return getAllSets(1, 1, 4, 4);
+        } else {
+          return getAllSets(1, 0, vol, 0);
+        }
+      } else if (primary === 0) {
+        if (full >= 3) {
+          return getAllSets(0, 3, 0, 9);
+        } else if (full === 2) {
+          return getAllSets(0, 2, 0, vol);
+        } else {
+          return getAllSets(0, 1, 0, vol);
+        }
+      }
+    case 10:
+      if (primary >= 3) {
+        return getAllSets(3, 0, vol, 0);
+      } else if (primary === 2) {
+        if (full >= 1) {
+          return getAllSets(2, 1, 7, 3);
+        } else {
+          return getAllSets(2, 0, vol, 0);
+        }
+      } else if (primary === 1) {
+        if (full >= 2) {
+          return getAllSets(1, 2, 4, 6);
+        } else if (full === 1) {
+          return getAllSets(1, 1, 5, 5);
+        } else {
+          return getAllSets(1, 0, vol, 0);
+        }
+      } else if (primary === 0) {
+        if (full >= 3) {
+          return getAllSets(0, 3, 0, 10);
+        } else if (full === 2) {
+          return getAllSets(0, 2, 0, vol);
+        } else {
+          return getAllSets(0, 1, 0, vol);
+        }
+      }
+    default:
+      return { primarySessions: [], fullSessions: [] };
+  }
+};
+
 export const distributeMRVAmongSessions = (
   muscle: string,
   sessions: number,
@@ -234,168 +328,297 @@ export const distributeMRVAmongSessions = (
   const sessionsStringified =
     sessions > 5 ? `${sessions}` : `${sessions}-${full}`;
 
-  let MEVList: number[] = [];
-  let MVList: number[] = [];
+  let volumeRange = MRV;
+  let totalVolume = 0;
 
-  let sessionLength = sessions + full;
-  for (let i = 0; i < sessionLength; i++) {
-    MEVList.push(MEV);
-    MVList.push(MV);
-  }
-
-  let primaryVolume = rank < 4 ? MRV : rank >= 8 ? MVList : MEVList;
-
-  let max_sessions = rank < 4 ? frequency_max : rank >= 8 ? 2 : 3;
+  let max_sessions = frequency_max;
   let fullVolume = 0;
-
-  let uppers = 0;
-  let fulls = 0;
 
   switch (sessionsStringified) {
     // ZERO PRIMARY
     case "0-0":
       return { primarySessions: [], fullSessions: [] };
     case "0-1":
-      return { primarySessions: [], fullSessions: [MAV] };
+      if (rank > MRV_RANK && rank < MEV_RANK) {
+        return distributeMEVorMV(0, 1, MEV);
+      } else if (rank >= MEV_RANK) {
+        return distributeMEVorMV(0, 1, MV);
+      }
+      totalVolume = volumeRange[0];
+      return { primarySessions: [], fullSessions: [totalVolume] };
     case "0-2":
-      let pos = primaryVolume[1];
-      let getIt = Math.floor(pos / 2);
-      return { primarySessions: [], fullSessions: [getIt, getIt] };
+      if (rank > MRV_RANK && rank < MEV_RANK) {
+        return distributeMEVorMV(0, 2, MEV);
+      } else if (rank >= MEV_RANK) {
+        return distributeMEVorMV(0, 2, MV);
+      }
+      totalVolume = volumeRange[1];
+      let splitVolume = Math.floor(totalVolume / 2);
+      return { primarySessions: [], fullSessions: [splitVolume, splitVolume] };
     case "0-3":
-      fullVolume = primaryVolume[2];
+      if (rank > MRV_RANK && rank < MEV_RANK) {
+        return distributeMEVorMV(0, 3, MEV);
+      } else if (rank >= MEV_RANK) {
+        return distributeMEVorMV(0, 3, MV);
+      }
+      fullVolume = volumeRange[2];
       return getAllSets(0, 3, 0, fullVolume);
     case "0-4":
-      fullVolume = primaryVolume[3];
+      if (rank > MRV_RANK && rank < MEV_RANK) {
+        return distributeMEVorMV(0, 3, MEV);
+      } else if (rank >= MEV_RANK) {
+        return distributeMEVorMV(0, 3, MV);
+      }
+      fullVolume = volumeRange[3];
       return getAllSets(0, 4, 0, fullVolume);
     case "0-5":
-      fullVolume = primaryVolume[frequency_max - 1];
-      return getAllSets(0, 5, 0, fullVolume);
+      if (rank > MRV_RANK && rank < MEV_RANK) {
+        return distributeMEVorMV(0, 3, MEV);
+      } else if (rank >= MEV_RANK) {
+        return distributeMEVorMV(0, 3, MV);
+      }
+      fullVolume = volumeRange[max_sessions - 1];
+      return getAllSets(0, max_sessions, 0, fullVolume);
     case "0-6":
-      fullVolume = primaryVolume[frequency_max - 1];
-      return getAllSets(0, 6, 0, fullVolume);
+      if (rank > MRV_RANK && rank < MEV_RANK) {
+        return distributeMEVorMV(0, 3, MEV);
+      } else if (rank >= MEV_RANK) {
+        return distributeMEVorMV(0, 3, MV);
+      }
+      fullVolume = volumeRange[max_sessions - 1];
+      return getAllSets(0, max_sessions, 0, fullVolume);
     case "0-7":
-      fullVolume = primaryVolume[frequency_max - 1];
-      return getAllSets(0, 7, 0, fullVolume);
+      if (rank > MRV_RANK && rank < MEV_RANK) {
+        return distributeMEVorMV(0, 3, MEV);
+      } else if (rank >= MEV_RANK) {
+        return distributeMEVorMV(0, 3, MV);
+      }
+      fullVolume = volumeRange[max_sessions - 1];
+      return getAllSets(0, max_sessions, 0, fullVolume);
 
     // ONE PRIMARY
     case "1-0":
-      return getAllSets(1, 0, primaryVolume[1], 0);
+      return getAllSets(1, 0, volumeRange[0], 0);
     case "1-1":
-      fullVolume = primaryVolume[1] - MAV;
-      let prim = primaryVolume[1] - fullVolume;
+      if (rank > MRV_RANK && rank < MEV_RANK) {
+        return distributeMEVorMV(1, 1, MEV);
+      } else if (rank >= MEV_RANK) {
+        return distributeMEVorMV(1, 1, MV);
+      }
+      fullVolume = volumeRange[1] - MAV;
+      let prim = volumeRange[1] - fullVolume;
       return getAllSets(1, 1, prim, fullVolume);
     case "1-2":
-      fullVolume = primaryVolume[2] - MAV;
+      if (rank > MRV_RANK && rank < MEV_RANK) {
+        return distributeMEVorMV(1, 2, MEV);
+      } else if (rank >= MEV_RANK) {
+        return distributeMEVorMV(1, 2, MV);
+      }
+      fullVolume = volumeRange[2] - MAV;
       return getAllSets(1, 2, MAV, fullVolume);
     case "1-3":
-      fullVolume = primaryVolume[3] - MAV;
-      return getAllSets(1, 3, primaryVolume[4], fullVolume);
+      if (rank > MRV_RANK && rank < MEV_RANK) {
+        return distributeMEVorMV(1, 2, MEV);
+      } else if (rank >= MEV_RANK) {
+        return distributeMEVorMV(1, 2, MV);
+      }
+      fullVolume = volumeRange[3] - MAV;
+      return getAllSets(1, 3, volumeRange[4], fullVolume);
     case "1-4":
-      fullVolume = primaryVolume[frequency_max - 1] - MAV;
-      return getAllSets(1, 4, primaryVolume[frequency_max - 1], fullVolume);
+      if (rank > MRV_RANK && rank < MEV_RANK) {
+        return distributeMEVorMV(1, 2, MEV);
+      } else if (rank >= MEV_RANK) {
+        return distributeMEVorMV(1, 2, MV);
+      }
+      fullVolume = volumeRange[frequency_max - 1] - MAV;
+      return getAllSets(1, 4, volumeRange[frequency_max - 1], fullVolume);
     case "1-5":
-      fullVolume = primaryVolume[frequency_max - 1] - MAV;
-      return getAllSets(1, 5, primaryVolume[frequency_max - 1], fullVolume);
+      if (rank > MRV_RANK && rank < MEV_RANK) {
+        return distributeMEVorMV(1, 2, MEV);
+      } else if (rank >= MEV_RANK) {
+        return distributeMEVorMV(1, 2, MV);
+      }
+      fullVolume = volumeRange[frequency_max - 1] - MAV;
+      return getAllSets(1, 5, volumeRange[frequency_max - 1], fullVolume);
     case "1-6":
-      fullVolume = primaryVolume[frequency_max - 1] - MAV;
-      return getAllSets(1, 6, primaryVolume[frequency_max - 1], fullVolume);
+      if (rank > MRV_RANK && rank < MEV_RANK) {
+        return distributeMEVorMV(1, 2, MEV);
+      } else if (rank >= MEV_RANK) {
+        return distributeMEVorMV(1, 2, MV);
+      }
+      fullVolume = volumeRange[frequency_max - 1] - MAV;
+      return getAllSets(1, 6, volumeRange[frequency_max - 1], fullVolume);
 
     // TWO PRIMARY
     case "2-0":
-      return getAllSets(2, 0, primaryVolume[1], 0);
+      if (rank > MRV_RANK && rank < MEV_RANK) {
+        return distributeMEVorMV(2, 0, MEV);
+      } else if (rank >= MEV_RANK) {
+        return distributeMEVorMV(2, 0, MV);
+      }
+      return getAllSets(2, 0, volumeRange[1], 0);
     case "2-1":
-      fullVolume = primaryVolume[2] - MAV * 2;
-      return getAllSets(2, 1, primaryVolume[2], fullVolume);
+      if (rank > MRV_RANK && rank < MEV_RANK) {
+        return distributeMEVorMV(2, 1, MEV);
+      } else if (rank >= MEV_RANK) {
+        return distributeMEVorMV(2, 1, MV);
+      }
+      fullVolume = volumeRange[2] - MAV * 2;
+      return getAllSets(2, 1, volumeRange[2], fullVolume);
     case "2-2":
-      fullVolume = primaryVolume[3] - MAV * 2;
-      return getAllSets(2, 2, primaryVolume[3] - fullVolume, fullVolume);
+      if (rank > MRV_RANK && rank < MEV_RANK) {
+        return distributeMEVorMV(2, 1, MEV);
+      } else if (rank >= MEV_RANK) {
+        return distributeMEVorMV(2, 1, MV);
+      }
+      fullVolume = volumeRange[3] - MAV * 2;
+      return getAllSets(2, 2, volumeRange[3] - fullVolume, fullVolume);
     case "2-3":
-      fullVolume = primaryVolume[4] - MAV * 2;
-      return getAllSets(2, 3, primaryVolume[4], fullVolume);
+      if (rank > MRV_RANK && rank < MEV_RANK) {
+        return distributeMEVorMV(2, 1, MEV);
+      } else if (rank >= MEV_RANK) {
+        return distributeMEVorMV(2, 1, MV);
+      }
+      fullVolume = volumeRange[4] - MAV * 2;
+      return getAllSets(2, 3, volumeRange[4], fullVolume);
     case "2-4":
-      fullVolume = primaryVolume[4] - MAV * 2;
-      return getAllSets(2, 4, primaryVolume[4], fullVolume);
+      if (rank > MRV_RANK && rank < MEV_RANK) {
+        return distributeMEVorMV(2, 1, MEV);
+      } else if (rank >= MEV_RANK) {
+        return distributeMEVorMV(2, 1, MV);
+      }
+      fullVolume = volumeRange[4] - MAV * 2;
+      return getAllSets(2, 4, volumeRange[4], fullVolume);
     case "2-5":
-      fullVolume = primaryVolume[4] - MAV * 2;
-      return getAllSets(2, 5, primaryVolume[4], fullVolume);
+      if (rank > MRV_RANK && rank < MEV_RANK) {
+        return distributeMEVorMV(2, 1, MEV);
+      } else if (rank >= MEV_RANK) {
+        return distributeMEVorMV(2, 1, MV);
+      }
+      fullVolume = volumeRange[4] - MAV * 2;
+      return getAllSets(2, 5, volumeRange[4], fullVolume);
 
     // THREE PRIMARY
     case "3-0":
-      // fullVolume = primaryVolume[4] - MAV * 2;
-      return getAllSets(3, 0, primaryVolume[2], 0);
+      if (rank > MRV_RANK && rank < MEV_RANK) {
+        return distributeMEVorMV(3, 0, MEV);
+      } else if (rank >= MEV_RANK) {
+        return distributeMEVorMV(3, 0, MV);
+      }
+      // fullVolume = volumeRange[4] - MAV * 2;
+      return getAllSets(3, 0, volumeRange[2], 0);
     case "3-1":
-      // fullVolume = primaryVolume[3] - MAV * 2;
-      return getAllSets(3, 1, primaryVolume[3], 6);
+      if (rank > MRV_RANK && rank < MEV_RANK) {
+        return distributeMEVorMV(3, 0, MEV);
+      } else if (rank >= MEV_RANK) {
+        return distributeMEVorMV(3, 0, MV);
+      }
+      // fullVolume = volumeRange[3] - MAV * 2;
+      return getAllSets(3, 1, volumeRange[3], 6);
     case "3-2":
+      if (rank > MRV_RANK && rank < MEV_RANK) {
+        return distributeMEVorMV(3, 0, MEV);
+      } else if (rank >= MEV_RANK) {
+        return distributeMEVorMV(3, 0, MV);
+      }
       const result = matchFrequencies(3, 2, max_sessions);
-      console.log(
-        result,
-        max_sessions,
-        muscle,
-        "LETS LOOK AT THIS GPT FUNCTION???!!"
-      );
 
-      let totVol = primaryVolume[result[0] + result[1]];
-      let total = getSessionSets(totVol, result[0] + result[1]);
-
-      const splitVol = (
-        total: number[],
-        times: number,
-        max: number,
-        min: number
-      ) => {
-        let count = 0;
-        let lastIndex = total.length - 1;
-
-        for (let i = 0; i < total.length; i++) {
-          if (total[i] < max) {
-          }
-        }
-
-        return total;
-      };
-
-      fullVolume = primaryVolume[result[0]] - MAV * 3;
+      fullVolume = volumeRange[result[0]] - MAV * 3;
       let lol = result[1];
       let newVol = lol * 5;
-      let primVol = primaryVolume[result[0]] - newVol;
+      let primVol = volumeRange[result[0]] - newVol;
 
       return getAllSets(result[0], result[1], primVol, newVol);
     case "3-3":
-      fullVolume = primaryVolume[frequency_max - 1] - MAV * 3;
-      return getAllSets(3, 3, primaryVolume[frequency_max - 1], fullVolume);
+      if (rank > MRV_RANK && rank < MEV_RANK) {
+        return distributeMEVorMV(3, 0, MEV);
+      } else if (rank >= MEV_RANK) {
+        return distributeMEVorMV(3, 0, MV);
+      }
+      fullVolume = volumeRange[frequency_max - 1] - MAV * 3;
+      return getAllSets(3, 3, volumeRange[frequency_max - 1], fullVolume);
     case "3-4":
-      fullVolume = primaryVolume[frequency_max - 1] - MAV * 3;
-      return getAllSets(3, 4, primaryVolume[frequency_max - 1], fullVolume);
+      if (rank > MRV_RANK && rank < MEV_RANK) {
+        return distributeMEVorMV(3, 0, MEV);
+      } else if (rank >= MEV_RANK) {
+        return distributeMEVorMV(3, 0, MV);
+      }
+      fullVolume = volumeRange[frequency_max - 1] - MAV * 3;
+      return getAllSets(3, 4, volumeRange[frequency_max - 1], fullVolume);
 
     // FOUR PRIMARY
     case "4-0":
-      return getAllSets(4, 0, primaryVolume[3], fullVolume);
+      if (rank > MRV_RANK && rank < MEV_RANK) {
+        return distributeMEVorMV(3, 0, MEV);
+      } else if (rank >= MEV_RANK) {
+        return distributeMEVorMV(3, 0, MV);
+      }
+      return getAllSets(4, 0, volumeRange[3], fullVolume);
     case "4-1":
-      return getAllSets(4, 1, primaryVolume[frequency_max - 1], 5);
+      if (rank > MRV_RANK && rank < MEV_RANK) {
+        return distributeMEVorMV(3, 0, MEV);
+      } else if (rank >= MEV_RANK) {
+        return distributeMEVorMV(3, 0, MV);
+      }
+      return getAllSets(4, 1, volumeRange[frequency_max - 1], 5);
     case "4-2":
-      return getAllSets(4, 2, primaryVolume[frequency_max - 1], 10);
+      if (rank > MRV_RANK && rank < MEV_RANK) {
+        return distributeMEVorMV(3, 0, MEV);
+      } else if (rank >= MEV_RANK) {
+        return distributeMEVorMV(3, 0, MV);
+      }
+      return getAllSets(4, 2, volumeRange[frequency_max - 1], 10);
     case "4-3":
-      return getAllSets(4, 3, primaryVolume[frequency_max - 1], 15);
+      if (rank > MRV_RANK && rank < MEV_RANK) {
+        return distributeMEVorMV(3, 0, MEV);
+      } else if (rank >= MEV_RANK) {
+        return distributeMEVorMV(3, 0, MV);
+      }
+      return getAllSets(4, 3, volumeRange[frequency_max - 1], 15);
 
     // FIVE PRIMARY
     case "5-0":
-      return getAllSets(5, 0, primaryVolume[frequency_max - 1], 0);
+      if (rank > MRV_RANK && rank < MEV_RANK) {
+        return distributeMEVorMV(3, 0, MEV);
+      } else if (rank >= MEV_RANK) {
+        return distributeMEVorMV(3, 0, MV);
+      }
+      return getAllSets(5, 0, volumeRange[frequency_max - 1], 0);
     case "5-1":
-      // fullVolume = primaryVolume[frequency_max - 1] - MAV * 3;
-      return getAllSets(5, 1, primaryVolume[frequency_max - 1], 5);
+      if (rank > MRV_RANK && rank < MEV_RANK) {
+        return distributeMEVorMV(3, 0, MEV);
+      } else if (rank >= MEV_RANK) {
+        return distributeMEVorMV(3, 0, MV);
+      }
+      // fullVolume = volumeRange[frequency_max - 1] - MAV * 3;
+      return getAllSets(5, 1, volumeRange[frequency_max - 1], 5);
     case "5-2":
-      // fullVolume = primaryVolume[frequency_max - 1] - MAV * 3;
-      return getAllSets(5, 2, primaryVolume[frequency_max - 1], 8);
+      if (rank > MRV_RANK && rank < MEV_RANK) {
+        return distributeMEVorMV(3, 0, MEV);
+      } else if (rank >= MEV_RANK) {
+        return distributeMEVorMV(3, 0, MV);
+      }
+      // fullVolume = volumeRange[frequency_max - 1] - MAV * 3;
+      return getAllSets(5, 2, volumeRange[frequency_max - 1], 8);
 
     // SIX PRIMARY
     case "6":
-      fullVolume = primaryVolume[frequency_max - 1] - MAV * 3;
-      return getAllSets(3, 4, primaryVolume[frequency_max - 1], fullVolume);
+      if (rank > MRV_RANK && rank < MEV_RANK) {
+        return distributeMEVorMV(3, 0, MEV);
+      } else if (rank >= MEV_RANK) {
+        return distributeMEVorMV(3, 0, MV);
+      }
+      fullVolume = volumeRange[frequency_max - 1] - MAV * 3;
+      return getAllSets(3, 4, volumeRange[frequency_max - 1], fullVolume);
     // SEVEN PRIMARY
     case "7":
-      fullVolume = primaryVolume[frequency_max - 1] - MAV * 3;
-      return getAllSets(3, 4, primaryVolume[frequency_max - 1], fullVolume);
+      if (rank > MRV_RANK && rank < MEV_RANK) {
+        return distributeMEVorMV(3, 0, MEV);
+      } else if (rank >= MEV_RANK) {
+        return distributeMEVorMV(3, 0, MV);
+      }
+      fullVolume = volumeRange[frequency_max - 1] - MAV * 3;
+      return getAllSets(3, 4, volumeRange[frequency_max - 1], fullVolume);
     // EIGHT+ -- Not yet determined
     default:
       console.log(
@@ -496,10 +719,25 @@ export const TestTable = ({
 }) => {
   const [rows, setRows] = useState<(string | number)[][]>([]);
   const [testRows, setTestRows] = useState<[string, number[], number][]>([]);
+  const [sessionSetTotal, setSessionsSetTotal] = useState<number[]>([]);
 
   useEffect(() => {
     if (split[0]) {
       setTestRows(split[0].testSets);
+      let sets = split[0].testSets;
+      let sessions = sets[0][1];
+      let setTotals = [];
+
+      for (let i = 0; i < sessions.length; i++) {
+        let total = 0;
+        for (let j = 0; j < sets.length; j++) {
+          total = total + sets[j][1][i];
+        }
+        setTotals.push(total);
+      }
+
+      console.log(setTotals, "this is probably way off");
+      setSessionsSetTotal(setTotals);
     }
   }, [split]);
 
@@ -536,7 +774,7 @@ export const TestTable = ({
       <table className="w-300">
         <thead>
           <tr className="bg-slate-500">
-            <th className="bg-slate-300 px-1 text-sm text-white">Muscle</th>
+            <th className="bg-slate-500 px-1 text-sm text-white">Muscle</th>
             {split.map((each) => {
               let color =
                 each.split === "upper"
@@ -550,21 +788,27 @@ export const TestTable = ({
                 </th>
               );
             })}
-            <th className="bg-slate-300 px-1 text-sm text-white">Total</th>
+            <th className="bg-slate-500 px-1 text-sm text-white">Total</th>
           </tr>
         </thead>
         <tbody>
-          {testRows.map((each) => {
+          {testRows.map((each, index) => {
+            let rankColor =
+              index < MRV_RANK
+                ? "bg-red-400"
+                : index >= MRV_RANK && index < MEV_RANK
+                ? "bg-orange-400"
+                : "bg-green-400";
             return (
               <tr className="text-xs">
-                <td className="bg-slate-300">{each[0]}</td>
+                <td className={"text-sm text-white " + rankColor}>{each[0]}</td>
                 {each[1].map((e, i) => {
                   let bgColor =
                     e === 0
                       ? "bg-slate-400"
-                      : split[i - 1]?.split === "upper"
+                      : split[i].split === "upper"
                       ? "bg-blue-200"
-                      : split[i - 1]?.split === "lower"
+                      : split[i].split === "lower"
                       ? "bg-red-200"
                       : "bg-purple-200";
 
@@ -574,42 +818,27 @@ export const TestTable = ({
                     </td>
                   );
                 })}
-                <td className="bg-slate-400 px-1 text-xs">{each[2]}</td>
+                <td className="bg-slate-300 px-1 text-xs">{each[2]}</td>
               </tr>
             );
           })}
-          {/* {rows.map((each) => {
-            return (
-              <tr className="text-xs">
-                {each.map((e, i) => {
-                  let bgColor =
-                    i == 0
-                      ? "bg-slate-300"
-                      : e === 0
-                      ? "bg-slate-400"
-                      : split[i - 1]?.split === "upper"
-                      ? "bg-blue-200"
-                      : split[i - 1]?.split === "lower"
-                      ? "bg-red-200"
-                      : "bg-purple-200";
-                  return (
-                    <td className={bgColor + " border border-slate-500 pl-2"}>
-                      {e}
-                    </td>
-                  );
-                })}
-              </tr>
-            );
-          })} */}
+
           <tr>
-            <td className="pl-2">Total</td>
-            {split.map((each) => {
-              let total = each.sets.reduce(
-                (total, [, number]) => total + number,
-                0
+            <td className="bg-slate-500 px-1 text-sm font-bold text-white">
+              Total
+            </td>
+            {split.map((each, index) => {
+              return (
+                <td className=" bg-slate-400 pl-2 text-xs">
+                  {sessionSetTotal[index]}
+                </td>
               );
-              return <td className="pl-2 text-xs">{total}</td>;
             })}
+            <td className="bg-slate-300 px-1 text-xs">
+              {sessionSetTotal.length > 0
+                ? sessionSetTotal?.reduce((total, num) => total + num)
+                : null}
+            </td>
           </tr>
         </tbody>
       </table>

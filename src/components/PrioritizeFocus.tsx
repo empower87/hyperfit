@@ -13,6 +13,7 @@ import {
   DroppableProps,
 } from "react-beautiful-dnd";
 import workouts from "src/constants/workouts.json";
+import { MEV_RANK, MRV_RANK } from "~/constants/prioritizeRanks";
 import { LOWER_MUSCLES, UPPER_MUSCLES } from "~/constants/workoutSplits";
 import { MusclePriorityType, SessionType, SplitType } from "~/pages";
 import { featureTest } from "./MesoTable";
@@ -315,23 +316,6 @@ export default function PrioritizeFocus({
   );
 }
 
-const COLORS = [
-  "bg-red-500",
-  "bg-orange-500",
-  "bg-orange-500",
-  "bg-yellow-500",
-  "bg-yellow-500",
-  "bg-yellow-500",
-  "bg-yellow-500",
-  "bg-blue-500",
-  "bg-blue-500",
-  "bg-blue-500",
-  "bg-green-500",
-  "bg-green-500",
-  "bg-green-500",
-  "bg-green-500",
-];
-
 const Muscle = ({
   muscle,
   sets,
@@ -341,11 +325,16 @@ const Muscle = ({
   sets: number;
   index: number;
 }) => {
-  const bgColor = ` ${COLORS[index]}`;
+  const bgColor =
+    index < MRV_RANK
+      ? "bg-red-500"
+      : index >= MRV_RANK && index < MEV_RANK
+      ? "bg-orange-400"
+      : "bg-green-400";
   return (
     <li
       className={
-        "mt-1 flex justify-between rounded border-2 border-slate-700 p-1 text-xs text-white" +
+        "mt-1 flex justify-between rounded border-2 border-slate-700 p-1 text-xs text-white " +
         bgColor
       }
     >
