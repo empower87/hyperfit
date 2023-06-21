@@ -28,50 +28,9 @@ type PrioritizeFocusProps = {
   setSplitTest: Dispatch<SetStateAction<SessionType[]>>;
 };
 
-export const PickPriority = ({
-  sessions,
-  onClick,
-}: {
-  sessions: number;
-  onClick: (type: "upper" | "lower") => void;
-}) => {
-  const [isOdd, setIsOdd] = useState<boolean>(false);
-
-  const onClickHandler = (type: "upper" | "lower") => {
-    onClick(type);
-    setIsOdd(false);
-  };
-
-  useEffect(() => {
-    const isOdd = sessions % 2 > 0 ? true : false;
-    setIsOdd(isOdd);
-  }, [sessions]);
-
-  if (isOdd) {
-    return (
-      <div>
-        <p>Would you like to prioritize your upper body or lower body?</p>
-        <div>
-          <button
-            className="m-1 rounded  bg-red-500 p-1 text-sm text-white"
-            onClick={() => onClickHandler("upper")}
-          >
-            Upper
-          </button>
-          <button
-            className="m-1 rounded bg-blue-500  p-1 text-sm text-white"
-            onClick={() => onClickHandler("lower")}
-          >
-            Lower
-          </button>
-        </div>
-      </div>
-    );
-  } else return null;
-};
-
 export const StrictModeDroppable = ({ children, ...props }: DroppableProps) => {
   const [enabled, setEnabled] = useState(false);
+
   useEffect(() => {
     const animation = requestAnimationFrame(() => setEnabled(true));
     return () => {
@@ -79,16 +38,14 @@ export const StrictModeDroppable = ({ children, ...props }: DroppableProps) => {
       setEnabled(false);
     };
   }, []);
+
   if (!enabled) {
     return null;
   }
   return <Droppable {...props}>{children}</Droppable>;
 };
 
-const updateNewList = (
-  items: MusclePriorityType[],
-  splitFrequency: number[]
-) => {
+const updateNewList = (items: MusclePriorityType[]) => {
   let newList: MusclePriorityType[] = [];
 
   for (let i = 0; i < items.length; i++) {
@@ -97,23 +54,25 @@ const updateNewList = (
     );
 
     const { name, MEV, MRV, featureMatrix } = getMuscleObj[0];
+    let rank = i < 4 ? 0 : i >= 4 && i < 9 ? 1 : 2;
+    const sets = featureMatrix[rank];
 
     if (UPPER_MUSCLES.includes(name)) {
       newList.push({
         id: items[i].id,
+        rank: i + 1,
         muscle: items[i].muscle,
-        sets: featureMatrix[i][splitFrequency[0] - 1],
+        sets: sets,
       });
     } else {
       newList.push({
         id: items[i].id,
+        rank: i + 1,
         muscle: items[i].muscle,
-        sets: featureMatrix[i][splitFrequency[1] - 1],
+        sets: sets,
       });
     }
   }
-
-  console.log(newList, "OK IS THIS LIST WAVK?");
 
   return newList;
 };
@@ -130,7 +89,7 @@ export default function PrioritizeFocus({
   const [newList, setNewList] = useState<MusclePriorityType[]>([]);
 
   useEffect(() => {
-    const getNewList = updateNewList(musclePriority, split);
+    const getNewList = updateNewList(musclePriority);
     setNewList(getNewList);
   }, [split, musclePriority]);
 
@@ -160,16 +119,12 @@ export default function PrioritizeFocus({
       items.splice(result.destination.index, 0, removed);
 
       const split = handleUpperLowerSplit(items, totalWorkouts);
-      const newerList = updateNewList(items, split);
-      console.log(items, split, items, "OK LETS SEE WHAT ITS DOING");
-
+      const newerList = updateNewList(items);
+      console.log(items, split, "OK LETS SEE WHAT ITS DOING");
       setMusclePriority(newerList);
-      // updateNewList(items);
+
       const testSplit = featureTest(items, totalWorkouts);
-      if (testSplit) {
-        console.log(testSplit, "ok what this look like???");
-        setSplitTest(testSplit);
-      }
+      setSplitTest(testSplit);
     },
     [newList, split]
   );
@@ -197,7 +152,7 @@ export default function PrioritizeFocus({
 
     for (let i = 0; i < newList.length; i++) {
       if (UPPER_MUSCLES.includes(newList[i].muscle)) {
-        let sessions = divideSetsAmongDays(split[0], newList[i].sets);
+        let sessions = divideSetsAmongDays(split[0], newList[i].sets[split[0]]);
 
         console.log(
           sessions,
@@ -222,7 +177,7 @@ export default function PrioritizeFocus({
           }
         }
       } else {
-        let sessions = divideSetsAmongDays(split[1], newList[i].sets);
+        let sessions = divideSetsAmongDays(split[1], newList[i].sets[split[1]]);
 
         let count = 0;
 
@@ -274,7 +229,7 @@ export default function PrioritizeFocus({
                       >
                         <Muscle
                           muscle={each.muscle}
-                          sets={each.sets}
+                          sets={each.sets[0]}
                           index={index}
                         />
                       </div>
@@ -288,29 +243,13 @@ export default function PrioritizeFocus({
         </StrictModeDroppable>
       </DragDropContext>
 
-      <div className="flex">
-        <div className="mx-1 w-1/2 flex-col">
-          <h3>frequency: {totalWorkouts}</h3>
-          {split[0] >= split[1] ? (
-            <>
-              <p className="text-red-500">upper set: {split[0]}</p>
-              <p className="text-blue-500">lower set: {split[1]}</p>
-            </>
-          ) : (
-            <>
-              <p className="text-blue-500">lower set: {split[1]}</p>
-              <p className="text-red-500">upper set: {split[0]}</p>
-            </>
-          )}
-        </div>
-        <div className="flex w-1/2 items-center justify-center">
-          <button
-            className="flex h-6 items-center justify-center rounded-md border-slate-500 bg-slate-700"
-            onClick={() => onClickHandler()}
-          >
-            <p className="m-2 text-sm text-white">Set Priority</p>
-          </button>
-        </div>
+      <div className="flex w-full items-center justify-center">
+        <button
+          className="mt-2 flex h-6 w-full items-center justify-center rounded-md border-slate-500 bg-slate-700"
+          onClick={() => onClickHandler()}
+        >
+          <p className="m-2 text-sm text-white">Set Priority</p>
+        </button>
       </div>
     </>
   );
@@ -426,72 +365,3 @@ export const handleUpperLowerSplit = (
       return [1, 0];
   }
 };
-
-// rear_delts should be trained at least 2x a week at MEV if growth is desired
-
-// EXERCISES    |   1   |   2   |   3   |   4   |   5   |   6   |   7
-// -------------------------------------------------------------------
-// 1 triceps    |   8   |   16  |  21   |  25   |  35   |  35   |  35
-// -------------------------------------------------------------------
-// 2 triceps    |   7   |   12  |  15   |  18   |  21   |  21   |  21
-// 3 triceps    |   7   |   12  |  15   |  18   |  21   |  21   |  21
-// -------------------------------------------------------------------
-// 4 triceps    |   5   |   8   |  12   |  15   |  18   |  18   |  18
-// 5 triceps    |   5   |   10  |  14   |  17   |  20   |  20   |  20
-// 6 triceps    |   5   |   9   |  13   |  16   |  19   |  19   |  19
-// 7 triceps    |   5   |   8   |  12   |  15   |  18   |  18   |  18
-// -------------------------------------------------------------------
-// 8 triceps    |   4   |   6   |   6   |   6   |   6   |   6   |   6
-// 9 triceps    |   4   |   6   |   6   |   6   |   6   |   6   |   6
-// 0 triceps    |   4   |   6   |   6   |   6   |   6   |   6   |   6
-// -------------------------------------------------------------------
-// 1 triceps    |   4   |   4   |   4   |   4   |   4   |   4   |   4
-// 2 triceps    |   4   |   4   |   4   |   4   |   4   |   4   |   4
-// 3 triceps    |   4   |   4   |   4   |   4   |   4   |   4   |   4
-// 4 triceps    |   4   |   4   |   4   |   4   |   4   |   4   |   4
-
-// prompt user for splits
-// which is higher priority
-// back - chest - legs
-// high - mid - low - maintenance
-
-// frequency 5 legs on backburner
-
-// TRAINING BLOCK
-
-// MESO 1  |  week 1   |   week 2   |   week 3   |   week 4   |  deload    |
-// ========================================================================|
-//         |           |            |            |            |            |
-//  sets   |     5     |     6      |      8     |     10     |            |
-//         |           |            |            |            |            |
-//  sets   |     5     |     6      |      8     |     10     |            |
-
-// MESO 2  |  week 1   |   week 2   |   week 3   |   week 4   |  deload    |
-// ========================================================================|
-//         |           |            |            |            |            |
-//  sets   |           |            |            |            |            |
-//         |           |            |            |            |            |
-//  sets   |           |            |            |            |            |
-//         |           |            |            |            |            |
-//  sets   |           |            |            |            |            |
-
-// MESO 3  |  week 1   |   week 2   |   week 3   |   week 4   |  deload    |
-// ========================================================================|
-//         |           |            |            |            |            |
-//  sets   |           |            |            |            |            |
-//         |           |            |            |            |            |
-//  sets   |           |            |            |            |            |
-//         |           |            |            |            |            |
-//  sets   |           |            |            |            |            |
-//         |           |            |            |            |            |
-//  sets   |           |            |            |            |            |
-
-// resensitization meso
-// MESO 4  |  week 1   |   week 2   |   week 3   |   week 4   |  deload    |
-// ========================================================================|
-//         |           |            |            |            |            |
-//  sets   |           |            |            |            |            |
-//         |           |            |            |            |            |
-//  sets   |           |            |            |            |            |
-//         |           |            |            |            |            |
-//  sets   |           |            |            |            |            |

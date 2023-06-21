@@ -16,82 +16,97 @@ type ListTuple = [string, number];
 
 export type MusclePriorityType = {
   id: string;
+  rank: number;
   muscle: string;
-  sets: number;
+  sets: number[];
 };
 
 export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
   {
     id: "back-002",
+    rank: 1,
     muscle: "back",
-    sets: 30,
+    sets: [10, 20, 25, 30, 35, 35, 35],
   },
   {
     id: "delts_side-008",
+    rank: 2,
     muscle: "delts_side",
-    sets: 35,
+    sets: [12, 25, 30, 35, 40, 40, 40],
   },
   {
     id: "triceps-014",
+    rank: 3,
     muscle: "triceps",
-    sets: 25,
+    sets: [8, 16, 20, 25, 35, 35, 35],
   },
   {
     id: "hamstrings-011",
+    rank: 4,
     muscle: "hamstrings",
-    sets: 16,
+    sets: [6, 12, 16, 18, 18, 18, 18],
   },
   {
     id: "quads-012",
+    rank: 5,
     muscle: "quads",
-    sets: 22,
+    sets: [8, 8, 8, 8, 8, 8, 8],
   },
   {
     id: "delts_rear-007",
+    rank: 6,
     muscle: "delts_rear",
-    sets: 30,
+    sets: [6, 6, 6, 6, 6, 6, 6],
   },
   {
     id: "forearms-009",
+    rank: 7,
     muscle: "forearms",
-    sets: 0,
+    sets: [2, 2, 2, 2, 2, 2, 2],
   },
   {
     id: "traps-013",
+    rank: 8,
     muscle: "traps",
-    sets: 30,
+    sets: [4, 4, 4, 4, 4, 4, 4],
   },
   {
     id: "biceps-003",
+    rank: 9,
     muscle: "biceps",
-    sets: 30,
+    sets: [6, 6, 6, 6, 6, 6, 6],
   },
 
   {
     id: "chest-005",
+    rank: 10,
     muscle: "chest",
-    sets: 30,
+    sets: [4, 4, 4, 4, 4, 4, 4],
   },
   {
     id: "calves-004",
+    rank: 11,
     muscle: "calves",
-    sets: 20,
+    sets: [6, 6, 6, 6, 6, 6, 6],
   },
 
   {
     id: "delts_front-006",
+    rank: 12,
     muscle: "delts_front",
-    sets: 0,
+    sets: [0, 0, 0, 0, 0, 0, 0],
   },
   {
     id: "abs-001",
+    rank: 13,
     muscle: "abs",
-    sets: 0,
+    sets: [0, 0, 0, 0, 0, 0, 0],
   },
   {
     id: "glutes-010",
+    rank: 14,
     muscle: "glutes",
-    sets: 0,
+    sets: [0, 0, 0, 0, 0, 0, 0],
   },
 ];
 
