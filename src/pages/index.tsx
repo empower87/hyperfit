@@ -1,16 +1,12 @@
 import { type NextPage } from "next";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { TestTable } from "~/components/MesoTable";
-import PrioritizeFocus, {
-  handleUpperLowerSplit,
-} from "~/components/PrioritizeFocus";
+import PrioritizeFocus from "~/components/PrioritizeFocus";
 import PrioritySectionLayout from "~/components/PrioritySectionLayout";
 import PromptCardLayout, {
   FrequencySelect,
 } from "~/components/PromptCardLayout";
 import Title from "~/components/Title";
-
-const NUMBERS = [1, 2, 3, 4, 5, 6, 7];
 
 type ListTuple = [string, number];
 
@@ -117,30 +113,21 @@ export type SessionType = {
   totalSets: number;
   maxSets: number;
   split: "full" | "upper" | "lower";
-  testSets: [string, number[], number][];
+  // testSets: [string, number[], number][];
 };
 
 export type SplitType = { day: number; split: string; sets: ListTuple[] };
 
 const Home: NextPage = () => {
   const [totalWorkouts, setTotalWorkouts] = useState<number>(0);
-  const [workoutSplit, setWorkoutSplit] = useState<SplitType[]>([]);
+  const [workoutSplit, setWorkoutSplit] = useState<SessionType[]>([]);
   const [musclePriority, setMusclePriority] = useState<MusclePriorityType[]>([
     ...MUSCLE_PRIORITY_LIST,
   ]);
-  const [split, setSplit] = useState<number[]>([1, 0]);
-
-  //testing
-  const [splitTest, setSplitTest] = useState<SessionType[]>([]);
 
   const handleSelectChange = (value: number) => {
     setTotalWorkouts(value);
   };
-
-  useEffect(() => {
-    const split = handleUpperLowerSplit(musclePriority, totalWorkouts);
-    setSplit(split);
-  }, [totalWorkouts, musclePriority]);
 
   return (
     <>
@@ -152,17 +139,14 @@ const Home: NextPage = () => {
         </PromptCardLayout>
 
         <PrioritySectionLayout
-          table={<TestTable list={musclePriority} split={splitTest} />}
+          table={<TestTable list={musclePriority} split={workoutSplit} />}
         >
           {totalWorkouts > 0 ? (
             <PrioritizeFocus
-              split={split}
               totalWorkouts={totalWorkouts}
               musclePriority={musclePriority}
               setMusclePriority={setMusclePriority}
               setWorkoutSplit={setWorkoutSplit}
-              workoutSplit={workoutSplit}
-              setSplitTest={setSplitTest}
             />
           ) : null}
         </PrioritySectionLayout>

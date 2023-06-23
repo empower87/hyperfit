@@ -1,14 +1,14 @@
 import { MEV_RANK, MRV_RANK } from "src/constants/prioritizeRanks";
-import workouts from "src/constants/workouts.json";
 import { LOWER_MUSCLES, UPPER_MUSCLES } from "~/constants/workoutSplits";
 import { MusclePriorityType, SessionType } from "~/pages";
+import { getMuscleData } from "./getMuscleData";
 export type SessionSplitType = "upper" | "lower" | "full";
 
 type SplitAmongSetsType = {
   split: SessionType[];
   rank: number;
   _name: string;
-  testSets: [string, number[], number][];
+  // testSets: [string, number[], number][];
 };
 
 const getSessionSets = (sessionVolume: number, totalSessions: number) => {
@@ -148,9 +148,10 @@ const distributeMRVAmongSessions = (
   full: number,
   rank: number
 ) => {
-  const muscleObj = workouts.find((each) => each.name === muscle);
-  if (!muscleObj) return { primarySessions: [], fullSessions: [] };
-  const { MRV, MAV, MEV, MV, frequency_max } = muscleObj;
+  // const muscleObj = workouts.find((each) => each.name === muscle);
+  const muscleData = getMuscleData(muscle);
+  // if (!muscleObj) return { primarySessions: [], fullSessions: [] };
+  const { MRV, MAV, MEV, MV, frequency_max } = muscleData;
 
   const sessionsStringified =
     sessions > 5 ? `${sessions}` : `${sessions}-${full}`;
@@ -468,21 +469,22 @@ type objType = {
 
 const findLowestVolumeSession = (
   sessionSplit: "upper" | "lower",
-  split: SessionType[],
-  sets: [string, number[], number][]
+  split: SessionType[]
 ) => {
-  const INITIAL_SETS = new Array(split.length).fill(0);
-
-  let sessions = sets.length ? sets[0][1] : INITIAL_SETS;
   let setTotals: objType[] = [];
 
-  for (let i = 0; i < sessions.length; i++) {
-    let total = 0;
-    for (let j = 0; j < sets.length; j++) {
-      total = total + sets[j][1][i];
+  for (let h = 0; h < split.length; h++) {
+    if (split[h].sets.length) {
+      let value = split[h].sets.reduce(
+        (acc: [string, number], current: [string, number]) => {
+          acc = [current[0], acc[1] + current[1]];
+          return acc;
+        }
+      );
+      setTotals.push({ session: split[h].split, total: value[1], index: h });
+    } else {
+      setTotals.push({ session: split[h].split, total: 0, index: h });
     }
-    console.log(split, "WHY IS THIS FAILING?");
-    setTotals.push({ session: split[i].split, total: total, index: i });
   }
 
   let sessionsIndices = [];
@@ -612,7 +614,6 @@ const splitSetsAmongSessions = ({
   split,
   rank,
   _name,
-  testSets,
 }: SplitAmongSetsType): [string, number[], number] => {
   let getUpperSessions = split.filter((each) => each.split === "upper");
   let getLowerSessions = split.filter((each) => each.split === "lower");
@@ -642,8 +643,7 @@ const splitSetsAmongSessions = ({
 
   const { sessionIndices, fullIndices } = findLowestVolumeSession(
     sessionSplit as "upper" | "lower",
-    split,
-    testSets
+    split
   );
 
   const reduceSessionIndices = (
@@ -698,7 +698,6 @@ export const featureTest = (list: MusclePriorityType[], sessions: number) => {
     totalSets: 0,
     maxSets: 30,
     split: "full",
-    testSets: [],
   };
 
   for (let i = 0; i < sessions; i++) {
@@ -709,24 +708,21 @@ export const featureTest = (list: MusclePriorityType[], sessions: number) => {
       totalSets: 0,
       maxSets: 30,
       split: split[i],
-      testSets: [],
     });
   }
 
   for (let j = 0; j < list.length; j++) {
     let muscle_name = list[j].muscle;
+
     const oneLine = splitSetsAmongSessions({
       split: sessionsMRV,
       rank: j,
       _name: muscle_name,
-      testSets: sessionsMRV[0].testSets,
     });
 
     for (let k = 0; k < sessionsMRV.length; k++) {
       sessionsMRV[k].sets.push([muscle_name, oneLine[1][k]]);
     }
-
-    sessionsMRV[0].testSets.push(oneLine);
   }
 
   return sessionsMRV;

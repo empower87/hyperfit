@@ -15,14 +15,15 @@ function TotalRow({ split }: { split: SessionType[] }) {
             return acc;
           }
         );
+
         total += value[1];
+
         return (
           <td
-            key={`${each}_${index}total`}
+            key={`${each.split}_${index}total`}
             className=" bg-slate-400 pl-2 text-xs"
           >
             {value[1]}
-            {/* {sessionSetTotal[index]} */}
           </td>
         );
       })}
@@ -63,6 +64,7 @@ export const TestTable = ({
             <th className="bg-slate-500 px-1 text-sm text-white">Total</th>
           </tr>
         </thead>
+
         <tbody>
           {list.map((each, index) => {
             let rankColor =
@@ -71,6 +73,7 @@ export const TestTable = ({
                 : index >= MRV_RANK && index < MEV_RANK
                 ? "bg-orange-400"
                 : "bg-green-400";
+
             let total = 0;
             return (
               <tr key={`${each.muscle}_vertical`} className="text-xs">
