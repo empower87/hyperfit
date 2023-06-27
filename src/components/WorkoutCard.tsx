@@ -1,4 +1,5 @@
-import { useRef } from "react";
+import { ReactNode, useRef } from "react";
+import { SessionType } from "~/pages";
 import Lift, { LiftTable } from "./Lift";
 
 type WorkoutCardProps = {
@@ -115,4 +116,180 @@ export const updateList = (list: ListTuple[], tuple: ListTuple) => {
     list.push(tuple);
     return list;
   }
+};
+
+type LayoutProps = {
+  number: number;
+  children: ReactNode;
+};
+type MesocycleTableProps = {
+  split: SessionType[];
+};
+type MicrocycleTableProps = {
+  values: number[][];
+};
+
+export const MesocycleLayout = ({ number, children }: LayoutProps) => {
+  return (
+    <div className="flex flex-col rounded border-2 border-slate-500">
+      <div className="w-full rounded-t-sm bg-slate-700">
+        <h2 className="ml-1 p-1 text-white">Mesocycle {number}</h2>
+      </div>
+      <div className="flex">{children}</div>
+    </div>
+  );
+};
+
+export const MicrocycleLayout = ({ number, children }: LayoutProps) => {
+  return (
+    <div className="mt-2 flex justify-center">
+      <div className="flex w-20 flex-col rounded border-2 border-slate-500">
+        <div className="w-full rounded-t-sm bg-slate-700">
+          <h2 className="ml-1 p-1 text-white">Week {number}</h2>
+        </div>
+        <div className="flex">{children}</div>
+      </div>
+    </div>
+  );
+};
+
+export const MesocycleTable = ({ split }: MesocycleTableProps) => {
+  return (
+    <div className="flex flex-col">
+      {split.map((each) => {
+        return (
+          <table className="m-1">
+            <TableHeadColumns session={each.split} />
+            <tbody>
+              {each.sets.map((set) => {
+                if (set[1] > 0) {
+                  return <TableBodyRows exercise={set[0]} sets={set[1]} />;
+                }
+              })}
+            </tbody>
+          </table>
+        );
+      })}
+    </div>
+  );
+};
+
+export function TableHeadColumns({ session }: TableBodyRowsProps) {
+  const ColumnHead = ({ text }: { text: string }) => {
+    return (
+      <th className="bg-slate-300 pl-2" style={{ fontSize: "10px" }}>
+        {text}
+      </th>
+    );
+  };
+
+  const ColumnsForEachWeek = () => (
+    <>
+      <ColumnHead text="Sets" />
+      <ColumnHead text="Reps" />
+      <ColumnHead text="Weight" />
+      <ColumnHead text="RIR" />
+    </>
+  );
+
+  return (
+    <thead>
+      <tr>
+        <ColumnHead text={session} />
+        <ColumnsForEachWeek />
+        <ColumnsForEachWeek />
+        <ColumnsForEachWeek />
+        <ColumnsForEachWeek />
+        <ColumnsForEachWeek />
+      </tr>
+    </thead>
+  );
+}
+
+type TableBodyRowsProps = {
+  session: "upper" | "lower" | "full";
+};
+
+const Row = ({ value }: { value: number | string }) => {
+  return (
+    <td className="border-l-2 pl-2" style={{ fontSize: "10px" }}>
+      {value}
+    </td>
+  );
+};
+
+export function TableBodyRows({
+  exercise,
+  sets,
+}: {
+  exercise: string;
+  sets: number;
+}) {
+  type RowsForEachWeekProps = {
+    sets: number;
+    reps: number;
+    weight: number;
+    rir: number;
+  };
+  const Row = ({ value }: { value: number | string }) => {
+    return (
+      <td className="border-l-2 pl-2" style={{ fontSize: "10px" }}>
+        {value}
+      </td>
+    );
+  };
+
+  const RowsForEachWeek = ({
+    sets,
+    reps,
+    weight,
+    rir,
+  }: RowsForEachWeekProps) => {
+    return (
+      <>
+        <Row value={sets} />
+        <Row value={reps} />
+        <Row value={weight} />
+        <Row value={rir} />
+      </>
+    );
+  };
+
+  return (
+    <tr className="" style={{ lineHeight: 1.2 }}>
+      <Row value={exercise} />
+      <RowsForEachWeek sets={sets} reps={12} weight={100} rir={2} />
+      <RowsForEachWeek sets={sets} reps={12} weight={100} rir={2} />
+      <RowsForEachWeek sets={sets} reps={12} weight={100} rir={2} />
+      <RowsForEachWeek sets={sets} reps={12} weight={100} rir={2} />
+      <RowsForEachWeek sets={sets} reps={12} weight={100} rir={2} />
+    </tr>
+  );
+}
+
+export const MicrocycleTable = ({ values }: MicrocycleTableProps) => {
+  return (
+    <table>
+      <thead>
+        <tr>
+          <th>Sets</th>
+          <th>Reps</th>
+          <th>Weight</th>
+          <th>RIR</th>
+        </tr>
+      </thead>
+      <tbody>
+        {values.map((columns) => {
+          return (
+            <tr key={`${columns.length}_row`}>
+              {columns.map((column) => {
+                return <td key={`${column}_column`}>{column}</td>;
+              })}
+              {/* <Row value={} /> */}
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
+  );
 };

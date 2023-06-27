@@ -7,6 +7,7 @@ import PromptCardLayout, {
   FrequencySelect,
 } from "~/components/PromptCardLayout";
 import Title from "~/components/Title";
+import { MesocycleLayout, MesocycleTable } from "~/components/WorkoutCard";
 
 type ListTuple = [string, number];
 
@@ -106,17 +107,13 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
   },
 ];
 
-//testing
 export type SessionType = {
   day: number;
   sets: [string, number][];
   totalSets: number;
   maxSets: number;
   split: "full" | "upper" | "lower";
-  // testSets: [string, number[], number][];
 };
-
-export type SplitType = { day: number; split: string; sets: ListTuple[] };
 
 const Home: NextPage = () => {
   const [totalWorkouts, setTotalWorkouts] = useState<number>(0);
@@ -154,7 +151,7 @@ const Home: NextPage = () => {
 
       <div className="mt-2 flex h-full w-full flex-col items-center">
         <div className="mb-3 w-3/4 rounded-t-sm bg-slate-700">
-          <h2 className="ml-1 p-1 text-white">Training Week</h2>
+          <h2 className="ml-1 p-1 text-white">Training Program</h2>
         </div>
         <div className="flex flex-wrap justify-center">
           {/* {workoutSplit.length > 0
@@ -174,6 +171,10 @@ const Home: NextPage = () => {
           {/* {workoutSplit.length > 0 && (
             
           )} */}
+
+          <MesocycleLayout number={1}>
+            <MesocycleTable split={workoutSplit} />
+          </MesocycleLayout>
         </div>
       </div>
     </>
