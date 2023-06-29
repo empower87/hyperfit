@@ -119,33 +119,33 @@ export const updateList = (list: ListTuple[], tuple: ListTuple) => {
 };
 
 type LayoutProps = {
-  number: number;
+  title: string;
   children: ReactNode;
 };
 type MesocycleTableProps = {
   split: SessionType[];
 };
 type MicrocycleTableProps = {
-  values: number[][];
+  values: [string, number][];
 };
 
-export const MesocycleLayout = ({ number, children }: LayoutProps) => {
+export const MesocycleLayout = ({ title, children }: LayoutProps) => {
   return (
     <div className="flex flex-col rounded border-2 border-slate-500">
       <div className="w-full rounded-t-sm bg-slate-700">
-        <h2 className="ml-1 p-1 text-white">Mesocycle {number}</h2>
+        <h2 className="ml-1 p-1 text-white">Mesocycle {title}</h2>
       </div>
-      <div className="flex">{children}</div>
+      <div className="flex flex-col">{children}</div>
     </div>
   );
 };
 
-export const MicrocycleLayout = ({ number, children }: LayoutProps) => {
+export const MicrocycleLayout = ({ title, children }: LayoutProps) => {
   return (
     <div className="mt-2 flex justify-center">
-      <div className="flex w-20 flex-col rounded border-2 border-slate-500">
+      <div className="flex flex-col rounded border-2 border-slate-500">
         <div className="w-full rounded-t-sm bg-slate-700">
-          <h2 className="ml-1 p-1 text-white">Week {number}</h2>
+          <h2 className="ml-1 p-1 text-white">{title}</h2>
         </div>
         <div className="flex">{children}</div>
       </div>
@@ -156,64 +156,155 @@ export const MicrocycleLayout = ({ number, children }: LayoutProps) => {
 export const MesocycleTable = ({ split }: MesocycleTableProps) => {
   return (
     <div className="flex flex-col">
-      {split.map((each) => {
-        return (
-          <table className="m-1">
-            <TableHeadColumns session={each.split} />
-            <tbody>
-              {each.sets.map((set) => {
+      <table className="m-1">
+        <TableHeadColumns />
+        <tbody>
+          {/* {each.sets.map((set) => {
                 if (set[1] > 0) {
                   return <TableBodyRows exercise={set[0]} sets={set[1]} />;
                 }
-              })}
-            </tbody>
-          </table>
-        );
-      })}
+              })} */}
+
+          {split.map((each) => {
+            return <TableBody split={each} />;
+          })}
+        </tbody>
+      </table>
     </div>
   );
 };
+// export const MesocycleTable = ({ split }: MesocycleTableProps) => {
+//   return (
+//     <div className="flex flex-col">
+//       {split.map((each) => {
+//         return (
+//           <table className="m-1">
+//             <TableHeadColumns session={each.split} />
+//             <tbody>
+//               {each.sets.map((set) => {
+//                 if (set[1] > 0) {
+//                   return <TableBodyRows exercise={set[0]} sets={set[1]} />;
+//                 }
+//               })}
+//             </tbody>
+//           </table>
+//         );
+//       })}
+//     </div>
+//   );
+// };
+const ColumnHead = ({ text }: { text: string }) => {
+  return (
+    <th className="bg-slate-300 pl-2" style={{ fontSize: "10px" }}>
+      {text}
+    </th>
+  );
+};
 
-export function TableHeadColumns({ session }: TableBodyRowsProps) {
+const CellHeads = ["Sets", "Reps", "Weight", "RiR"];
+
+export function TableHeadColumns() {
   const ColumnHead = ({ text }: { text: string }) => {
     return (
-      <th className="bg-slate-300 pl-2" style={{ fontSize: "10px" }}>
+      <th className="bg-slate-300 pl-2" style={{ fontSize: "13px" }}>
         {text}
       </th>
     );
   };
 
-  const ColumnsForEachWeek = () => (
-    <>
-      <ColumnHead text="Sets" />
-      <ColumnHead text="Reps" />
-      <ColumnHead text="Weight" />
-      <ColumnHead text="RIR" />
-    </>
-  );
-
   return (
     <thead>
       <tr>
-        <ColumnHead text={session} />
-        <ColumnsForEachWeek />
-        <ColumnsForEachWeek />
-        <ColumnsForEachWeek />
-        <ColumnsForEachWeek />
-        <ColumnsForEachWeek />
+        <ColumnHead text="Session" />
+        <ColumnHead text="Week 1" />
+        <ColumnHead text="Week 2" />
+        <ColumnHead text="Week 3" />
+        <ColumnHead text="Week 4" />
+        <ColumnHead text="Deload" />
       </tr>
     </thead>
   );
 }
 
-type TableBodyRowsProps = {
-  session: "upper" | "lower" | "full";
+function TableBody({ split }: { split: SessionType }) {
+  const filterSessionCells = split.sets.map((each) => {
+    if (each[1] > 0) {
+      return each[0];
+    } else return "";
+  });
+  const filterSessionNumberCells = split.sets.map((each) => {
+    return [each[1], 12, 100, 3];
+  });
+  return (
+    <tr>
+      <TableCell head={[split.split]} body={filterSessionCells} />
+      <TableCell head={CellHeads} body={filterSessionNumberCells} />
+      <TableCell head={CellHeads} body={filterSessionNumberCells} />
+      <TableCell head={CellHeads} body={filterSessionNumberCells} />
+      <TableCell head={CellHeads} body={filterSessionNumberCells} />
+      <TableCell head={CellHeads} body={filterSessionNumberCells} />
+    </tr>
+  );
+}
+
+type TableCellProps = {
+  head: string[];
+  body: string[] | number[][];
 };
 
-const Row = ({ value }: { value: number | string }) => {
+const TableCell = ({ head, body }: TableCellProps) => {
+  const THead = ({ head }: { head: string[] }) => {
+    return (
+      <thead>
+        <tr>
+          {head.map((each) => {
+            return <ColumnHead text={each} />;
+          })}
+        </tr>
+      </thead>
+    );
+  };
+
+  const TBody = ({ body }: { body: string[] | number[][] }) => {
+    return (
+      <tbody>
+        {body.map((each) => {
+          return (
+            <tr>
+              {typeof each === "string"
+                ? each !== "" && (
+                    <td
+                      className="border-l-2 pl-2"
+                      style={{ fontSize: "10px" }}
+                    >
+                      {each}
+                    </td>
+                  )
+                : each.map((ea) => {
+                    return (
+                      each[0] > 0 && (
+                        <td
+                          className="border-l-2 pl-2"
+                          style={{ fontSize: "10px" }}
+                        >
+                          {ea}
+                        </td>
+                      )
+                    );
+                  })}
+            </tr>
+          );
+        })}
+      </tbody>
+    );
+  };
+
   return (
-    <td className="border-l-2 pl-2" style={{ fontSize: "10px" }}>
-      {value}
+    <td>
+      <table>
+        <THead head={head} />
+        <TBody body={body} />
+      </table>
     </td>
   );
 };
@@ -231,6 +322,7 @@ export function TableBodyRows({
     weight: number;
     rir: number;
   };
+
   const Row = ({ value }: { value: number | string }) => {
     return (
       <td className="border-l-2 pl-2" style={{ fontSize: "10px" }}>
@@ -266,28 +358,196 @@ export function TableBodyRows({
     </tr>
   );
 }
+// export function TableHeadColumns({ session }: TableBodyRowsProps) {
+//   const ColumnHead = ({ text }: { text: string }) => {
+//     return (
+//       <th className="bg-slate-300 pl-2" style={{ fontSize: "10px" }}>
+//         {text}
+//       </th>
+//     );
+//   };
 
-export const MicrocycleTable = ({ values }: MicrocycleTableProps) => {
+//   const ColumnsForEachWeek = () => (
+//     <>
+//       <ColumnHead text="Sets" />
+//       <ColumnHead text="Reps" />
+//       <ColumnHead text="Weight" />
+//       <ColumnHead text="RIR" />
+//     </>
+//   );
+
+//   return (
+//     <thead>
+//       <tr>
+//         <ColumnHead text={session} />
+//         <ColumnsForEachWeek />
+//         <ColumnsForEachWeek />
+//         <ColumnsForEachWeek />
+//         <ColumnsForEachWeek />
+//         <ColumnsForEachWeek />
+//       </tr>
+//     </thead>
+//   );
+// }
+
+type TableBodyRowsProps = {
+  session: "upper" | "lower" | "full";
+};
+
+const Row = ({ value }: { value: number | string }) => {
+  return (
+    <td className="border-l-2 pl-2" style={{ fontSize: "10px" }}>
+      {value}
+    </td>
+  );
+};
+
+// export function TableBodyRows({
+//   exercise,
+//   sets,
+// }: {
+//   exercise: string;
+//   sets: number;
+// }) {
+//   type RowsForEachWeekProps = {
+//     sets: number;
+//     reps: number;
+//     weight: number;
+//     rir: number;
+//   };
+
+//   const Row = ({ value }: { value: number | string }) => {
+//     return (
+//       <td className="border-l-2 pl-2" style={{ fontSize: "10px" }}>
+//         {value}
+//       </td>
+//     );
+//   };
+
+//   const RowsForEachWeek = ({
+//     sets,
+//     reps,
+//     weight,
+//     rir,
+//   }: RowsForEachWeekProps) => {
+//     return (
+//       <>
+//         <Row value={sets} />
+//         <Row value={reps} />
+//         <Row value={weight} />
+//         <Row value={rir} />
+//       </>
+//     );
+//   };
+
+//   return (
+//     <tr className="" style={{ lineHeight: 1.2 }}>
+//       <Row value={exercise} />
+//       <RowsForEachWeek sets={sets} reps={12} weight={100} rir={2} />
+//       <RowsForEachWeek sets={sets} reps={12} weight={100} rir={2} />
+//       <RowsForEachWeek sets={sets} reps={12} weight={100} rir={2} />
+//       <RowsForEachWeek sets={sets} reps={12} weight={100} rir={2} />
+//       <RowsForEachWeek sets={sets} reps={12} weight={100} rir={2} />
+//     </tr>
+//   );
+// }
+
+export const Mesocycle = ({ split }: { split: SessionType }) => {
+  return (
+    <div className="flex">
+      <MicrocycleLayout title={"Session"}>
+        <MicrocycleTableExercises split={split.split} exercises={split.sets} />
+      </MicrocycleLayout>
+      <MicrocycleLayout title={"Week 1"}>
+        <MicrocycleTable values={split.sets} />
+      </MicrocycleLayout>
+      <MicrocycleLayout title={"Week 2"}>
+        <MicrocycleTable values={split.sets} />
+      </MicrocycleLayout>
+      <MicrocycleLayout title={"Week 3"}>
+        <MicrocycleTable values={split.sets} />
+      </MicrocycleLayout>
+      <MicrocycleLayout title={"Week 4"}>
+        <MicrocycleTable values={split.sets} />
+      </MicrocycleLayout>
+      <MicrocycleLayout title={"Deload"}>
+        <MicrocycleTable values={split.sets} />
+      </MicrocycleLayout>
+    </div>
+  );
+};
+const MicrocycleTableExercises = ({
+  split,
+  exercises,
+}: {
+  split: string;
+  exercises: [string, number][];
+}) => {
   return (
     <table>
       <thead>
         <tr>
-          <th>Sets</th>
-          <th>Reps</th>
-          <th>Weight</th>
-          <th>RIR</th>
+          <th className="bg-slate-300 pl-2" style={{ fontSize: "10px" }}>
+            {split}
+          </th>
         </tr>
       </thead>
       <tbody>
+        {exercises.map((each) => {
+          if (each[1] > 0) {
+            return (
+              <tr>
+                <td className="border-l-2 pl-2" style={{ fontSize: "10px" }}>
+                  {each[0]}
+                </td>
+              </tr>
+            );
+          }
+        })}
+      </tbody>
+    </table>
+  );
+};
+export const MicrocycleTable = ({ values }: MicrocycleTableProps) => {
+  return (
+    <table style={{ width: "150px" }}>
+      <thead>
+        <tr>
+          <th className="border-l-2 pl-2" style={{ fontSize: "10px" }}>
+            Sets
+          </th>
+          <th className="border-l-2 pl-2" style={{ fontSize: "10px" }}>
+            Reps
+          </th>
+          <th className="border-l-2 pl-2" style={{ fontSize: "10px" }}>
+            Weight
+          </th>
+          <th className="border-l-2 pl-2" style={{ fontSize: "10px" }}>
+            RIR
+          </th>
+        </tr>
+      </thead>
+
+      <tbody>
         {values.map((columns) => {
-          return (
-            <tr key={`${columns.length}_row`}>
-              {columns.map((column) => {
-                return <td key={`${column}_column`}>{column}</td>;
-              })}
-              {/* <Row value={} /> */}
-            </tr>
-          );
+          if (columns[1] > 0) {
+            return (
+              <tr key={`${columns.length}_row`}>
+                <td className="border-l-2 pl-2" style={{ fontSize: "10px" }}>
+                  {columns[1]}
+                </td>
+                <td className="border-l-2 pl-2" style={{ fontSize: "10px" }}>
+                  10-15
+                </td>
+                <td className="border-l-2 pl-2" style={{ fontSize: "10px" }}>
+                  100
+                </td>
+                <td className="border-l-2 pl-2" style={{ fontSize: "10px" }}>
+                  3
+                </td>
+              </tr>
+            );
+          }
         })}
       </tbody>
     </table>

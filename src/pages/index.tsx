@@ -168,12 +168,11 @@ const Home: NextPage = () => {
               })
             : null} */}
 
-          {/* {workoutSplit.length > 0 && (
-            
-          )} */}
-
-          <MesocycleLayout number={1}>
+          <MesocycleLayout title={"1"}>
             <MesocycleTable split={workoutSplit} />
+            {/* {workoutSplit.map((split) => {
+              return <Mesocycle split={split} />;
+            })} */}
           </MesocycleLayout>
         </div>
       </div>
