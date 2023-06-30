@@ -153,26 +153,9 @@ const Home: NextPage = () => {
         <div className="mb-3 w-3/4 rounded-t-sm bg-slate-700">
           <h2 className="ml-1 p-1 text-white">Training Program</h2>
         </div>
-        <div className="flex flex-wrap justify-center">
-          {/* {workoutSplit.length > 0
-            ? workoutSplit.map((each, index) => {
-                console.log(each, "during splitList mapping");
-                return (
-                  <WorkoutCard
-                    key={`${each.day}x${index}`}
-                    day={each.day}
-                    split={each.split}
-                    sets={each.sets}
-                  />
-                );
-              })
-            : null} */}
-
-          <MesocycleLayout title={"1"}>
+        <div className="flex w-3/4 flex-wrap justify-center">
+          <MesocycleLayout title={"Mesocycle 1"}>
             <MesocycleTable split={workoutSplit} />
-            {/* {workoutSplit.map((split) => {
-              return <Mesocycle split={split} />;
-            })} */}
           </MesocycleLayout>
         </div>
       </div>

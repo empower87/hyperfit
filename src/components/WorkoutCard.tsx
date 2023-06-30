@@ -131,9 +131,9 @@ type MicrocycleTableProps = {
 
 export const MesocycleLayout = ({ title, children }: LayoutProps) => {
   return (
-    <div className="flex flex-col rounded border-2 border-slate-500">
+    <div className="flex w-full flex-col rounded border-2 border-slate-500">
       <div className="w-full rounded-t-sm bg-slate-700">
-        <h2 className="ml-1 p-1 text-white">Mesocycle {title}</h2>
+        <h2 className="ml-1 p-1 text-white">{title}</h2>
       </div>
       <div className="flex flex-col">{children}</div>
     </div>
@@ -156,15 +156,9 @@ export const MicrocycleLayout = ({ title, children }: LayoutProps) => {
 export const MesocycleTable = ({ split }: MesocycleTableProps) => {
   return (
     <div className="flex flex-col">
-      <table className="m-1">
+      <table className="m-1 border-collapse">
         <TableHeadColumns />
-        <tbody>
-          {/* {each.sets.map((set) => {
-                if (set[1] > 0) {
-                  return <TableBodyRows exercise={set[0]} sets={set[1]} />;
-                }
-              })} */}
-
+        <tbody className="">
           {split.map((each) => {
             return <TableBody split={each} />;
           })}
@@ -173,40 +167,28 @@ export const MesocycleTable = ({ split }: MesocycleTableProps) => {
     </div>
   );
 };
-// export const MesocycleTable = ({ split }: MesocycleTableProps) => {
-//   return (
-//     <div className="flex flex-col">
-//       {split.map((each) => {
-//         return (
-//           <table className="m-1">
-//             <TableHeadColumns session={each.split} />
-//             <tbody>
-//               {each.sets.map((set) => {
-//                 if (set[1] > 0) {
-//                   return <TableBodyRows exercise={set[0]} sets={set[1]} />;
-//                 }
-//               })}
-//             </tbody>
-//           </table>
-//         );
-//       })}
-//     </div>
-//   );
-// };
-const ColumnHead = ({ text }: { text: string }) => {
+
+const ColumnHead = ({ text, session }: { text: string; session: string }) => {
+  const bgColor =
+    session === "upper"
+      ? "bg-blue-400"
+      : session === "lower"
+      ? "bg-red-400"
+      : "bg-purple-400";
   return (
-    <th className="bg-slate-300 pl-2" style={{ fontSize: "10px" }}>
+    <th className={bgColor + " text-white"} style={{ fontSize: "8px" }}>
       {text}
     </th>
   );
 };
 
-const CellHeads = ["Sets", "Reps", "Weight", "RiR"];
+const CELL_HEADS_WEEK_1 = ["Sets", "Reps", "Weight", "RiR"];
+const CELL_HEADS_WEEK_2PLUS = ["Sets", "Weight", "RiR"];
 
 export function TableHeadColumns() {
   const ColumnHead = ({ text }: { text: string }) => {
     return (
-      <th className="bg-slate-300 pl-2" style={{ fontSize: "13px" }}>
+      <th className="bg-slate-500" style={{ fontSize: "13px" }}>
         {text}
       </th>
     );
@@ -232,17 +214,47 @@ function TableBody({ split }: { split: SessionType }) {
       return each[0];
     } else return "";
   });
-  const filterSessionNumberCells = split.sets.map((each) => {
+
+  const filterSessionNumberCellsWeek1 = split.sets.map((each) => {
     return [each[1], 12, 100, 3];
   });
+
+  const filterSessionNumberCellsWeek2Plus = split.sets.map((each) => {
+    return [each[1], 100, 3];
+  });
+
   return (
-    <tr>
-      <TableCell head={[split.split]} body={filterSessionCells} />
-      <TableCell head={CellHeads} body={filterSessionNumberCells} />
-      <TableCell head={CellHeads} body={filterSessionNumberCells} />
-      <TableCell head={CellHeads} body={filterSessionNumberCells} />
-      <TableCell head={CellHeads} body={filterSessionNumberCells} />
-      <TableCell head={CellHeads} body={filterSessionNumberCells} />
+    <tr className="">
+      <TableCell
+        head={[split.split]}
+        body={filterSessionCells}
+        session={split.split}
+      />
+      <TableCell
+        head={CELL_HEADS_WEEK_1}
+        body={filterSessionNumberCellsWeek1}
+        session={split.split}
+      />
+      <TableCell
+        head={CELL_HEADS_WEEK_2PLUS}
+        body={filterSessionNumberCellsWeek2Plus}
+        session={split.split}
+      />
+      <TableCell
+        head={CELL_HEADS_WEEK_2PLUS}
+        body={filterSessionNumberCellsWeek2Plus}
+        session={split.split}
+      />
+      <TableCell
+        head={CELL_HEADS_WEEK_2PLUS}
+        body={filterSessionNumberCellsWeek2Plus}
+        session={split.split}
+      />
+      <TableCell
+        head={CELL_HEADS_WEEK_2PLUS}
+        body={filterSessionNumberCellsWeek2Plus}
+        session={split.split}
+      />
     </tr>
   );
 }
@@ -250,15 +262,16 @@ function TableBody({ split }: { split: SessionType }) {
 type TableCellProps = {
   head: string[];
   body: string[] | number[][];
+  session: string;
 };
 
-const TableCell = ({ head, body }: TableCellProps) => {
+const TableCell = ({ head, body, session }: TableCellProps) => {
   const THead = ({ head }: { head: string[] }) => {
     return (
       <thead>
-        <tr>
+        <tr className="leading-3">
           {head.map((each) => {
-            return <ColumnHead text={each} />;
+            return <ColumnHead text={each} session={session} />;
           })}
         </tr>
       </thead>
@@ -270,11 +283,11 @@ const TableCell = ({ head, body }: TableCellProps) => {
       <tbody>
         {body.map((each) => {
           return (
-            <tr>
+            <tr className="leading-none">
               {typeof each === "string"
                 ? each !== "" && (
                     <td
-                      className="border-l-2 pl-2"
+                      className="border-l-2 pl-2 text-slate-600"
                       style={{ fontSize: "10px" }}
                     >
                       {each}
@@ -284,7 +297,7 @@ const TableCell = ({ head, body }: TableCellProps) => {
                     return (
                       each[0] > 0 && (
                         <td
-                          className="border-l-2 pl-2"
+                          className="border-l-2 pl-2 text-slate-600"
                           style={{ fontSize: "10px" }}
                         >
                           {ea}
@@ -300,8 +313,8 @@ const TableCell = ({ head, body }: TableCellProps) => {
   };
 
   return (
-    <td>
-      <table>
+    <td className="pb-1 pt-1">
+      <table className="w-full">
         <THead head={head} />
         <TBody body={body} />
       </table>
