@@ -1,5 +1,6 @@
 import { type NextPage } from "next";
 import { useState } from "react";
+import Macrocycle from "~/components/Macrocycle/Macrocycle";
 import { TestTable } from "~/components/MesoTable";
 import PrioritizeFocus from "~/components/PrioritizeFocus";
 import PrioritySectionLayout from "~/components/PrioritySectionLayout";
@@ -7,9 +8,6 @@ import PromptCardLayout, {
   FrequencySelect,
 } from "~/components/PromptCardLayout";
 import Title from "~/components/Title";
-import { MesocycleLayout, MesocycleTable } from "~/components/WorkoutCard";
-
-type ListTuple = [string, number];
 
 export type MusclePriorityType = {
   id: string;
@@ -153,11 +151,8 @@ const Home: NextPage = () => {
         <div className="mb-3 w-3/4 rounded-t-sm bg-slate-700">
           <h2 className="ml-1 p-1 text-white">Training Program</h2>
         </div>
-        <div className="flex w-3/4 flex-wrap justify-center">
-          <MesocycleLayout title={"Mesocycle 1"}>
-            <MesocycleTable split={workoutSplit} />
-          </MesocycleLayout>
-        </div>
+
+        <Macrocycle workoutSplit={workoutSplit} />
       </div>
     </>
   );

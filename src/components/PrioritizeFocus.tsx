@@ -41,19 +41,6 @@ export const StrictModeDroppable = ({ children, ...props }: DroppableProps) => {
   return <Droppable {...props}>{children}</Droppable>;
 };
 
-const updateMuscleListSets = (items: MusclePriorityType[]) => {
-  for (let i = 0; i < items.length; i++) {
-    const muscleData = getMuscleData(items[i].muscle);
-    const { featureMatrix } = muscleData;
-
-    let rank = i < MRV_RANK ? 0 : i >= MRV_RANK && i < MEV_RANK ? 1 : 2;
-    const sets = featureMatrix[rank];
-
-    items[i].sets = sets;
-  }
-  return items;
-};
-
 export default function PrioritizeFocus({
   totalWorkouts,
   musclePriority,
@@ -63,6 +50,19 @@ export default function PrioritizeFocus({
   const [newList, setNewList] = useState<MusclePriorityType[]>([
     ...musclePriority,
   ]);
+
+  const updateMuscleListSets = (items: MusclePriorityType[]) => {
+    for (let i = 0; i < items.length; i++) {
+      const muscleData = getMuscleData(items[i].muscle);
+      const { featureMatrix } = muscleData;
+
+      let rank = i < MRV_RANK ? 0 : i >= MRV_RANK && i < MEV_RANK ? 1 : 2;
+      const sets = featureMatrix[rank];
+
+      items[i].sets = sets;
+    }
+    return items;
+  };
 
   useEffect(() => {
     const getNewList = updateMuscleListSets(musclePriority);
@@ -188,11 +188,9 @@ const getLowerPosition = (list: MusclePriorityType[]) => {
   if (top === 3) {
     return "top";
   }
-
   if (bottom === 3) {
     return "bottom";
   }
-
   return "mid";
 };
 
