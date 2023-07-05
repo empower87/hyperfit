@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import { SessionType } from "~/pages";
+import { subtractSetsForMeso } from "~/utils/createPeriodizationMesocycle";
 import Microcycle from "./Microcycle";
 
 type MesocycleTableProps = {
@@ -31,6 +32,7 @@ function TableHeadColumns() {
     </thead>
   );
 }
+
 const CELL_HEADS_WEEK_1 = ["Sets", "Reps", "Weight", "RiR"];
 const CELL_HEADS_WEEK_2PLUS = ["Sets", "Weight", "RiR"];
 
@@ -49,29 +51,16 @@ function TableBody({ split }: { split: SessionType }) {
     return [each[1], 100, 3];
   });
 
+  const values = subtractSetsForMeso(split.sets);
+
   return (
     <tr className="">
       <Microcycle head={[split.split]} body={filterSessionCells} />
-      <Microcycle
-        head={CELL_HEADS_WEEK_1}
-        body={filterSessionNumberCellsWeek1}
-      />
-      <Microcycle
-        head={CELL_HEADS_WEEK_2PLUS}
-        body={filterSessionNumberCellsWeek2Plus}
-      />
-      <Microcycle
-        head={CELL_HEADS_WEEK_2PLUS}
-        body={filterSessionNumberCellsWeek2Plus}
-      />
-      <Microcycle
-        head={CELL_HEADS_WEEK_2PLUS}
-        body={filterSessionNumberCellsWeek2Plus}
-      />
-      <Microcycle
-        head={CELL_HEADS_WEEK_2PLUS}
-        body={filterSessionNumberCellsWeek2Plus}
-      />
+      <Microcycle head={CELL_HEADS_WEEK_1} body={values[0]} />
+      <Microcycle head={CELL_HEADS_WEEK_2PLUS} body={values[1]} />
+      <Microcycle head={CELL_HEADS_WEEK_2PLUS} body={values[2]} />
+      <Microcycle head={CELL_HEADS_WEEK_2PLUS} body={values[3]} />
+      <Microcycle head={CELL_HEADS_WEEK_2PLUS} body={values[4]} />
     </tr>
   );
 }

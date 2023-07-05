@@ -153,6 +153,7 @@ const Home: NextPage = () => {
         </div>
 
         <Macrocycle workoutSplit={workoutSplit} />
+        <>{console.log(workoutSplit, "NEED TO SEE THIS")}</>
       </div>
     </>
   );
