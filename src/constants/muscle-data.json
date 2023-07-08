@@ -12,6 +12,13 @@
       [6, 6, 6, 6, 6, 6, 6],
       [4, 4, 4, 4, 4, 4, 4]
     ],
+    "mevToMrvProgression": [
+      [2],
+      [2, 2],
+      [2, 3, 2],
+      [3, 3, 3, 2],
+      [3, 3, 3, 3, 2]
+    ],
     "restPeriod": 1,
     "systemicallyFatiguing": false,
     "localSystemicFatigue": ["back"]
@@ -29,6 +36,7 @@
       [6, 6, 6, 6, 6, 6, 6],
       [0, 0, 0, 0, 0, 0, 0]
     ],
+    "mevToMrvProgression": [[2], [2, 3], [3, 4, 3], [3, 4, 4, 2]],
     "restPeriod": 1,
     "systemicallyFatiguing": false,
     "localSystemicFatigue": []
@@ -45,6 +53,13 @@
       [10, 20, 25, 30, 35, 35, 35],
       [10, 10, 10, 10, 10, 10, 10],
       [6, 6, 6, 6, 6, 6, 6]
+    ],
+    "mevToMrvProgression": [
+      [4],
+      [4, 4],
+      [5, 5, 4],
+      [6, 6, 5, 2],
+      [6, 6, 6, 3, 2]
     ],
     "restPeriod": 2,
     "systemicallyFatiguing": true,
@@ -63,6 +78,7 @@
       [4, 4, 4, 4, 4, 4, 4],
       [0, 0, 0, 0, 0, 0, 0]
     ],
+    "mevToMrvProgression": [[2], [2, 3], [3, 4, 3], [3, 4, 4, 2]],
     "restPeriod": 1,
     "systemicallyFatiguing": false,
     "localSystemicFatigue": ["delts_rear", "delts_side", "delts_front"]
@@ -79,6 +95,13 @@
       [8, 16, 20, 25, 35, 35, 35],
       [6, 6, 6, 6, 6, 6, 6],
       [4, 4, 4, 4, 4, 4, 4]
+    ],
+    "mevToMrvProgression": [
+      [2],
+      [2, 2],
+      [2, 3, 2],
+      [3, 3, 3, 2],
+      [3, 3, 3, 3, 2]
     ],
     "restPeriod": 1,
     "systemicallyFatiguing": false,
@@ -97,6 +120,13 @@
       [6, 6, 6, 6, 6, 6, 6],
       [4, 4, 4, 4, 4, 4, 4]
     ],
+    "mevToMrvProgression": [
+      [4],
+      [4, 4],
+      [5, 5, 2],
+      [6, 6, 3, 2],
+      [6, 6, 4, 3, 2]
+    ],
     "restPeriod": 2,
     "systemicallyFatiguing": true,
     "localSystemicFatigue": ["triceps", "delts_front"]
@@ -113,6 +143,13 @@
       [9, 18, 22, 26, 30, 30, 30],
       [8, 8, 8, 8, 8, 8, 8],
       [6, 6, 6, 6, 6, 6, 6]
+    ],
+    "mevToMrvProgression": [
+      [4],
+      [4, 4],
+      [5, 5, 3],
+      [6, 6, 4, 1],
+      [6, 6, 5, 2, 1]
     ],
     "restPeriod": 2,
     "systemicallyFatiguing": true,
@@ -131,6 +168,7 @@
       [4, 4, 4, 4, 4, 4, 4],
       [3, 3, 3, 3, 3, 3, 3]
     ],
+    "mevToMrvProgression": [[2], [2, 3], [3, 4, 3], [3, 4, 4, 2]],
     "restPeriod": 2,
     "systemicallyFatiguing": true,
     "localSystemicFatigue": ["quads", "hamstrings"]
@@ -147,6 +185,13 @@
       [6, 12, 18, 25, 30, 30, 30],
       [0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0]
+    ],
+    "mevToMrvProgression": [
+      [2],
+      [2, 3],
+      [3, 4, 3],
+      [3, 4, 4, 2],
+      [4, 4, 4, 3, 2]
     ],
     "restPeriod": 2,
     "systemicallyFatiguing": true,
@@ -165,6 +210,7 @@
       [0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0]
     ],
+    "mevToMrvProgression": [[2], [2, 3], [3, 4, 3]],
     "restPeriod": 2,
     "systemicallyFatiguing": false,
     "localSystemicFatigue": ["chest"]
@@ -181,6 +227,13 @@
       [12, 25, 30, 35, 40, 40, 40],
       [8, 8, 8, 8, 8, 8, 8],
       [6, 6, 6, 6, 6, 6, 6]
+    ],
+    "mevToMrvProgression": [
+      [4],
+      [4, 4],
+      [5, 5, 4],
+      [6, 6, 5, 2],
+      [6, 6, 6, 3, 2]
     ],
     "restPeriod": 1,
     "frequency": "3-5",
@@ -200,6 +253,13 @@
       [6, 6, 6, 6, 6, 6, 6],
       [0, 0, 0, 0, 0, 0, 0]
     ],
+    "mevToMrvProgression": [
+      [3],
+      [3, 3],
+      [3, 3, 3],
+      [4, 4, 4, 3],
+      [5, 5, 5, 4, 3]
+    ],
     "restPeriod": 1,
     "systemicallyFatiguing": false,
     "localSystemicFatigue": ["back", "delts_side", "delts_front"]
@@ -217,6 +277,13 @@
       [8, 8, 8, 8, 8, 8, 8],
       [6, 6, 6, 6, 6, 6, 6]
     ],
+    "mevToMrvProgression": [
+      [2],
+      [2, 3],
+      [3, 4, 3],
+      [3, 4, 4, 2],
+      [4, 4, 4, 3, 2]
+    ],
     "restPeriod": 1,
     "systemicallyFatiguing": false,
     "localSystemicFatigue": ["hamstrings"]
@@ -233,6 +300,13 @@
       [8, 15, 20, 25, 25, 25, 25],
       [2, 2, 2, 2, 2, 2, 2],
       [0, 0, 0, 0, 0, 0, 0]
+    ],
+    "mevToMrvProgression": [
+      [2],
+      [2, 3],
+      [3, 4, 3],
+      [3, 4, 4, 2],
+      [4, 4, 4, 3, 2]
     ],
     "restPeriod": 1,
     "systemicallyFatiguing": false,

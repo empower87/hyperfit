@@ -1,6 +1,6 @@
 type TableCellProps = {
   head: string[];
-  body: string[] | number[][];
+  body: string[] | [string, number, number, number][];
 };
 
 function TH({ text }: { text: string }) {
@@ -46,7 +46,10 @@ export default function Microcycle({ head, body }: TableCellProps) {
                 {typeof each === "string"
                   ? each !== "" && <TD value={each} />
                   : each.map((ea) => {
-                      return each[0] > 0 && <TD value={ea} />;
+                      return (
+                        each[1] > 0 &&
+                        typeof ea !== "string" && <TD value={ea} />
+                      );
                     })}
               </tr>
             );

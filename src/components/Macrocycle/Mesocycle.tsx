@@ -37,21 +37,12 @@ const CELL_HEADS_WEEK_1 = ["Sets", "Reps", "Weight", "RiR"];
 const CELL_HEADS_WEEK_2PLUS = ["Sets", "Weight", "RiR"];
 
 function TableBody({ split }: { split: SessionType }) {
-  const filterSessionCells = split.sets.map((each) => {
+  const values = subtractSetsForMeso(split.sets);
+  const filterSessionCells = values[0].map((each) => {
     if (each[1] > 0) {
       return each[0];
     } else return "";
   });
-
-  const filterSessionNumberCellsWeek1 = split.sets.map((each) => {
-    return [each[1], 12, 100, 3];
-  });
-
-  const filterSessionNumberCellsWeek2Plus = split.sets.map((each) => {
-    return [each[1], 100, 3];
-  });
-
-  const values = subtractSetsForMeso(split.sets);
 
   return (
     <tr className="">
@@ -65,13 +56,45 @@ function TableBody({ split }: { split: SessionType }) {
   );
 }
 
+const splitMuscleSetsForExercises = (split: SessionType[]) => {
+  const newSplit = split.map((each) => {
+    let newSets: [string, number][] = [];
+    for (let i = 0; i < each.sets.length; i++) {
+      let totalSets = each.sets[i][1];
+      let muscle = each.sets[i][0];
+      if (totalSets === 6) {
+        newSets.push([muscle, 3]);
+        newSets.push([muscle, 3]);
+      } else if (totalSets === 7) {
+        newSets.push([muscle, 4]);
+        newSets.push([muscle, 3]);
+      } else if (totalSets === 8) {
+        newSets.push([muscle, 4]);
+        newSets.push([muscle, 4]);
+      } else if (totalSets === 9) {
+        newSets.push([muscle, 5]);
+        newSets.push([muscle, 4]);
+      } else if (totalSets === 10) {
+        newSets.push([muscle, 5]);
+        newSets.push([muscle, 5]);
+      } else {
+        newSets.push([muscle, totalSets]);
+      }
+    }
+
+    return { ...each, sets: newSets };
+  });
+  return newSplit;
+};
+
 export function MesocycleTable({ split }: MesocycleTableProps) {
+  const newplit = splitMuscleSetsForExercises(split);
   return (
     <div className="flex flex-col">
       <table className="m-1 border-collapse">
         <TableHeadColumns />
         <tbody className="">
-          {split.map((each) => {
+          {newplit.map((each) => {
             return <TableBody split={each} />;
           })}
         </tbody>
