@@ -140,12 +140,12 @@ export const TestTable = ({
 //  meso 1  |  wk 1  |  wk 2  |  wk 3  |  wk 4  |  deload
 //  =======================================================
 //  back    |   10   |   12   |   14   |   16   |
-//  chest   |    4   |    5   |   6    |   6    |
+//  delts_s |    8   |   10   |   12   |   14   |
 //  triceps |    8   |   10   |   12   |   14   |
+//  hams    |    5   |    6   |    7   |   8    |
+//  chest   |    4   |    5   |   6    |   6    |
 //  biceps  |    4   |    5   |   6    |   6    |
-//  delts   |    8   |   10   |   12   |   14   |
 //  quads   |    8   |   10   |   12   |   14   |
-//  hams    |        |        |        |        |
 //  calves  |        |        |        |        |
 
 //  meso 2  |  wk 1  |  wk 2  |  wk 3  |  wk 4  |  deload

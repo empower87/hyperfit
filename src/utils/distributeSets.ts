@@ -148,9 +148,7 @@ const distributeMRVAmongSessions = (
   full: number,
   rank: number
 ) => {
-  // const muscleObj = workouts.find((each) => each.name === muscle);
   const muscleData = getMuscleData(muscle);
-  // if (!muscleObj) return { primarySessions: [], fullSessions: [] };
   const { MRV, MAV, MEV, MV, frequency_max } = muscleData;
 
   const sessionsStringified =
@@ -560,7 +558,7 @@ const getLowerPosition = (list: MusclePriorityType[]) => {
   }
 };
 
-const getTrainingSplit = (
+export const getTrainingSplit = (
   list: MusclePriorityType[],
   sessions: number
 ): SessionSplitType[] => {
@@ -576,21 +574,40 @@ const getTrainingSplit = (
     case 5:
       switch (lowerRank) {
         case "MAX_MRV":
-          return ["lower", "lower", "lower", "lower", "full"];
+          return ["lower", "upper", "lower", "full", "lower"];
         case "FULL_MRV":
-          return ["upper", "lower", "full", "lower", "full"];
+          // const meso1 = ["lower", "upper", "lower", "full"];
+          // const meso2 = ["lower", "upper", "lower", "full"];
+          // const meso3 = ["lower", "upper", "lower", "full", "full"];
+
+          // return ["upper", "lower", "full", "lower", "full"];
+          return ["lower", "upper", "lower", "full", "full"];
         case "MRV":
-          return ["upper", "lower", "upper", "full", "full"];
+          // const meso1 = ["upper", "lower", "upper", "lower", "full"];
+          // const meso2 = ["upper", "lower", "upper", "lower", "full"];
+          // const meso3 = ["upper", "lower", "upper", "lower", "full"];
+
+          // return ["upper", "lower", "upper", "full", "full"];
+          return ["lower", "upper", "lower", "upper", "full"];
         case "LOW_MRV":
           return ["upper", "lower", "upper", "full", "full"];
         case "MEV":
-          return ["upper", "full", "upper", "full", "upper"];
+          // const meso1 = ["upper", "lower", "upper", "full"];
+          // const meso2 = ["upper", "lower", "upper", "full"];
+          // const meso3 = ["upper", "lower", "upper", "full", "upper"];
+
+          return ["upper", "lower", "upper", "full", "upper"];
         default:
-          return ["upper", "upper", "full", "upper", "upper"];
+          // return ["upper", "upper", "full", "upper", "upper"];
+          return ["upper", "lower", "upper", "full", "upper"];
       }
     case 6:
       switch (lowerRank) {
         case "MAX_MRV":
+          const meso1 = ["lower", "lower", "lower", "lower", "full", "upper"];
+          const meso2 = ["lower", "lower", "lower", "lower", "full", "upper"];
+          const meso3 = ["lower", "lower", "lower", "lower", "full", "upper"];
+
           return ["lower", "lower", "lower", "lower", "full", "upper"];
         case "FULL_MRV":
           return ["upper", "lower", "full", "lower", "full", "upper"];
@@ -608,6 +625,16 @@ const getTrainingSplit = (
     default:
       return ["full"];
   }
+};
+
+const EXERCISE = {
+  muscle: "back",
+  day: 1,
+  exercise: "Bent Over Rows",
+  weight: 135,
+  rir: 3,
+  sets: 2,
+  reps: "5-10",
 };
 
 const splitSetsAmongSessions = ({
@@ -688,8 +715,11 @@ const splitSetsAmongSessions = ({
   return [_name, setsPerSession, totalSets];
 };
 
-export const featureTest = (list: MusclePriorityType[], sessions: number) => {
-  const split = getTrainingSplit(list, sessions);
+export const featureTest = (
+  list: MusclePriorityType[],
+  split: SessionSplitType[]
+) => {
+  // const split = getTrainingSplit(list, sessions);
   let sessionsMRV: SessionType[] = [];
 
   const SESSION: SessionType = {
@@ -700,7 +730,7 @@ export const featureTest = (list: MusclePriorityType[], sessions: number) => {
     split: "full",
   };
 
-  for (let i = 0; i < sessions; i++) {
+  for (let i = 0; i < split.length; i++) {
     sessionsMRV.push({
       ...SESSION,
       day: i + 1,

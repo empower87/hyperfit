@@ -11,9 +11,13 @@ import {
   Droppable,
   DroppableProps,
 } from "react-beautiful-dnd";
-import { featureTest } from "src/utils/distributeSets";
+import {
+  SessionSplitType,
+  featureTest,
+  getTrainingSplit,
+} from "src/utils/distributeSets";
 import { MEV_RANK, MRV_RANK } from "~/constants/prioritizeRanks";
-import { LOWER_MUSCLES } from "~/constants/workoutSplits";
+import { UPPER_MUSCLES } from "~/constants/workoutSplits";
 import { MusclePriorityType, SessionType } from "~/pages";
 import { getMuscleData } from "~/utils/getMuscleData";
 
@@ -51,12 +55,57 @@ export default function PrioritizeFocus({
     ...musclePriority,
   ]);
 
-  const updateMuscleListSets = (items: MusclePriorityType[]) => {
+  const getMesoProgression = (sessions: number) => {
+    switch (sessions) {
+      case 5:
+        return [3, 4, 5];
+      case 4:
+        return [2, 3, 4];
+
+      case 3:
+        return [2, 3, 3];
+
+      case 2:
+        return [1, 2, 2];
+
+      case 1:
+        return [1, 1, 1];
+
+      default:
+        return [0, 0, 0];
+    }
+  };
+
+  const updateMuscleListSets = (
+    items: MusclePriorityType[],
+    split: SessionSplitType[]
+  ) => {
+    let upper = split.filter((each) => each !== "lower");
+    let lower = split.filter((each) => each !== "upper");
+
+    let sessions = lower.length;
     for (let i = 0; i < items.length; i++) {
       const muscleData = getMuscleData(items[i].muscle);
       const { featureMatrix } = muscleData;
 
       let rank = i < MRV_RANK ? 0 : i >= MRV_RANK && i < MEV_RANK ? 1 : 2;
+
+      if (UPPER_MUSCLES.includes(items[i].muscle)) {
+        sessions = upper.length;
+      }
+
+      if (i < MRV_RANK) {
+        items[i].mesoProgression = getMesoProgression(sessions);
+      } else if (i >= MRV_RANK && i < MEV_RANK) {
+        if (items[i].muscle !== "back" || items[i].muscle !== "quads") {
+          items[i].mesoProgression = [1, 2, 2];
+        } else {
+          items[i].mesoProgression = [2, 2, 3];
+        }
+      } else {
+        items[i].mesoProgression = [1, 1, 1];
+      }
+
       const sets = featureMatrix[rank];
 
       items[i].sets = sets;
@@ -65,12 +114,15 @@ export default function PrioritizeFocus({
   };
 
   useEffect(() => {
-    const getNewList = updateMuscleListSets(musclePriority);
+    const split = getTrainingSplit(newList, totalWorkouts);
+    const getNewList = updateMuscleListSets(musclePriority, split);
+    console.log(split, getNewList, "USE EFFECT IN PRIORITIZE FOCUS");
     setNewList(getNewList);
   }, [totalWorkouts, musclePriority]);
 
   useEffect(() => {
-    const testSplit = featureTest(newList, totalWorkouts);
+    const split = getTrainingSplit(newList, totalWorkouts);
+    const testSplit = featureTest(newList, split);
     setWorkoutSplit(testSplit);
   }, [newList, totalWorkouts]);
 
@@ -81,12 +133,12 @@ export default function PrioritizeFocus({
       const [removed] = items.splice(result.source.index, 1);
       items.splice(result.destination.index, 0, removed);
 
-      const split = handleUpperLowerSplit(items, totalWorkouts);
-      const newerList = updateMuscleListSets(items);
+      const split = getTrainingSplit(items, totalWorkouts);
+      const newerList = updateMuscleListSets(items, split);
       console.log(items, split, "OK LETS SEE WHAT ITS DOING");
       setMusclePriority(newerList);
 
-      const testSplit = featureTest(items, totalWorkouts);
+      const testSplit = featureTest(items, split);
       setWorkoutSplit(testSplit);
     },
     [newList, totalWorkouts]
@@ -165,84 +217,4 @@ const Muscle = ({
       <div className="font-bold">{sets}</div>
     </li>
   );
-};
-
-const getLowerPosition = (list: MusclePriorityType[]) => {
-  let top = 0;
-  let bottom = 0;
-
-  for (let i = 0; i < list.length; i++) {
-    if (i < 4) {
-      if (LOWER_MUSCLES.includes(list[i].muscle)) {
-        top++;
-      }
-    }
-
-    if (i >= list.length - 4) {
-      if (LOWER_MUSCLES.includes(list[i].muscle)) {
-        bottom++;
-      }
-    }
-  }
-
-  if (top === 3) {
-    return "top";
-  }
-  if (bottom === 3) {
-    return "bottom";
-  }
-  return "mid";
-};
-
-export const handleUpperLowerSplit = (
-  list: MusclePriorityType[],
-  sessions: number
-) => {
-  const lowerPriority = getLowerPosition(list);
-  console.log(
-    lowerPriority,
-    "WHAT IS THIS VALUE IN HANDLE UPPER LOWER SPLIT??"
-  );
-  switch (sessions) {
-    case 2:
-      return [1, 1];
-    case 3:
-      if (lowerPriority === "top") {
-        return [1, 2];
-      } else return [2, 1];
-    case 4:
-      if (lowerPriority === "top") {
-        return [1, 3];
-      } else if (lowerPriority === "bottom") {
-        return [3, 1];
-      } else {
-        return [2, 2];
-      }
-    case 5:
-      if (lowerPriority === "top") {
-        return [2, 3];
-      } else if (lowerPriority === "bottom") {
-        return [4, 1];
-      } else {
-        return [3, 2];
-      }
-    case 6:
-      if (lowerPriority === "top") {
-        return [3, 3];
-      } else if (lowerPriority === "bottom") {
-        return [5, 1];
-      } else {
-        return [4, 2];
-      }
-    case 7:
-      if (lowerPriority === "top") {
-        return [4, 3];
-      } else if (lowerPriority === "bottom") {
-        return [5, 2];
-      } else {
-        return [4, 3];
-      }
-    default:
-      return [1, 0];
-  }
 };

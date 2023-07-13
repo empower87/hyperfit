@@ -19,6 +19,7 @@
       [3, 3, 3, 2],
       [3, 3, 3, 3, 2]
     ],
+    "mvToMevProgression": [[3], [2, 2], [2, 2, 1]],
     "restPeriod": 1,
     "systemicallyFatiguing": false,
     "localSystemicFatigue": ["back"]
@@ -37,6 +38,7 @@
       [0, 0, 0, 0, 0, 0, 0]
     ],
     "mevToMrvProgression": [[2], [2, 3], [3, 4, 3], [3, 4, 4, 2]],
+    "mvToMevProgression": [[3], [2, 2], [2, 2, 2]],
     "restPeriod": 1,
     "systemicallyFatiguing": false,
     "localSystemicFatigue": []
@@ -61,6 +63,7 @@
       [6, 6, 5, 2],
       [6, 6, 6, 3, 2]
     ],
+    "mvToMevProgression": [[6], [4, 3], [4, 3, 1]],
     "restPeriod": 2,
     "systemicallyFatiguing": true,
     "localSystemicFatigue": ["biceps"]
@@ -78,7 +81,14 @@
       [4, 4, 4, 4, 4, 4, 4],
       [0, 0, 0, 0, 0, 0, 0]
     ],
-    "mevToMrvProgression": [[2], [2, 3], [3, 4, 3], [3, 4, 4, 2]],
+    "mevToMrvProgression": [
+      [3],
+      [2, 3],
+      [3, 4, 3],
+      [3, 4, 4, 2],
+      [4, 4, 4, 3, 1]
+    ],
+    "mvToMevProgression": [[2], [2, 1], [2, 1, 1]],
     "restPeriod": 1,
     "systemicallyFatiguing": false,
     "localSystemicFatigue": ["delts_rear", "delts_side", "delts_front"]
@@ -103,6 +113,7 @@
       [3, 3, 3, 2],
       [3, 3, 3, 3, 2]
     ],
+    "mvToMevProgression": [[3], [2, 2], [2, 2, 1]],
     "restPeriod": 1,
     "systemicallyFatiguing": false,
     "localSystemicFatigue": ["chest"]
@@ -127,6 +138,7 @@
       [6, 6, 3, 2],
       [6, 6, 4, 3, 2]
     ],
+    "mvToMevProgression": [[3], [2, 2], [2, 2, 1]],
     "restPeriod": 2,
     "systemicallyFatiguing": true,
     "localSystemicFatigue": ["triceps", "delts_front"]
@@ -151,6 +163,7 @@
       [6, 6, 4, 1],
       [6, 6, 5, 2, 1]
     ],
+    "mvToMevProgression": [[4], [3, 2], [3, 3, 1]],
     "restPeriod": 2,
     "systemicallyFatiguing": true,
     "localSystemicFatigue": ["hamstrings", "glutes"]
@@ -169,6 +182,7 @@
       [3, 3, 3, 3, 3, 3, 3]
     ],
     "mevToMrvProgression": [[2], [2, 3], [3, 4, 3], [3, 4, 4, 2]],
+    "mvToMevProgression": [[3], [2, 1], [2, 1, 1]],
     "restPeriod": 2,
     "systemicallyFatiguing": true,
     "localSystemicFatigue": ["quads", "hamstrings"]
@@ -193,6 +207,7 @@
       [3, 4, 4, 2],
       [4, 4, 4, 3, 2]
     ],
+    "mvToMevProgression": [[0], [0, 0], [0, 0, 0]],
     "restPeriod": 2,
     "systemicallyFatiguing": true,
     "localSystemicFatigue": ["hamstrings", "quads"]
@@ -211,6 +226,7 @@
       [0, 0, 0, 0, 0, 0, 0]
     ],
     "mevToMrvProgression": [[2], [2, 3], [3, 4, 3]],
+    "mvToMevProgression": [[0], [0, 0], [0, 0, 0]],
     "restPeriod": 2,
     "systemicallyFatiguing": false,
     "localSystemicFatigue": ["chest"]
@@ -235,6 +251,7 @@
       [6, 6, 5, 2],
       [6, 6, 6, 3, 2]
     ],
+    "mvToMevProgression": [[3], [3, 2], [3, 3, 1]],
     "restPeriod": 1,
     "frequency": "3-5",
     "systemicallyFatiguing": false,
@@ -260,6 +277,7 @@
       [4, 4, 4, 3],
       [5, 5, 5, 4, 3]
     ],
+    "mvToMevProgression": [[3], [2, 2], [2, 2, 2]],
     "restPeriod": 1,
     "systemicallyFatiguing": false,
     "localSystemicFatigue": ["back", "delts_side", "delts_front"]
@@ -284,6 +302,7 @@
       [3, 4, 4, 2],
       [4, 4, 4, 3, 2]
     ],
+    "mvToMevProgression": [[3], [3, 2], [3, 3, 1]],
     "restPeriod": 1,
     "systemicallyFatiguing": false,
     "localSystemicFatigue": ["hamstrings"]
@@ -308,6 +327,7 @@
       [3, 4, 4, 2],
       [4, 4, 4, 3, 2]
     ],
+    "mvToMevProgression": [[0], [1, 0], [1, 1, 0]],
     "restPeriod": 1,
     "systemicallyFatiguing": false,
     "localSystemicFatigue": ["biceps"]

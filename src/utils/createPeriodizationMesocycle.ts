@@ -8,7 +8,7 @@ const progressMEVmeso1 = (name: string) => {
 };
 
 export const subtractSetsForMeso = (sets: [string, number][]) => {
-  // let count = setsToSubtact
+  // let count = setsToSubtract
 
   let total = 5;
   let weight = 250;
@@ -58,8 +58,6 @@ export const subtractSetsForMeso = (sets: [string, number][]) => {
       return [muscle, 4, weight, 5];
     }
   };
-
-  const checkPreviousIndex = () => {};
 
   while (total > 0) {
     let index = total - 1;
@@ -122,3 +120,66 @@ export const subtractSetsForMeso = (sets: [string, number][]) => {
   );
   return tableMatrix;
 };
+
+const finalMeso = () => {};
+
+//  meso 1  |  wk 1  |  wk 2  |  wk 3  |  wk 4  |  deload
+//  =======================================================
+//  back    |    8   |   10   |   12   |   14   |
+//  delts_s |    8   |   10   |   12   |   14   |
+//  triceps |    4   |    6   |    8   |   10   |
+//  hams    |    5   |    6   |    7   |    8   |
+
+//  quads   |    6   |    7   |    7   |    8   |
+//  chest   |    3   |    4   |    5   |    6   |
+//  biceps  |    3   |    4   |    5   |    6   |
+//  calves  |    6   |    7   |    7   |    8   |
+//  traps   |    2   |    3   |    3   |    4   |
+
+//  meso 2  |  wk 1  |  wk 2  |  wk 3  |  wk 4  |  deload
+//  =======================================================
+//  back    |   14   |   17   |   20   |   23   |
+//  delts_s |   14   |   17   |   20   |   23   |
+//  triceps |    7   |    9   |   11   |   12   |
+//  hams    |    7   |    9   |   11   |   12   |
+
+//  quads   |    7   |    7   |    8   |    8   |
+//  chest   |    4   |    5   |    6   |    6   |
+//  biceps  |    4   |    5   |    6   |    6   |
+//  calves  |    7   |    7   |    8   |    8   |
+//  traps   |    3   |    3   |    4   |    4   |
+
+//  meso 2  |  wk 1  |  wk 2  |  wk 3  |  wk 4  |  deload
+//  =======================================================
+//  back    |   19   |   22   |   26   |   30   |
+//  delts_s |   19   |   22   |   26   |   30   |
+//  triceps |   11   |   14   |   17   |   20   |
+//  hams    |   11   |   14   |   17   |   20   |
+
+//  quads   |    7   |    8   |    8   |    8   |
+//  chest   |    5   |    6   |    6   |    6   |
+//  biceps  |    5   |    6   |    6   |    6   |
+//  calves  |    7   |    8   |    8   |    8   |
+//  traps   |    3   |    4   |    4   |    4   |
+
+//  meso 2  |  wk 1  |  wk 2  |  wk 3  |  wk 4  |  deload
+//  =======================================================
+//  back    |   14   |   17   |   20   |   23   |
+//  chest   |   5    |   5    |    6   |    6   |
+//  triceps |   12   |   14   |   15   |   16   |
+//  biceps  |   5    |   5    |    6   |    6   |
+//  delts   |   14   |   17   |   20   |   23   |
+//  quads   |   14   |   16   |   16   |   18   |
+//  hams    |        |        |        |        |
+//  calves  |        |        |        |        |
+
+//  meso 3  |  wk 1  |  wk 2  |  wk 3  |  wk 4  |  deload
+//  =======================================================
+//  back    |   22   |   23   |   24   |   25   |
+//  chest   |    6   |    6   |    6   |    6   |
+//  triceps |   16   |   18   |   18   |   20   |
+//  biceps  |    6   |    6   |    6   |    6   |
+//  delts   |   20   |   23   |   25   |   27   |
+//  quads   |   18   |   20   |   20   |   22   |
+//  hams    |        |        |        |        |
+//  calves  |        |        |        |        |

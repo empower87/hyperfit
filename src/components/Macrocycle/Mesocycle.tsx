@@ -36,6 +36,18 @@ function TableHeadColumns() {
 const CELL_HEADS_WEEK_1 = ["Sets", "Reps", "Weight", "RiR"];
 const CELL_HEADS_WEEK_2PLUS = ["Sets", "Weight", "RiR"];
 
+const SETS = {
+  name: "back",
+  totalVolume: 30,
+  totalSessions: 4,
+  mesocyles: [
+    [4, 4],
+    [5, 5, 4],
+    [6, 6, 5, 2],
+    [6, 6, 6, 3, 2],
+  ],
+};
+
 function TableBody({ split }: { split: SessionType }) {
   const values = subtractSetsForMeso(split.sets);
   const filterSessionCells = values[0].map((each) => {
@@ -88,13 +100,13 @@ const splitMuscleSetsForExercises = (split: SessionType[]) => {
 };
 
 export function MesocycleTable({ split }: MesocycleTableProps) {
-  const newplit = splitMuscleSetsForExercises(split);
+  const newSplit = splitMuscleSetsForExercises(split);
   return (
     <div className="flex flex-col">
       <table className="m-1 border-collapse">
         <TableHeadColumns />
         <tbody className="">
-          {newplit.map((each) => {
+          {newSplit.map((each) => {
             return <TableBody split={each} />;
           })}
         </tbody>
