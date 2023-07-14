@@ -107,7 +107,7 @@ export function MesocycleTable({ split }: MesocycleTableProps) {
         <TableHeadColumns />
         <tbody className="">
           {newSplit.map((each) => {
-            return <TableBody split={each} />;
+            return <TableBody key={`${each.day}`} split={each} />;
           })}
         </tbody>
       </table>

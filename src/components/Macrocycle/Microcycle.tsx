@@ -34,21 +34,23 @@ export default function Microcycle({ head, body }: TableCellProps) {
         <thead>
           <tr className="leading-3">
             {head.map((each) => {
-              return <TH text={each} />;
+              return <TH key={`${each}_th`} text={each} />;
             })}
           </tr>
         </thead>
 
         <tbody>
-          {body.map((each) => {
+          {body.map((each, index) => {
             return (
-              <tr className="leading-none">
+              <tr key={`${each}_${index}_tr`} className="leading-none">
                 {typeof each === "string"
                   ? each !== "" && <TD value={each} />
-                  : each.map((ea) => {
+                  : each.map((ea, i) => {
                       return (
                         each[1] > 0 &&
-                        typeof ea !== "string" && <TD value={ea} />
+                        typeof ea !== "string" && (
+                          <TD key={`${ea}_${i}_td_num`} value={ea} />
+                        )
                       );
                     })}
               </tr>

@@ -61,16 +61,12 @@ export default function PrioritizeFocus({
         return [3, 4, 5];
       case 4:
         return [2, 3, 4];
-
       case 3:
         return [2, 3, 3];
-
       case 2:
         return [1, 2, 2];
-
       case 1:
         return [1, 1, 1];
-
       default:
         return [0, 0, 0];
     }
@@ -83,27 +79,39 @@ export default function PrioritizeFocus({
     let upper = split.filter((each) => each !== "lower");
     let lower = split.filter((each) => each !== "upper");
 
-    let sessions = lower.length;
     for (let i = 0; i < items.length; i++) {
       const muscleData = getMuscleData(items[i].muscle);
       const { featureMatrix } = muscleData;
 
       let rank = i < MRV_RANK ? 0 : i >= MRV_RANK && i < MEV_RANK ? 1 : 2;
 
+      let sessions = lower.length;
       if (UPPER_MUSCLES.includes(items[i].muscle)) {
         sessions = upper.length;
       }
 
-      if (i < MRV_RANK) {
+      console.log(upper, lower, sessions, muscleData.name, "OK WHAT??");
+
+      if (rank === 0) {
         items[i].mesoProgression = getMesoProgression(sessions);
-      } else if (i >= MRV_RANK && i < MEV_RANK) {
-        if (items[i].muscle !== "back" || items[i].muscle !== "quads") {
-          items[i].mesoProgression = [1, 2, 2];
-        } else {
-          items[i].mesoProgression = [2, 2, 3];
+      } else if (rank === 1) {
+        if (sessions <= 2) items[i].mesoProgression = [1, 2, 2];
+        else if (
+          items[i].muscle === "back" ||
+          items[i].muscle === "quads" ||
+          items[i].muscle === "calves"
+        ) {
+          items[i].mesoProgression = [2, 3, 3];
         }
       } else {
-        items[i].mesoProgression = [1, 1, 1];
+        if (sessions <= 1) items[i].mesoProgression = [1, 1, 1];
+        else if (
+          items[i].muscle === "back" ||
+          items[i].muscle === "quads" ||
+          items[i].muscle === "calves"
+        ) {
+          items[i].mesoProgression = [1, 2, 2];
+        }
       }
 
       const sets = featureMatrix[rank];
@@ -118,7 +126,7 @@ export default function PrioritizeFocus({
     const getNewList = updateMuscleListSets(musclePriority, split);
     console.log(split, getNewList, "USE EFFECT IN PRIORITIZE FOCUS");
     setNewList(getNewList);
-  }, [totalWorkouts, musclePriority]);
+  }, [totalWorkouts, musclePriority, newList]);
 
   useEffect(() => {
     const split = getTrainingSplit(newList, totalWorkouts);
@@ -135,7 +143,6 @@ export default function PrioritizeFocus({
 
       const split = getTrainingSplit(items, totalWorkouts);
       const newerList = updateMuscleListSets(items, split);
-      console.log(items, split, "OK LETS SEE WHAT ITS DOING");
       setMusclePriority(newerList);
 
       const testSplit = featureTest(items, split);

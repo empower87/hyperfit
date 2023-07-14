@@ -54,7 +54,7 @@ export const TestTable = ({
                   : "bg-purple-500";
               return (
                 <th
-                  key={`${each}_${index}`}
+                  key={`${each.day}_${index}`}
                   className={color + " px-2 text-sm text-white"}
                 >
                   {each.split}
@@ -101,7 +101,7 @@ export const TestTable = ({
                         </td>
                       );
                     } else {
-                      return <></>;
+                      return null;
                     }
                   });
                 })}
