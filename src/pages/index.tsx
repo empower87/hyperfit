@@ -8,6 +8,7 @@ import PromptCardLayout, {
   FrequencySelect,
 } from "~/components/PromptCardLayout";
 import Title from "~/components/Title";
+import { ExerciseType } from "~/utils/distributeSets";
 
 export type MusclePriorityType = {
   id: string;
@@ -126,6 +127,7 @@ export type SessionType = {
   totalSets: number;
   maxSets: number;
   split: "full" | "upper" | "lower";
+  testSets: ExerciseType[][];
 };
 
 const Home: NextPage = () => {
@@ -167,7 +169,10 @@ const Home: NextPage = () => {
           <h2 className="ml-1 p-1 text-white">Training Program</h2>
         </div>
 
-        <Macrocycle workoutSplit={workoutSplit} />
+        <Macrocycle
+          workoutSplit={workoutSplit}
+          priorityRanking={musclePriority}
+        />
       </div>
     </>
   );

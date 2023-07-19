@@ -534,6 +534,7 @@ const getLowerPosition = (list: MusclePriorityType[]) => {
   // 1, 1 = LOW_MRV
   // 0, 1 = MEV
   // 0 = MV
+
   switch (priority[1]) {
     case 4:
       return "MAX_MRV";
@@ -728,6 +729,7 @@ export const featureTest = (
     totalSets: 0,
     maxSets: 30,
     split: "full",
+    testSets: [],
   };
 
   for (let i = 0; i < split.length; i++) {
@@ -743,6 +745,7 @@ export const featureTest = (
 
   for (let j = 0; j < list.length; j++) {
     let muscle_name = list[j].muscle;
+    const gotIt = getIt(j, list[j].muscle, list[j].mesoProgression);
 
     const oneLine = splitSetsAmongSessions({
       split: sessionsMRV,
@@ -756,4 +759,161 @@ export const featureTest = (
   }
 
   return sessionsMRV;
+};
+
+type MuscleTypeForTable = {
+  name: string;
+  sessions: number;
+  exercises: ExerciseType[][];
+};
+
+export type ExerciseType = {
+  exercise: string;
+  sets: number;
+  reps: number;
+  weight: number;
+  rir: number;
+};
+
+const exercise: ExerciseType = {
+  exercise: "back",
+  sets: 2,
+  reps: 10,
+  weight: 100,
+  rir: 3,
+};
+
+const getIt = (rank: number, name: string, mesoProgress: number[]) => {
+  const data = getMuscleData(name);
+  if (!data) return;
+  const s = rank < MRV_RANK ? 0 : rank >= MRV_RANK && rank < MEV_RANK ? 1 : 2;
+  let mesoProgressIndex = mesoProgress[2] - 1 >= 0 ? mesoProgress[2] - 1 : 0;
+
+  let m: MuscleTypeForTable = {
+    name: data.name,
+    sessions: 0,
+    exercises: [],
+  };
+
+  switch (s) {
+    case 0:
+      let FULL_MRV = data.mevToMrvProgression[mesoProgressIndex];
+      m.sessions = FULL_MRV.length;
+
+      for (let i = 0; i < FULL_MRV.length; i++) {
+        let exerciseList: ExerciseType[] = [];
+
+        if (FULL_MRV[i] >= 4) {
+          exerciseList.push({ ...exercise, exercise: `${data.name}_${i + 1}` });
+          exerciseList.push({
+            ...exercise,
+            exercise: `${data.name}_${i + 1.5}`,
+          });
+        } else {
+          exerciseList.push({ ...exercise, exercise: `${data.name}_${i + 1}` });
+        }
+        m.exercises.push(exerciseList);
+      }
+      break;
+    case 1:
+      let FULL_MEV = data.mvToMevProgression[mesoProgressIndex];
+      m.sessions = FULL_MEV.length;
+
+      for (let i = 0; i < FULL_MEV.length; i++) {
+        let exerciseList: ExerciseType[] = [];
+
+        if (FULL_MEV[i] >= 4) {
+          exerciseList.push({ ...exercise, exercise: `${data.name}_${i + 1}` });
+          exerciseList.push({
+            ...exercise,
+            exercise: `${data.name}_${i + 1.5}`,
+          });
+        } else {
+          exerciseList.push({ ...exercise, exercise: `${data.name}_${i + 1}` });
+        }
+
+        m.exercises.push(exerciseList);
+      }
+      break;
+    default:
+      let FULL_MV = data.MV;
+      let exerciseList: ExerciseType[] = [];
+      if (FULL_MV > 0) {
+        m.sessions = 1;
+
+        if (FULL_MV >= 6) {
+          exerciseList.push({ ...exercise, exercise: `${data.name}_${1}` });
+          exerciseList.push({
+            ...exercise,
+            exercise: `${data.name}_${1.5}`,
+          });
+        } else {
+          exerciseList.push({ ...exercise, exercise: `${data.name}_${1}` });
+        }
+        m.exercises.push(exerciseList);
+      }
+      break;
+  }
+  console.log(m, "what does this clusterfuck look like??");
+  return m;
+};
+
+export const setUpMesoOne = (
+  split: SessionType[],
+  list: MusclePriorityType[]
+) => {
+  let newList: MuscleTypeForTable[] = [];
+  let getUpperSessions = split.filter((each) => each.split === "upper");
+  let getLowerSessions = split.filter((each) => each.split === "lower");
+  let getFullSessions = split.filter((each) => each.split === "full");
+
+  let upper = getUpperSessions.length;
+  let lower = getLowerSessions.length;
+  let full = getFullSessions.length;
+
+  let meso1: SessionType[] = [];
+  let meso2: SessionType[] = [];
+  let meso3: SessionType[] = [];
+
+  for (let i = 0; i < list.length; i++) {
+    const gotIt = getIt(i, list[i].muscle, list[i].mesoProgression);
+    if (gotIt) {
+      let newMeso1 = doIt([...split], list[i].mesoProgression[0], { ...gotIt });
+      let newMeso2 = doIt([...split], list[i].mesoProgression[1], { ...gotIt });
+      let newMeso3 = doIt([...split], list[i].mesoProgression[2], { ...gotIt });
+      meso1 = newMeso1;
+      meso2 = newMeso2;
+      meso3 = newMeso3;
+    }
+  }
+  console.log(meso1, meso2, meso3, "OH BOY HERE COMES A LOT OF DATA!!");
+  return [meso1, meso2, meso3];
+};
+
+const doIt = (
+  split: SessionType[],
+  totalSessions: number,
+  obj: MuscleTypeForTable
+) => {
+  let decrement = totalSessions;
+  let iterator = 0;
+
+  for (let i = 0; i < split.length; i++) {
+    if (decrement > 0) {
+      if (UPPER_MUSCLES.includes(obj.name)) {
+        if (split[i].split === "upper" || split[i].split === "full") {
+          split[i].testSets.push(obj.exercises[iterator]);
+          iterator++;
+          decrement--;
+        }
+      } else {
+        if (split[i].split === "lower" || split[i].split === "full") {
+          split[i].testSets.push(obj.exercises[iterator]);
+          iterator++;
+          decrement--;
+        }
+      }
+    }
+  }
+  return split;
 };

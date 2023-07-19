@@ -6,9 +6,6 @@ import Microcycle from "./Microcycle";
 type MesocycleTableProps = {
   split: SessionType[];
 };
-type MicrocycleTableProps = {
-  values: [string, number][];
-};
 
 function TableHeadColumns() {
   const ColumnHead = ({ text }: { text: string }) => {
@@ -35,18 +32,6 @@ function TableHeadColumns() {
 
 const CELL_HEADS_WEEK_1 = ["Sets", "Reps", "Weight", "RiR"];
 const CELL_HEADS_WEEK_2PLUS = ["Sets", "Weight", "RiR"];
-
-const SETS = {
-  name: "back",
-  totalVolume: 30,
-  totalSessions: 4,
-  mesocyles: [
-    [4, 4],
-    [5, 5, 4],
-    [6, 6, 5, 2],
-    [6, 6, 6, 3, 2],
-  ],
-};
 
 function TableBody({ split }: { split: SessionType }) {
   const values = subtractSetsForMeso(split.sets);
@@ -93,7 +78,6 @@ const splitMuscleSetsForExercises = (split: SessionType[]) => {
         newSets.push([muscle, totalSets]);
       }
     }
-
     return { ...each, sets: newSets };
   });
   return newSplit;
