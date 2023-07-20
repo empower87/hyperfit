@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { MusclePriorityType, SessionType } from "~/pages";
 import { setUpMesoOne } from "~/utils/distributeSets";
 import { MesocycleLayout, MesocycleTable } from "./Mesocycle";
@@ -14,11 +15,20 @@ export default function Macrocycle({
   workoutSplit,
   priorityRanking,
 }: MacrocycleProps) {
-  const list = setUpMesoOne(workoutSplit, priorityRanking);
+  const [state, setState] = useState<SessionType[][]>([]);
+
+  useEffect(() => {
+    // const meso1 = ugh([...workoutSplit], priorityRanking, 0);
+    // const meso2 = ugh([...workoutSplit], priorityRanking, 1);
+    // const meso3 = ugh([...workoutSplit], priorityRanking, 2);
+    // console.log(meso1, meso2, meso3, "OH BOY HERE COMES A LOT OF DATA!!");
+    const list = setUpMesoOne(workoutSplit, priorityRanking);
+    setState(list);
+  }, [workoutSplit, priorityRanking]);
 
   return (
     <div className="flex w-3/4 flex-wrap justify-center">
-      {list.map((each, index) => {
+      {state.map((each, index) => {
         return (
           <MesocycleLayout
             key={`${index}_mesocycles`}

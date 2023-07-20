@@ -93,30 +93,41 @@ export default function PrioritizeFocus({
       console.log(upper, lower, sessions, muscleData.name, "OK WHAT??");
 
       if (rank === 0) {
-        items[i].mesoProgression = getMesoProgression(sessions);
+        let prog = getMesoProgression(sessions);
+        items[i] = { ...items[i], mesoProgression: prog };
+        // items[i].mesoProgression = getMesoProgression(sessions);
       } else if (rank === 1) {
-        if (sessions <= 2) items[i].mesoProgression = [1, 2, 2];
+        if (sessions <= 2)
+          items[i] = { ...items[i], mesoProgression: [1, 2, 2] };
         else if (
           items[i].muscle === "back" ||
           items[i].muscle === "quads" ||
           items[i].muscle === "calves"
         ) {
-          items[i].mesoProgression = [2, 3, 3];
+          // items[i].mesoProgression = [2, 3, 3];
+          items[i] = { ...items[i], mesoProgression: [2, 3, 3] };
+        } else {
+          items[i] = { ...items[i], mesoProgression: [1, 1, 1] };
         }
       } else {
-        if (sessions <= 1) items[i].mesoProgression = [1, 1, 1];
+        if (sessions <= 1)
+          items[i] = { ...items[i], mesoProgression: [1, 1, 1] };
         else if (
           items[i].muscle === "back" ||
           items[i].muscle === "quads" ||
           items[i].muscle === "calves"
         ) {
-          items[i].mesoProgression = [1, 2, 2];
+          items[i] = { ...items[i], mesoProgression: [1, 2, 2] };
+          // items[i].mesoProgression = [1, 2, 2];
+        } else {
+          items[i] = { ...items[i], mesoProgression: [1, 1, 1] };
         }
       }
 
       const sets = featureMatrix[rank];
 
-      items[i].sets = sets;
+      // items[i].sets = sets;
+      items[i] = { ...items[i], sets: sets };
     }
     return items;
   };

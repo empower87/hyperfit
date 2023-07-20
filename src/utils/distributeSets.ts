@@ -745,7 +745,6 @@ export const featureTest = (
 
   for (let j = 0; j < list.length; j++) {
     let muscle_name = list[j].muscle;
-    const gotIt = getIt(j, list[j].muscle, list[j].mesoProgression);
 
     const oneLine = splitSetsAmongSessions({
       split: sessionsMRV,
@@ -862,58 +861,65 @@ export const setUpMesoOne = (
   split: SessionType[],
   list: MusclePriorityType[]
 ) => {
-  let newList: MuscleTypeForTable[] = [];
-  let getUpperSessions = split.filter((each) => each.split === "upper");
-  let getLowerSessions = split.filter((each) => each.split === "lower");
-  let getFullSessions = split.filter((each) => each.split === "full");
+  let meso1 = ugh([...split], list, 0);
+  let meso2 = ugh([...split], list, 1);
+  let meso3 = ugh([...split], list, 2);
 
-  let upper = getUpperSessions.length;
-  let lower = getLowerSessions.length;
-  let full = getFullSessions.length;
-
-  let meso1: SessionType[] = [];
-  let meso2: SessionType[] = [];
-  let meso3: SessionType[] = [];
-
-  for (let i = 0; i < list.length; i++) {
-    const gotIt = getIt(i, list[i].muscle, list[i].mesoProgression);
-    if (gotIt) {
-      let newMeso1 = doIt([...split], list[i].mesoProgression[0], { ...gotIt });
-      let newMeso2 = doIt([...split], list[i].mesoProgression[1], { ...gotIt });
-      let newMeso3 = doIt([...split], list[i].mesoProgression[2], { ...gotIt });
-      meso1 = newMeso1;
-      meso2 = newMeso2;
-      meso3 = newMeso3;
-    }
-  }
   console.log(meso1, meso2, meso3, "OH BOY HERE COMES A LOT OF DATA!!");
   return [meso1, meso2, meso3];
 };
 
-const doIt = (
+export const ugh = (
   split: SessionType[],
-  totalSessions: number,
-  obj: MuscleTypeForTable
+  list: MusclePriorityType[],
+  mesoNum: number
 ) => {
-  let decrement = totalSessions;
-  let iterator = 0;
+  let meso = [...split];
 
-  for (let i = 0; i < split.length; i++) {
-    if (decrement > 0) {
-      if (UPPER_MUSCLES.includes(obj.name)) {
-        if (split[i].split === "upper" || split[i].split === "full") {
-          split[i].testSets.push(obj.exercises[iterator]);
-          iterator++;
-          decrement--;
-        }
-      } else {
-        if (split[i].split === "lower" || split[i].split === "full") {
-          split[i].testSets.push(obj.exercises[iterator]);
-          iterator++;
-          decrement--;
+  for (let i = 0; i < list.length; i++) {
+    console.log(list, "WTF MAN");
+    const gotIt = getIt(i, list[i].muscle, list[i].mesoProgression);
+    if (gotIt) {
+      let newMeso1 = doIt(split, list[i].mesoProgression, mesoNum, gotIt);
+
+      for (let j = 0; j < meso.length; j++) {
+        let sets = newMeso1[j];
+        if (typeof sets !== "number" && typeof sets !== "undefined") {
+          meso[j] = { ...meso[j], testSets: [...meso[j].testSets, sets] };
         }
       }
     }
   }
-  return split;
+
+  return meso;
+};
+
+const doIt = (
+  split: SessionType[],
+  prog: number[],
+  totalSessions: number,
+  obj: MuscleTypeForTable
+) => {
+  let decrement = prog[totalSessions];
+  let iterator = 0;
+  let sessions = "lower";
+  if (UPPER_MUSCLES.includes(obj.name)) {
+    sessions = "upper";
+  }
+
+  console.log(obj, prog, decrement, iterator, "PROBLEM PROBS HERE");
+  const arraylol = [];
+  let newSets = [...split];
+  for (let i = 0; i < newSets.length; i++) {
+    if (decrement <= 0) arraylol.push(0);
+    else if (newSets[i].split === sessions || newSets[i].split === "full") {
+      arraylol.push(obj.exercises[iterator]);
+      iterator++;
+      decrement--;
+    } else {
+      arraylol.push(0);
+    }
+  }
+
+  return arraylol;
 };
