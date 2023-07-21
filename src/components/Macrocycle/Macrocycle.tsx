@@ -18,10 +18,6 @@ export default function Macrocycle({
   const [state, setState] = useState<SessionType[][]>([]);
 
   useEffect(() => {
-    // const meso1 = ugh([...workoutSplit], priorityRanking, 0);
-    // const meso2 = ugh([...workoutSplit], priorityRanking, 1);
-    // const meso3 = ugh([...workoutSplit], priorityRanking, 2);
-    // console.log(meso1, meso2, meso3, "OH BOY HERE COMES A LOT OF DATA!!");
     const list = setUpMesoOne(workoutSplit, priorityRanking);
     setState(list);
   }, [workoutSplit, priorityRanking]);

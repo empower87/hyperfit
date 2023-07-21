@@ -1,6 +1,16 @@
+import { ExerciseType } from "~/utils/distributeSets";
+
 type TableCellProps = {
-  head: string[];
-  body: string[] | [string, number, number, number][];
+  head:
+    | "week 1"
+    | "week 2"
+    | "week 3"
+    | "week 4"
+    | "deload"
+    | "upper"
+    | "lower"
+    | "full";
+  body: ExerciseType[][];
 };
 
 function TH({ text }: { text: string }) {
@@ -28,33 +38,62 @@ function TD({ value }: { value: string | number }) {
 }
 
 export default function Microcycle({ head, body }: TableCellProps) {
+  const getCellHeads = (head: string) => {
+    const CELL_HEADS_WEEK_1 = ["Sets", "Reps", "Weight", "RiR"];
+    const CELL_HEADS_WEEK_2PLUS = ["Sets", "Weight", "RiR"];
+
+    switch (head) {
+      case "week 1":
+        return CELL_HEADS_WEEK_1;
+      case "week 2":
+        return CELL_HEADS_WEEK_2PLUS;
+      case "week 3":
+        return CELL_HEADS_WEEK_2PLUS;
+      case "week 4":
+        return CELL_HEADS_WEEK_2PLUS;
+      case "deload":
+        return CELL_HEADS_WEEK_2PLUS;
+      default:
+        return [head];
+    }
+  };
+
+  const getInnerCells = (head: string, values: ExerciseType) => {
+    const sessions = ["upper", "lower", "full"];
+    if (sessions.includes(head)) {
+      return [values.exercise];
+    } else if (head === "week 1") {
+      return [values.sets, values.reps, values.weight, values.rir];
+    } else {
+      return [values.sets, values.weight, values.rir];
+    }
+  };
+
+  const th_list = getCellHeads(head);
+
   return (
     <td className="pb-1 pt-1">
       <table className="w-full border-collapse">
         <thead>
           <tr className="leading-3">
-            {head.map((each) => {
-              return <TH key={`${each}_th`} text={each} />;
+            {th_list.map((each, index) => {
+              return <TH key={`${each}_${index}`} text={each} />;
             })}
           </tr>
         </thead>
 
         <tbody>
           {body.map((each, index) => {
-            return (
-              <tr key={`${each}_${index}_tr`} className="leading-none">
-                {typeof each === "string"
-                  ? each !== "" && <TD value={each} />
-                  : each.map((ea, i) => {
-                      return (
-                        each[1] > 0 &&
-                        typeof ea !== "string" && (
-                          <TD key={`${ea}_${i}_td_num`} value={ea} />
-                        )
-                      );
-                    })}
-              </tr>
-            );
+            return each.map((ea) => {
+              const cells = getInnerCells(head, ea);
+              return (
+                <tr key={`${ea.exercise}_${index}_tr`} className="leading-none">
+                  {cells.map((cell) => {
+                    return <TD key={`${cell}_cell`} value={cell} />;
+                  })}
+                </tr>
+              );
+            });
           })}
         </tbody>
       </table>

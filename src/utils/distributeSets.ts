@@ -768,6 +768,7 @@ type MuscleTypeForTable = {
 
 export type ExerciseType = {
   exercise: string;
+  group: string;
   sets: number;
   reps: number;
   weight: number;
@@ -775,7 +776,8 @@ export type ExerciseType = {
 };
 
 const exercise: ExerciseType = {
-  exercise: "back",
+  exercise: "Bent Over Rows",
+  group: "back",
   sets: 2,
   reps: 10,
   weight: 100,
