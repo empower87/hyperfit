@@ -769,6 +769,7 @@ type MuscleTypeForTable = {
 export type ExerciseType = {
   exercise: string;
   group: string;
+  rank: "MRV" | "MEV" | "MV";
   sets: number;
   reps: number;
   weight: number;
@@ -778,6 +779,7 @@ export type ExerciseType = {
 const exercise: ExerciseType = {
   exercise: "Bent Over Rows",
   group: "back",
+  rank: "MRV",
   sets: 2,
   reps: 10,
   weight: 100,
@@ -805,13 +807,22 @@ const getIt = (rank: number, name: string, mesoProgress: number[]) => {
         let exerciseList: ExerciseType[] = [];
 
         if (FULL_MRV[i] >= 4) {
-          exerciseList.push({ ...exercise, exercise: `${data.name}_${i + 1}` });
           exerciseList.push({
             ...exercise,
+            rank: "MRV",
+            exercise: `${data.name}_${i + 1}`,
+          });
+          exerciseList.push({
+            ...exercise,
+            rank: "MRV",
             exercise: `${data.name}_${i + 1.5}`,
           });
         } else {
-          exerciseList.push({ ...exercise, exercise: `${data.name}_${i + 1}` });
+          exerciseList.push({
+            ...exercise,
+            rank: "MRV",
+            exercise: `${data.name}_${i + 1}`,
+          });
         }
         m.exercises.push(exerciseList);
       }
@@ -824,13 +835,22 @@ const getIt = (rank: number, name: string, mesoProgress: number[]) => {
         let exerciseList: ExerciseType[] = [];
 
         if (FULL_MEV[i] >= 4) {
-          exerciseList.push({ ...exercise, exercise: `${data.name}_${i + 1}` });
           exerciseList.push({
             ...exercise,
+            rank: "MEV",
+            exercise: `${data.name}_${i + 1}`,
+          });
+          exerciseList.push({
+            ...exercise,
+            rank: "MEV",
             exercise: `${data.name}_${i + 1.5}`,
           });
         } else {
-          exerciseList.push({ ...exercise, exercise: `${data.name}_${i + 1}` });
+          exerciseList.push({
+            ...exercise,
+            rank: "MEV",
+            exercise: `${data.name}_${i + 1}`,
+          });
         }
 
         m.exercises.push(exerciseList);
@@ -843,13 +863,22 @@ const getIt = (rank: number, name: string, mesoProgress: number[]) => {
         m.sessions = 1;
 
         if (FULL_MV >= 6) {
-          exerciseList.push({ ...exercise, exercise: `${data.name}_${1}` });
           exerciseList.push({
             ...exercise,
+            rank: "MV",
+            exercise: `${data.name}_${1}`,
+          });
+          exerciseList.push({
+            ...exercise,
+            rank: "MV",
             exercise: `${data.name}_${1.5}`,
           });
         } else {
-          exerciseList.push({ ...exercise, exercise: `${data.name}_${1}` });
+          exerciseList.push({
+            ...exercise,
+            rank: "MV",
+            exercise: `${data.name}_${1}`,
+          });
         }
         m.exercises.push(exerciseList);
       }
@@ -905,23 +934,23 @@ const doIt = (
   let decrement = prog[totalSessions];
   let iterator = 0;
   let sessions = "lower";
+
   if (UPPER_MUSCLES.includes(obj.name)) {
     sessions = "upper";
   }
 
-  console.log(obj, prog, decrement, iterator, "PROBLEM PROBS HERE");
-  const arraylol = [];
-  let newSets = [...split];
-  for (let i = 0; i < newSets.length; i++) {
-    if (decrement <= 0) arraylol.push(0);
-    else if (newSets[i].split === sessions || newSets[i].split === "full") {
-      arraylol.push(obj.exercises[iterator]);
+  const exercisesForSessions: Array<ExerciseType[] | number> = [];
+
+  for (let i = 0; i < split.length; i++) {
+    if (decrement <= 0) exercisesForSessions.push(0);
+    else if (split[i].split === sessions || split[i].split === "full") {
+      exercisesForSessions.push(obj.exercises[iterator]);
       iterator++;
       decrement--;
     } else {
-      arraylol.push(0);
+      exercisesForSessions.push(0);
     }
   }
 
-  return arraylol;
+  return exercisesForSessions;
 };

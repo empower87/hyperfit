@@ -9,7 +9,7 @@ type MesocycleTableProps = {
 function TableHeadColumns() {
   const ColumnHead = ({ text }: { text: string }) => {
     return (
-      <th className="bg-slate-500" style={{ fontSize: "13px" }}>
+      <th className="bg-slate-500 text-white" style={{ fontSize: "13px" }}>
         {text}
       </th>
     );
@@ -30,14 +30,44 @@ function TableHeadColumns() {
 }
 
 function TableBody({ split }: { split: SessionType }) {
+  const backgroundColor =
+    split.split === "upper"
+      ? "bg-blue-400"
+      : split.split === "lower"
+      ? "bg-red-400"
+      : "bg-purple-400";
   return (
     <tr className="">
-      <Microcycle head={split.split} body={split.testSets} />
-      <Microcycle head={"week 1"} body={split.testSets} />
-      <Microcycle head={"week 2"} body={split.testSets} />
-      <Microcycle head={"week 3"} body={split.testSets} />
-      <Microcycle head={"week 4"} body={split.testSets} />
-      <Microcycle head={"deload"} body={split.testSets} />
+      <Microcycle
+        head={split.split}
+        body={split.testSets}
+        bgColor={backgroundColor}
+      />
+      <Microcycle
+        head={"week 1"}
+        body={split.testSets}
+        bgColor={backgroundColor}
+      />
+      <Microcycle
+        head={"week 2"}
+        body={split.testSets}
+        bgColor={backgroundColor}
+      />
+      <Microcycle
+        head={"week 3"}
+        body={split.testSets}
+        bgColor={backgroundColor}
+      />
+      <Microcycle
+        head={"week 4"}
+        body={split.testSets}
+        bgColor={backgroundColor}
+      />
+      <Microcycle
+        head={"deload"}
+        body={split.testSets}
+        bgColor={backgroundColor}
+      />
     </tr>
   );
 }

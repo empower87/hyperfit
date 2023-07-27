@@ -11,33 +11,41 @@ type TableCellProps = {
     | "lower"
     | "full";
   body: ExerciseType[][];
+  bgColor: string;
 };
 
-function TH({ text }: { text: string }) {
-  const backgroundColor =
-    text === "upper"
-      ? "bg-blue-400"
-      : text === "lower"
-      ? "bg-red-400"
-      : text === "full"
-      ? "bg-purple-400"
-      : "bg-slate-400";
+function TH({ text, bgColor }: { text: string; bgColor: string }) {
   return (
-    <th className={backgroundColor + " text-white"} style={{ fontSize: "8px" }}>
+    <th
+      className={bgColor + " border-2 border-slate-700 text-white"}
+      style={{ fontSize: "8px" }}
+    >
       {text}
     </th>
   );
 }
 
-function TD({ value }: { value: string | number }) {
+function TD({
+  value,
+  rank,
+}: {
+  value: string | number;
+  rank: "MRV" | "MEV" | "MV";
+}) {
+  const bgColor =
+    rank === "MRV"
+      ? "bg-red-400"
+      : rank === "MEV"
+      ? "bg-orange-400"
+      : "bg-green-400";
   return (
-    <td className="border-2 pl-2 text-slate-600" style={{ fontSize: "10px" }}>
+    <td className={bgColor + " text-white"} style={{ fontSize: "10px" }}>
       {value}
     </td>
   );
 }
 
-export default function Microcycle({ head, body }: TableCellProps) {
+export default function Microcycle({ head, body, bgColor }: TableCellProps) {
   const getCellHeads = (head: string) => {
     const CELL_HEADS_WEEK_1 = ["Sets", "Reps", "Weight", "RiR"];
     const CELL_HEADS_WEEK_2PLUS = ["Sets", "Weight", "RiR"];
@@ -72,12 +80,14 @@ export default function Microcycle({ head, body }: TableCellProps) {
   const th_list = getCellHeads(head);
 
   return (
-    <td className="pb-1 pt-1">
-      <table className="w-full border-collapse">
-        <thead>
+    <td className="">
+      <table className="w-full border-collapse border-spacing-2">
+        <thead className="border-2 border-slate-700 ">
           <tr className="leading-3">
             {th_list.map((each, index) => {
-              return <TH key={`${each}_${index}`} text={each} />;
+              return (
+                <TH key={`${each}_${index}`} text={each} bgColor={bgColor} />
+              );
             })}
           </tr>
         </thead>
@@ -89,7 +99,9 @@ export default function Microcycle({ head, body }: TableCellProps) {
               return (
                 <tr key={`${ea.exercise}_${index}_tr`} className="leading-none">
                   {cells.map((cell) => {
-                    return <TD key={`${cell}_cell`} value={cell} />;
+                    return (
+                      <TD key={`${cell}_cell`} value={cell} rank={ea.rank} />
+                    );
                   })}
                 </tr>
               );
