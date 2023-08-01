@@ -2,35 +2,35 @@ import { MEV_RANK, MRV_RANK } from "src/constants/prioritizeRanks";
 
 import { MusclePriorityType, SessionType } from "~/pages";
 
-function TotalRow({ split }: { split: SessionType[] }) {
-  let total = 0;
+// function TotalRow({ split }: { split: SessionType[] }) {
+//   let total = 0;
 
-  return (
-    <tr>
-      <td className="bg-slate-500 px-1 text-sm font-bold text-white">Total</td>
-      {split.map((each, index) => {
-        let value = each.sets.reduce(
-          (acc: [string, number], current: [string, number]) => {
-            acc = [current[0], acc[1] + current[1]];
-            return acc;
-          }
-        );
+//   return (
+//     <tr>
+//       <td className="bg-slate-500 px-1 text-sm font-bold text-white">Total</td>
+//       {split.map((each, index) => {
+//         let value = each.sets?.reduce(
+//           (acc: [string, number], current: [string, number]) => {
+//             acc = [current[0], acc[1] + current[1]];
+//             return acc;
+//           }
+//         );
 
-        total += value[1];
+//         total += value[1];
 
-        return (
-          <td
-            key={`${each.split}_${index}total`}
-            className=" bg-slate-400 pl-2 text-xs"
-          >
-            {value[1]}
-          </td>
-        );
-      })}
-      <td className="bg-slate-300 px-1 text-xs">{total}</td>
-    </tr>
-  );
-}
+//         return (
+//           <td
+//             key={`${each.split}_${index}total`}
+//             className=" bg-slate-400 pl-2 text-xs"
+//           >
+//             {value[1]}
+//           </td>
+//         );
+//       })}
+//       <td className="bg-slate-300 px-1 text-xs">{total}</td>
+//     </tr>
+//   );
+// }
 
 export const TestTable = ({
   list,
@@ -110,7 +110,7 @@ export const TestTable = ({
             );
           })}
 
-          <TotalRow split={split} />
+          {/* <TotalRow split={split} /> */}
         </tbody>
       </table>
     </div>

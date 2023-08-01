@@ -78,9 +78,14 @@ export function MesocycleTable({ split }: MesocycleTableProps) {
       <table className="m-1 border-collapse">
         <TableHeadColumns />
         <tbody className="">
-          {split.map((each) => {
+          {split.map((each, index) => {
             if (each.testSets.length) {
-              return <TableBody key={`${each.day}`} split={each} />;
+              return (
+                <TableBody
+                  key={`${each.split}_${index}_tablebodymesocycle`}
+                  split={each}
+                />
+              );
             }
           })}
         </tbody>
