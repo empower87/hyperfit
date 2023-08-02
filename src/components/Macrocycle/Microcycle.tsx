@@ -31,9 +31,11 @@ function TH({ text, bgColor }: { text: string; bgColor: string }) {
 function TD({
   value,
   rank,
+  bottomBorder,
 }: {
   value: string | number;
   rank: "MRV" | "MEV" | "MV";
+  bottomBorder: boolean;
 }) {
   const bgColor =
     rank === "MRV"
@@ -41,8 +43,12 @@ function TD({
       : rank === "MEV"
       ? "bg-orange-400"
       : "bg-green-400";
+  const border = bottomBorder ? " border-b-2 border-slate-300" : "";
   return (
-    <td className={bgColor + " text-white"} style={{ fontSize: "10px" }}>
+    <td
+      className={bgColor + border + " text-white"}
+      style={{ fontSize: "10px", height: "25px" }}
+    >
       {value}
     </td>
   );
@@ -191,30 +197,42 @@ const TR = ({
   exercises: ExerciseType[];
   head: HeadType;
 }) => {
-  const getInnerCells = (head: string, values: ExerciseType) => {
-    const sessions = ["upper", "lower", "full"];
-    if (sessions.includes(head)) {
-      return [values.exercise];
-    } else if (head === "week 1") {
-      return [values.sets, values.reps, values.weight, values.rir];
-    } else {
-      return [values.sets, values.weight, values.rir];
-    }
-  };
-
   return (
     <>
-      {exercises.map((each) => {
-        const cellsa = getInnerCells(head, each);
-        console.log(cellsa, exercises, "this should always be an array");
+      {exercises.map((each, index) => {
+        const hasBorder = index === exercises.length - 1 ? true : false;
+        const sessions = ["upper", "lower", "full"];
 
-        return (
-          <tr className="leading-none">
-            {cellsa.map((ea, i) => {
-              return <TD key={`${ea}_tds_${i}`} value={ea} rank={each.rank} />;
-            })}
-          </tr>
-        );
+        if (sessions.includes(head)) {
+          return (
+            <tr className="leading-none">
+              <TD
+                value={`${each.exercise} -- ${each.group}`}
+                rank={each.rank}
+                bottomBorder={hasBorder}
+              />
+            </tr>
+          );
+        } else {
+          return (
+            <tr className="leading-none">
+              <TD value={each.sets} rank={each.rank} bottomBorder={hasBorder} />
+              {head === "week 1" && (
+                <TD
+                  value={each.reps}
+                  rank={each.rank}
+                  bottomBorder={hasBorder}
+                />
+              )}
+              <TD
+                value={each.weight}
+                rank={each.rank}
+                bottomBorder={hasBorder}
+              />
+              <TD value={each.rir} rank={each.rank} bottomBorder={hasBorder} />
+            </tr>
+          );
+        }
       })}
     </>
   );

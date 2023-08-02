@@ -21,7 +21,7 @@ export type ExerciseType = {
 };
 
 const exercise: ExerciseType = {
-  exercise: "Bent Over Rows",
+  exercise: "Triceps Extension (cable, single-arm)",
   group: "back",
   rank: "MRV",
   sets: 2,
@@ -35,9 +35,6 @@ const getIt = (rank: number, name: string, mesoProgress: number) => {
   if (!data) return;
   const s = rank < MRV_RANK ? 0 : rank >= MRV_RANK && rank < MEV_RANK ? 1 : 2;
   let mesoProgressIndex = mesoProgress - 1;
-
-  // let mesoProgressIndex = mesoProgress[2] - 1 >= 0 ? mesoProgress[2] - 1 : 0;
-
   let frequency_progression = [data.MV];
   let frequency_type: "MV" | "MEV" | "MRV" = "MV";
   let split_max = 4;
@@ -83,13 +80,15 @@ const getIt = (rank: number, name: string, mesoProgress: number) => {
           ...exercise,
           rank: frequency_type,
           sets: setOne,
-          exercise: `${data.name}_${i + 1}`,
+          group: data.name,
+          // exercise: `${data.name}_${i + 1}`,
         },
         {
           ...exercise,
           rank: frequency_type,
           sets: setTwo,
-          exercise: `${data.name}_${i + 1.5}`,
+          group: data.name,
+          // exercise: `${data.name}_${i + 1.5}`,
         }
       );
     } else {
@@ -97,7 +96,8 @@ const getIt = (rank: number, name: string, mesoProgress: number) => {
         ...exercise,
         rank: frequency_type,
         sets: frequency_progression[i],
-        exercise: `${data.name}_${i + 1}`,
+        group: data.name,
+        // exercise: `${data.name}_${i + 1}`,
       });
     }
 
