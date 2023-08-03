@@ -17,43 +17,6 @@ type TableCellProps = {
   bgColor: string;
 };
 
-function TH({ text, bgColor }: { text: string; bgColor: string }) {
-  return (
-    <th
-      className={bgColor + " border-2 border-slate-700 text-white"}
-      style={{ fontSize: "8px" }}
-    >
-      {text}
-    </th>
-  );
-}
-
-function TD({
-  value,
-  rank,
-  bottomBorder,
-}: {
-  value: string | number;
-  rank: "MRV" | "MEV" | "MV";
-  bottomBorder: boolean;
-}) {
-  const bgColor =
-    rank === "MRV"
-      ? "bg-red-400"
-      : rank === "MEV"
-      ? "bg-orange-400"
-      : "bg-green-400";
-  const border = bottomBorder ? " border-b-2 border-slate-300" : "";
-  return (
-    <td
-      className={bgColor + border + " text-white"}
-      style={{ fontSize: "10px", height: "25px" }}
-    >
-      {value}
-    </td>
-  );
-}
-
 function useMesocycleProgression(
   head: HeadType,
   exerciseList: ExerciseType[][]
@@ -105,7 +68,7 @@ function useMesocycleProgression(
   }, [exerciseList, head]);
 
   const progressWeeks = (head: HeadType, values: ExerciseType[]) => {
-    const PROGRESS_HOLDER = {
+    const PROGRESSION_HOLDER = {
       sets: null,
       weight: 0,
       rir: 0,
@@ -113,25 +76,25 @@ function useMesocycleProgression(
     };
     switch (head) {
       case "week 1":
-        return PROGRESS_HOLDER;
+        return PROGRESSION_HOLDER;
       case "week 2":
-        return { ...PROGRESS_HOLDER, sets: [1], weight: 5, rir: 1 };
+        return { ...PROGRESSION_HOLDER, sets: [1], weight: 5, rir: 1 };
       case "week 3":
         // if values is greater than 1 than there are 2 exercises.
         // Max of 2 exercises per session currently, so this will work but isn't scalable.
         if (values.length > 1)
-          return { ...PROGRESS_HOLDER, sets: [1, 1], weight: 10, rir: 2 };
-        else return { ...PROGRESS_HOLDER, sets: [2], weight: 10, rir: 2 };
+          return { ...PROGRESSION_HOLDER, sets: [1, 1], weight: 10, rir: 2 };
+        else return { ...PROGRESSION_HOLDER, sets: [2], weight: 10, rir: 2 };
       case "week 4":
         if (values.length > 1)
-          return { ...PROGRESS_HOLDER, sets: [2, 1], weight: 15, rir: 3 };
-        else return { ...PROGRESS_HOLDER, sets: [3], weight: 15, rir: 3 };
+          return { ...PROGRESSION_HOLDER, sets: [2, 1], weight: 15, rir: 3 };
+        else return { ...PROGRESSION_HOLDER, sets: [3], weight: 15, rir: 3 };
       case "deload":
         if (values.length > 1)
           return { sets: [2, 2], weight: 0, rir: 5, deload: true };
         else return { sets: [2], weight: 0, rir: 5, deload: true };
       default:
-        return PROGRESS_HOLDER;
+        return PROGRESSION_HOLDER;
     }
   };
 
@@ -151,15 +114,71 @@ function useMesocycleProgression(
       case "deload":
         return CELL_HEADS_WEEK_2PLUS;
       default:
-        return [head];
+        return ["#", head, "group", "category", "modalities"];
+      // return [head];
     }
   };
 
   return { heads, exercises };
 }
 
+function TH({ text, bgColor }: { text: string; bgColor: string }) {
+  return (
+    <th
+      className={bgColor + " border-2 border-slate-700 text-white"}
+      style={{ fontSize: "8px" }}
+    >
+      {text}
+    </th>
+  );
+}
+
+function TD({
+  value,
+  rank,
+  bottomBorder,
+}: {
+  value: string | number;
+  rank: "MRV" | "MEV" | "MV";
+  bottomBorder: boolean;
+}) {
+  const bgColor =
+    rank === "MRV"
+      ? "bg-red-400"
+      : rank === "MEV"
+      ? "bg-orange-400"
+      : "bg-green-400";
+  const border = bottomBorder ? " border-b-2 border-slate-300" : "";
+  return (
+    <td
+      className={bgColor + border + " truncate text-white"}
+      style={{ fontSize: "10px", height: "25px" }}
+    >
+      {value}
+    </td>
+  );
+}
+
+const getIndices = (exercises: ExerciseType[][]) => {
+  let addIndices = 0;
+
+  let indices = [];
+  for (let i = 0; i < exercises.length; i++) {
+    if (exercises[i].length > 1) {
+      indices.push([addIndices + 1, addIndices + 2]);
+      addIndices = addIndices + 2;
+    } else {
+      indices.push([addIndices + 1]);
+      addIndices = addIndices + 1;
+    }
+  }
+  return indices;
+};
+
 export default function Microcycle({ head, body, bgColor }: TableCellProps) {
   const { heads, exercises } = useMesocycleProgression(head, body);
+
+  const indices = getIndices(exercises);
 
   return (
     <td className="">
@@ -181,6 +200,7 @@ export default function Microcycle({ head, body, bgColor }: TableCellProps) {
                 key={`body_${index}_${each[index]?.exercise}`}
                 exercises={each}
                 head={head}
+                index={indices[index]}
               />
             );
           })}
@@ -193,21 +213,42 @@ export default function Microcycle({ head, body, bgColor }: TableCellProps) {
 const TR = ({
   exercises,
   head,
+  index,
 }: {
   exercises: ExerciseType[];
   head: HeadType;
+  index: number[];
 }) => {
   return (
     <>
-      {exercises.map((each, index) => {
-        const hasBorder = index === exercises.length - 1 ? true : false;
+      {exercises.map((each, i) => {
+        const hasBorder = i === exercises.length - 1 ? true : false;
         const sessions = ["upper", "lower", "full"];
-
         if (sessions.includes(head)) {
           return (
             <tr className="leading-none">
               <TD
-                value={`${each.exercise} -- ${each.group}`}
+                value={`${index[i]}`}
+                rank={each.rank}
+                bottomBorder={hasBorder}
+              />
+              <TD
+                value={`${each.exercise}`}
+                rank={each.rank}
+                bottomBorder={hasBorder}
+              />
+              <TD
+                value={`${each.group}`}
+                rank={each.rank}
+                bottomBorder={hasBorder}
+              />
+              <TD
+                value={`dumbbell`}
+                rank={each.rank}
+                bottomBorder={hasBorder}
+              />
+              <TD
+                value={`straight`}
                 rank={each.rank}
                 bottomBorder={hasBorder}
               />
