@@ -14,7 +14,7 @@ export default function Macrocycle({
   const { macrocycle } = useMacrocycle(workoutSplit, priorityRanking);
 
   return (
-    <div className="flex w-3/4 flex-wrap justify-center">
+    <div className="flex w-4/5 flex-wrap justify-center">
       {macrocycle.map((each, index) => {
         return (
           <MesocycleLayout

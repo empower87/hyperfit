@@ -1,7 +1,6 @@
 import { type NextPage } from "next";
 import { useState } from "react";
 import Macrocycle from "~/components/Macrocycle/Macrocycle";
-import { TestTable } from "~/components/MesoTable";
 import PrioritizeFocus from "~/components/PrioritizeFocus";
 import PrioritySectionLayout from "~/components/PrioritySectionLayout";
 import PromptCardLayout, {
@@ -145,34 +144,36 @@ const Home: NextPage = () => {
     <>
       <Title />
 
-      <div className="flex h-full w-full flex-col justify-center">
-        <PromptCardLayout title="Frequency">
-          <FrequencySelect onChange={handleSelectChange} />
-        </PromptCardLayout>
+      <div className="flex h-full w-full flex-row justify-center">
+        <div className="flex w-1/4 flex-col border-r-2 border-slate-700">
+          <PromptCardLayout title="Frequency">
+            <FrequencySelect onChange={handleSelectChange} />
+          </PromptCardLayout>
 
-        <PrioritySectionLayout
-          table={<TestTable list={musclePriority} split={workoutSplit} />}
-        >
-          {totalWorkouts > 0 ? (
-            <PrioritizeFocus
-              totalWorkouts={totalWorkouts}
-              musclePriority={musclePriority}
-              setMusclePriority={setMusclePriority}
-              setWorkoutSplit={setWorkoutSplit}
-            />
-          ) : null}
-        </PrioritySectionLayout>
-      </div>
-
-      <div className="mt-2 flex h-full w-full flex-col items-center">
-        <div className="mb-3 w-3/4 rounded-t-sm bg-slate-700">
-          <h2 className="ml-1 p-1 text-white">Training Program</h2>
+          <PrioritySectionLayout
+          // table={<TestTable list={musclePriority} split={workoutSplit} />}
+          >
+            {totalWorkouts > 0 ? (
+              <PrioritizeFocus
+                totalWorkouts={totalWorkouts}
+                musclePriority={musclePriority}
+                setMusclePriority={setMusclePriority}
+                setWorkoutSplit={setWorkoutSplit}
+              />
+            ) : null}
+          </PrioritySectionLayout>
         </div>
 
-        <Macrocycle
-          workoutSplit={workoutSplit}
-          priorityRanking={musclePriority}
-        />
+        <div className="mt-2 flex h-full w-3/4 flex-col items-center">
+          <div className="mb-3 w-4/5 rounded-t-sm bg-slate-700">
+            <h2 className="ml-1 p-1 text-white">Training Program</h2>
+          </div>
+
+          <Macrocycle
+            workoutSplit={workoutSplit}
+            priorityRanking={musclePriority}
+          />
+        </div>
       </div>
     </>
   );

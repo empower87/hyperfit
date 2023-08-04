@@ -114,7 +114,7 @@ function useMesocycleProgression(
       case "deload":
         return CELL_HEADS_WEEK_2PLUS;
       default:
-        return ["#", head, "group", "category", "modalities"];
+        return ["#", "group", head, "category", "modalities"];
       // return [head];
     }
   };
@@ -122,11 +122,19 @@ function useMesocycleProgression(
   return { heads, exercises };
 }
 
-function TH({ text, bgColor }: { text: string; bgColor: string }) {
+function TH({
+  text,
+  bgColor,
+  width,
+}: {
+  text: string;
+  bgColor: string;
+  width: number;
+}) {
   return (
     <th
-      className={bgColor + " border-2 border-slate-700 text-white"}
-      style={{ fontSize: "8px" }}
+      className={bgColor + " border-2 border-slate-600 text-white"}
+      style={{ fontSize: "8px", width: `${width}px` }}
     >
       {text}
     </th>
@@ -137,10 +145,12 @@ function TD({
   value,
   rank,
   bottomBorder,
+  center,
 }: {
   value: string | number;
   rank: "MRV" | "MEV" | "MV";
   bottomBorder: boolean;
+  center?: "text-center";
 }) {
   const bgColor =
     rank === "MRV"
@@ -149,10 +159,11 @@ function TD({
       ? "bg-orange-400"
       : "bg-green-400";
   const border = bottomBorder ? " border-b-2 border-slate-300" : "";
+  const _center = center ? " text-center" : "";
   return (
     <td
-      className={bgColor + border + " truncate text-white"}
-      style={{ fontSize: "10px", height: "25px" }}
+      className={bgColor + border + _center + " truncate border-l-2 text-white"}
+      style={{ fontSize: "10px", height: "20px" }}
     >
       {value}
     </td>
@@ -175,11 +186,16 @@ const getIndices = (exercises: ExerciseType[][]) => {
   return indices;
 };
 
+const WEEK_1 = [20, 30, 30, 20];
+const WEEK_2PLUS = [30, 40, 30];
+const SESSION = [5, 15, 50, 15, 15];
+
 export default function Microcycle({ head, body, bgColor }: TableCellProps) {
   const { heads, exercises } = useMesocycleProgression(head, body);
 
   const indices = getIndices(exercises);
-
+  const widths =
+    heads.length === 5 ? SESSION : heads.length === 4 ? WEEK_1 : WEEK_2PLUS;
   return (
     <td className="">
       <table className="w-full border-collapse border-spacing-2">
@@ -187,7 +203,12 @@ export default function Microcycle({ head, body, bgColor }: TableCellProps) {
           <tr className="leading-3">
             {heads.map((each, index) => {
               return (
-                <TH key={`${each}_${index}_th`} text={each} bgColor={bgColor} />
+                <TH
+                  key={`${each}_${index}_th`}
+                  text={each}
+                  bgColor={bgColor}
+                  width={widths[index]}
+                />
               );
             })}
           </tr>
@@ -224,6 +245,7 @@ const TR = ({
       {exercises.map((each, i) => {
         const hasBorder = i === exercises.length - 1 ? true : false;
         const sessions = ["upper", "lower", "full"];
+
         if (sessions.includes(head)) {
           return (
             <tr className="leading-none">
@@ -233,12 +255,12 @@ const TR = ({
                 bottomBorder={hasBorder}
               />
               <TD
-                value={`${each.exercise}`}
+                value={`${each.group}`}
                 rank={each.rank}
                 bottomBorder={hasBorder}
               />
               <TD
-                value={`${each.group}`}
+                value={`${each.exercise}`}
                 rank={each.rank}
                 bottomBorder={hasBorder}
               />
@@ -257,20 +279,32 @@ const TR = ({
         } else {
           return (
             <tr className="leading-none">
-              <TD value={each.sets} rank={each.rank} bottomBorder={hasBorder} />
+              <TD
+                value={each.sets}
+                rank={each.rank}
+                bottomBorder={hasBorder}
+                center="text-center"
+              />
               {head === "week 1" && (
                 <TD
                   value={each.reps}
                   rank={each.rank}
                   bottomBorder={hasBorder}
+                  center="text-center"
                 />
               )}
               <TD
                 value={each.weight}
                 rank={each.rank}
                 bottomBorder={hasBorder}
+                center="text-center"
               />
-              <TD value={each.rir} rank={each.rank} bottomBorder={hasBorder} />
+              <TD
+                value={each.rir}
+                rank={each.rank}
+                bottomBorder={hasBorder}
+                center="text-center"
+              />
             </tr>
           );
         }

@@ -11,7 +11,7 @@ function TableHeadColumns() {
     return (
       <th
         className="bg-slate-500 text-white"
-        style={{ fontSize: "13px", width: width ? `${width}px` : "" }}
+        style={{ fontSize: "12px", width: `${width}%` }}
       >
         {text}
       </th>
@@ -19,14 +19,14 @@ function TableHeadColumns() {
   };
 
   return (
-    <thead>
+    <thead className="w-full">
       <tr>
-        <ColumnHead text="Session" width={200} />
-        <ColumnHead text="Week 1" />
-        <ColumnHead text="Week 2" />
-        <ColumnHead text="Week 3" />
-        <ColumnHead text="Week 4" />
-        <ColumnHead text="Deload" />
+        <ColumnHead text="Session" width={45} />
+        <ColumnHead text="Week 1" width={15} />
+        <ColumnHead text="Week 2" width={10} />
+        <ColumnHead text="Week 3" width={10} />
+        <ColumnHead text="Week 4" width={10} />
+        <ColumnHead text="Deload" width={10} />
       </tr>
     </thead>
   );
@@ -78,7 +78,10 @@ function TableBody({ split }: { split: SessionType }) {
 export function MesocycleTable({ split }: MesocycleTableProps) {
   return (
     <div className="flex flex-col">
-      <table className="m-1 border-collapse" style={{ width: "600px" }}>
+      <table
+        className="m-1 table-fixed border-collapse"
+        style={{ width: "700px" }}
+      >
         <TableHeadColumns />
         <tbody className="">
           {split.map((each, index) => {

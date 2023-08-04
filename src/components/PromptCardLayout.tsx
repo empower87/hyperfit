@@ -37,7 +37,7 @@ export const FrequencySelect = ({
 export default function PromptCardLayout({ title, children }: PromptCardProps) {
   return (
     <div className="mt-4 flex justify-center">
-      <div className="w-3/4 rounded border-2 border-slate-500">
+      <div className="w-11/12 rounded border-2 border-slate-500">
         <div className="w-full rounded-t-sm bg-slate-700">
           <h2 className="ml-1 p-1 text-white">{title}</h2>
         </div>
