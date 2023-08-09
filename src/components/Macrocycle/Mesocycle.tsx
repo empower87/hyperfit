@@ -32,6 +32,10 @@ function TableHeadColumns() {
   );
 }
 
+function MesocycleCell({ children }: { children: ReactNode }) {
+  return <td className="">{children}</td>;
+}
+
 function TableBody({ split }: { split: SessionType }) {
   const backgroundColor =
     split.split === "upper"
@@ -41,36 +45,49 @@ function TableBody({ split }: { split: SessionType }) {
       : "bg-purple-400";
   return (
     <tr className="">
-      <Microcycle
-        head={split.split}
-        body={split.testSets}
-        bgColor={backgroundColor}
-      />
-      <Microcycle
-        head={"week 1"}
-        body={split.testSets}
-        bgColor={backgroundColor}
-      />
-      <Microcycle
-        head={"week 2"}
-        body={split.testSets}
-        bgColor={backgroundColor}
-      />
-      <Microcycle
-        head={"week 3"}
-        body={split.testSets}
-        bgColor={backgroundColor}
-      />
-      <Microcycle
-        head={"week 4"}
-        body={split.testSets}
-        bgColor={backgroundColor}
-      />
-      <Microcycle
-        head={"deload"}
-        body={split.testSets}
-        bgColor={backgroundColor}
-      />
+      <MesocycleCell>
+        <Microcycle
+          head={split.split}
+          body={split.testSets}
+          bgColor={backgroundColor}
+        />
+      </MesocycleCell>
+      <MesocycleCell>
+        <Microcycle
+          head={"week 1"}
+          body={split.testSets}
+          bgColor={backgroundColor}
+        />
+      </MesocycleCell>
+
+      <MesocycleCell>
+        <Microcycle
+          head={"week 2"}
+          body={split.testSets}
+          bgColor={backgroundColor}
+        />
+      </MesocycleCell>
+      <MesocycleCell>
+        <Microcycle
+          head={"week 3"}
+          body={split.testSets}
+          bgColor={backgroundColor}
+        />
+      </MesocycleCell>
+      <MesocycleCell>
+        <Microcycle
+          head={"week 4"}
+          body={split.testSets}
+          bgColor={backgroundColor}
+        />
+      </MesocycleCell>
+      <MesocycleCell>
+        <Microcycle
+          head={"deload"}
+          body={split.testSets}
+          bgColor={backgroundColor}
+        />
+      </MesocycleCell>
     </tr>
   );
 }

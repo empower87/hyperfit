@@ -2,15 +2,15 @@ import useMacrocycle from "~/hooks/useMacrocycle";
 import { MusclePriorityType, SessionType } from "~/pages";
 import { MesocycleLayout, MesocycleTable } from "./Mesocycle";
 
-type MacrocycleProps = {
+type TrainingBlockProps = {
   priorityRanking: MusclePriorityType[];
   workoutSplit: SessionType[];
 };
 
-export default function Macrocycle({
+export default function TrainingBlock({
   workoutSplit,
   priorityRanking,
-}: MacrocycleProps) {
+}: TrainingBlockProps) {
   const { macrocycle } = useMacrocycle(workoutSplit, priorityRanking);
 
   return (

@@ -1,4 +1,3 @@
-import { useRef } from "react";
 import Lift, { LiftTable } from "./Lift";
 
 export type ListTuple = [string, number];
@@ -69,8 +68,6 @@ export default function WorkoutCard({ day, split, sets }: WorkoutCardProps) {
 
   const totalWorkoutTime = getEstimatedWorkoutDuration(totalSets);
 
-  const renderRef = useRef<number>(0);
-  console.log(renderRef.current++, "<WorkoutCard /> render count");
   return (
     <div className="mb-2 mr-2">
       <Header day={day} split={split} />

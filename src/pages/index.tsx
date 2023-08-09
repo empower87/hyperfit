@@ -1,6 +1,6 @@
 import { type NextPage } from "next";
 import { useState } from "react";
-import Macrocycle from "~/components/Macrocycle/Macrocycle";
+import TrainingBlock from "~/components/Macrocycle/TrainingBlock";
 import PrioritizeFocus from "~/components/PrioritizeFocus";
 import PrioritySectionLayout from "~/components/PrioritySectionLayout";
 import PromptCardLayout, {
@@ -150,9 +150,7 @@ const Home: NextPage = () => {
             <FrequencySelect onChange={handleSelectChange} />
           </PromptCardLayout>
 
-          <PrioritySectionLayout
-          // table={<TestTable list={musclePriority} split={workoutSplit} />}
-          >
+          <PrioritySectionLayout>
             {totalWorkouts > 0 ? (
               <PrioritizeFocus
                 totalWorkouts={totalWorkouts}
@@ -166,10 +164,10 @@ const Home: NextPage = () => {
 
         <div className="mt-2 flex h-full w-3/4 flex-col items-center">
           <div className="mb-3 w-4/5 rounded-t-sm bg-slate-700">
-            <h2 className="ml-1 p-1 text-white">Training Program</h2>
+            <h2 className="ml-1 p-1 text-white">Training Block</h2>
           </div>
 
-          <Macrocycle
+          <TrainingBlock
             workoutSplit={workoutSplit}
             priorityRanking={musclePriority}
           />

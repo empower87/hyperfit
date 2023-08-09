@@ -114,7 +114,7 @@ function useMesocycleProgression(
       case "deload":
         return CELL_HEADS_WEEK_2PLUS;
       default:
-        return ["#", "group", head, "category", "modalities"];
+        return ["#", head, "exercise", "category", "modalities"];
       // return [head];
     }
   };
@@ -197,37 +197,35 @@ export default function Microcycle({ head, body, bgColor }: TableCellProps) {
   const widths =
     heads.length === 5 ? SESSION : heads.length === 4 ? WEEK_1 : WEEK_2PLUS;
   return (
-    <td className="">
-      <table className="w-full border-collapse border-spacing-2">
-        <thead className="border-2 border-slate-700 ">
-          <tr className="leading-3">
-            {heads.map((each, index) => {
-              return (
-                <TH
-                  key={`${each}_${index}_th`}
-                  text={each}
-                  bgColor={bgColor}
-                  width={widths[index]}
-                />
-              );
-            })}
-          </tr>
-        </thead>
-
-        <tbody>
-          {exercises.map((each, index) => {
+    <table className="w-full border-collapse border-spacing-2">
+      <thead className="border-2 border-slate-700 ">
+        <tr className="leading-3">
+          {heads.map((each, index) => {
             return (
-              <TR
-                key={`body_${index}_${each[index]?.exercise}`}
-                exercises={each}
-                head={head}
-                index={indices[index]}
+              <TH
+                key={`${each}_${index}_th`}
+                text={each}
+                bgColor={bgColor}
+                width={widths[index]}
               />
             );
           })}
-        </tbody>
-      </table>
-    </td>
+        </tr>
+      </thead>
+
+      <tbody>
+        {exercises.map((each, index) => {
+          return (
+            <TR
+              key={`body_${index}_${each[index]?.exercise}`}
+              exercises={each}
+              head={head}
+              index={indices[index]}
+            />
+          );
+        })}
+      </tbody>
+    </table>
   );
 }
 

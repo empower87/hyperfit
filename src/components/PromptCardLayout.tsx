@@ -19,7 +19,7 @@ export const FrequencySelect = ({
   return (
     <>
       <p className="p-1 text-slate-700">
-        How many days per week will you being lifting?
+        Max sessions you can ideally commit to:
         {/* --- this should probably be the max amount of sessions a week so as to progress toward --- */}
       </p>
 
