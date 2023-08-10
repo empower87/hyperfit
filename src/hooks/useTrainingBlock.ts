@@ -39,7 +39,7 @@ const getIt = (rank: number, name: string, mesoProgress: number) => {
   let frequency_type: "MV" | "MEV" | "MRV" = "MV";
   let split_max = 4;
 
-  let m: MuscleTypeForTable = {
+  let muscleExercises: MuscleTypeForTable = {
     name: data.name,
     sessions: 0,
     exercises: [],
@@ -49,12 +49,12 @@ const getIt = (rank: number, name: string, mesoProgress: number) => {
     case 0:
       frequency_progression = data.mevToMrvProgression[mesoProgressIndex];
       frequency_type = "MRV";
-      m.sessions = frequency_progression?.length;
+      muscleExercises.sessions = frequency_progression?.length;
       break;
     case 1:
       frequency_progression = data.mvToMevProgression[mesoProgressIndex];
       frequency_type = "MEV";
-      m.sessions = frequency_progression?.length;
+      muscleExercises.sessions = frequency_progression?.length;
       break;
     default:
       split_max = 6;
@@ -101,11 +101,10 @@ const getIt = (rank: number, name: string, mesoProgress: number) => {
       });
     }
 
-    m.exercises.push(exerciseList);
+    muscleExercises.exercises.push(exerciseList);
   }
 
-  console.log(m, "what does this clusterfuck look like??");
-  return m;
+  return muscleExercises;
 };
 
 const doIt = (
@@ -138,7 +137,7 @@ const doIt = (
   return exercisesForSessions;
 };
 
-export const ugh = (
+const getMesocycle = (
   split: SessionType[],
   list: MusclePriorityType[],
   mesoNum: number
@@ -162,21 +161,22 @@ export const ugh = (
   return meso;
 };
 
-export default function useMacrocycle(
+export default function useTrainingBlock(
   split: SessionType[],
   list: MusclePriorityType[]
 ) {
-  const [macrocycle, setMacrocycle] = useState<SessionType[][]>([]);
+  const [trainingBlock, setTraingingBlock] = useState<SessionType[][]>([]);
 
   useEffect(() => {
-    let meso1 = ugh([...split], list, 0);
-    let meso2 = ugh([...split], list, 1);
-    let meso3 = ugh([...split], list, 2);
+    console.log(split, list, "ERROR: USE MACRO");
+    let meso1 = getMesocycle([...split], list, 0);
+    let meso2 = getMesocycle([...split], list, 1);
+    let meso3 = getMesocycle([...split], list, 2);
 
-    setMacrocycle([meso1, meso2, meso3]);
+    setTraingingBlock([meso1, meso2, meso3]);
   }, [split, list]);
 
   return {
-    macrocycle,
+    trainingBlock,
   };
 }

@@ -7,7 +7,7 @@ import PromptCardLayout, {
   FrequencySelect,
 } from "~/components/PromptCardLayout";
 import Title from "~/components/Title";
-import { ExerciseType } from "~/hooks/useMacrocycle";
+import { ExerciseType } from "~/hooks/useTrainingBlock";
 
 export type MusclePriorityType = {
   id: string;

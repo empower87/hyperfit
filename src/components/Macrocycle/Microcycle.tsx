@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ExerciseType } from "~/hooks/useMacrocycle";
+import { ExerciseType } from "~/hooks/useTrainingBlock";
 
 type HeadType =
   | "week 1"
@@ -228,6 +228,38 @@ export default function Microcycle({ head, body, bgColor }: TableCellProps) {
     </table>
   );
 }
+
+// const SessionTR = ({ exercises, index }: { exercises: ExerciseType[], index: number}) => {
+//   return (
+//     <tr className="leading-none">
+//       <TD
+//         value={`${index}`}
+//         rank={each.rank}
+//         bottomBorder={hasBorder}
+//       />
+//       <TD
+//         value={`${each.group}`}
+//         rank={each.rank}
+//         bottomBorder={hasBorder}
+//       />
+//       <TD
+//         value={`${each.exercise}`}
+//         rank={each.rank}
+//         bottomBorder={hasBorder}
+//       />
+//       <TD
+//         value={`dumbbell`}
+//         rank={each.rank}
+//         bottomBorder={hasBorder}
+//       />
+//       <TD
+//         value={`straight`}
+//         rank={each.rank}
+//         bottomBorder={hasBorder}
+//       />
+//     </tr>
+//   )
+// }
 
 const TR = ({
   exercises,

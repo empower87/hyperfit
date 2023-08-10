@@ -1,5 +1,6 @@
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { MEV_RANK, MRV_RANK } from "src/constants/prioritizeRanks";
-import { LOWER_MUSCLES } from "~/constants/workoutSplits";
+import { LOWER_MUSCLES, UPPER_MUSCLES } from "~/constants/workoutSplits";
 import { MusclePriorityType, SessionType } from "~/pages";
 import { getMuscleData } from "./getMuscleData";
 export type SessionSplitType = "upper" | "lower" | "full";
@@ -559,7 +560,7 @@ const getLowerPosition = (list: MusclePriorityType[]) => {
   }
 };
 
-export const getTrainingSplit = (
+const getTrainingSplit = (
   list: MusclePriorityType[],
   sessions: number
 ): SessionSplitType[] => {
@@ -628,124 +629,112 @@ export const getTrainingSplit = (
   }
 };
 
-// const splitSetsAmongSessions = ({
-//   split,
-//   rank,
-//   _name,
-// }: SplitAmongSetsType): [string, number[], number] => {
-//   let getUpperSessions = split.filter((each) => each.split === "upper");
-//   let getLowerSessions = split.filter((each) => each.split === "lower");
-//   let getFullSessions = split.filter((each) => each.split === "full");
+const getMesoProgression = (sessions: number) => {
+  switch (sessions) {
+    case 5:
+      return [3, 4, 5];
+    case 4:
+      return [2, 3, 4];
+    case 3:
+      return [2, 3, 3];
+    case 2:
+      return [1, 2, 2];
+    case 1:
+      return [1, 1, 1];
+    default:
+      return [0, 0, 0];
+  }
+};
 
-//   let upper = getUpperSessions.length;
-//   let lower = getLowerSessions.length;
-//   let full = getFullSessions.length;
-
-//   let sessionSplit = "lower";
-//   let sessionSplitFrequency = lower;
-//   let setsPerSession: number[] = [];
-//   let sessionCounter = 0;
-//   let fullCounter = 0;
-
-//   if (UPPER_MUSCLES.includes(_name)) {
-//     sessionSplit = "upper";
-//     sessionSplitFrequency = upper;
-//   }
-
-//   const { primarySessions, fullSessions } = distributeMRVAmongSessions(
-//     _name,
-//     sessionSplitFrequency,
-//     full,
-//     rank
-//   );
-
-//   const { sessionIndices, fullIndices } = findLowestVolumeSession(
-//     sessionSplit as "upper" | "lower",
-//     split
-//   );
-
-//   const reduceSessionIndices = (
-//     sessionIndices: number[],
-//     totalSessions: number
-//   ) => {
-//     if (sessionIndices.length > totalSessions) {
-//       while (sessionIndices.length > totalSessions) {
-//         sessionIndices.pop();
-//       }
-//     }
-//     return sessionIndices;
-//   };
-
-//   for (let i = 0; i < split.length; i++) {
-//     const sesh = reduceSessionIndices(sessionIndices, primarySessions.length);
-//     const fullz = reduceSessionIndices(fullIndices, fullSessions.length);
-
-//     if (split[i].split === sessionSplit) {
-//       if (primarySessions[sessionCounter]) {
-//         if (sesh.includes(i)) {
-//           setsPerSession.push(primarySessions[sessionCounter]);
-//           sessionCounter++;
-//         } else {
-//           setsPerSession.push(0);
-//         }
-//       } else {
-//         setsPerSession.push(0);
-//       }
-//     } else if (split[i].split === "full" && fullz.includes(i)) {
-//       if (fullSessions[fullCounter]) {
-//         setsPerSession.push(fullSessions[fullCounter]);
-//         fullCounter++;
-//       } else {
-//         setsPerSession.push(0);
-//       }
-//     } else {
-//       setsPerSession.push(0);
-//     }
-//   }
-//   const totalSets = setsPerSession.reduce((total, number) => total + number, 0);
-//   return [_name, setsPerSession, totalSets];
-// };
-
-export const featureTest = (
-  list: MusclePriorityType[],
+const updateMuscleListSets = (
+  items: MusclePriorityType[],
   split: SessionSplitType[]
 ) => {
-  // const split = getTrainingSplit(list, sessions);
-  let sessionsMRV: SessionType[] = [];
+  let upper = split.filter((each) => each !== "lower");
+  let lower = split.filter((each) => each !== "upper");
 
-  const SESSION: SessionType = {
-    day: 1,
-    sets: [],
-    totalSets: 0,
-    maxSets: 30,
-    split: "full",
-    testSets: [],
-  };
+  for (let i = 0; i < items.length; i++) {
+    const muscleData = getMuscleData(items[i].muscle);
+    const { featureMatrix } = muscleData;
+
+    let rank = i < MRV_RANK ? 0 : i >= MRV_RANK && i < MEV_RANK ? 1 : 2;
+
+    let sessions = lower.length;
+    if (UPPER_MUSCLES.includes(items[i].muscle)) {
+      sessions = upper.length;
+    }
+
+    if (rank === 0) {
+      let prog = getMesoProgression(sessions);
+      items[i] = { ...items[i], mesoProgression: prog };
+    } else if (rank === 1) {
+      if (sessions <= 2) items[i] = { ...items[i], mesoProgression: [1, 2, 2] };
+      else if (
+        items[i].muscle === "back" ||
+        items[i].muscle === "quads" ||
+        items[i].muscle === "calves"
+      ) {
+        items[i] = { ...items[i], mesoProgression: [2, 3, 3] };
+      } else {
+        items[i] = { ...items[i], mesoProgression: [1, 1, 1] };
+      }
+    } else {
+      if (sessions <= 1) items[i] = { ...items[i], mesoProgression: [1, 1, 1] };
+      else if (
+        items[i].muscle === "back" ||
+        items[i].muscle === "quads" ||
+        items[i].muscle === "calves"
+      ) {
+        items[i] = { ...items[i], mesoProgression: [1, 2, 2] };
+      } else {
+        items[i] = { ...items[i], mesoProgression: [1, 1, 1] };
+      }
+    }
+
+    const sets = featureMatrix[rank];
+
+    items[i] = { ...items[i], sets: sets };
+  }
+  return items;
+};
+
+const SESSION: SessionType = {
+  day: 1,
+  sets: [],
+  totalSets: 0,
+  maxSets: 30,
+  split: "full",
+  testSets: [],
+};
+
+const updateWorkoutSplit = (split: ("upper" | "lower" | "full")[]) => {
+  let newSplit: SessionType[] = [];
 
   for (let i = 0; i < split.length; i++) {
-    sessionsMRV.push({
-      ...SESSION,
-      day: i + 1,
-      sets: [],
-      totalSets: 0,
-      maxSets: 30,
-      split: split[i],
-    });
+    newSplit.push({ ...SESSION, day: i + 1, split: split[i] });
   }
 
-  // for (let j = 0; j < list.length; j++) {
-  //   let muscle_name = list[j].muscle;
-
-  //   const oneLine = splitSetsAmongSessions({
-  //     split: sessionsMRV,
-  //     rank: j,
-  //     _name: muscle_name,
-  //   });
-
-  //   for (let k = 0; k < sessionsMRV.length; k++) {
-  //     sessionsMRV[k].sets.push([muscle_name, oneLine[1][k]]);
-  //   }
-  // }
-
-  return sessionsMRV;
+  return newSplit;
 };
+
+export function usePrioritizeMuscles(
+  musclePriorityList: MusclePriorityType[],
+  max_workouts: number,
+  setWorkoutSplit: Dispatch<SetStateAction<SessionType[]>>
+) {
+  const [newList, setNewList] = useState<MusclePriorityType[]>([
+    ...musclePriorityList,
+  ]);
+
+  useEffect(() => {
+    const split = getTrainingSplit(newList, max_workouts);
+    const getNewList = updateMuscleListSets(musclePriorityList, split);
+    console.log(split, getNewList, "USE EFFECT IN PRIORITIZE FOCUS");
+    setNewList(getNewList);
+
+    const updatedWorkoutSplit = updateWorkoutSplit(split);
+    setWorkoutSplit(updatedWorkoutSplit);
+  }, [max_workouts, musclePriorityList, newList]);
+
+  return { newList };
+}
