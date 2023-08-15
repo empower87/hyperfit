@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { getExercise } from "~/constants/exercises";
 import { MEV_RANK, MRV_RANK } from "~/constants/prioritizeRanks";
 import { UPPER_MUSCLES } from "~/constants/workoutSplits";
 import { MusclePriorityType, SessionType } from "~/pages";
@@ -30,14 +31,20 @@ const exercise: ExerciseType = {
   rir: 3,
 };
 
-const getIt = (rank: number, name: string, mesoProgress: number) => {
+const getIt = (
+  index: number,
+  name: string,
+  mesoProgress: number,
+  key: VolumeKey
+) => {
   const data = getMuscleData(name);
-  if (!data) return;
-  const s = rank < MRV_RANK ? 0 : rank >= MRV_RANK && rank < MEV_RANK ? 1 : 2;
-  let mesoProgressIndex = mesoProgress - 1;
-  let frequency_progression = [data.MV];
-  let frequency_type: "MV" | "MEV" | "MRV" = "MV";
-  let split_max = 4;
+  const volume_matrix = data[key][mesoProgress];
+  const volume_landmark =
+    index < MRV_RANK
+      ? "MRV"
+      : index >= MRV_RANK && index < MEV_RANK
+      ? "MEV"
+      : "MV";
 
   let muscleExercises: MuscleTypeForTable = {
     name: data.name,
@@ -45,62 +52,40 @@ const getIt = (rank: number, name: string, mesoProgress: number) => {
     exercises: [],
   };
 
-  switch (s) {
-    case 0:
-      frequency_progression = data.mevToMrvProgression[mesoProgressIndex];
-      frequency_type = "MRV";
-      muscleExercises.sessions = frequency_progression?.length;
-      break;
-    case 1:
-      frequency_progression = data.mvToMevProgression[mesoProgressIndex];
-      frequency_type = "MEV";
-      muscleExercises.sessions = frequency_progression?.length;
-      break;
-    default:
-      split_max = 6;
-  }
-
-  for (let i = 0; i < frequency_progression?.length; i++) {
+  let count = 0;
+  for (let i = 0; i < volume_matrix?.length; i++) {
     let exerciseList: ExerciseType[] = [];
 
-    if (frequency_progression.length === 1 && frequency_progression[i] === 0)
-      break;
-    if (frequency_progression[i] >= split_max) {
-      let totalSets = frequency_progression[i];
-      let setOne = 2;
-      let setTwo = 2;
+    const split = volume_matrix[i].split("-").map((each) => parseInt(each));
 
-      if (frequency_progression[i] > split_max) {
-        setOne = Math.floor(totalSets / 2);
-        setTwo = totalSets - setOne;
-      }
-
+    if (split.length > 1) {
       exerciseList.push(
         {
           ...exercise,
-          rank: frequency_type,
-          sets: setOne,
+          rank: volume_landmark,
+          sets: split[0],
           group: data.name,
-          // exercise: `${data.name}_${i + 1}`,
+          exercise: getExercise(data.name, count).name,
         },
         {
           ...exercise,
-          rank: frequency_type,
-          sets: setTwo,
+          rank: volume_landmark,
+          sets: split[1],
           group: data.name,
-          // exercise: `${data.name}_${i + 1.5}`,
+          exercise: getExercise(data.name, count + 1).name,
         }
       );
+      count = count + 2;
     } else {
       exerciseList.push({
         ...exercise,
-        rank: frequency_type,
-        sets: frequency_progression[i],
+        rank: volume_landmark,
+        sets: split[0],
         group: data.name,
-        // exercise: `${data.name}_${i + 1}`,
+        exercise: getExercise(data.name, count).name,
       });
+      count = count + 1;
     }
-
     muscleExercises.exercises.push(exerciseList);
   }
 
@@ -137,6 +122,11 @@ const doIt = (
   return exercisesForSessions;
 };
 
+type VolumeKey =
+  | "mrv_progression_matrix"
+  | "mev_progression_matrix"
+  | "mv_progression_matrix";
+
 const getMesocycle = (
   split: SessionType[],
   list: MusclePriorityType[],
@@ -145,14 +135,26 @@ const getMesocycle = (
   let meso = [...split];
 
   for (let i = 0; i < list.length; i++) {
-    const gotIt = getIt(i, list[i].muscle, list[i].mesoProgression[mesoNum]);
+    // const data = getMuscleData(list[i].muscle);
+    let key: VolumeKey =
+      i < MRV_RANK
+        ? "mrv_progression_matrix"
+        : i >= MRV_RANK && i < MEV_RANK
+        ? "mev_progression_matrix"
+        : "mv_progression_matrix";
+    let initial_frequency = list[i].mesoProgression[mesoNum];
+    let freq_index = initial_frequency > 0 ? initial_frequency - 1 : 0;
+    // let progression = data[key]
+
+    const gotIt = getIt(i, list[i].muscle, freq_index, key);
+
     if (gotIt) {
       let newMeso1 = doIt(split, list[i].mesoProgression, mesoNum, gotIt);
 
       for (let j = 0; j < meso.length; j++) {
         let sets = newMeso1[j];
         if (typeof sets !== "number" && typeof sets !== "undefined") {
-          meso[j] = { ...meso[j], testSets: [...meso[j].testSets, sets] };
+          meso[j] = { ...meso[j], sets: [...meso[j].sets, sets] };
         }
       }
     }
@@ -165,18 +167,161 @@ export default function useTrainingBlock(
   split: SessionType[],
   list: MusclePriorityType[]
 ) {
-  const [trainingBlock, setTraingingBlock] = useState<SessionType[][]>([]);
+  const [trainingBlock, setTrainingBlock] = useState<SessionType[][]>([]);
 
   useEffect(() => {
-    console.log(split, list, "ERROR: USE MACRO");
     let meso1 = getMesocycle([...split], list, 0);
     let meso2 = getMesocycle([...split], list, 1);
     let meso3 = getMesocycle([...split], list, 2);
 
-    setTraingingBlock([meso1, meso2, meso3]);
+    console.log([meso1, meso2, meso3], list, "ERROR: USE MACRO");
+    setTrainingBlock([meso1, meso2, meso3]);
   }, [split, list]);
 
   return {
     trainingBlock,
   };
 }
+
+// const getIt = (
+//   index: number,
+//   name: string,
+//   mesoProgress: number,
+//   key: VolumeKey
+// ) => {
+//   const data = getMuscleData(name);
+//   // if (!data) return;
+//   const volume_matrix = data[key][mesoProgress];
+//   const volume_landmark =
+//     index < MRV_RANK
+//       ? "MRV"
+//       : index >= MRV_RANK && index < MEV_RANK
+//       ? "MEV"
+//       : "MV";
+
+//   let mesoProgressIndex = mesoProgress - 1;
+//   let frequency_progression = [data.MV];
+//   let frequency_type: "MV" | "MEV" | "MRV" = "MV";
+//   let split_max = 4;
+
+//   let muscleExercises: MuscleTypeForTable = {
+//     name: data.name,
+//     sessions: 0,
+//     exercises: [],
+//   };
+
+//   let count = 0;
+//   for (let i = 0; i < volume_matrix?.length; i++) {
+//     let exerciseList: ExerciseType[] = [];
+
+//     const split = volume_matrix[i].split("-").map((each) => parseInt(each));
+
+//     if (split.length > 1) {
+//       exerciseList.push(
+//         {
+//           ...exercise,
+//           rank: frequency_type,
+//           sets: split[0],
+//           group: data.name,
+//           exercise: getExercise(data.name, count).name,
+//         },
+//         {
+//           ...exercise,
+//           rank: frequency_type,
+//           sets: split[1],
+//           group: data.name,
+//           exercise: getExercise(data.name, count + 1).name,
+//         }
+//       );
+//       count = count + 2;
+//     } else {
+//       exerciseList.push({
+//         ...exercise,
+//         rank: frequency_type,
+//         sets: split[0],
+//         group: data.name,
+//         exercise: getExercise(data.name, count).name,
+//       });
+//       count = count + 1;
+//     }
+//     muscleExercises.exercises.push(exerciseList);
+//   }
+
+//   // switch (s) {
+//   //   case 0:
+//   //     frequency_progression = data.mevToMrvProgression[mesoProgressIndex];
+//   //     frequency_type = "MRV";
+//   //     muscleExercises.sessions = frequency_progression?.length;
+//   //     break;
+//   //   case 1:
+//   //     frequency_progression = data.mvToMevProgression[mesoProgressIndex];
+//   //     frequency_type = "MEV";
+//   //     muscleExercises.sessions = frequency_progression?.length;
+//   //     break;
+//   //   default:
+//   //     split_max = 6;
+//   // }
+
+//   // let indices: number[][] = [];
+//   // let counter = 0;
+
+//   // for (let j = 0; j < frequency_progression?.length; j++) {
+//   //   if (frequency_progression[j] >= split_max) {
+//   //     indices.push([counter, counter + 1]);
+//   //     counter = counter + 2;
+//   //   } else {
+//   //     indices.push([counter]);
+//   //     counter = counter + 1;
+//   //   }
+//   // }
+
+//   // for (let i = 0; i < frequency_progression?.length; i++) {
+//   //   let exerciseList: ExerciseType[] = [];
+
+//   //   let indexCounter = i;
+
+//   //   if (frequency_progression.length === 1 && frequency_progression[i] === 0)
+//   //     break;
+//   //   if (frequency_progression[i] >= split_max) {
+//   //     let totalSets = frequency_progression[i];
+//   //     let setOne = 2;
+//   //     let setTwo = 2;
+
+//   //     if (frequency_progression[i] > split_max) {
+//   //       setOne = Math.floor(totalSets / 2);
+//   //       setTwo = totalSets - setOne;
+//   //     }
+
+//   //     exerciseList.push(
+//   //       {
+//   //         ...exercise,
+//   //         rank: frequency_type,
+//   //         sets: setOne,
+//   //         group: data.name,
+//   //         exercise: getExercise(data.name, indices[i][0]).name,
+//   //       },
+//   //       {
+//   //         ...exercise,
+//   //         rank: frequency_type,
+//   //         sets: setTwo,
+//   //         group: data.name,
+//   //         exercise: getExercise(data.name, indices[i][1]).name,
+//   //       }
+//   //     );
+//   //     indexCounter = indexCounter + 2;
+//   //   } else {
+//   //     exerciseList.push({
+//   //       ...exercise,
+//   //       rank: frequency_type,
+//   //       sets: frequency_progression[i],
+//   //       group: data.name,
+//   //       exercise: getExercise(data.name, indices[i][0]).name,
+//   //     });
+//   //     indexCounter = indexCounter + 1;
+//   //   }
+
+//   //   muscleExercises.exercises.push(exerciseList);
+//   // }
+
+//   return muscleExercises;
+// };

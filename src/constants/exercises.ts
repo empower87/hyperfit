@@ -2,7 +2,18 @@
 // -- Add in logic for supersets and staggering rest time instead of jumping back to back into exercises
 // -- supersets should be antagonist muscles. ie. bicep curls > tricep extensions .. bench press > bent-over row .. etc.
 
-export const BACK_EXERCISES = [
+type ExerciseType = {
+  name: string;
+  rank: number;
+  group: string;
+  specification: string;
+  versions: string[];
+  requirements: string[];
+  angle: string[];
+  variations: string[];
+};
+
+export const BACK_EXERCISES: ExerciseType[] = [
   {
     name: "Rows",
     rank: 1,
@@ -14,7 +25,7 @@ export const BACK_EXERCISES = [
     variations: [],
   },
   {
-    name: "Meadow's Row",
+    name: "Pull Ups",
     rank: 2,
     group: "chest",
     specification: "lat",
@@ -24,7 +35,7 @@ export const BACK_EXERCISES = [
     variations: ["close-grip", "wide-grip"],
   },
   {
-    name: "Pull Ups",
+    name: "Lat Pulldown",
     rank: 3,
     group: "chest",
     specification: "lat",
@@ -34,8 +45,28 @@ export const BACK_EXERCISES = [
     variations: ["close-grip", "wide-grip"],
   },
   {
-    name: "Lat Pulldown",
+    name: "Lat Prayers",
     rank: 4,
+    group: "chest",
+    specification: "lat",
+    versions: ["dumbbell", "barbell"],
+    requirements: ["bench"],
+    angle: ["incline", "decline", "flat"],
+    variations: ["close-grip", "wide-grip"],
+  },
+  {
+    name: "Lat-Focused Rows",
+    rank: 5,
+    group: "chest",
+    specification: "lat",
+    versions: ["dumbbell", "barbell"],
+    requirements: ["bench"],
+    angle: ["incline", "decline", "flat"],
+    variations: ["close-grip", "wide-grip"],
+  },
+  {
+    name: "Meadow's Row",
+    rank: 6,
     group: "chest",
     specification: "lat",
     versions: ["dumbbell", "barbell"],
@@ -125,13 +156,13 @@ export const TRICEPS_EXERCISES = [
   },
 ];
 
-const CHEST_EXERCISES = [
+const CHEST_EXERCISES: ExerciseType[] = [
   {
     name: "Bench Press",
     rank: 1,
     group: "chest",
     specification: "lat",
-    versions: ["dumbbell", "barbbell"],
+    versions: ["dumbbell", "barbell"],
     requirements: ["bench"],
     angle: ["incline", "decline", "flat"],
     variations: ["close-grip", "wide-grip"],
@@ -141,6 +172,7 @@ const CHEST_EXERCISES = [
     rank: 2,
     group: "chest",
     specification: "lat",
+    versions: ["dumbbell", "barbell"],
     requirements: ["bench", "dumbbell", "machine", "cable"],
     angle: ["incline", "decline", "flat"],
     variations: [],
@@ -150,6 +182,7 @@ const CHEST_EXERCISES = [
     rank: 3,
     group: "chest",
     specification: "lat",
+    versions: ["dumbbell", "barbell"],
     requirements: ["machine"],
     angle: ["incline", "decline", "flat"],
     variations: ["close-grip", "wide-grip"],
@@ -159,13 +192,14 @@ const CHEST_EXERCISES = [
     rank: 4,
     group: "chest",
     specification: "lat",
+    versions: ["dumbbell", "barbell"],
     requirements: [],
     angle: ["incline", "flat"],
     variations: ["diamond"],
   },
 ];
 
-enum ExerciseEnum {
+enum EquipmentEnum {
   "dumbbell",
   "barbell",
   "cable",
@@ -199,33 +233,154 @@ enum AdditionalInformationEnum {
 
 // legend: equipment_position_angle_additional_exercise-rank
 export const topRearDeltExercises = [
-  "3_x_x_x_1",
-  "3_x_x_1_1",
-  "4_x_x_x_2",
-  "3_x_x_4_3",
-  "1_x_x_5_3",
-  "1_3_4_x_3",
+  "3_0_0_0_1",
+  "3_0_0_1_1",
+  "4_0_0_0_2",
+  "3_0_0_4_3",
+  "1_0_0_5_3",
+  "1_3_4_0_3",
 ];
 
 export const topSideDeltExercises = [
-  "1_x_x_x_1",
-  "3_x_x_6_1",
-  "3_x_x_9_1",
-  "1_3_1_x_1",
-  "1_1_x_x_4",
-  "2_1_x_x_4",
-  "2_x_x_x_2",
-  "3_x_x_x_2",
+  "1_0_0_0_1",
+  "3_0_0_6_1",
+  "3_0_0_9_1",
+  "1_3_1_0_1",
+  "1_1_0_0_4",
+  "2_1_0_0_4",
+  "2_0_0_0_2",
+  "3_0_0_0_2",
 ];
 
-export const topBackExercises = ["2_x_3_x_1", ""];
+export const topUpperBackExercises = [
+  "2_0_3_0_1",
+  "3_1_0_0_1",
+  "2_0_0_0_6",
+  "1_0_1_4_1",
+  "0_0_0_0_2",
+  "0_0_0_0_3",
+];
 
-const DELTS_REAR_EXERCISES = [
+export const topLatBackExercises = [
+  "3_1_0_0_1",
+  "1_0_1_5_5",
+  "1_0_0_0_5",
+  "1_0_0_1_3",
+];
+
+const TEST = {
+  name: "Rows",
+  rank: 1,
+  group: "back",
+  specification: "upper",
+  versions: ["dumbbell", "barbell"],
+  requirements: ["barbell"],
+  angle: [],
+  variations: [],
+};
+
+const getExerciseObject = (key: string, exercises: ExerciseType[]) => {
+  if (!key) return TEST;
+  const splitString = key.split("_").map((each) => parseInt(each));
+
+  const equipment = splitString[0] !== 0 ? EquipmentEnum[splitString[0]] : "";
+  const position = splitString[1] !== 0 ? PositionEnum[splitString[1]] : "";
+  const angle = splitString[2] !== 0 ? AngleEnum[splitString[2]] : "";
+  const additional =
+    splitString[3] !== 0 ? AdditionalInformationEnum[splitString[3]] : "";
+  const exercise = exercises.filter((each) => each.rank === splitString[4]);
+  const name =
+    `${equipment} ${position} ${angle} ${additional} ${exercise[0].name}`.replace(
+      /-+/g,
+      " "
+    );
+  const newExercise = { ...exercise[0], name: name };
+  return newExercise;
+};
+
+export function getExercise(group: string, index: number) {
+  let key: string;
+
+  switch (group) {
+    case "back":
+      key =
+        index % 0 ? topLatBackExercises[index] : topUpperBackExercises[index];
+      return getExerciseObject(key, BACK_EXERCISES);
+    case "chest":
+      key = topLatBackExercises[index]
+        ? topLatBackExercises[index]
+        : topLatBackExercises[0];
+      return getExerciseObject(key, BACK_EXERCISES);
+    case "delts_side":
+      key = topSideDeltExercises[index]
+        ? topSideDeltExercises[index]
+        : topSideDeltExercises[0];
+      return getExerciseObject(key, DELTS_SIDE_FRONT_EXERCISES);
+    case "delts_front":
+      key = topLatBackExercises[index]
+        ? topLatBackExercises[index]
+        : topLatBackExercises[0];
+      return getExerciseObject(key, DELTS_SIDE_FRONT_EXERCISES);
+    case "delts_rear":
+      key = topRearDeltExercises[index]
+        ? topRearDeltExercises[index]
+        : topRearDeltExercises[0];
+      return getExerciseObject(key, DELTS_REAR_EXERCISES);
+    case "triceps":
+      key = topLatBackExercises[index]
+        ? topLatBackExercises[index]
+        : topLatBackExercises[0];
+      return getExerciseObject(key, BACK_EXERCISES);
+    case "biceps":
+      key = topLatBackExercises[index]
+        ? topLatBackExercises[index]
+        : topLatBackExercises[0];
+      return getExerciseObject(key, BACK_EXERCISES);
+    case "traps":
+      key = topLatBackExercises[index]
+        ? topLatBackExercises[index]
+        : topLatBackExercises[0];
+      return getExerciseObject(key, BACK_EXERCISES);
+    case "forearms":
+      key = topLatBackExercises[index]
+        ? topLatBackExercises[index]
+        : topLatBackExercises[0];
+      return getExerciseObject(key, BACK_EXERCISES);
+    case "quads":
+      key = topLatBackExercises[index]
+        ? topLatBackExercises[index]
+        : topLatBackExercises[0];
+      return getExerciseObject(key, BACK_EXERCISES);
+    case "hamstrings":
+      key = topLatBackExercises[index]
+        ? topLatBackExercises[index]
+        : topLatBackExercises[0];
+      return getExerciseObject(key, BACK_EXERCISES);
+    case "glutes":
+      key = topLatBackExercises[index]
+        ? topLatBackExercises[index]
+        : topLatBackExercises[0];
+      return getExerciseObject(key, BACK_EXERCISES);
+    case "calves":
+      key = topLatBackExercises[index]
+        ? topLatBackExercises[index]
+        : topLatBackExercises[0];
+      return getExerciseObject(key, BACK_EXERCISES);
+    default:
+      key = topLatBackExercises[index]
+        ? topLatBackExercises[index]
+        : topLatBackExercises[0];
+      return getExerciseObject(key, BACK_EXERCISES);
+  }
+}
+
+const DELTS_REAR_EXERCISES: ExerciseType[] = [
   {
     name: "Rear Delt Flyes",
     rank: 1,
     group: "delts_rear",
     specification: "lat",
+    versions: ["dumbbell", "barbbell"],
     requirements: ["cable"],
     angle: [],
     variations: [],
@@ -235,6 +390,7 @@ const DELTS_REAR_EXERCISES = [
     rank: 2,
     group: "delts_rear",
     specification: "lat",
+    versions: ["dumbbell", "barbbell"],
     requirements: ["dumbbell"],
     angle: [],
     variations: ["bent-over", "chest-supported"],
@@ -244,6 +400,7 @@ const DELTS_REAR_EXERCISES = [
     rank: 3,
     group: "delts_rear",
     specification: "lat",
+    versions: ["dumbbell", "barbbell"],
     requirements: ["dumbbell", "barbell", "cable"],
     angle: [],
     variations: ["bent-over", "chest-supported"],
@@ -253,26 +410,20 @@ const DELTS_REAR_EXERCISES = [
     rank: 4,
     group: "delts_rear",
     specification: "lat",
+    versions: ["dumbbell", "barbbell"],
     requirements: ["cable"],
     angle: [],
     variations: [],
   },
 ];
 
-const angle = "seated";
-const equipment = "dumbbell";
-const variation = "lying";
-const name = "Shoulder Press";
-const exerciseKey = `${angle}_${equipment}_${name}`;
-
-export const topFrontDelts = ["1-1-0", "1-0-0", "1-1-1", "1-0-1", "3-0-0"];
-
-const DELTS_SIDE_FRONT_EXERCISES = [
+const DELTS_SIDE_FRONT_EXERCISES: ExerciseType[] = [
   {
     name: "Lateral Raise",
     rank: 1,
     group: "delts_side",
     specification: "lat",
+    versions: ["dumbbell", "barbbell"],
     requirements: ["dumbbell", "cable"],
     angle: [],
     variations: ["full-ROM", "chest-supported"],
@@ -282,6 +433,7 @@ const DELTS_SIDE_FRONT_EXERCISES = [
     rank: 2,
     group: "delts_side",
     specification: "lat",
+    versions: ["dumbbell", "barbbell"],
     requirements: ["dumbbell", "barbell", "cable"],
     angle: [],
     variations: [],
@@ -291,6 +443,7 @@ const DELTS_SIDE_FRONT_EXERCISES = [
     rank: 3,
     group: "delts_side",
     specification: "lat",
+    versions: ["dumbbell", "barbbell"],
     requirements: ["bench", "dumbbell"],
     angle: [],
     variations: [],
@@ -300,18 +453,20 @@ const DELTS_SIDE_FRONT_EXERCISES = [
     rank: 4,
     group: "delts_front",
     specification: "lat",
+    versions: ["dumbbell", "barbbell"],
     requirements: ["dumbbell", "barbell"],
     angle: [],
     variations: ["seated", "standing"],
   },
 ];
 
-const BICEPS_EXERCISES = [
+const BICEPS_EXERCISES: ExerciseType[] = [
   {
     name: "Biceps Curls",
     rank: 1,
     group: "biceps",
     specification: "lat",
+    versions: ["dumbbell", "barbbell"],
     requirements: ["cable", "dumbbell", "barbell", "ez-curl-bar"],
     angle: [],
     variations: [],
@@ -321,6 +476,7 @@ const BICEPS_EXERCISES = [
     rank: 2,
     group: "biceps",
     specification: "lat",
+    versions: ["dumbbell", "barbbell"],
     requirements: ["dumbbell", "machine", "cable"],
     angle: [],
     variations: [],
@@ -330,6 +486,7 @@ const BICEPS_EXERCISES = [
     rank: 3,
     group: "biceps",
     specification: "lat",
+    versions: ["dumbbell", "barbbell"],
     requirements: ["dumbbell"],
     angle: [],
     variations: ["bent-over", "chest-supported"],
@@ -339,6 +496,7 @@ const BICEPS_EXERCISES = [
     rank: 4,
     group: "biceps",
     specification: "lat",
+    versions: ["dumbbell", "barbbell"],
     requirements: ["dumbbell", "barbell"],
     angle: [],
     variations: ["bent-over", "chest-supported"],
@@ -348,6 +506,7 @@ const BICEPS_EXERCISES = [
     rank: 5,
     group: "biceps",
     specification: "lat",
+    versions: ["dumbbell", "barbbell"],
     requirements: ["cable"],
     angle: [],
     variations: [],

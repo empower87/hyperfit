@@ -48,14 +48,14 @@ function TableBody({ split }: { split: SessionType }) {
       <MesocycleCell>
         <Microcycle
           head={split.split}
-          body={split.testSets}
+          body={split.sets}
           bgColor={backgroundColor}
         />
       </MesocycleCell>
       <MesocycleCell>
         <Microcycle
           head={"week 1"}
-          body={split.testSets}
+          body={split.sets}
           bgColor={backgroundColor}
         />
       </MesocycleCell>
@@ -63,28 +63,28 @@ function TableBody({ split }: { split: SessionType }) {
       <MesocycleCell>
         <Microcycle
           head={"week 2"}
-          body={split.testSets}
+          body={split.sets}
           bgColor={backgroundColor}
         />
       </MesocycleCell>
       <MesocycleCell>
         <Microcycle
           head={"week 3"}
-          body={split.testSets}
+          body={split.sets}
           bgColor={backgroundColor}
         />
       </MesocycleCell>
       <MesocycleCell>
         <Microcycle
           head={"week 4"}
-          body={split.testSets}
+          body={split.sets}
           bgColor={backgroundColor}
         />
       </MesocycleCell>
       <MesocycleCell>
         <Microcycle
           head={"deload"}
-          body={split.testSets}
+          body={split.sets}
           bgColor={backgroundColor}
         />
       </MesocycleCell>
@@ -102,7 +102,7 @@ export function MesocycleTable({ split }: MesocycleTableProps) {
         <TableHeadColumns />
         <tbody className="">
           {split.map((each, index) => {
-            if (each.testSets.length) {
+            if (each.sets.length) {
               return (
                 <TableBody
                   key={`${each.split}_${index}_tablebodymesocycle`}

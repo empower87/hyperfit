@@ -7,11 +7,15 @@
     "frequency_min": 2,
     "frequency_max": 5,
     "MRV": [10, 20, 25, 30, 35],
-    "featureMatrix": [
-      [10, 20, 25, 30, 35, 35, 35],
-      [6, 6, 6, 6, 6, 6, 6],
-      [4, 4, 4, 4, 4, 4, 4]
+    "mrv_progression_matrix": [
+      ["2"],
+      ["2", "2"],
+      ["2", "3", "2"],
+      ["3", "3", "3", "2"],
+      ["3", "3", "3", "3", "2"]
     ],
+    "mev_progression_matrix": [["2"], ["2", "2"], ["2", "1", "1"]],
+    "mv_progression_matrix": [["3"], ["2", "2"], ["2", "2", "2"]],
     "mevToMrvProgression": [
       [2],
       [2, 2],
@@ -32,11 +36,15 @@
     "MRV": [12, 25, 25, 25, 25],
     "frequency_min": 1,
     "frequency_max": 7,
-    "featureMatrix": [
-      [12, 25, 25, 25, 25, 25, 25],
-      [6, 6, 6, 6, 6, 6, 6],
-      [0, 0, 0, 0, 0, 0, 0]
+    "mrv_progression_matrix": [
+      ["2"],
+      ["2", "2"],
+      ["3", "3", "2"],
+      ["4", "4", "3", "1"],
+      ["5", "5", "3", "2", "1"]
     ],
+    "mev_progression_matrix": [["2"], ["2", "2"], ["2", "1", "1"]],
+    "mv_progression_matrix": [],
     "mevToMrvProgression": [[2], [2, 3], [3, 4, 3], [3, 4, 4, 2]],
     "mvToMevProgression": [[3], [2, 2], [2, 2, 2]],
     "restPeriod": 1,
@@ -51,11 +59,15 @@
     "MRV": [10, 20, 25, 30, 35],
     "frequency_min": 2,
     "frequency_max": 4,
-    "featureMatrix": [
-      [10, 20, 25, 30, 35, 35, 35],
-      [10, 10, 10, 10, 10, 10, 10],
-      [6, 6, 6, 6, 6, 6, 6]
+    "mrv_progression_matrix": [
+      ["2-2"],
+      ["2-2", "2-2"],
+      ["2-3", "2-3", "2-2"],
+      ["3-3", "3-3", "2-3", "2"],
+      ["3-3", "3-3", "3-3", "3", "2"]
     ],
+    "mev_progression_matrix": [["3"], ["3", "2"], ["3", "3", "1"]],
+    "mv_progression_matrix": [["2-2"], ["2-3", "2"], ["2-2", "2", "1"]],
     "mevToMrvProgression": [
       [4],
       [4, 4],
@@ -76,11 +88,15 @@
     "MRV": [10, 20, 25, 30, 35],
     "frequency_min": 2,
     "frequency_max": 5,
-    "featureMatrix": [
-      [10, 20, 25, 30, 35, 35, 35],
-      [4, 4, 4, 4, 4, 4, 4],
-      [0, 0, 0, 0, 0, 0, 0]
+    "mrv_progression_matrix": [
+      ["3"],
+      ["2", "3"],
+      ["3", "4", "3"],
+      ["4", "4", "4", "2"],
+      ["4", "4", "4", "3", "1"]
     ],
+    "mev_progression_matrix": [["2"], ["2", "1"], ["2", "1", "1"]],
+    "mv_progression_matrix": [],
     "mevToMrvProgression": [
       [3],
       [2, 3],
@@ -101,11 +117,15 @@
     "MRV": [8, 16, 20, 25, 35],
     "frequency_min": 2,
     "frequency_max": 4,
-    "featureMatrix": [
-      [8, 16, 20, 25, 35, 35, 35],
-      [6, 6, 6, 6, 6, 6, 6],
-      [4, 4, 4, 4, 4, 4, 4]
+    "mrv_progression_matrix": [
+      ["2"],
+      ["2", "2"],
+      ["2", "3", "2"],
+      ["3", "3", "3", "2"],
+      ["3", "3", "3", "3", "2"]
     ],
+    "mev_progression_matrix": [["3"], ["2", "2"], ["2", "2", "1"]],
+    "mv_progression_matrix": [["2"], ["2", "2"], ["2", "2", "2"]],
     "mevToMrvProgression": [
       [2],
       [2, 2],
@@ -126,11 +146,15 @@
     "frequency_min": 2,
     "frequency_max": 4,
     "MRV": [10, 20, 25, 30, 35],
-    "featureMatrix": [
-      [10, 20, 25, 30, 35, 35, 35],
-      [6, 6, 6, 6, 6, 6, 6],
-      [4, 4, 4, 4, 4, 4, 4]
+    "mrv_progression_matrix": [
+      ["2-2"],
+      ["2-2", "2-2"],
+      ["2-3", "2-3", "2"],
+      ["3-3", "3-3", "3", "2"],
+      ["3-3", "3-3", "4", "3", "2"]
     ],
+    "mev_progression_matrix": [["3"], ["3", "2"], ["3", "3", "1"]],
+    "mv_progression_matrix": [["2"], ["2", "2"]],
     "mevToMrvProgression": [
       [4],
       [4, 4],
@@ -151,11 +175,15 @@
     "frequency_min": 2,
     "frequency_max": 4,
     "MRV": [9, 18, 22, 26, 30],
-    "featureMatrix": [
-      [9, 18, 22, 26, 30, 30, 30],
-      [8, 8, 8, 8, 8, 8, 8],
-      [6, 6, 6, 6, 6, 6, 6]
+    "mrv_progression_matrix": [
+      ["2-2"],
+      ["2-2", "2-2"],
+      ["2-3", "2-3", "3"],
+      ["3-3", "3-3", "4", "2"],
+      ["3-3", "3-3", "5", "3", "1"]
     ],
+    "mev_progression_matrix": [["3"], ["3", "2"], ["3", "3", "1"]],
+    "mv_progression_matrix": [["2"], ["2", "2"]],
     "mevToMrvProgression": [
       [4],
       [4, 4],
@@ -176,11 +204,14 @@
     "frequency_min": 2,
     "frequency_max": 4,
     "MRV": [6, 12, 16, 18, 18],
-    "featureMatrix": [
-      [6, 12, 16, 18, 18, 18, 18],
-      [4, 4, 4, 4, 4, 4, 4],
-      [3, 3, 3, 3, 3, 3, 3]
+    "mrv_progression_matrix": [
+      ["3"],
+      ["2", "3"],
+      ["3", "4", "3"],
+      ["3", "4", "4", "2"]
     ],
+    "mev_progression_matrix": [["2"], ["2", "2"], ["2", "1", "1"]],
+    "mv_progression_matrix": [["2"]],
     "mevToMrvProgression": [[2], [2, 3], [3, 4, 3], [3, 4, 4, 2]],
     "mvToMevProgression": [[3], [2, 1], [2, 1, 1]],
     "restPeriod": 2,
@@ -195,11 +226,15 @@
     "frequency_min": 2,
     "frequency_max": 4,
     "MRV": [6, 12, 18, 25, 30],
-    "featureMatrix": [
-      [6, 12, 18, 25, 30, 30, 30],
-      [0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0]
+    "mrv_progression_matrix": [
+      ["2"],
+      ["2", "3"],
+      ["3", "4", "3"],
+      ["3", "4", "4", "2"],
+      ["4", "4", "4", "3", "2"]
     ],
+    "mev_progression_matrix": [],
+    "mv_progression_matrix": [],
     "mevToMrvProgression": [
       [2],
       [2, 3],
@@ -220,11 +255,14 @@
     "frequency_min": 2,
     "frequency_max": 4,
     "MRV": [6, 12, 16, 16, 16],
-    "featureMatrix": [
-      [6, 12, 16, 16, 16, 16, 16],
-      [0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0]
+    "mrv_progression_matrix": [
+      ["2"],
+      ["2", "3"],
+      ["3", "4", "3"],
+      ["3", "4", "4", "2"]
     ],
+    "mev_progression_matrix": [],
+    "mv_progression_matrix": [],
     "mevToMrvProgression": [[2], [2, 3], [3, 4, 3]],
     "mvToMevProgression": [[0], [0, 0], [0, 0, 0]],
     "restPeriod": 2,
@@ -239,11 +277,15 @@
     "frequency_min": 2,
     "frequency_max": 5,
     "MRV": [12, 25, 30, 35, 40],
-    "featureMatrix": [
-      [12, 25, 30, 35, 40, 40, 40],
-      [8, 8, 8, 8, 8, 8, 8],
-      [6, 6, 6, 6, 6, 6, 6]
+    "mrv_progression_matrix": [
+      ["2-2"],
+      ["2-2", "2-2"],
+      ["2-3", "2-3", "2-2"],
+      ["3-3", "3-3", "2-3", "2"],
+      ["3-3", "3-3", "3-3", "3", "2"]
     ],
+    "mev_progression_matrix": [["3"], ["3", "2"], ["3", "3", "1"]],
+    "mv_progression_matrix": [["3"], ["2", "2"], ["2", "2", "2"]],
     "mevToMrvProgression": [
       [4],
       [4, 4],
@@ -265,11 +307,15 @@
     "MRV": [9, 18, 25, 30, 35],
     "frequency_min": 2,
     "frequency_max": 5,
-    "featureMatrix": [
-      [9, 18, 25, 30, 35, 35, 35],
-      [6, 6, 6, 6, 6, 6, 6],
-      [0, 0, 0, 0, 0, 0, 0]
+    "mrv_progression_matrix": [
+      ["2"],
+      ["3", "3"],
+      ["3", "3", "3"],
+      ["4", "4", "4", "3"],
+      ["5", "5", "5", "4", "3"]
     ],
+    "mev_progression_matrix": [["3"], ["2", "2"], ["2", "2", "2"]],
+    "mv_progression_matrix": [],
     "mevToMrvProgression": [
       [3],
       [3, 3],
@@ -290,11 +336,15 @@
     "MRV": [8, 16, 20, 25, 35],
     "frequency_min": 2,
     "frequency_max": 5,
-    "featureMatrix": [
-      [8, 16, 20, 25, 35, 35, 35],
-      [8, 8, 8, 8, 8, 8, 8],
-      [6, 6, 6, 6, 6, 6, 6]
+    "mrv_progression_matrix": [
+      ["2"],
+      ["3", "3"],
+      ["3", "3", "3"],
+      ["4", "4", "4", "3"],
+      ["5", "5", "5", "4", "3"]
     ],
+    "mev_progression_matrix": [["3"], ["3", "2"], ["3", "2", "1"]],
+    "mv_progression_matrix": [["3"], ["2", "2"], ["2", "2", "2"]],
     "mevToMrvProgression": [
       [2],
       [2, 3],
@@ -315,11 +365,15 @@
     "MRV": [8, 15, 20, 25, 25],
     "frequency_min": 2,
     "frequency_max": 5,
-    "featureMatrix": [
-      [8, 15, 20, 25, 25, 25, 25],
-      [2, 2, 2, 2, 2, 2, 2],
-      [0, 0, 0, 0, 0, 0, 0]
+    "mrv_progression_matrix": [
+      ["2"],
+      ["3", "3"],
+      ["3", "3", "3"],
+      ["4", "4", "4", "3"],
+      ["5", "5", "5", "4", "3"]
     ],
+    "mev_progression_matrix": [["2"]],
+    "mv_progression_matrix": [],
     "mevToMrvProgression": [
       [2],
       [2, 3],

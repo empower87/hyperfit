@@ -134,7 +134,7 @@ function TH({
   return (
     <th
       className={bgColor + " border-2 border-slate-600 text-white"}
-      style={{ fontSize: "8px", width: `${width}px` }}
+      style={{ fontSize: "8px", width: `${width}%` }}
     >
       {text}
     </th>
@@ -197,7 +197,7 @@ export default function Microcycle({ head, body, bgColor }: TableCellProps) {
   const widths =
     heads.length === 5 ? SESSION : heads.length === 4 ? WEEK_1 : WEEK_2PLUS;
   return (
-    <table className="w-full border-collapse border-spacing-2">
+    <table className="w-full table-fixed border-collapse border-spacing-2">
       <thead className="border-2 border-slate-700 ">
         <tr className="leading-3">
           {heads.map((each, index) => {
@@ -228,38 +228,6 @@ export default function Microcycle({ head, body, bgColor }: TableCellProps) {
     </table>
   );
 }
-
-// const SessionTR = ({ exercises, index }: { exercises: ExerciseType[], index: number}) => {
-//   return (
-//     <tr className="leading-none">
-//       <TD
-//         value={`${index}`}
-//         rank={each.rank}
-//         bottomBorder={hasBorder}
-//       />
-//       <TD
-//         value={`${each.group}`}
-//         rank={each.rank}
-//         bottomBorder={hasBorder}
-//       />
-//       <TD
-//         value={`${each.exercise}`}
-//         rank={each.rank}
-//         bottomBorder={hasBorder}
-//       />
-//       <TD
-//         value={`dumbbell`}
-//         rank={each.rank}
-//         bottomBorder={hasBorder}
-//       />
-//       <TD
-//         value={`straight`}
-//         rank={each.rank}
-//         bottomBorder={hasBorder}
-//       />
-//     </tr>
-//   )
-// }
 
 const TR = ({
   exercises,
@@ -306,6 +274,35 @@ const TR = ({
               />
             </tr>
           );
+        } else if (head === "week 1") {
+          return (
+            <tr className="leading-none">
+              <TD
+                value={each.sets}
+                rank={each.rank}
+                bottomBorder={hasBorder}
+                center="text-center"
+              />
+              <TD
+                value={each.reps}
+                rank={each.rank}
+                bottomBorder={hasBorder}
+                center="text-center"
+              />
+              <TD
+                value={each.weight}
+                rank={each.rank}
+                bottomBorder={hasBorder}
+                center="text-center"
+              />
+              <TD
+                value={each.rir}
+                rank={each.rank}
+                bottomBorder={hasBorder}
+                center="text-center"
+              />
+            </tr>
+          );
         } else {
           return (
             <tr className="leading-none">
@@ -315,14 +312,6 @@ const TR = ({
                 bottomBorder={hasBorder}
                 center="text-center"
               />
-              {head === "week 1" && (
-                <TD
-                  value={each.reps}
-                  rank={each.rank}
-                  bottomBorder={hasBorder}
-                  center="text-center"
-                />
-              )}
               <TD
                 value={each.weight}
                 rank={each.rank}

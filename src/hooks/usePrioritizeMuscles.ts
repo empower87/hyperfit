@@ -140,7 +140,6 @@ const updateMuscleListSets = (
 
   for (let i = 0; i < items.length; i++) {
     const muscleData = getMuscleData(items[i].muscle);
-    const { featureMatrix } = muscleData;
 
     let rank = i < MRV_RANK ? 0 : i >= MRV_RANK && i < MEV_RANK ? 1 : 2;
 
@@ -175,10 +174,6 @@ const updateMuscleListSets = (
         items[i] = { ...items[i], mesoProgression: [1, 1, 1] };
       }
     }
-
-    const sets = featureMatrix[rank];
-
-    items[i] = { ...items[i], sets: sets };
   }
   return items;
 };
@@ -192,7 +187,6 @@ const updateWorkoutSplit = (split: ("upper" | "lower" | "full")[]) => {
     totalSets: 0,
     maxSets: 30,
     split: "full",
-    testSets: [],
   };
 
   for (let i = 0; i < split.length; i++) {

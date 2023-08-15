@@ -1,11 +1,4 @@
-import { SessionType } from "~/pages";
-import { getMuscleData } from "./getMuscleData";
-
-export const mesocycleProgression = (workoutSplit: SessionType[]) => {};
-
-const progressMEVmeso1 = (name: string) => {
-  const data = getMuscleData(name);
-};
+import { MusclePriorityType } from "~/pages";
 
 export const subtractSetsForMeso = (sets: [string, number][]) => {
   // let count = setsToSubtract
@@ -121,7 +114,18 @@ export const subtractSetsForMeso = (sets: [string, number][]) => {
   return tableMatrix;
 };
 
-const finalMeso = () => {};
+const MUSCLE = {
+  session: "upper",
+  name: "back",
+  exercises: [],
+};
+const SESSION = {
+  session: "upper",
+};
+
+const finalMeso = (list: MusclePriorityType[], sessions: number[]) => {
+  for (let i = 0; i < list.length; i++) {}
+};
 
 //  meso 1  |  wk 1  |  wk 2  |  wk 3  |  wk 4  |  deload
 //  =======================================================

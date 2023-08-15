@@ -122,11 +122,10 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
 
 export type SessionType = {
   day: number;
-  sets: [string, number][];
+  sets: ExerciseType[][];
   totalSets: number;
   maxSets: number;
   split: "full" | "upper" | "lower";
-  testSets: ExerciseType[][];
 };
 
 const Home: NextPage = () => {
