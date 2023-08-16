@@ -14,6 +14,7 @@ type MuscleTypeForTable = {
 export type ExerciseType = {
   exercise: string;
   group: string;
+  session: number;
   rank: "MRV" | "MEV" | "MV";
   sets: number;
   reps: number;
@@ -25,6 +26,7 @@ const exercise: ExerciseType = {
   exercise: "Triceps Extension (cable, single-arm)",
   group: "back",
   rank: "MRV",
+  session: 1,
   sets: 2,
   reps: 10,
   weight: 100,
@@ -33,6 +35,7 @@ const exercise: ExerciseType = {
 
 const getIt = (
   index: number,
+  split: SessionType[],
   name: string,
   mesoProgress: number,
   key: VolumeKey
@@ -56,21 +59,23 @@ const getIt = (
   for (let i = 0; i < volume_matrix?.length; i++) {
     let exerciseList: ExerciseType[] = [];
 
-    const split = volume_matrix[i].split("-").map((each) => parseInt(each));
+    const splitVol = volume_matrix[i].split("-").map((each) => parseInt(each));
 
-    if (split.length > 1) {
+    if (splitVol.length > 1) {
       exerciseList.push(
         {
           ...exercise,
           rank: volume_landmark,
-          sets: split[0],
+          sets: splitVol[0],
+          session: split[i] ? split[i].day : 1,
           group: data.name,
           exercise: getExercise(data.name, count).name,
         },
         {
           ...exercise,
           rank: volume_landmark,
-          sets: split[1],
+          sets: splitVol[1],
+          session: split[i] ? split[i].day : 1,
           group: data.name,
           exercise: getExercise(data.name, count + 1).name,
         }
@@ -80,7 +85,8 @@ const getIt = (
       exerciseList.push({
         ...exercise,
         rank: volume_landmark,
-        sets: split[0],
+        sets: splitVol[0],
+        session: split[i] ? split[i].day : 1,
         group: data.name,
         exercise: getExercise(data.name, count).name,
       });
@@ -118,11 +124,11 @@ const doIt = (
       exercisesForSessions.push(0);
     }
   }
-
+  console.log(exercisesForSessions, obj, split, "LETS TAKE A LOOK");
   return exercisesForSessions;
 };
 
-type VolumeKey =
+export type VolumeKey =
   | "mrv_progression_matrix"
   | "mev_progression_matrix"
   | "mv_progression_matrix";
@@ -135,7 +141,6 @@ const getMesocycle = (
   let meso = [...split];
 
   for (let i = 0; i < list.length; i++) {
-    // const data = getMuscleData(list[i].muscle);
     let key: VolumeKey =
       i < MRV_RANK
         ? "mrv_progression_matrix"
@@ -144,18 +149,15 @@ const getMesocycle = (
         : "mv_progression_matrix";
     let initial_frequency = list[i].mesoProgression[mesoNum];
     let freq_index = initial_frequency > 0 ? initial_frequency - 1 : 0;
-    // let progression = data[key]
 
-    const gotIt = getIt(i, list[i].muscle, freq_index, key);
+    const gotIt = getIt(i, split, list[i].muscle, freq_index, key);
 
-    if (gotIt) {
-      let newMeso1 = doIt(split, list[i].mesoProgression, mesoNum, gotIt);
+    let newMeso1 = doIt(split, list[i].mesoProgression, mesoNum, gotIt);
 
-      for (let j = 0; j < meso.length; j++) {
-        let sets = newMeso1[j];
-        if (typeof sets !== "number" && typeof sets !== "undefined") {
-          meso[j] = { ...meso[j], sets: [...meso[j].sets, sets] };
-        }
+    for (let j = 0; j < meso.length; j++) {
+      let sets = newMeso1[j];
+      if (typeof sets !== "number" && typeof sets !== "undefined") {
+        meso[j] = { ...meso[j], sets: [...meso[j].sets, sets] };
       }
     }
   }

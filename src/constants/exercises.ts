@@ -253,7 +253,7 @@ export const topSideDeltExercises = [
 ];
 
 export const topUpperBackExercises = [
-  "2_0_3_0_1",
+  "2_0_4_0_1",
   "3_1_0_0_1",
   "2_0_0_0_6",
   "1_0_1_4_1",
@@ -304,7 +304,9 @@ export function getExercise(group: string, index: number) {
   switch (group) {
     case "back":
       key =
-        index % 0 ? topLatBackExercises[index] : topUpperBackExercises[index];
+        index % 2 === 0
+          ? topLatBackExercises[index]
+          : topUpperBackExercises[index];
       return getExerciseObject(key, BACK_EXERCISES);
     case "chest":
       key = topLatBackExercises[index]

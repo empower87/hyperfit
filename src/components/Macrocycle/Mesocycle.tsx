@@ -43,6 +43,7 @@ function TableBody({ split }: { split: SessionType }) {
       : split.split === "lower"
       ? "bg-red-400"
       : "bg-purple-400";
+
   return (
     <tr className="">
       <MesocycleCell>
@@ -52,6 +53,7 @@ function TableBody({ split }: { split: SessionType }) {
           bgColor={backgroundColor}
         />
       </MesocycleCell>
+
       <MesocycleCell>
         <Microcycle
           head={"week 1"}
@@ -67,6 +69,7 @@ function TableBody({ split }: { split: SessionType }) {
           bgColor={backgroundColor}
         />
       </MesocycleCell>
+
       <MesocycleCell>
         <Microcycle
           head={"week 3"}
@@ -74,6 +77,7 @@ function TableBody({ split }: { split: SessionType }) {
           bgColor={backgroundColor}
         />
       </MesocycleCell>
+
       <MesocycleCell>
         <Microcycle
           head={"week 4"}
@@ -81,6 +85,7 @@ function TableBody({ split }: { split: SessionType }) {
           bgColor={backgroundColor}
         />
       </MesocycleCell>
+
       <MesocycleCell>
         <Microcycle
           head={"deload"}

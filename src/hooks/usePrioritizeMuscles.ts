@@ -1,8 +1,10 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { MEV_RANK, MRV_RANK } from "src/constants/prioritizeRanks";
+import { getExercise } from "~/constants/exercises";
 import { LOWER_MUSCLES, UPPER_MUSCLES } from "~/constants/workoutSplits";
 import { MusclePriorityType, SessionType } from "~/pages";
 import { getMuscleData } from "../utils/getMuscleData";
+import { ExerciseType, VolumeKey } from "./useTrainingBlock";
 
 export type SessionSplitType = "upper" | "lower" | "full";
 
@@ -141,40 +143,115 @@ const updateMuscleListSets = (
   for (let i = 0; i < items.length; i++) {
     const muscleData = getMuscleData(items[i].muscle);
 
-    let rank = i < MRV_RANK ? 0 : i >= MRV_RANK && i < MEV_RANK ? 1 : 2;
+    let key: VolumeKey =
+      i < MRV_RANK
+        ? "mrv_progression_matrix"
+        : i >= MRV_RANK && i < MEV_RANK
+        ? "mev_progression_matrix"
+        : "mv_progression_matrix";
 
-    let sessions = lower.length;
+    let sessions = lower;
+
+    const volume_landmark =
+      i < MRV_RANK ? "MRV" : i >= MRV_RANK && i < MEV_RANK ? "MEV" : "MV";
+
     if (UPPER_MUSCLES.includes(items[i].muscle)) {
-      sessions = upper.length;
+      sessions = upper;
     }
 
-    if (rank === 0) {
-      let prog = getMesoProgression(sessions);
-      items[i] = { ...items[i], mesoProgression: prog };
-    } else if (rank === 1) {
-      if (sessions <= 2) items[i] = { ...items[i], mesoProgression: [1, 2, 2] };
-      else if (
+    let mesoProgression = [1, 1, 1];
+    let index = mesoProgression[mesoProgression.length - 1];
+    let matrixIndex = 0;
+
+    if (key === "mrv_progression_matrix") {
+      let prog = getMesoProgression(sessions.length);
+      mesoProgression = prog;
+      matrixIndex = prog[prog.length - 1] - 1;
+    } else if (key === "mev_progression_matrix") {
+      if (sessions.length <= 2) {
+        mesoProgression = [1, 2, 2];
+        matrixIndex = 1;
+      } else if (
         items[i].muscle === "back" ||
         items[i].muscle === "quads" ||
         items[i].muscle === "calves"
       ) {
-        items[i] = { ...items[i], mesoProgression: [2, 3, 3] };
-      } else {
-        items[i] = { ...items[i], mesoProgression: [1, 1, 1] };
+        mesoProgression = [2, 3, 3];
+        matrixIndex = 2;
       }
     } else {
-      if (sessions <= 1) items[i] = { ...items[i], mesoProgression: [1, 1, 1] };
-      else if (
+      if (
         items[i].muscle === "back" ||
         items[i].muscle === "quads" ||
         items[i].muscle === "calves"
       ) {
-        items[i] = { ...items[i], mesoProgression: [1, 2, 2] };
-      } else {
-        items[i] = { ...items[i], mesoProgression: [1, 1, 1] };
+        mesoProgression = [1, 2, 2];
+        matrixIndex = 1;
       }
     }
+
+    let matrix = muscleData[key][matrixIndex];
+    let exercises: ExerciseType[][] = [];
+
+    const exercise: ExerciseType = {
+      exercise: "Triceps Extension (cable, single-arm)",
+      group: "back",
+      rank: "MRV",
+      session: 1,
+      sets: 2,
+      reps: 10,
+      weight: 100,
+      rir: 3,
+    };
+
+    let count = 0;
+    for (let j = 0; j < matrix?.length; j++) {
+      let exerciseList: ExerciseType[] = [];
+
+      const splitVol = matrix[j].split("-").map((each) => parseInt(each));
+
+      console.log(matrix, splitVol, "WHAT IS GOING ON???");
+      if (splitVol.length > 1) {
+        exerciseList.push(
+          {
+            ...exercise,
+            rank: volume_landmark,
+            sets: splitVol[0],
+            session: j,
+            group: muscleData.name,
+            exercise: getExercise(muscleData.name, count).name,
+          },
+          {
+            ...exercise,
+            rank: volume_landmark,
+            sets: splitVol[1],
+            session: j,
+            group: muscleData.name,
+            exercise: getExercise(muscleData.name, count + 1).name,
+          }
+        );
+        count = count + 2;
+      } else {
+        exerciseList.push({
+          ...exercise,
+          rank: volume_landmark,
+          sets: splitVol[0],
+          session: j,
+          group: muscleData.name,
+          exercise: getExercise(muscleData.name, count).name,
+        });
+        count = count + 1;
+      }
+      exercises.push(exerciseList);
+    }
+
+    items[i] = {
+      ...items[i],
+      mesoProgression: mesoProgression,
+      exercises: exercises,
+    };
   }
+  console.log(items, "HAS THIS CHANGED???");
   return items;
 };
 

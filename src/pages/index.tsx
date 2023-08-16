@@ -15,6 +15,7 @@ export type MusclePriorityType = {
   muscle: string;
   sets: number[];
   mesoProgression: number[];
+  exercises: ExerciseType[][];
 };
 
 export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
@@ -24,6 +25,7 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
     muscle: "back",
     sets: [10, 20, 25, 30, 35, 35, 35],
     mesoProgression: [0, 0, 0],
+    exercises: [],
   },
   {
     id: "delts_side-008",
@@ -31,6 +33,7 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
     muscle: "delts_side",
     sets: [12, 25, 30, 35, 40, 40, 40],
     mesoProgression: [0, 0, 0],
+    exercises: [],
   },
   {
     id: "triceps-014",
@@ -38,6 +41,7 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
     muscle: "triceps",
     sets: [8, 16, 20, 25, 35, 35, 35],
     mesoProgression: [0, 0, 0],
+    exercises: [],
   },
   {
     id: "hamstrings-011",
@@ -45,6 +49,7 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
     muscle: "hamstrings",
     sets: [6, 12, 16, 18, 18, 18, 18],
     mesoProgression: [0, 0, 0],
+    exercises: [],
   },
   {
     id: "quads-012",
@@ -52,6 +57,7 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
     muscle: "quads",
     sets: [8, 8, 8, 8, 8, 8, 8],
     mesoProgression: [0, 0, 0],
+    exercises: [],
   },
   {
     id: "delts_rear-007",
@@ -59,6 +65,7 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
     muscle: "delts_rear",
     sets: [6, 6, 6, 6, 6, 6, 6],
     mesoProgression: [0, 0, 0],
+    exercises: [],
   },
   {
     id: "forearms-009",
@@ -66,6 +73,7 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
     muscle: "forearms",
     sets: [2, 2, 2, 2, 2, 2, 2],
     mesoProgression: [0, 0, 0],
+    exercises: [],
   },
   {
     id: "traps-013",
@@ -73,6 +81,7 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
     muscle: "traps",
     sets: [4, 4, 4, 4, 4, 4, 4],
     mesoProgression: [0, 0, 0],
+    exercises: [],
   },
   {
     id: "biceps-003",
@@ -80,6 +89,7 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
     muscle: "biceps",
     sets: [6, 6, 6, 6, 6, 6, 6],
     mesoProgression: [0, 0, 0],
+    exercises: [],
   },
 
   {
@@ -88,6 +98,7 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
     muscle: "chest",
     sets: [4, 4, 4, 4, 4, 4, 4],
     mesoProgression: [0, 0, 0],
+    exercises: [],
   },
   {
     id: "calves-004",
@@ -95,6 +106,7 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
     muscle: "calves",
     sets: [6, 6, 6, 6, 6, 6, 6],
     mesoProgression: [0, 0, 0],
+    exercises: [],
   },
 
   {
@@ -103,6 +115,7 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
     muscle: "delts_front",
     sets: [0, 0, 0, 0, 0, 0, 0],
     mesoProgression: [0, 0, 0],
+    exercises: [],
   },
   {
     id: "abs-001",
@@ -110,6 +123,7 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
     muscle: "abs",
     sets: [0, 0, 0, 0, 0, 0, 0],
     mesoProgression: [0, 0, 0],
+    exercises: [],
   },
   {
     id: "glutes-010",
@@ -117,6 +131,7 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
     muscle: "glutes",
     sets: [0, 0, 0, 0, 0, 0, 0],
     mesoProgression: [0, 0, 0],
+    exercises: [],
   },
 ];
 
