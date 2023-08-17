@@ -32,7 +32,6 @@ const getLowerPosition = (list: MusclePriorityType[]) => {
       break;
     }
   }
-
   // 4 = MAX_MRV
   // 3 = FULL_MRV
   // 2, 2 = FULL_MRV
@@ -41,7 +40,6 @@ const getLowerPosition = (list: MusclePriorityType[]) => {
   // 1, 1 = LOW_MRV
   // 0, 1 = MEV
   // 0 = MV
-
   switch (priority[1]) {
     case 4:
       return "MAX_MRV";
@@ -73,10 +71,12 @@ const getTrainingSplit = (
   const lowerRank = getLowerPosition(list);
 
   switch (sessions) {
-    case 2:
-      return ["full", "full"];
+    // case 2:
+    //   return ["full", "full"];
+    // case 3:
+    //   return ["full", "full", "full"];
     case 3:
-      return ["full", "full", "full"];
+      return ["upper", "lower", "upper"];
     case 4:
       return ["upper", "upper", "lower", "lower"];
     case 5:
@@ -111,6 +111,16 @@ const getTrainingSplit = (
       }
     case 7:
       return ["upper", "upper", "upper", "lower", "lower", "lower", "full"];
+
+    case 8:
+
+    case 12:
+      // push pull legs push pull legs
+      // legs push pull legs push pull
+
+      // push upper upper upper upper upper upper
+      // lower lower lower lower lower lower lower
+      return [];
     default:
       return ["full"];
   }
@@ -160,7 +170,6 @@ const updateMuscleListSets = (
     }
 
     let mesoProgression = [1, 1, 1];
-    let index = mesoProgression[mesoProgression.length - 1];
     let matrixIndex = 0;
 
     if (key === "mrv_progression_matrix") {
@@ -205,6 +214,7 @@ const updateMuscleListSets = (
     };
 
     let count = 0;
+
     for (let j = 0; j < matrix?.length; j++) {
       let exerciseList: ExerciseType[] = [];
 
@@ -217,7 +227,7 @@ const updateMuscleListSets = (
             ...exercise,
             rank: volume_landmark,
             sets: splitVol[0],
-            session: j,
+            session: j + 1,
             group: muscleData.name,
             exercise: getExercise(muscleData.name, count).name,
           },
@@ -225,7 +235,7 @@ const updateMuscleListSets = (
             ...exercise,
             rank: volume_landmark,
             sets: splitVol[1],
-            session: j,
+            session: j + 1,
             group: muscleData.name,
             exercise: getExercise(muscleData.name, count + 1).name,
           }
@@ -236,7 +246,7 @@ const updateMuscleListSets = (
           ...exercise,
           rank: volume_landmark,
           sets: splitVol[0],
-          session: j,
+          session: j + 1,
           group: muscleData.name,
           exercise: getExercise(muscleData.name, count).name,
         });

@@ -1,15 +1,17 @@
 import { ReactNode } from "react";
 
-const TOTAL_WORKOUTS = [1, 2, 3, 4, 5, 6, 7];
-
 type PromptCardProps = {
   title: string;
   children: ReactNode;
 };
 
 export const FrequencySelect = ({
+  title,
+  options,
   onChange,
 }: {
+  title: string;
+  options: number[];
   onChange: (value: number) => void;
 }) => {
   const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -18,15 +20,12 @@ export const FrequencySelect = ({
   };
   return (
     <>
-      <p className="p-1 text-slate-700">
-        Max sessions you can ideally commit to:
-        {/* --- this should probably be the max amount of sessions a week so as to progress toward --- */}
-      </p>
+      <p className="p-1 text-slate-700">{title}</p>
 
       <select onChange={handleSelectChange}>
-        {TOTAL_WORKOUTS.map((option) => (
+        {options.map((option) => (
           <option key={option} value={option}>
-            {option}
+            {option === 7 ? `${option}: Not Recommended` : option}
           </option>
         ))}
       </select>
@@ -41,7 +40,7 @@ export default function PromptCardLayout({ title, children }: PromptCardProps) {
         <div className="w-full rounded-t-sm bg-slate-700">
           <h2 className="ml-1 p-1 text-white">{title}</h2>
         </div>
-        <div className="flex">{children}</div>
+        <div className="flex flex-col">{children}</div>
       </div>
     </div>
   );

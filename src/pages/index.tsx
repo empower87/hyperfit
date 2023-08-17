@@ -142,16 +142,28 @@ export type SessionType = {
   maxSets: number;
   split: "full" | "upper" | "lower";
 };
+const OPTIONS = [1, 2, 3, 4, 5, 6, 7];
 
 const Home: NextPage = () => {
-  const [totalWorkouts, setTotalWorkouts] = useState<number>(0);
+  const [totalSessionsPerWeek, setTotalSessionsPerWeek] = useState<number>(3);
+  const [totalDoubleSessionsPerWeek, setTotalDoubleSessionsPerWeek] =
+    useState<number>(0);
+
+  const [showPrompt, setShowPrompt] = useState<boolean>(false);
+  const [showMultipleSessionsPrompt, setShowMultipleSessionsPrompt] =
+    useState<boolean>(false);
   const [workoutSplit, setWorkoutSplit] = useState<SessionType[]>([]);
   const [musclePriority, setMusclePriority] = useState<MusclePriorityType[]>([
     ...MUSCLE_PRIORITY_LIST,
   ]);
 
   const handleSelectChange = (value: number) => {
-    setTotalWorkouts(value);
+    if (showPrompt) {
+      setTotalDoubleSessionsPerWeek(value);
+    } else {
+      setTotalSessionsPerWeek(value);
+      setShowMultipleSessionsPrompt(true);
+    }
   };
 
   return (
@@ -161,13 +173,38 @@ const Home: NextPage = () => {
       <div className="flex h-full w-full flex-row justify-center">
         <div className="flex w-1/4 flex-col border-r-2 border-slate-700">
           <PromptCardLayout title="Frequency">
-            <FrequencySelect onChange={handleSelectChange} />
+            <FrequencySelect
+              title="Weekly Sessions: How many days per week you can train?"
+              options={OPTIONS.slice(2)}
+              onChange={handleSelectChange}
+            />
+            {showMultipleSessionsPrompt && (
+              <div>
+                <p>Will you be training twice on any of these days?</p>
+                <button onClick={() => setShowPrompt(true)}>yes</button>
+                <button
+                  onClick={() => {
+                    setShowMultipleSessionsPrompt(false);
+                    setShowPrompt(false);
+                  }}
+                >
+                  no
+                </button>
+              </div>
+            )}
+            {showPrompt && (
+              <FrequencySelect
+                title="Daily Sessions: How many daily sessions will you be training double?"
+                options={OPTIONS.slice(0, totalSessionsPerWeek)}
+                onChange={handleSelectChange}
+              />
+            )}
           </PromptCardLayout>
 
           <PrioritySectionLayout>
-            {totalWorkouts > 0 ? (
+            {totalSessionsPerWeek > 0 ? (
               <PrioritizeFocus
-                totalWorkouts={totalWorkouts}
+                totalWorkouts={totalSessionsPerWeek}
                 musclePriority={musclePriority}
                 setMusclePriority={setMusclePriority}
                 setWorkoutSplit={setWorkoutSplit}
