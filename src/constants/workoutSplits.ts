@@ -49,16 +49,18 @@ export const PUSH_MUSCLES = [
   "chest",
   "triceps",
   "delts_front",
-  "delts_side",
-  "traps",
+  // "delts_side",
+  // "traps",
 ];
-
+export const PUSH_AND_PULL_MUSCLES = ["delts_side", "traps"];
 export const PULL_MUSCLES = [
   "back",
   "biceps",
-  "delts_side",
+  // "delts_side",
   "delts_rear",
-  "traps",
+  // "traps",
 ];
+
+export const ANY_MUSCLES = ["delts_side", "traps", "abs", "forearms"];
 
 export const PERIPHERAL_MUSCLES = ["forearms", "abs", "calves"];

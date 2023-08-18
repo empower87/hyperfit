@@ -4,6 +4,7 @@ import { MEV_RANK, MRV_RANK } from "~/constants/prioritizeRanks";
 import { UPPER_MUSCLES } from "~/constants/workoutSplits";
 import { MusclePriorityType, SessionType } from "~/pages";
 import { getMuscleData } from "~/utils/getMuscleData";
+import { getPushPosition } from "./usePrioritizeMuscles";
 
 type MuscleTypeForTable = {
   name: string;
@@ -176,7 +177,8 @@ export default function useTrainingBlock(
     let meso2 = getMesocycle([...split], list, 1);
     let meso3 = getMesocycle([...split], list, 2);
 
-    console.log([meso1, meso2, meso3], list, "ERROR: USE MACRO");
+    const data = getPushPosition(list, split.length);
+    // console.log([meso1, meso2, meso3], list, "ERROR: USE MACRO");
     setTrainingBlock([meso1, meso2, meso3]);
   }, [split, list]);
 

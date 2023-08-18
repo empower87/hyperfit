@@ -1,12 +1,96 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { MEV_RANK, MRV_RANK } from "src/constants/prioritizeRanks";
 import { getExercise } from "~/constants/exercises";
-import { LOWER_MUSCLES, UPPER_MUSCLES } from "~/constants/workoutSplits";
+import {
+  LOWER_MUSCLES,
+  PULL_MUSCLES,
+  PUSH_AND_PULL_MUSCLES,
+  PUSH_MUSCLES,
+  UPPER_MUSCLES,
+} from "~/constants/workoutSplits";
 import { MusclePriorityType, SessionType } from "~/pages";
 import { getMuscleData } from "../utils/getMuscleData";
 import { ExerciseType, VolumeKey } from "./useTrainingBlock";
 
 export type SessionSplitType = "upper" | "lower" | "full";
+
+// const getSessionType = (name: string) => {
+//   if (PUSH_MUSCLES.includes(name)) {
+//     return "push"
+//   } else if (PULL_MUSCLES.includes(name)) {
+//     return "pull"
+//   } else if (LOWER_MUSCLES.includes(name)) {
+//     return "lower"
+//   } else {
+//     return "any"
+//   }
+// }
+const initializeSessions = (sessions: number) => {
+  switch (sessions) {
+    case 3:
+      return [2, 2, 2];
+    case 4:
+      // lower full full upper
+
+      return [3, 3, 3];
+    case 5:
+      return [4, 4, 3];
+    case 6:
+      // max - 4 - 1 - 1
+
+      return [4, 4, 3];
+
+    case 7:
+      return [1, 1, 1];
+    case 8:
+      return [1, 1, 1];
+    case 9:
+      return [1, 1, 1];
+    case 10:
+      return [1, 1, 1];
+    case 11:
+      return [6, 6, 5];
+    case 12:
+      return [6, 6, 5];
+    case 13:
+      return [6, 6, 6];
+    case 14:
+      // max_lower = 6 - 4 - 4
+      // max_push = 6
+      return [6, 6, 6];
+    default:
+  }
+};
+
+export const getPushPosition = (
+  list: MusclePriorityType[],
+  totalSessions: number
+) => {
+  let push = 0;
+  let pull = 0;
+  let lower = 0;
+
+  // 6
+
+  for (let i = 0; i < list.length; i++) {
+    if (PUSH_MUSCLES.includes(list[i].muscle)) {
+      push = push + (1 * list.length - i);
+    } else if (PULL_MUSCLES.includes(list[i].muscle)) {
+      pull = pull + (1 * list.length - i);
+    } else if (PUSH_AND_PULL_MUSCLES.includes(list[i].muscle)) {
+      let split = Math.round(list.length - i / 2);
+      push = push + split;
+      pull = pull + split;
+    } else if (LOWER_MUSCLES.includes(list[i].muscle)) {
+      lower = lower + (2 * list.length - i);
+    }
+  }
+  console.log(
+    `push: ${push} -- pull: ${pull} -- lower: ${lower} total: ${
+      push + pull + lower
+    } || sessions: ${totalSessions}`
+  );
+};
 
 const getLowerPosition = (list: MusclePriorityType[]) => {
   let priority = [0, 0];
@@ -32,14 +116,16 @@ const getLowerPosition = (list: MusclePriorityType[]) => {
       break;
     }
   }
-  // 4 = MAX_MRV
-  // 3 = FULL_MRV
-  // 2, 2 = FULL_MRV
-  // 1, 2 = MRV
-  // 0, 2 = LOW_MRV
-  // 1, 1 = LOW_MRV
-  // 0, 1 = MEV
-  // 0 = MV
+
+  // 4 = MAX_MRV       5
+  // 3 = FULL_MRV      4
+  // 2, 2 = FULL_MRV   4
+  // 1, 2 = MRV        3
+  // 0, 2 = LOW_MRV    2
+  // 1, 1 = LOW_MRV    2
+  // 0, 1 = MEV        2
+  // 0 = MV            1
+
   switch (priority[1]) {
     case 4:
       return "MAX_MRV";
@@ -114,13 +200,37 @@ const getTrainingSplit = (
 
     case 8:
 
+    case 9:
+    case 10:
+    case 11:
+      const f121 = ["lower", "push", "lower", "pull", "lower", "lower"];
+      const s121 = ["push", "pull", "none", "lower", "push", "pull"];
     case 12:
       // push pull legs push pull legs
       // legs push pull legs push pull
 
       // push upper upper upper upper upper upper
       // lower lower lower lower lower lower lower
-      return [];
+      switch (lowerRank) {
+        case "MAX_MRV":
+          const f121 = ["lower", "push", "lower", "pull", "lower", "lower"];
+          const s121 = ["push", "pull", "upper", "lower", "push", "pull"];
+
+          return ["lower", "upper", "lower", "upper", "lower", "upper"];
+        case "FULL_MRV":
+          const f122 = ["lower", "push", "lower", "pull", "lower", "lower"];
+          const s122 = ["push", "pull", "upper", "lower", "push", "pull"];
+
+          return ["upper", "lower", "full", "lower", "full", "upper"];
+        case "MRV":
+          return ["upper", "lower", "upper", "full", "full", "upper"];
+        case "LOW_MRV":
+          return ["upper", "lower", "upper", "full", "full", "upper"];
+        case "MEV":
+          return ["upper", "lower", "upper", "full", "upper", "upper"];
+        default:
+          return ["upper", "lower", "upper", "upper", "upper", "upper"];
+      }
     default:
       return ["full"];
   }
