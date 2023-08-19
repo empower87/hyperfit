@@ -70,26 +70,118 @@ export const getPushPosition = (
   let pull = 0;
   let lower = 0;
 
-  // 6
+  // 00 14
+  // 01 12
+  // 02 10
+  // 03 8
+  // 04 7
+  // 05 6
+  // 06 5
+  // 07 4
+  // 08 3
+  // 09 2
+  // 10 1
+  // 11 0
+  // 12 0
+  // 13 0
+  const WEIGHTS = [14, 12, 10, 8, 7, 6, 5, 4, 3, 2, 1, 0, 0, 0];
 
   for (let i = 0; i < list.length; i++) {
     if (PUSH_MUSCLES.includes(list[i].muscle)) {
-      push = push + (1 * list.length - i);
+      // push = push + (1 * list.length - i);
+      push = push + WEIGHTS[i];
     } else if (PULL_MUSCLES.includes(list[i].muscle)) {
-      pull = pull + (1 * list.length - i);
+      // pull = pull + (1 * list.length - i);
+      pull = pull + WEIGHTS[i];
     } else if (PUSH_AND_PULL_MUSCLES.includes(list[i].muscle)) {
-      let split = Math.round(list.length - i / 2);
+      let split = Math.round(WEIGHTS[i] / 2);
       push = push + split;
       pull = pull + split;
     } else if (LOWER_MUSCLES.includes(list[i].muscle)) {
-      lower = lower + (2 * list.length - i);
+      lower = lower + WEIGHTS[i];
     }
   }
+  // maths
+  const total = push + pull + lower;
+
+  const pushDecimal = push / total;
+  const pullDecimal = pull / total;
+  const lowerDecimal = lower / total;
+
+  const pushPercent = Math.round(pushDecimal * 100);
+  const pullPercent = Math.round(pullDecimal * 100);
+  const lowerPercent = Math.round(lowerDecimal * 100);
+
+  const pushRatio = (totalSessions * pushDecimal).toFixed(1);
+  const pullRatio = (totalSessions * pullDecimal).toFixed(1);
+  const lowerRatio = (totalSessions * lowerDecimal).toFixed(1);
+
+  let upperSessions = 0;
+  let lowerSessions = 0;
+  let fullSessions = 0;
+
+  const getPush = pushRatio.split(".").map((each) => parseInt(each));
+  const getPull = pullRatio.split(".").map((each) => parseInt(each));
+  const getLower = lowerRatio.split(".").map((each) => parseInt(each));
+
+  upperSessions = getPush[0] + getPull[0];
+  lowerSessions = getLower[0];
+
+  let totalPushAndPull = getPush[1] + getPush[1];
+  let totalLower = getLower[1];
+
+  let roundPushAndPull = Math.round(totalPushAndPull / 5) * 5;
+  let roundLower = Math.round(totalLower / 5) * 5;
+
+  switch (roundPushAndPull) {
+    case 0:
+      if (roundLower > 1) {
+        lowerSessions = lowerSessions + 2;
+      } else if (roundLower === 1) {
+        lowerSessions = lowerSessions + 1;
+      }
+    case 0.5:
+      if (roundLower > 1) {
+        lowerSessions = lowerSessions + 1;
+        fullSessions = fullSessions + 1;
+      } else {
+        fullSessions = fullSessions + 1;
+      }
+    case 1:
+      upperSessions = upperSessions + 1;
+      if (roundLower >= 1) {
+        lowerSessions = lowerSessions + 1;
+      }
+    case 1.5:
+      upperSessions = upperSessions + 1;
+      fullSessions = fullSessions + 1;
+    case 2:
+      upperSessions = upperSessions + 2;
+  }
+
   console.log(
-    `push: ${push} -- pull: ${pull} -- lower: ${lower} total: ${
-      push + pull + lower
-    } || sessions: ${totalSessions}`
+    `push: ${push} -- pull: ${pull} -- lower: ${lower} total: ${total}`
   );
+  console.log(
+    `push: ${pushPercent}% -- pull: ${pullPercent}% -- lower: ${lowerPercent}% total: 100%`
+  );
+  console.log(
+    `push: ${pushRatio} -- pull: ${pullRatio} -- lower: ${lowerRatio} total: ${totalSessions}`
+  );
+
+  let split: ("upper" | "lower" | "full")[] = [];
+
+  for (let i = 0; i < upperSessions; i++) {
+    split.push("upper");
+  }
+  for (let i = 0; i < lowerSessions; i++) {
+    split.push("lower");
+  }
+  for (let i = 0; i < fullSessions; i++) {
+    split.push("full");
+  }
+
+  return split;
 };
 
 const getLowerPosition = (list: MusclePriorityType[]) => {
