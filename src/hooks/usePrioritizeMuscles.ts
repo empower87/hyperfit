@@ -1,5 +1,6 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { MEV_RANK, MRV_RANK } from "src/constants/prioritizeRanks";
+import { determineWorkoutSplit } from "~/components/Macrocycle/TrainingBlock";
 import { getExercise } from "~/constants/exercises";
 import {
   LOWER_MUSCLES,
@@ -120,9 +121,18 @@ export const getPushPosition = (
   let lowerSessions = 0;
   let fullSessions = 0;
 
-  const getPush = pushRatio.split(".").map((each) => parseInt(each));
-  const getPull = pullRatio.split(".").map((each) => parseInt(each));
-  const getLower = lowerRatio.split(".").map((each) => parseInt(each));
+  const getPush = (totalSessions * pushDecimal)
+    .toFixed(2)
+    .split(".")
+    .map((each) => parseInt(each));
+  const getPull = (totalSessions * pullDecimal)
+    .toFixed(2)
+    .split(".")
+    .map((each) => parseInt(each));
+  const getLower = (totalSessions * lowerDecimal)
+    .toFixed(2)
+    .split(".")
+    .map((each) => parseInt(each));
 
   upperSessions = getPush[0] + getPull[0];
   lowerSessions = getLower[0];
@@ -133,31 +143,55 @@ export const getPushPosition = (
   let roundPushAndPull = Math.round(totalPushAndPull / 5) * 5;
   let roundLower = Math.round(totalLower / 5) * 5;
 
-  switch (roundPushAndPull) {
-    case 0:
-      if (roundLower > 1) {
-        lowerSessions = lowerSessions + 2;
-      } else if (roundLower === 1) {
-        lowerSessions = lowerSessions + 1;
-      }
-    case 0.5:
-      if (roundLower > 1) {
-        lowerSessions = lowerSessions + 1;
-        fullSessions = fullSessions + 1;
-      } else {
-        fullSessions = fullSessions + 1;
-      }
-    case 1:
-      upperSessions = upperSessions + 1;
-      if (roundLower >= 1) {
-        lowerSessions = lowerSessions + 1;
-      }
-    case 1.5:
-      upperSessions = upperSessions + 1;
+  if (roundPushAndPull >= 0 && roundPushAndPull <= 0.5) {
+    if (roundLower > 1) {
+      lowerSessions = lowerSessions + 2;
+    } else if (roundLower === 1) {
+      lowerSessions = lowerSessions + 1;
+    }
+  } else if (roundPushAndPull > 0.5 && roundPushAndPull <= 1) {
+    if (roundLower > 1) {
+      lowerSessions = lowerSessions + 1;
       fullSessions = fullSessions + 1;
-    case 2:
-      upperSessions = upperSessions + 2;
+    } else {
+      fullSessions = fullSessions + 1;
+    }
+  } else if (roundPushAndPull > 1 && roundPushAndPull <= 1.5) {
+    upperSessions = upperSessions + 1;
+    if (roundLower >= 1) {
+      lowerSessions = lowerSessions + 1;
+    }
+  } else {
+    upperSessions = upperSessions + 1;
+    fullSessions = fullSessions + 1;
   }
+
+  const det = determineWorkoutSplit(push, pull, lower, totalSessions);
+  // switch (roundPushAndPull) {
+  //   case 0:
+  //     if (roundLower > 1) {
+  //       lowerSessions = lowerSessions + 2;
+  //     } else if (roundLower === 1) {
+  //       lowerSessions = lowerSessions + 1;
+  //     }
+  //   case 0.5:
+  //     if (roundLower > 1) {
+  //       lowerSessions = lowerSessions + 1;
+  //       fullSessions = fullSessions + 1;
+  //     } else {
+  //       fullSessions = fullSessions + 1;
+  //     }
+  //   case 1:
+  //     upperSessions = upperSessions + 1;
+  //     if (roundLower >= 1) {
+  //       lowerSessions = lowerSessions + 1;
+  //     }
+  //   case 1.5:
+  //     upperSessions = upperSessions + 1;
+  //     fullSessions = fullSessions + 1;
+  //   case 2:
+  //     upperSessions = upperSessions + 2;
+  // }
 
   console.log(
     `push: ${push} -- pull: ${pull} -- lower: ${lower} total: ${total}`
@@ -181,7 +215,7 @@ export const getPushPosition = (
     split.push("full");
   }
 
-  return split;
+  return det;
 };
 
 const getLowerPosition = (list: MusclePriorityType[]) => {
