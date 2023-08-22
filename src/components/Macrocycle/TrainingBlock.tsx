@@ -66,7 +66,7 @@ export const determineWorkoutSplit = (
   lower: number,
   totalSessions: number
 ) => {
-  const total = push + pull + lower;
+  var total = push + pull + lower;
 
   var pushDecimal = push / total;
   var pullDecimal = pull / total;
@@ -94,48 +94,61 @@ export const determineWorkoutSplit = (
   if (pushTenths + pullTenths + lowerTenths <= 1.1) {
     if (pushTenths >= 0.7 || pullTenths >= 0.7) {
       upperSessions = upperSessions + 1;
-    } else if (lowerTenths >= 0.7) {
+    } else if (lowerTenths >= 0.6) {
       lowerSessions = lowerSessions + 1;
     } else {
       fullSessions = fullSessions + 1;
     }
   } else {
-    if (lowerTenths < 0.35) {
+    if (lowerTenths <= 0.33) {
       upperSessions = upperSessions + 2;
-    } else if (lowerTenths > 0.6) {
+    } else if (lowerTenths >= 0.6) {
+      lowerSessions = lowerSessions + 1;
       upperSessions = upperSessions + 1;
-      fullSessions = fullSessions + 1;
     } else {
       upperSessions = upperSessions + 1;
-      lowerSessions = lowerSessions + 1;
+      fullSessions = fullSessions + 1;
     }
   }
 
   let split: ("upper" | "lower" | "full")[] = [];
 
-  for (let i = 0; i < upperSessions; i++) {
-    split.push("upper");
-  }
-  for (let i = 0; i < lowerSessions; i++) {
-    split.push("lower");
-  }
-  for (let i = 0; i < fullSessions; i++) {
-    split.push("full");
+  // this may not be efficient and cause infinite loop need to fine tune it.
+  while (upperSessions + lowerSessions + fullSessions > 0) {
+    if (upperSessions > 0) {
+      split.push("upper");
+      upperSessions = upperSessions - 1;
+    } else if (lowerSessions > 0) {
+      split.push("lower");
+      lowerSessions = lowerSessions - 1;
+    } else if (fullSessions > 0) {
+      split.push("full");
+      fullSessions = fullSessions - 1;
+    } else {
+      break;
+    }
   }
 
+  // LOGGING FOR TESTING
+  const pushRatioFixed = pushRatio.toFixed(2);
+  const pullRatioFixed = pullRatio.toFixed(2);
+  const lowerRatioFixed = lowerRatio.toFixed(2);
+
+  const pushPercentage = Math.round((push / total) * 100);
+  const pullPercentage = Math.round((pull / total) * 100);
+  const lowerPercentage = Math.round((lower / total) * 100);
+
+  console.log("push: --------------------------------------");
   console.log(
-    pushRatio.toFixed(2),
-    pullRatio.toFixed(2),
-    lowerRatio.toFixed(2),
-    pushTenths + pullTenths + lowerTenths,
-    pushInteger,
-    pullInteger,
-    lowerInteger,
-    upperSessions,
-    lowerSessions,
-    fullSessions,
-    "ARE THESE VALUES ???"
+    `push: ${push} -- pull: ${pull} -- lower: ${lower} total: ${total}`
   );
+  console.log(
+    `push: ${pushPercentage}% -- pull: ${pullPercentage}% -- lower: ${lowerPercentage}% total: 100%`
+  );
+  console.log(
+    `push: ${pushRatioFixed} -- pull: ${pullRatioFixed} -- lower: ${lowerRatioFixed} total: ${totalSessions}`
+  );
+  console.log("push: --------------------------------------");
 
   return split;
 };
