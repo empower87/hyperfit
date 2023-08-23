@@ -15,40 +15,28 @@ import { ExerciseType, VolumeKey } from "./useTrainingBlock";
 
 export type SessionSplitType = "upper" | "lower" | "full";
 
-// const getSessionType = (name: string) => {
-//   if (PUSH_MUSCLES.includes(name)) {
-//     return "push"
-//   } else if (PULL_MUSCLES.includes(name)) {
-//     return "pull"
-//   } else if (LOWER_MUSCLES.includes(name)) {
-//     return "lower"
-//   } else {
-//     return "any"
-//   }
-// }
-const initializeSessions = (sessions: number) => {
+export const initializeSessions = (sessions: number) => {
+  // KEY
+  // [0, 1, 2]
+  // [push, pull, lower]
+
   switch (sessions) {
     case 3:
       return [2, 2, 2];
     case 4:
-      // lower full full upper
-
       return [3, 3, 3];
     case 5:
       return [4, 4, 3];
     case 6:
-      // max - 4 - 1 - 1
-
       return [4, 4, 3];
-
     case 7:
-      return [1, 1, 1];
+      return [5, 5, 4];
     case 8:
-      return [1, 1, 1];
+      return [5, 5, 4];
     case 9:
-      return [1, 1, 1];
+      return [5, 5, 5];
     case 10:
-      return [1, 1, 1];
+      return [6, 6, 5];
     case 11:
       return [6, 6, 5];
     case 12:
@@ -56,10 +44,9 @@ const initializeSessions = (sessions: number) => {
     case 13:
       return [6, 6, 6];
     case 14:
-      // max_lower = 6 - 4 - 4
-      // max_push = 6
       return [6, 6, 6];
     default:
+      return [2, 2, 2];
   }
 };
 
@@ -70,21 +57,6 @@ export const getPushPosition = (
   let push = 0;
   let pull = 0;
   let lower = 0;
-
-  // 00 14
-  // 01 12
-  // 02 10
-  // 03 8
-  // 04 7
-  // 05 6
-  // 06 5
-  // 07 4
-  // 08 3
-  // 09 2
-  // 10 1
-  // 11 0
-  // 12 0
-  // 13 0
 
   const SYSTEMIC_FATIGUE_MODIFIER = 2;
   const LOWER_MODIFIER = 1.15;
@@ -178,10 +150,6 @@ const getTrainingSplit = (
   const lowerRank = getLowerPosition(list);
 
   switch (sessions) {
-    // case 2:
-    //   return ["full", "full"];
-    // case 3:
-    //   return ["full", "full", "full"];
     case 3:
       return ["upper", "lower", "upper"];
     case 4:
@@ -220,7 +188,29 @@ const getTrainingSplit = (
       return ["upper", "upper", "upper", "lower", "lower", "lower", "full"];
 
     case 8:
-
+      switch (lowerRank) {
+        case "MAX_MRV":
+          return [
+            "lower",
+            "lower",
+            "lower",
+            "lower",
+            "upper",
+            "upper",
+            "upper",
+            "upper",
+          ];
+        case "FULL_MRV":
+          return ["upper", "lower", "full", "lower", "full", "upper"];
+        case "MRV":
+          return ["upper", "lower", "upper", "full", "full", "upper"];
+        case "LOW_MRV":
+          return ["upper", "lower", "upper", "full", "full", "upper"];
+        case "MEV":
+          return ["upper", "lower", "upper", "full", "upper", "upper"];
+        default:
+          return ["upper", "lower", "upper", "upper", "upper", "upper"];
+      }
     case 9:
     case 10:
     case 11:
@@ -234,10 +224,10 @@ const getTrainingSplit = (
       // lower lower lower lower lower lower lower
       switch (lowerRank) {
         case "MAX_MRV":
-          const f121 = ["lower", "push", "lower", "pull", "lower", "lower"];
-          const s121 = ["push", "pull", "upper", "lower", "push", "pull"];
+          const f121 = ["lower", "push", "lower", "upper", "lower", "lower"];
+          const s121 = ["upper", "pull", "upper", "lower", "upper", "upper"];
 
-          return ["lower", "upper", "lower", "upper", "lower", "upper"];
+          return ["lower", "upper", "lower", "upper", "lower", "lower"];
         case "FULL_MRV":
           const f122 = ["lower", "push", "lower", "pull", "lower", "lower"];
           const s122 = ["push", "pull", "upper", "lower", "push", "pull"];

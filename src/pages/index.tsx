@@ -222,6 +222,7 @@ const Home: NextPage = () => {
           <TrainingBlock
             workoutSplit={workoutSplit}
             priorityRanking={musclePriority}
+            totalSessions={totalSessionsPerWeek + totalDoubleSessionsPerWeek}
           />
         </div>
       </div>

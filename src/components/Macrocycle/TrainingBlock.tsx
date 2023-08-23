@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { initializeSessions } from "~/hooks/usePrioritizeMuscles";
 import useTrainingBlock from "~/hooks/useTrainingBlock";
 import { MusclePriorityType, SessionType } from "~/pages";
 import { MesocycleLayout, MesocycleTable } from "./Mesocycle";
@@ -6,15 +6,18 @@ import { MesocycleLayout, MesocycleTable } from "./Mesocycle";
 type TrainingBlockProps = {
   priorityRanking: MusclePriorityType[];
   workoutSplit: SessionType[];
+  totalSessions: number;
 };
 
 export default function TrainingBlock({
   workoutSplit,
   priorityRanking,
+  totalSessions,
 }: TrainingBlockProps) {
   const { trainingBlock, testSplit } = useTrainingBlock(
     workoutSplit,
-    priorityRanking
+    priorityRanking,
+    totalSessions
   );
 
   // TEMPORARY: to look at  console.log to find algorithm
@@ -28,10 +31,6 @@ export default function TrainingBlock({
         return "text-purple-500";
     }
   };
-
-  useEffect(() => {
-    console.log(testSplit);
-  }, [testSplit]);
 
   return (
     <div className="flex w-4/5 flex-wrap justify-center">
@@ -66,7 +65,8 @@ export const determineWorkoutSplit = (
   lower: number,
   totalSessions: number
 ) => {
-  var total = push + pull + lower;
+  const session_maxes_per_week = initializeSessions(totalSessions);
+  const total = push + pull + lower;
 
   var pushDecimal = push / total;
   var pullDecimal = pull / total;
@@ -84,36 +84,49 @@ export const determineWorkoutSplit = (
   var pullTenths = pullRatio - pullInteger;
   var lowerTenths = lowerRatio - lowerInteger;
 
-  let upperSessions = 0;
-  let lowerSessions = 0;
+  let pushSessions = pushInteger;
+  let pullSessions = pullInteger;
+  let lowerSessions = lowerInteger;
+  let upperSessions = pushSessions + pullSessions;
   let fullSessions = 0;
 
-  upperSessions = pushInteger + pullInteger;
-  lowerSessions = lowerInteger;
+  let totalTenths = Math.round(pushTenths + pullTenths + lowerTenths);
 
-  if (pushTenths + pullTenths + lowerTenths <= 1.1) {
-    if (pushTenths >= 0.7 || pullTenths >= 0.7) {
-      upperSessions = upperSessions + 1;
-    } else if (lowerTenths >= 0.6) {
-      lowerSessions = lowerSessions + 1;
+  if (totalTenths <= 1) {
+    if (pushTenths >= 0.66) {
+      pullSessions++;
+    } else if (pullTenths >= 0.66) {
+      pullSessions++;
+    } else if (lowerTenths >= 0.55) {
+      lowerSessions++;
     } else {
-      fullSessions = fullSessions + 1;
+      fullSessions++;
     }
   } else {
     if (lowerTenths <= 0.33) {
-      upperSessions = upperSessions + 2;
+      pushSessions++;
+      pullSessions++;
     } else if (lowerTenths >= 0.6) {
-      lowerSessions = lowerSessions + 1;
-      upperSessions = upperSessions + 1;
+      lowerSessions++;
+      if (pullTenths > pushTenths) {
+        pullSessions++;
+      } else {
+        pushSessions++;
+      }
     } else {
-      upperSessions = upperSessions + 1;
       fullSessions = fullSessions + 1;
+      if (pullTenths > pushTenths) {
+        pullSessions++;
+      } else {
+        pushSessions++;
+      }
     }
   }
 
+  upperSessions = pushSessions + pullSessions;
+
   let split: ("upper" | "lower" | "full")[] = [];
 
-  // this may not be efficient and cause infinite loop need to fine tune it.
   while (upperSessions + lowerSessions + fullSessions > 0) {
     if (upperSessions > 0) {
       split.push("upper");
@@ -124,12 +137,12 @@ export const determineWorkoutSplit = (
     } else if (fullSessions > 0) {
       split.push("full");
       fullSessions = fullSessions - 1;
-    } else {
-      break;
     }
   }
 
-  // LOGGING FOR TESTING
+  // LOGGING FOR TESTING ---------------------------------------------------
+  // -----------------------------------------------------------------------
+  // -----------------------------------------------------------------------
   const pushRatioFixed = pushRatio.toFixed(2);
   const pullRatioFixed = pullRatio.toFixed(2);
   const lowerRatioFixed = lowerRatio.toFixed(2);
@@ -149,6 +162,9 @@ export const determineWorkoutSplit = (
     `push: ${pushRatioFixed} -- pull: ${pullRatioFixed} -- lower: ${lowerRatioFixed} total: ${totalSessions}`
   );
   console.log("push: --------------------------------------");
+  // LOGGING FOR TESTING ---------------------------------------------------
+  // -----------------------------------------------------------------------
+  // -----------------------------------------------------------------------
 
   return split;
 };
