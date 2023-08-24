@@ -151,8 +151,7 @@ const Home: NextPage = () => {
     useState<number>(0);
 
   const [showPrompt, setShowPrompt] = useState<boolean>(false);
-  const [showMultipleSessionsPrompt, setShowMultipleSessionsPrompt] =
-    useState<boolean>(false);
+
   const [workoutSplit, setWorkoutSplit] = useState<SessionType[]>([]);
   const [musclePriority, setMusclePriority] = useState<MusclePriorityType[]>([
     ...MUSCLE_PRIORITY_LIST,
@@ -163,7 +162,7 @@ const Home: NextPage = () => {
       setTotalDoubleSessionsPerWeek(value);
     } else {
       setTotalSessionsPerWeek(value);
-      setShowMultipleSessionsPrompt(true);
+      setShowPrompt(true);
     }
   };
 
@@ -179,20 +178,7 @@ const Home: NextPage = () => {
               options={OPTIONS.slice(2)}
               onChange={handleSelectChange}
             />
-            {showMultipleSessionsPrompt && (
-              <div>
-                <p>Will you be training twice on any of these days?</p>
-                <button onClick={() => setShowPrompt(true)}>yes</button>
-                <button
-                  onClick={() => {
-                    setShowMultipleSessionsPrompt(false);
-                    setShowPrompt(false);
-                  }}
-                >
-                  no
-                </button>
-              </div>
-            )}
+
             {showPrompt && (
               <FrequencySelect
                 title="Daily Sessions: How many daily sessions will you be training double?"

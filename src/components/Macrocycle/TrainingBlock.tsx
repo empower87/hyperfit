@@ -1,4 +1,9 @@
-import { initializeSessions } from "~/hooks/usePrioritizeMuscles";
+import { useEffect, useState } from "react";
+import {
+  SessionSplitTESTType,
+  getTrainingSplitTEST,
+  initializeSessions,
+} from "~/hooks/usePrioritizeMuscles";
 import useTrainingBlock from "~/hooks/useTrainingBlock";
 import { MusclePriorityType, SessionType } from "~/pages";
 import { MesocycleLayout, MesocycleTable } from "./Mesocycle";
@@ -19,7 +24,7 @@ export default function TrainingBlock({
     priorityRanking,
     totalSessions
   );
-
+  const [test, setTest] = useState<SessionSplitTESTType[][]>([]);
   // TEMPORARY: to look at  console.log to find algorithm
   const getColor = (split: "upper" | "lower" | "full") => {
     switch (split) {
@@ -32,19 +37,31 @@ export default function TrainingBlock({
     }
   };
 
+  useEffect(() => {
+    const getTest = getTrainingSplitTEST(priorityRanking, totalSessions);
+    setTest(getTest);
+  }, [totalSessions, priorityRanking]);
+
   return (
     <div className="flex w-4/5 flex-wrap justify-center">
       <div className="flex">
-        {workoutSplit.map((each) => {
-          return <p className={`${getColor(each.split)} m-2`}>{each.split}</p>;
+        {test.map((each, index) => {
+          return <SessionCard session={each} index={index + 1} />;
         })}
       </div>
 
+      {/* <div className="flex">
+        {workoutSplit.map((each) => {
+          return <p className={`${getColor(each.split)} m-2`}>{each.split}</p>;
+        })}
+      </div> */}
+      {/* 
       <div className="flex">
         {testSplit?.map((each) => {
           return <p className={`${getColor(each)} m-2`}>{each}</p>;
         })}
-      </div>
+      </div> */}
+
       {trainingBlock.map((each, index) => {
         return (
           <MesocycleLayout
@@ -58,6 +75,21 @@ export default function TrainingBlock({
     </div>
   );
 }
+const SessionCard = ({
+  session,
+  index,
+}: {
+  session: SessionSplitTESTType[];
+  index: number;
+}) => {
+  return (
+    <div className="flex flex-col border border-slate-500">
+      <p className="m-1 w-20 text-sm">Day {index}</p>
+      <p className="m-1 w-20 text-sm">1st Session: {session[0]}</p>
+      <p className="m-1 w-20 text-sm">2nd Session: {session[1]}</p>
+    </div>
+  );
+};
 
 export const determineWorkoutSplit = (
   push: number,

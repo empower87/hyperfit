@@ -143,6 +143,543 @@ const getLowerPosition = (list: MusclePriorityType[]) => {
   }
 };
 
+export type SessionSplitTESTType =
+  | "upper"
+  | "lower"
+  | "full"
+  | "push"
+  | "pull"
+  | "none";
+
+export const getTrainingSplitTEST = (
+  list: MusclePriorityType[],
+  sessions: number
+): SessionSplitTESTType[][] => {
+  const lowerRank = getLowerPosition(list);
+
+  switch (sessions) {
+    case 3:
+      switch (lowerRank) {
+        case "MAX_MRV":
+          return [
+            ["lower", "none"],
+            ["upper", "none"],
+            ["lower", "none"],
+          ];
+        case "FULL_MRV":
+          return [
+            ["lower", "none"],
+            ["upper", "none"],
+            ["lower", "none"],
+          ];
+        case "MRV":
+          return [
+            ["lower", "none"],
+            ["upper", "none"],
+            ["full", "none"],
+          ];
+        case "LOW_MRV":
+          return [
+            ["lower", "none"],
+            ["upper", "none"],
+            ["full", "none"],
+          ];
+        case "MEV":
+          return [
+            ["upper", "none"],
+            ["lower", "none"],
+            ["upper", "none"],
+          ];
+        default:
+          return [
+            ["upper", "none"],
+            ["full", "none"],
+            ["upper", "none"],
+          ];
+      }
+    case 4:
+      switch (lowerRank) {
+        case "MAX_MRV":
+          return [
+            ["lower", "none"],
+            ["upper", "none"],
+            ["lower", "none"],
+            ["full", "none"],
+          ];
+        case "FULL_MRV":
+          return [
+            ["lower", "none"],
+            ["upper", "none"],
+            ["lower", "none"],
+            ["full", "none"],
+          ];
+        case "MRV":
+          return [
+            ["lower", "none"],
+            ["upper", "none"],
+            ["upper", "none"],
+            ["full", "none"],
+          ];
+        case "LOW_MRV":
+          return [
+            ["lower", "none"],
+            ["upper", "none"],
+            ["upper", "none"],
+            ["full", "none"],
+          ];
+        case "MEV":
+          return [
+            ["upper", "none"],
+            ["lower", "none"],
+            ["upper", "none"],
+            ["upper", "none"],
+          ];
+        default:
+          return [
+            ["upper", "none"],
+            ["full", "none"],
+            ["upper", "none"],
+            ["upper", "none"],
+          ];
+      }
+    case 5:
+      switch (lowerRank) {
+        case "MAX_MRV":
+          return [
+            ["lower", "none"],
+            ["upper", "none"],
+            ["upper", "none"],
+            ["lower", "none"],
+            ["lower", "none"],
+          ];
+        case "FULL_MRV":
+          return [
+            ["lower", "none"],
+            ["upper", "none"],
+            ["upper", "none"],
+            ["lower", "none"],
+            ["full", "none"],
+          ];
+        case "MRV":
+          return [
+            ["lower", "none"],
+            ["upper", "none"],
+            ["upper", "none"],
+            ["lower", "none"],
+            ["upper", "none"],
+          ];
+        case "LOW_MRV":
+          return [
+            ["lower", "none"],
+            ["upper", "none"],
+            ["upper", "none"],
+            ["full", "none"],
+            ["upper", "none"],
+          ];
+        case "MEV":
+          return [
+            ["upper", "none"],
+            ["lower", "none"],
+            ["upper", "none"],
+            ["upper", "none"],
+            ["full", "none"],
+          ];
+        default:
+          return [
+            ["upper", "none"],
+            ["lower", "none"],
+            ["upper", "none"],
+            ["upper", "none"],
+            ["full", "none"],
+          ];
+      }
+    case 6:
+      switch (lowerRank) {
+        case "MAX_MRV":
+          return [
+            ["lower", "none"],
+            ["upper", "none"],
+            ["upper", "none"],
+            ["lower", "none"],
+            ["upper", "none"],
+            ["lower", "none"],
+          ];
+        case "FULL_MRV":
+          return [
+            ["lower", "none"],
+            ["upper", "none"],
+            ["upper", "none"],
+            ["lower", "none"],
+            ["upper", "none"],
+            ["lower", "none"],
+          ];
+        case "MRV":
+          return [
+            ["lower", "none"],
+            ["upper", "none"],
+            ["upper", "none"],
+            ["lower", "none"],
+            ["upper", "none"],
+            ["full", "none"],
+          ];
+        case "LOW_MRV":
+          return [
+            ["lower", "none"],
+            ["upper", "none"],
+            ["upper", "none"],
+            ["lower", "none"],
+            ["upper", "none"],
+            ["full", "none"],
+          ];
+        case "MEV":
+          return [
+            ["upper", "none"],
+            ["lower", "none"],
+            ["upper", "none"],
+            ["upper", "none"],
+            ["lower", "none"],
+            ["upper", "none"],
+          ];
+        default:
+          return [
+            ["upper", "none"],
+            ["lower", "none"],
+            ["upper", "none"],
+            ["upper", "none"],
+            ["full", "none"],
+            ["upper", "none"],
+          ];
+      }
+    case 7:
+      switch (lowerRank) {
+        case "MAX_MRV":
+          return [
+            ["lower", "none"],
+            ["lower", "upper"],
+            ["upper", "none"],
+            ["lower", "upper"],
+            ["lower", "none"],
+          ];
+        case "FULL_MRV":
+          return [
+            ["lower", "none"],
+            ["lower", "upper"],
+            ["upper", "none"],
+            ["lower", "upper"],
+            ["full", "none"],
+          ];
+        case "MRV":
+          return [
+            ["lower", "none"],
+            ["lower", "upper"],
+            ["upper", "none"],
+            ["full", "upper"],
+            ["upper", "none"],
+          ];
+        case "LOW_MRV":
+          return [
+            ["lower", "none"],
+            ["lower", "upper"],
+            ["upper", "none"],
+            ["full", "upper"],
+            ["upper", "none"],
+          ];
+        case "MEV":
+          return [
+            ["upper", "none"],
+            ["upper", "lower"],
+            ["upper", "none"],
+            ["upper", "lower"],
+            ["upper", "none"],
+          ];
+        default:
+          return [
+            ["upper", "none"],
+            ["upper", "lower"],
+            ["upper", "none"],
+            ["upper", "lower"],
+            ["upper", "none"],
+          ];
+      }
+    case 8:
+      switch (lowerRank) {
+        case "MAX_MRV":
+          return [
+            ["lower", "none"],
+            ["lower", "upper"],
+            ["upper", "none"],
+            ["lower", "upper"],
+            ["lower", "upper"],
+          ];
+        case "FULL_MRV":
+          return [
+            ["lower", "none"],
+            ["lower", "upper"],
+            ["upper", "none"],
+            ["lower", "upper"],
+            ["lower", "upper"],
+          ];
+        case "MRV":
+          return [
+            ["lower", "upper"],
+            ["lower", "upper"],
+            ["upper", "none"],
+            ["lower", "upper"],
+            ["upper", "none"],
+          ];
+        case "LOW_MRV":
+          return [
+            ["lower", "upper"],
+            ["lower", "upper"],
+            ["upper", "none"],
+            ["lower", "upper"],
+            ["upper", "none"],
+          ];
+        case "MEV":
+          return [
+            ["upper", "none"],
+            ["upper", "lower"],
+            ["push", "pull"],
+            ["upper", "lower"],
+            ["upper", "none"],
+          ];
+        default:
+          return [
+            ["upper", "none"],
+            ["upper", "lower"],
+            ["push", "pull"],
+            ["upper", "lower"],
+            ["upper", "none"],
+          ];
+      }
+    case 9:
+      switch (lowerRank) {
+        case "MAX_MRV":
+          return [
+            ["lower", "none"],
+            ["lower", "upper"],
+            ["lower", "upper"],
+            ["lower", "upper"],
+            ["lower", "upper"],
+          ];
+        case "FULL_MRV":
+          return [
+            ["lower", "none"],
+            ["lower", "upper"],
+            ["lower", "upper"],
+            ["lower", "upper"],
+            ["full", "upper"],
+          ];
+        case "MRV":
+          return [
+            ["lower", "upper"],
+            ["upper", "none"],
+            ["lower", "upper"],
+            ["upper", "full"],
+            ["lower", "upper"],
+          ];
+        case "LOW_MRV":
+          return [
+            ["lower", "upper"],
+            ["upper", "none"],
+            ["lower", "upper"],
+            ["upper", "full"],
+            ["lower", "upper"],
+          ];
+        case "MEV":
+          return [
+            ["upper", "lower"],
+            ["upper", "none"],
+            ["upper", "lower"],
+            ["push", "pull"],
+            ["upper", "full"],
+          ];
+        default:
+          return [
+            ["upper", "lower"],
+            ["upper", "none"],
+            ["upper", "lower"],
+            ["upper", "pull"],
+            ["upper", "push"],
+          ];
+      }
+    case 10:
+      switch (lowerRank) {
+        case "MAX_MRV":
+          return [
+            ["lower", "none"],
+            ["lower", "upper"],
+            ["lower", "upper"],
+            ["upper", "none"],
+            ["lower", "upper"],
+            ["lower", "upper"],
+          ];
+        case "FULL_MRV":
+          return [
+            ["lower", "none"],
+            ["lower", "upper"],
+            ["lower", "upper"],
+            ["upper", "none"],
+            ["lower", "upper"],
+            ["lower", "upper"],
+          ];
+        case "MRV":
+          return [
+            ["lower", "upper"],
+            ["upper", "none"],
+            ["lower", "upper"],
+            ["upper", "none"],
+            ["lower", "upper"],
+            ["lower", "upper"],
+          ];
+        case "LOW_MRV":
+          return [
+            ["lower", "upper"],
+            ["upper", "none"],
+            ["lower", "upper"],
+            ["upper", "none"],
+            ["lower", "upper"],
+            ["lower", "upper"],
+          ];
+        case "MEV":
+          return [
+            ["upper", "lower"],
+            ["upper", "none"],
+            ["upper", "lower"],
+            ["pull", "push"],
+            ["upper", "lower"],
+            ["upper", "none"],
+          ];
+        default:
+          return [
+            ["upper", "lower"],
+            ["upper", "none"],
+            ["upper", "lower"],
+            ["pull", "push"],
+            ["upper", "lower"],
+            ["upper", "none"],
+          ];
+      }
+    case 11:
+      switch (lowerRank) {
+        case "MAX_MRV":
+          return [
+            ["lower", "none"],
+            ["push", "pull"],
+            ["lower", "upper"],
+            ["lower", "upper"],
+            ["lower", "upper"],
+            ["lower", "upper"],
+          ];
+        case "FULL_MRV":
+          return [
+            ["lower", "none"],
+            ["push", "pull"],
+            ["lower", "upper"],
+            ["lower", "upper"],
+            ["lower", "upper"],
+            ["lower", "upper"],
+          ];
+        case "MRV":
+          return [
+            ["lower", "none"],
+            ["push", "pull"],
+            ["lower", "upper"],
+            ["push", "pull"],
+            ["lower", "upper"],
+            ["lower", "upper"],
+          ];
+        case "LOW_MRV":
+          return [
+            ["lower", "none"],
+            ["push", "pull"],
+            ["lower", "upper"],
+            ["push", "pull"],
+            ["lower", "upper"],
+            ["lower", "upper"],
+          ];
+        case "MEV":
+          return [
+            ["upper", "lower"],
+            ["push", "pull"],
+            ["lower", "upper"],
+            ["pull", "none"],
+            ["lower", "upper"],
+            ["push", "pull"],
+          ];
+        default:
+          return [
+            ["upper", "lower"],
+            ["push", "pull"],
+            ["lower", "upper"],
+            ["pull", "none"],
+            ["lower", "upper"],
+            ["push", "pull"],
+          ];
+      }
+
+    case 12:
+      switch (lowerRank) {
+        case "MAX_MRV":
+          return [
+            ["lower", "upper"],
+            ["push", "pull"],
+            ["lower", "upper"],
+            ["lower", "upper"],
+            ["lower", "upper"],
+            ["lower", "upper"],
+          ];
+        case "FULL_MRV":
+          return [
+            ["lower", "upper"],
+            ["push", "pull"],
+            ["lower", "upper"],
+            ["lower", "upper"],
+            ["lower", "upper"],
+            ["lower", "upper"],
+          ];
+        case "MRV":
+          return [
+            ["lower", "upper"],
+            ["push", "pull"],
+            ["lower", "upper"],
+            ["push", "pull"],
+            ["lower", "upper"],
+            ["lower", "upper"],
+          ];
+        case "LOW_MRV":
+          return [
+            ["lower", "upper"],
+            ["push", "pull"],
+            ["lower", "upper"],
+            ["push", "pull"],
+            ["lower", "upper"],
+            ["lower", "upper"],
+          ];
+        case "MEV":
+          return [
+            ["lower", "upper"],
+            ["push", "pull"],
+            ["lower", "upper"],
+            ["push", "pull"],
+            ["lower", "upper"],
+            ["push", "pull"],
+          ];
+        default:
+          return [
+            ["lower", "upper"],
+            ["push", "pull"],
+            ["lower", "upper"],
+            ["push", "pull"],
+            ["lower", "upper"],
+            ["push", "pull"],
+          ];
+      }
+    default:
+      throw new Error("no case for this");
+  }
+};
+
 const getTrainingSplit = (
   list: MusclePriorityType[],
   sessions: number
@@ -216,6 +753,28 @@ const getTrainingSplit = (
     case 11:
       const f121 = ["lower", "push", "lower", "pull", "lower", "lower"];
       const s121 = ["push", "pull", "none", "lower", "push", "pull"];
+
+      switch (lowerRank) {
+        case "MAX_MRV":
+          const f121 = ["lower", "push", "lower", "upper", "lower", "lower"];
+          const s121 = ["upper", "pull", "upper", "lower", "upper", "upper"];
+
+          return ["lower", "upper", "lower", "upper", "lower", "lower"];
+        case "FULL_MRV":
+          const f122 = ["lower", "push", "lower", "pull", "lower", "lower"];
+          const s122 = ["push", "pull", "upper", "lower", "push", "pull"];
+
+          return ["upper", "lower", "full", "lower", "full", "upper"];
+        case "MRV":
+          return ["upper", "lower", "upper", "full", "full", "upper"];
+        case "LOW_MRV":
+          return ["upper", "lower", "upper", "full", "full", "upper"];
+        case "MEV":
+          return ["upper", "lower", "upper", "full", "upper", "upper"];
+        default:
+          return ["upper", "lower", "upper", "upper", "upper", "upper"];
+      }
+
     case 12:
       // push pull legs push pull legs
       // legs push pull legs push pull
