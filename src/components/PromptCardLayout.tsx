@@ -1,8 +1,42 @@
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 
 type PromptCardProps = {
   title: string;
   children: ReactNode;
+};
+const OPTIONS = [0, 1, 2, 3, 4, 5, 6, 7];
+
+export const FrequencySelectPrompts = () => {
+  const [totalSessionsPerWeek, setTotalSessionsPerWeek] = useState<number>(3);
+  const [totalDoubleSessionsPerWeek, setTotalDoubleSessionsPerWeek] =
+    useState<number>(0);
+  const [showPrompt, setShowPrompt] = useState<boolean>(false);
+
+  const handleSelectChange = (value: number) => {
+    if (showPrompt) {
+      setTotalDoubleSessionsPerWeek(value);
+    } else {
+      setTotalSessionsPerWeek(value);
+      setShowPrompt(true);
+    }
+  };
+
+  return (
+    <>
+      <FrequencySelect
+        title="Weekly Sessions: How many days per week you can train?"
+        options={[...OPTIONS].slice(3)}
+        onChange={handleSelectChange}
+      />
+      {showPrompt && (
+        <FrequencySelect
+          title="Weekly Sessions: How many days per week you can train?"
+          options={[...OPTIONS].slice(0, totalSessionsPerWeek - 1)}
+          onChange={handleSelectChange}
+        />
+      )}
+    </>
+  );
 };
 
 export const FrequencySelect = ({
@@ -12,11 +46,15 @@ export const FrequencySelect = ({
 }: {
   title: string;
   options: number[];
-  onChange: (value: number) => void;
+  onChange: (value: number, type: "week" | "day") => void;
 }) => {
   const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedValue = parseInt(event.target.value);
-    onChange(selectedValue);
+    const type =
+      title === "Weekly Sessions: How many days per week you can train?"
+        ? "week"
+        : "day";
+    onChange(selectedValue, type);
   };
   return (
     <>

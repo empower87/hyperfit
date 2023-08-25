@@ -1,5 +1,5 @@
 import { type NextPage } from "next";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import TrainingBlock from "~/components/Macrocycle/TrainingBlock";
 import PrioritizeFocus from "~/components/PrioritizeFocus";
 import PrioritySectionLayout from "~/components/PrioritySectionLayout";
@@ -143,27 +143,37 @@ export type SessionType = {
   split: "full" | "upper" | "lower";
 };
 
-const OPTIONS = [1, 2, 3, 4, 5, 6, 7];
+const OPTIONS = [0, 1, 2, 3, 4, 5, 6, 7];
 
 const Home: NextPage = () => {
+  const [sessions, setSessions] = useState<[number, number]>([3, 0]);
+
   const [totalSessionsPerWeek, setTotalSessionsPerWeek] = useState<number>(3);
   const [totalDoubleSessionsPerWeek, setTotalDoubleSessionsPerWeek] =
     useState<number>(0);
 
   const [showPrompt, setShowPrompt] = useState<boolean>(false);
-
+  const [showTrainingBlock, setShowTrainingBlock] = useState<boolean>(false);
   const [workoutSplit, setWorkoutSplit] = useState<SessionType[]>([]);
   const [musclePriority, setMusclePriority] = useState<MusclePriorityType[]>([
     ...MUSCLE_PRIORITY_LIST,
   ]);
 
-  const handleSelectChange = (value: number) => {
-    if (showPrompt) {
+  const handleSelectChange = (value: number, type: "week" | "day") => {
+    if (type === "day") {
       setTotalDoubleSessionsPerWeek(value);
     } else {
       setTotalSessionsPerWeek(value);
       setShowPrompt(true);
     }
+  };
+
+  useEffect(() => {
+    setSessions([totalSessionsPerWeek, totalDoubleSessionsPerWeek]);
+  }, [totalSessionsPerWeek, totalDoubleSessionsPerWeek]);
+
+  const handleTrainingBlock = () => {
+    setShowTrainingBlock(true);
   };
 
   return (
@@ -175,16 +185,21 @@ const Home: NextPage = () => {
           <PromptCardLayout title="Frequency">
             <FrequencySelect
               title="Weekly Sessions: How many days per week you can train?"
-              options={OPTIONS.slice(2)}
+              options={[...OPTIONS].slice(3)}
               onChange={handleSelectChange}
             />
 
             {showPrompt && (
               <FrequencySelect
                 title="Daily Sessions: How many daily sessions will you be training double?"
-                options={OPTIONS.slice(0, totalSessionsPerWeek)}
+                options={[...OPTIONS].slice(0, totalSessionsPerWeek - 1)}
                 onChange={handleSelectChange}
               />
+            )}
+            {showPrompt && (
+              <button onClick={() => handleTrainingBlock()}>
+                Get Training Block
+              </button>
             )}
           </PromptCardLayout>
 
@@ -205,11 +220,13 @@ const Home: NextPage = () => {
             <h2 className="ml-1 p-1 text-white">Training Block</h2>
           </div>
 
-          <TrainingBlock
-            workoutSplit={workoutSplit}
-            priorityRanking={musclePriority}
-            totalSessions={totalSessionsPerWeek + totalDoubleSessionsPerWeek}
-          />
+          {showTrainingBlock && (
+            <TrainingBlock
+              workoutSplit={workoutSplit}
+              priorityRanking={musclePriority}
+              totalSessions={sessions}
+            />
+          )}
         </div>
       </div>
     </>

@@ -52,7 +52,9 @@ export const initializeSessions = (sessions: number) => {
 
 export const getPushPosition = (
   list: MusclePriorityType[],
-  totalSessions: number
+  totalSessions: [number, number]
+  // totalWeeklySessions: number,
+  // totalDoubleSessions: number
 ) => {
   let push = 0;
   let pull = 0;
@@ -80,7 +82,14 @@ export const getPushPosition = (
     }
   }
 
-  const split = determineWorkoutSplit(push, pull, lower, totalSessions);
+  const split = determineWorkoutSplit(
+    push,
+    pull,
+    lower,
+    totalSessions
+    // totalWeeklySessions,
+    // totalDoubleSessions
+  );
 
   return split;
 };
@@ -153,8 +162,11 @@ export type SessionSplitTESTType =
 
 export const getTrainingSplitTEST = (
   list: MusclePriorityType[],
-  sessions: number
+  // sessions: number
+  totalWeeklySessions: number,
+  totalDoubleSessions: number
 ): SessionSplitTESTType[][] => {
+  const sessions = totalWeeklySessions + totalDoubleSessions;
   const lowerRank = getLowerPosition(list);
 
   switch (sessions) {

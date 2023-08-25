@@ -169,23 +169,29 @@ const getMesocycle = (
 export default function useTrainingBlock(
   split: SessionType[],
   list: MusclePriorityType[],
-  totalSessions: number
+  // totalSessions: number
+  totalWeeklySessions: number,
+  totalDoubleSessions: number
 ) {
   const [trainingBlock, setTrainingBlock] = useState<SessionType[][]>([]);
-  const [testSplit, setTestSplit] = useState<("upper" | "lower" | "full")[]>(
-    []
-  );
+  const [testSplit, setTestSplit] = useState<
+    ("push" | "pull" | "upper" | "lower" | "full")[]
+  >([]);
 
   useEffect(() => {
     let meso1 = getMesocycle([...split], list, 0);
     let meso2 = getMesocycle([...split], list, 1);
     let meso3 = getMesocycle([...split], list, 2);
 
-    const data = getPushPosition(list, totalSessions);
+    const data = getPushPosition(
+      list,
+      totalWeeklySessions,
+      totalDoubleSessions
+    );
     setTestSplit(data);
-    // console.log([meso1, meso2, meso3], list, "ERROR: USE MACRO");
+
     setTrainingBlock([meso1, meso2, meso3]);
-  }, [split, list, totalSessions]);
+  }, [split, list, totalWeeklySessions, totalDoubleSessions]);
 
   return {
     trainingBlock,
