@@ -4,7 +4,7 @@ import { MEV_RANK, MRV_RANK } from "~/constants/prioritizeRanks";
 import { UPPER_MUSCLES } from "~/constants/workoutSplits";
 import { MusclePriorityType, SessionType } from "~/pages";
 import { getMuscleData } from "~/utils/getMuscleData";
-import { getPushPosition } from "./usePrioritizeMuscles";
+import { SessionSplitTESTType, getPushPosition } from "./usePrioritizeMuscles";
 
 type MuscleTypeForTable = {
   name: string;
@@ -169,14 +169,12 @@ const getMesocycle = (
 export default function useTrainingBlock(
   split: SessionType[],
   list: MusclePriorityType[],
-  // totalSessions: number
-  totalWeeklySessions: number,
-  totalDoubleSessions: number
+  totalSessions: [number, number]
+  // totalWeeklySessions: number,
+  // totalDoubleSessions: number
 ) {
   const [trainingBlock, setTrainingBlock] = useState<SessionType[][]>([]);
-  const [testSplit, setTestSplit] = useState<
-    ("push" | "pull" | "upper" | "lower" | "full")[]
-  >([]);
+  const [testSplit, setTestSplit] = useState<SessionSplitTESTType[][]>([]);
 
   useEffect(() => {
     let meso1 = getMesocycle([...split], list, 0);
@@ -185,13 +183,14 @@ export default function useTrainingBlock(
 
     const data = getPushPosition(
       list,
-      totalWeeklySessions,
-      totalDoubleSessions
+      totalSessions
+      // totalWeeklySessions,
+      // totalDoubleSessions
     );
     setTestSplit(data);
 
     setTrainingBlock([meso1, meso2, meso3]);
-  }, [split, list, totalWeeklySessions, totalDoubleSessions]);
+  }, [split, list, totalSessions]);
 
   return {
     trainingBlock,

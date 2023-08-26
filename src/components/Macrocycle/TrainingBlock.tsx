@@ -48,7 +48,7 @@ export default function TrainingBlock({
       <div className="flex w-full flex-col">
         <p>Algorithmic Coded Sessions</p>
         <div className="flex">
-          {test.map((each, index) => {
+          {testSplit.map((each, index) => {
             return <SessionCard session={each} index={index + 1} />;
           })}
         </div>
@@ -79,6 +79,7 @@ export default function TrainingBlock({
     </div>
   );
 }
+
 const SessionCard = ({
   session,
   index,
@@ -151,9 +152,9 @@ export const determineWorkoutSplit = (
   let totalTenths = Math.round(pushTenths + pullTenths + lowerTenths);
 
   if (totalTenths <= 1) {
-    if (pushTenths >= 0.66) {
-      pullSessions++;
-    } else if (pullTenths >= 0.66) {
+    if (pushTenths >= 0.6) {
+      pushSessions++;
+    } else if (pullTenths >= 0.6) {
       pullSessions++;
     } else if (lowerTenths >= 0.55) {
       lowerSessions++;
@@ -181,43 +182,63 @@ export const determineWorkoutSplit = (
     }
   }
 
-  upperSessions = pushSessions + pullSessions;
+  // upperSessions = pushSessions + pullSessions;
 
-  let split: ("push" | "pull" | "upper" | "lower" | "full")[] = [];
+  // let split: ("push" | "pull" | "upper" | "lower" | "full")[] = [];
+  let first_sessions = sessions[0];
+  let second_sessions = sessions[1];
+
+  let split: SessionSplitTESTType[][] = [];
+  let index = 0;
 
   while (pushSessions + pullSessions + lowerSessions + fullSessions > 0) {
-    // if (upperSessions > 0) {
-    //   split.push("upper");
-    //   upperSessions = upperSessions - 1;
-    // }
-    if (pullSessions > 0) {
-      split.push("pull");
-      pullSessions--;
-    } else if (pushSessions > 0) {
-      split.push("push");
-      pushSessions--;
-    } else if (lowerSessions > 0) {
-      split.push("lower");
-      lowerSessions--;
-    } else if (fullSessions > 0) {
-      split.push("full");
-      fullSessions--;
+    if (first_sessions > 0) {
+      if (pullSessions > 0) {
+        split.push(["pull", "none"]);
+        pullSessions--;
+      } else if (pushSessions > 0) {
+        split.push(["push", "none"]);
+        pushSessions--;
+      } else if (lowerSessions > 0) {
+        split.push(["lower", "none"]);
+        lowerSessions--;
+      } else if (fullSessions > 0) {
+        split.push(["full", "none"]);
+        fullSessions--;
+      }
+      first_sessions--;
+    } else if (second_sessions > 0) {
+      if (pullSessions > 0) {
+        split[index].splice(1, 1, "pull");
+        pullSessions--;
+        index++;
+      } else if (pushSessions > 0) {
+        split[index].splice(1, 1, "push");
+        pushSessions--;
+        index++;
+      } else if (lowerSessions > 0) {
+        split[index].splice(1, 1, "lower");
+        lowerSessions--;
+        index++;
+      } else if (fullSessions > 0) {
+        split[index].splice(1, 1, "full");
+        fullSessions--;
+        index++;
+      }
+      second_sessions--;
     }
   }
 
-  const lowerTotal = split.filter(
-    (each) => each === "full" || each === "lower"
-  );
+  const push_pull_max = session_maxes_per_week[0];
+  const lower_max = session_maxes_per_week[2];
 
-  const upperTotal = split.filter((each) => each !== "lower");
+  // const lowerTotal = split.filter(
+  //   (each) => each === "full" || each === "lower"
+  // );
 
-  console.log(
-    split,
-    totalSessions,
-    lowerTotal,
-    upperTotal,
-    "WHAT THESE LOOK LIKE??"
-  );
+  // const upperTotal = split.filter((each) => each !== "lower");
+
+  console.log(sessions, split, totalSessions, "WHAT THESE LOOK LIKE??");
 
   // upperSessions = pushSessions + pullSessions;
 
