@@ -192,7 +192,7 @@ const Home: NextPage = () => {
             {showPrompt && (
               <FrequencySelect
                 title="Daily Sessions: How many daily sessions will you be training double?"
-                options={[...OPTIONS].slice(0, totalSessionsPerWeek - 1)}
+                options={[...OPTIONS].slice(0, totalSessionsPerWeek + 1)}
                 onChange={handleSelectChange}
               />
             )}

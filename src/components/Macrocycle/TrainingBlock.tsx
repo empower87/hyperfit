@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import {
   SessionSplitTESTType,
-  getTrainingSplitTEST,
   initializeSessions,
 } from "~/hooks/usePrioritizeMuscles";
 import useTrainingBlock from "~/hooks/useTrainingBlock";
 import { MusclePriorityType, SessionType } from "~/pages";
+import { getTrainingSplit } from "~/utils/getTrainingSplit";
 import { MesocycleLayout, MesocycleTable } from "./Mesocycle";
 
 type TrainingBlockProps = {
@@ -27,7 +27,7 @@ export default function TrainingBlock({
   const [test, setTest] = useState<SessionSplitTESTType[][]>([]);
 
   useEffect(() => {
-    const getTest = getTrainingSplitTEST(
+    const getTest = getTrainingSplit(
       priorityRanking,
       totalSessions[0],
       totalSessions[1]
@@ -53,18 +53,6 @@ export default function TrainingBlock({
           })}
         </div>
       </div>
-
-      {/* <div className="flex">
-        {workoutSplit.map((each) => {
-          return <p className={`${getColor(each.split)} m-2`}>{each.split}</p>;
-        })}
-      </div> */}
-      {/* 
-      <div className="flex">
-        {testSplit?.map((each) => {
-          return <p className={`${getColor(each)} m-2`}>{each}</p>;
-        })}
-      </div> */}
 
       {trainingBlock.map((each, index) => {
         return (
@@ -117,49 +105,6 @@ const SessionCard = ({
   );
 };
 
-// const combinePushPullUpper = (
-//   push: number,
-//   pull: number,
-//   max: number,
-//   total: number
-// ) => {
-//   let pushPull = 0;
-
-//   // Calculate the maximum possible value for pushPull without exceeding max
-//   pushPull = Math.min(max, total - (push + pull));
-
-//   // Distribute the remaining pushPull value between push and pull as evenly as possible
-//   if (pushPull > 0) {
-//     const remainingSpace = max - pushPull;
-//     const pushShare = Math.min(push, remainingSpace / 2);
-//     const pullShare = Math.min(pull, remainingSpace / 2);
-
-//     push -= pushShare;
-//     pull -= pullShare;
-//   }
-
-//   return [push, pull, pushPull];
-// };
-
-const combinePushPullUpper = (
-  push: number,
-  pull: number,
-  max: number,
-  total: number
-) => {
-  let upper = total;
-  let pushCount = 0;
-  let pullCount = 0;
-
-  while (pushCount + upper > max || pullCount + upper > max) {
-    upper = upper - 2;
-    pushCount++;
-    pullCount++;
-  }
-
-  return [pushCount, pullCount, upper];
-};
-
 export const determineWorkoutSplit = (
   push: number,
   pull: number,
@@ -168,6 +113,7 @@ export const determineWorkoutSplit = (
 ) => {
   const totalSessions = sessions[0] + sessions[1];
   const session_maxes_per_week = initializeSessions(totalSessions);
+  const push_pull_max = session_maxes_per_week[0];
   const total = push + pull + lower;
 
   var pushDecimal = push / total;
@@ -189,11 +135,12 @@ export const determineWorkoutSplit = (
   let pushSessions = pushInteger;
   let pullSessions = pullInteger;
   let lowerSessions = lowerInteger;
-  let upperSessions = pushSessions + pullSessions;
+  let upperSessions = 0;
   let fullSessions = 0;
 
   let totalTenths = Math.round(pushTenths + pullTenths + lowerTenths);
 
+  // -- Determine which session to create based on fractions of remainders
   if (totalTenths <= 1) {
     if (pushTenths >= 0.6) {
       pushSessions++;
@@ -225,16 +172,35 @@ export const determineWorkoutSplit = (
     }
   }
 
-  // upperSessions = pushSessions + pullSessions;
+  // -- Maximize frequency by combining push and pulls --
+  while (pullSessions + upperSessions < push_pull_max) {
+    if (pushSessions > 0) {
+      upperSessions++;
+      pushSessions--;
+    } else {
+      break;
+    }
+  }
+  while (pushSessions + upperSessions < push_pull_max) {
+    if (pullSessions > 0) {
+      upperSessions++;
+      pullSessions--;
+    } else {
+      break;
+    }
+  }
+  // ---------------------------------------------------
 
-  // let split: ("push" | "pull" | "upper" | "lower" | "full")[] = [];
   let first_sessions = sessions[0];
   let second_sessions = sessions[1];
 
   let split: SessionSplitTESTType[][] = [];
   let index = 0;
 
-  while (pushSessions + pullSessions + lowerSessions + fullSessions > 0) {
+  while (
+    pushSessions + pullSessions + lowerSessions + upperSessions + fullSessions >
+    0
+  ) {
     if (first_sessions > 0) {
       if (pullSessions > 0) {
         split.push(["pull", "none"]);
@@ -242,6 +208,9 @@ export const determineWorkoutSplit = (
       } else if (pushSessions > 0) {
         split.push(["push", "none"]);
         pushSessions--;
+      } else if (upperSessions > 0) {
+        split.push(["upper", "none"]);
+        upperSessions--;
       } else if (lowerSessions > 0) {
         split.push(["lower", "none"]);
         lowerSessions--;
@@ -259,6 +228,10 @@ export const determineWorkoutSplit = (
         split[index].splice(1, 1, "push");
         pushSessions--;
         index++;
+      } else if (upperSessions > 0) {
+        split[index].splice(1, 1, "upper");
+        upperSessions--;
+        index++;
       } else if (lowerSessions > 0) {
         split[index].splice(1, 1, "lower");
         lowerSessions--;
@@ -271,71 +244,6 @@ export const determineWorkoutSplit = (
       second_sessions--;
     }
   }
-
-  // test logic
-  const push_pull_max = session_maxes_per_week[0];
-  const lower_max = session_maxes_per_week[2];
-
-  // if (pullSessions < push_pull_max) {
-  //   if (pushSessions > 0) {
-  //     pushSessions--;
-  //     upperSessions++;
-  //   }
-  // }
-  let finalPush = 0;
-  let finalPull = 0;
-
-  for (let i = 0; i < split.length; i++) {
-    if (split[i][0] === "push") {
-      finalPush++;
-    } else if (split[i][0] === "pull") {
-      finalPull++;
-    } else if (split[i][1] === "push") {
-      finalPush++;
-    } else if (split[i][1] === "pull") {
-      finalPull++;
-    }
-  }
-
-  const totals = finalPush + finalPull;
-  const values = combinePushPullUpper(
-    finalPush,
-    finalPull,
-    push_pull_max,
-    totals
-  );
-
-  // 6 -- 5
-  // pull pull pull pull
-  // push push
-
-  // pull pull pull upper
-  // push upper
-
-  // const lowerTotal = split.filter(
-  //   (each) => each === "full" || each === "lower"
-  // );
-
-  // const upperTotal = split.filter((each) => each !== "lower");
-
-  console.log(sessions, split, totalSessions, values, "WHAT THESE LOOK LIKE??");
-
-  // upperSessions = pushSessions + pullSessions;
-
-  // let split: ("upper" | "lower" | "full")[] = [];
-
-  // while (upperSessions + lowerSessions + fullSessions > 0) {
-  //   if (upperSessions > 0) {
-  //     split.push("upper");
-  //     upperSessions = upperSessions - 1;
-  //   } else if (lowerSessions > 0) {
-  //     split.push("lower");
-  //     lowerSessions = lowerSessions - 1;
-  //   } else if (fullSessions > 0) {
-  //     split.push("full");
-  //     fullSessions = fullSessions - 1;
-  //   }
-  // }
 
   // LOGGING FOR TESTING ---------------------------------------------------
   // -----------------------------------------------------------------------
