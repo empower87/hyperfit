@@ -14,61 +14,44 @@ type TrainingBlockProps = {
   totalSessions: [number, number];
 };
 
-export default function TrainingBlock({
-  workoutSplit,
-  priorityRanking,
-  totalSessions,
-}: TrainingBlockProps) {
-  const { trainingBlock, testSplit } = useTrainingBlock(
-    workoutSplit,
-    priorityRanking,
-    totalSessions
-  );
-  const [test, setTest] = useState<SessionSplitTESTType[][]>([]);
+type TestingAlgorithmUIType = {
+  title: string;
+  split: SessionSplitTESTType[][];
+  margin?: string;
+};
 
-  useEffect(() => {
-    const getTest = getTrainingSplit(
-      priorityRanking,
-      totalSessions[0],
-      totalSessions[1]
-    );
-    setTest(getTest);
-  }, [totalSessions, priorityRanking]);
-
+const TestingAlgorithmUI = ({
+  title,
+  split,
+  margin,
+}: TestingAlgorithmUIType) => {
+  const DEFAULT: SessionSplitTESTType[][] = [
+    ["none", "none"],
+    ["none", "none"],
+    ["none", "none"],
+    ["none", "none"],
+    ["none", "none"],
+    ["none", "none"],
+    ["none", "none"],
+  ];
+  const updateSplit = DEFAULT.map((each, index) => {
+    if (split[index]) {
+      return split[index];
+    } else return each;
+  });
   return (
-    <div className="flex w-4/5 flex-wrap justify-center">
-      <div className="flex w-full flex-col">
-        <p>Hard Coded Sessions</p>
-        <div className="flex">
-          {test.map((each, index) => {
-            return <SessionCard session={each} index={index + 1} />;
-          })}
-        </div>
+    <div className={margin ? margin : "" + " flex flex-col"}>
+      <p className="text-xs font-bold">{title}</p>
+      <div className="flex border border-slate-500">
+        {updateSplit.map((each, index) => {
+          return <TestingCard session={each} index={index + 1} />;
+        })}
       </div>
-      <div className="flex w-full flex-col">
-        <p>Algorithmic Coded Sessions</p>
-        <div className="flex">
-          {testSplit.map((each, index) => {
-            return <SessionCard session={each} index={index + 1} />;
-          })}
-        </div>
-      </div>
-
-      {trainingBlock.map((each, index) => {
-        return (
-          <MesocycleLayout
-            key={`${index}_${each[index]?.day}_mesocycles`}
-            title={`Mesocycle ${index + 1}`}
-          >
-            <MesocycleTable split={each} />
-          </MesocycleLayout>
-        );
-      })}
     </div>
   );
-}
+};
 
-const SessionCard = ({
+const TestingCard = ({
   session,
   index,
 }: {
@@ -91,19 +74,81 @@ const SessionCard = ({
         return "text-blue-300";
     }
   };
-
+  const isOffDay =
+    session[0] === "none" && session[1] === "none" ? true : false;
+  const isLastElement = index === 7 ? true : false;
   return (
-    <div className="flex flex-col border border-slate-500">
-      <p className="m-1 w-20 text-sm">Day {index}</p>
-      <p className={"m-1 w-20 text-sm " + getColor(session[0])}>
-        1st Session: {session[0]}
-      </p>
-      <p className={"m-1 w-20 text-sm " + getColor(session[1])}>
-        2nd Session: {session[1]}
-      </p>
+    <div
+      className={
+        !isLastElement ? "border-r border-slate-500 " : "" + " flex flex-col"
+      }
+      style={{ width: "55px" }}
+    >
+      <div className="flex bg-slate-500" style={{ height: "20px" }}>
+        <p className="text-bold ml-1 text-xs text-white">Day {index}</p>
+      </div>
+      <div className="ml-1" style={{ height: "20px" }}>
+        <p className={"text-xs " + getColor(session[0])}>
+          {isOffDay ? "off" : `1: ${session[0]}`}
+        </p>
+      </div>
+      <div className="ml-1" style={{ height: "20px" }}>
+        <p className={"text-xs " + getColor(session[1])}>
+          {isOffDay ? "off" : `2: ${session[1]}`}
+        </p>
+      </div>
     </div>
   );
 };
+
+export default function TrainingBlock({
+  workoutSplit,
+  priorityRanking,
+  totalSessions,
+}: TrainingBlockProps) {
+  const { trainingBlock, testSplit } = useTrainingBlock(
+    workoutSplit,
+    priorityRanking,
+    totalSessions
+  );
+  const [test, setTest] = useState<SessionSplitTESTType[][]>([]);
+
+  useEffect(() => {
+    const getTest = getTrainingSplit(
+      priorityRanking,
+      totalSessions[0],
+      totalSessions[1]
+    );
+    setTest(getTest);
+  }, [totalSessions, priorityRanking]);
+
+  return (
+    <div className="flex flex-wrap">
+      <div className="m-2 rounded border border-slate-500 bg-gray-100 p-2">
+        <TestingAlgorithmUI
+          title="Hard Coded Sessions"
+          split={test}
+          margin={"mb-2"}
+        />
+        <TestingAlgorithmUI
+          title="Algorithmic Coded Sessions"
+          split={testSplit}
+        />
+      </div>
+
+      {trainingBlock.map((each, index) => {
+        return (
+          <MesocycleLayout
+            key={`${index}_${each[index]?.day}_mesocycles`}
+            title={`Mesocycle ${index + 1}`}
+          >
+            <MesocycleTable split={each} />
+          </MesocycleLayout>
+        );
+      })}
+    </div>
+  );
+}
 
 export const determineWorkoutSplit = (
   push: number,
@@ -245,6 +290,8 @@ export const determineWorkoutSplit = (
     }
   }
 
+  // TODO: have to figure out a sorting algorithm to optimally place sessions
+
   // LOGGING FOR TESTING ---------------------------------------------------
   // -----------------------------------------------------------------------
   // -----------------------------------------------------------------------
@@ -266,6 +313,7 @@ export const determineWorkoutSplit = (
   console.log(
     `push: ${pushRatioFixed} -- pull: ${pullRatioFixed} -- lower: ${lowerRatioFixed} total: ${totalSessions}`
   );
+  console.log(`push: ${split}`);
   console.log("push: --------------------------------------");
   // LOGGING FOR TESTING ---------------------------------------------------
   // -----------------------------------------------------------------------

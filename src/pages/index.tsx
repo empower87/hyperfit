@@ -215,18 +215,20 @@ const Home: NextPage = () => {
           </PrioritySectionLayout>
         </div>
 
-        <div className="mt-2 flex h-full w-3/4 flex-col items-center">
-          <div className="mb-3 w-4/5 rounded-t-sm bg-slate-700">
-            <h2 className="ml-1 p-1 text-white">Training Block</h2>
-          </div>
+        <div className="flex h-full w-3/4 flex-col p-2">
+          <div className="w-full rounded border border-slate-700">
+            <div className="rounded-t-sm bg-slate-700">
+              <h2 className="ml-1 p-1 text-white">Training Block</h2>
+            </div>
 
-          {showTrainingBlock && (
-            <TrainingBlock
-              workoutSplit={workoutSplit}
-              priorityRanking={musclePriority}
-              totalSessions={sessions}
-            />
-          )}
+            {showTrainingBlock && (
+              <TrainingBlock
+                workoutSplit={workoutSplit}
+                priorityRanking={musclePriority}
+                totalSessions={sessions}
+              />
+            )}
+          </div>
         </div>
       </div>
     </>
