@@ -1,4 +1,4 @@
-import { ReactNode, useState } from "react";
+import { Dispatch, ReactNode, SetStateAction, useState } from "react";
 
 type PromptCardProps = {
   title: string;
@@ -6,14 +6,18 @@ type PromptCardProps = {
 };
 const OPTIONS = [0, 1, 2, 3, 4, 5, 6, 7];
 
-export const FrequencySelectPrompts = () => {
+export const FrequencySelectPrompts = ({
+  setTotalSessions,
+}: {
+  setTotalSessions: Dispatch<SetStateAction<[number, number] | undefined>>;
+}) => {
   const [totalSessionsPerWeek, setTotalSessionsPerWeek] = useState<number>(3);
   const [totalDoubleSessionsPerWeek, setTotalDoubleSessionsPerWeek] =
     useState<number>(0);
   const [showPrompt, setShowPrompt] = useState<boolean>(false);
 
-  const handleSelectChange = (value: number) => {
-    if (showPrompt) {
+  const handleSelectChange = (value: number, type: "week" | "day") => {
+    if (type === "day") {
       setTotalDoubleSessionsPerWeek(value);
     } else {
       setTotalSessionsPerWeek(value);
@@ -21,8 +25,12 @@ export const FrequencySelectPrompts = () => {
     }
   };
 
+  const onClickHandler = () => {
+    setTotalSessions([totalSessionsPerWeek, totalDoubleSessionsPerWeek]);
+  };
+
   return (
-    <>
+    <div className="flex flex-col">
       <FrequencySelect
         title="Weekly Sessions: How many days per week you can train?"
         options={[...OPTIONS].slice(3)}
@@ -30,12 +38,20 @@ export const FrequencySelectPrompts = () => {
       />
       {showPrompt && (
         <FrequencySelect
-          title="Weekly Sessions: How many days per week you can train?"
-          options={[...OPTIONS].slice(0, totalSessionsPerWeek - 1)}
+          title="Daily Sessions: How many daily sessions will you be training double?"
+          options={[...OPTIONS].slice(0, totalSessionsPerWeek + 1)}
           onChange={handleSelectChange}
         />
       )}
-    </>
+      {showPrompt && (
+        <button
+          className="m-1 rounded bg-slate-700 p-1 text-xs font-bold text-white hover:bg-slate-500"
+          onClick={() => onClickHandler()}
+        >
+          Get Training Block
+        </button>
+      )}
+    </div>
   );
 };
 
@@ -56,38 +72,35 @@ export const FrequencySelect = ({
         : "day";
     onChange(selectedValue, type);
   };
-  return (
-    <>
-      <p className="p-1 text-slate-700">{title}</p>
 
-      <select onChange={handleSelectChange}>
+  return (
+    <div className="flex">
+      <p className="w-5/6 p-1 text-xs leading-3 text-slate-700">{title}</p>
+
+      <select className="w-1/6" onChange={handleSelectChange}>
         {options.map((option) => (
           <option key={option} value={option}>
             {option === 7 ? `${option}: Not Recommended` : option}
           </option>
         ))}
       </select>
-    </>
+    </div>
   );
 };
 
 export default function PromptCardLayout({ title, children }: PromptCardProps) {
   return (
-    <div className="mt-4 flex justify-center">
-      <div className="w-11/12 rounded border-2 border-slate-500">
-        <div className="w-full rounded-t-sm bg-slate-700">
-          <h2 className="ml-1 p-1 text-white">{title}</h2>
-        </div>
-        <div className="flex flex-col">{children}</div>
+    <div className="w-full rounded border-2 border-slate-500">
+      <div className="w-full rounded-t-sm bg-slate-700">
+        <h2 className="ml-1 p-1 text-white">{title}</h2>
       </div>
+      <div className="flex flex-col">{children}</div>
     </div>
   );
 }
 
-// LOGISTICS 2.0
+// GOALS:
 
-// 1. Prompt user for total sessions they can commit to a week.
-//    - this will allow to structure the plan to take priority muscle from mev to mrv.
-
-// 2. Check priority list.
-//    Options: allow for user to progressively overload all muscles at the same time.
+// WAIST: 33;
+// ARMS: 17;
+// LEGS: 26;

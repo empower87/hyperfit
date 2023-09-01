@@ -1,10 +1,10 @@
 import { type NextPage } from "next";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import TrainingBlock from "~/components/Macrocycle/TrainingBlock";
 import PrioritizeFocus from "~/components/PrioritizeFocus";
 import PrioritySectionLayout from "~/components/PrioritySectionLayout";
 import PromptCardLayout, {
-  FrequencySelect,
+  FrequencySelectPrompts,
 } from "~/components/PromptCardLayout";
 import Title from "~/components/Title";
 import { ExerciseType } from "~/hooks/useTrainingBlock";
@@ -143,75 +143,37 @@ export type SessionType = {
   split: "full" | "upper" | "lower";
 };
 
-const OPTIONS = [0, 1, 2, 3, 4, 5, 6, 7];
-
 const Home: NextPage = () => {
-  const [sessions, setSessions] = useState<[number, number]>([3, 0]);
+  const [totalSessions, setTotalSessions] = useState<
+    [number, number] | undefined
+  >();
 
-  const [totalSessionsPerWeek, setTotalSessionsPerWeek] = useState<number>(3);
-  const [totalDoubleSessionsPerWeek, setTotalDoubleSessionsPerWeek] =
-    useState<number>(0);
-
-  const [showPrompt, setShowPrompt] = useState<boolean>(false);
-  const [showTrainingBlock, setShowTrainingBlock] = useState<boolean>(false);
   const [workoutSplit, setWorkoutSplit] = useState<SessionType[]>([]);
   const [musclePriority, setMusclePriority] = useState<MusclePriorityType[]>([
     ...MUSCLE_PRIORITY_LIST,
   ]);
 
-  const handleSelectChange = (value: number, type: "week" | "day") => {
-    if (type === "day") {
-      setTotalDoubleSessionsPerWeek(value);
-    } else {
-      setTotalSessionsPerWeek(value);
-      setShowPrompt(true);
-    }
-  };
-
-  useEffect(() => {
-    setSessions([totalSessionsPerWeek, totalDoubleSessionsPerWeek]);
-  }, [totalSessionsPerWeek, totalDoubleSessionsPerWeek]);
-
-  const handleTrainingBlock = () => {
-    setShowTrainingBlock(true);
-  };
-
+  // for not updated PrioritizeFocus table
+  const totalSessionsPerWeek = totalSessions
+    ? totalSessions[0] + totalSessions[1]
+    : 3;
   return (
     <>
       <Title />
 
       <div className="flex h-full w-full flex-row justify-center">
-        <div className="flex w-1/4 flex-col border-r-2 border-slate-700">
+        <div className="flex w-1/4 flex-col border-r-2 border-slate-700 p-2">
           <PromptCardLayout title="Frequency">
-            <FrequencySelect
-              title="Weekly Sessions: How many days per week you can train?"
-              options={[...OPTIONS].slice(3)}
-              onChange={handleSelectChange}
-            />
-
-            {showPrompt && (
-              <FrequencySelect
-                title="Daily Sessions: How many daily sessions will you be training double?"
-                options={[...OPTIONS].slice(0, totalSessionsPerWeek + 1)}
-                onChange={handleSelectChange}
-              />
-            )}
-            {showPrompt && (
-              <button onClick={() => handleTrainingBlock()}>
-                Get Training Block
-              </button>
-            )}
+            <FrequencySelectPrompts setTotalSessions={setTotalSessions} />
           </PromptCardLayout>
 
           <PrioritySectionLayout>
-            {totalSessionsPerWeek > 0 ? (
-              <PrioritizeFocus
-                totalWorkouts={totalSessionsPerWeek}
-                musclePriority={musclePriority}
-                setMusclePriority={setMusclePriority}
-                setWorkoutSplit={setWorkoutSplit}
-              />
-            ) : null}
+            <PrioritizeFocus
+              totalWorkouts={totalSessionsPerWeek}
+              musclePriority={musclePriority}
+              setMusclePriority={setMusclePriority}
+              setWorkoutSplit={setWorkoutSplit}
+            />
           </PrioritySectionLayout>
         </div>
 
@@ -221,11 +183,11 @@ const Home: NextPage = () => {
               <h2 className="ml-1 p-1 text-white">Training Block</h2>
             </div>
 
-            {showTrainingBlock && (
+            {totalSessions && (
               <TrainingBlock
                 workoutSplit={workoutSplit}
                 priorityRanking={musclePriority}
-                totalSessions={sessions}
+                totalSessions={totalSessions}
               />
             )}
           </div>

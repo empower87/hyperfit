@@ -34,11 +34,13 @@ const TestingAlgorithmUI = ({
     ["none", "none"],
     ["none", "none"],
   ];
+
   const updateSplit = DEFAULT.map((each, index) => {
     if (split[index]) {
       return split[index];
     } else return each;
   });
+
   return (
     <div className={margin ? margin : "" + " flex flex-col"}>
       <p className="text-xs font-bold">{title}</p>

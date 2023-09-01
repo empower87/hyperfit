@@ -1062,6 +1062,6 @@ export const getTrainingSplit = (
           ];
       }
     default:
-      throw new Error("no case for this");
+      throw new Error("ERROR: no case for this input");
   }
 };

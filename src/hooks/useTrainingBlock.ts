@@ -170,8 +170,6 @@ export default function useTrainingBlock(
   split: SessionType[],
   list: MusclePriorityType[],
   totalSessions: [number, number]
-  // totalWeeklySessions: number,
-  // totalDoubleSessions: number
 ) {
   const [trainingBlock, setTrainingBlock] = useState<SessionType[][]>([]);
   const [testSplit, setTestSplit] = useState<SessionSplitTESTType[][]>([]);
@@ -181,12 +179,7 @@ export default function useTrainingBlock(
     let meso2 = getMesocycle([...split], list, 1);
     let meso3 = getMesocycle([...split], list, 2);
 
-    const data = getPushPosition(
-      list,
-      totalSessions
-      // totalWeeklySessions,
-      // totalDoubleSessions
-    );
+    const data = getPushPosition(list, totalSessions);
     setTestSplit(data);
 
     setTrainingBlock([meso1, meso2, meso3]);
@@ -197,146 +190,3 @@ export default function useTrainingBlock(
     testSplit,
   };
 }
-
-// const getIt = (
-//   index: number,
-//   name: string,
-//   mesoProgress: number,
-//   key: VolumeKey
-// ) => {
-//   const data = getMuscleData(name);
-//   // if (!data) return;
-//   const volume_matrix = data[key][mesoProgress];
-//   const volume_landmark =
-//     index < MRV_RANK
-//       ? "MRV"
-//       : index >= MRV_RANK && index < MEV_RANK
-//       ? "MEV"
-//       : "MV";
-
-//   let mesoProgressIndex = mesoProgress - 1;
-//   let frequency_progression = [data.MV];
-//   let frequency_type: "MV" | "MEV" | "MRV" = "MV";
-//   let split_max = 4;
-
-//   let muscleExercises: MuscleTypeForTable = {
-//     name: data.name,
-//     sessions: 0,
-//     exercises: [],
-//   };
-
-//   let count = 0;
-//   for (let i = 0; i < volume_matrix?.length; i++) {
-//     let exerciseList: ExerciseType[] = [];
-
-//     const split = volume_matrix[i].split("-").map((each) => parseInt(each));
-
-//     if (split.length > 1) {
-//       exerciseList.push(
-//         {
-//           ...exercise,
-//           rank: frequency_type,
-//           sets: split[0],
-//           group: data.name,
-//           exercise: getExercise(data.name, count).name,
-//         },
-//         {
-//           ...exercise,
-//           rank: frequency_type,
-//           sets: split[1],
-//           group: data.name,
-//           exercise: getExercise(data.name, count + 1).name,
-//         }
-//       );
-//       count = count + 2;
-//     } else {
-//       exerciseList.push({
-//         ...exercise,
-//         rank: frequency_type,
-//         sets: split[0],
-//         group: data.name,
-//         exercise: getExercise(data.name, count).name,
-//       });
-//       count = count + 1;
-//     }
-//     muscleExercises.exercises.push(exerciseList);
-//   }
-
-//   // switch (s) {
-//   //   case 0:
-//   //     frequency_progression = data.mevToMrvProgression[mesoProgressIndex];
-//   //     frequency_type = "MRV";
-//   //     muscleExercises.sessions = frequency_progression?.length;
-//   //     break;
-//   //   case 1:
-//   //     frequency_progression = data.mvToMevProgression[mesoProgressIndex];
-//   //     frequency_type = "MEV";
-//   //     muscleExercises.sessions = frequency_progression?.length;
-//   //     break;
-//   //   default:
-//   //     split_max = 6;
-//   // }
-
-//   // let indices: number[][] = [];
-//   // let counter = 0;
-
-//   // for (let j = 0; j < frequency_progression?.length; j++) {
-//   //   if (frequency_progression[j] >= split_max) {
-//   //     indices.push([counter, counter + 1]);
-//   //     counter = counter + 2;
-//   //   } else {
-//   //     indices.push([counter]);
-//   //     counter = counter + 1;
-//   //   }
-//   // }
-
-//   // for (let i = 0; i < frequency_progression?.length; i++) {
-//   //   let exerciseList: ExerciseType[] = [];
-
-//   //   let indexCounter = i;
-
-//   //   if (frequency_progression.length === 1 && frequency_progression[i] === 0)
-//   //     break;
-//   //   if (frequency_progression[i] >= split_max) {
-//   //     let totalSets = frequency_progression[i];
-//   //     let setOne = 2;
-//   //     let setTwo = 2;
-
-//   //     if (frequency_progression[i] > split_max) {
-//   //       setOne = Math.floor(totalSets / 2);
-//   //       setTwo = totalSets - setOne;
-//   //     }
-
-//   //     exerciseList.push(
-//   //       {
-//   //         ...exercise,
-//   //         rank: frequency_type,
-//   //         sets: setOne,
-//   //         group: data.name,
-//   //         exercise: getExercise(data.name, indices[i][0]).name,
-//   //       },
-//   //       {
-//   //         ...exercise,
-//   //         rank: frequency_type,
-//   //         sets: setTwo,
-//   //         group: data.name,
-//   //         exercise: getExercise(data.name, indices[i][1]).name,
-//   //       }
-//   //     );
-//   //     indexCounter = indexCounter + 2;
-//   //   } else {
-//   //     exerciseList.push({
-//   //       ...exercise,
-//   //       rank: frequency_type,
-//   //       sets: frequency_progression[i],
-//   //       group: data.name,
-//   //       exercise: getExercise(data.name, indices[i][0]).name,
-//   //     });
-//   //     indexCounter = indexCounter + 1;
-//   //   }
-
-//   //   muscleExercises.exercises.push(exerciseList);
-//   // }
-
-//   return muscleExercises;
-// };
