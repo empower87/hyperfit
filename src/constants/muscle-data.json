@@ -16,14 +16,6 @@
     ],
     "mev_progression_matrix": [["2"], ["2", "2"], ["2", "1", "1"]],
     "mv_progression_matrix": [["3"], ["2", "2"], ["2", "2", "2"]],
-    "mevToMrvProgression": [
-      [2],
-      [2, 2],
-      [2, 3, 2],
-      [3, 3, 3, 2],
-      [3, 3, 3, 3, 2]
-    ],
-    "mvToMevProgression": [[3], [2, 2], [2, 2, 1]],
     "restPeriod": 1,
     "systemicallyFatiguing": false,
     "localSystemicFatigue": ["back"]
@@ -45,8 +37,6 @@
     ],
     "mev_progression_matrix": [["2"], ["2", "2"], ["2", "1", "1"]],
     "mv_progression_matrix": [],
-    "mevToMrvProgression": [[2], [2, 3], [3, 4, 3], [3, 4, 4, 2]],
-    "mvToMevProgression": [[3], [2, 2], [2, 2, 2]],
     "restPeriod": 1,
     "systemicallyFatiguing": false,
     "localSystemicFatigue": []
@@ -68,14 +58,6 @@
     ],
     "mev_progression_matrix": [["3"], ["3", "2"], ["3", "3", "1"]],
     "mv_progression_matrix": [["2-2"], ["2-3", "2"], ["2-2", "2", "1"]],
-    "mevToMrvProgression": [
-      [4],
-      [4, 4],
-      [5, 5, 4],
-      [6, 6, 5, 2],
-      [6, 6, 6, 3, 2]
-    ],
-    "mvToMevProgression": [[6], [4, 3], [4, 3, 1]],
     "restPeriod": 2,
     "systemicallyFatiguing": true,
     "localSystemicFatigue": ["biceps"]
@@ -97,14 +79,6 @@
     ],
     "mev_progression_matrix": [["2"], ["2", "1"], ["2", "1", "1"]],
     "mv_progression_matrix": [],
-    "mevToMrvProgression": [
-      [3],
-      [2, 3],
-      [3, 4, 3],
-      [3, 4, 4, 2],
-      [4, 4, 4, 3, 1]
-    ],
-    "mvToMevProgression": [[2], [2, 1], [2, 1, 1]],
     "restPeriod": 1,
     "systemicallyFatiguing": false,
     "localSystemicFatigue": ["delts_rear", "delts_side", "delts_front"]
@@ -126,14 +100,6 @@
     ],
     "mev_progression_matrix": [["3"], ["2", "2"], ["2", "2", "1"]],
     "mv_progression_matrix": [["2"], ["2", "2"], ["2", "2", "2"]],
-    "mevToMrvProgression": [
-      [2],
-      [2, 2],
-      [2, 3, 2],
-      [3, 3, 3, 2],
-      [3, 3, 3, 3, 2]
-    ],
-    "mvToMevProgression": [[3], [2, 2], [2, 2, 1]],
     "restPeriod": 1,
     "systemicallyFatiguing": false,
     "localSystemicFatigue": ["chest"]
@@ -155,14 +121,6 @@
     ],
     "mev_progression_matrix": [["3"], ["3", "2"], ["3", "3", "1"]],
     "mv_progression_matrix": [["2"], ["2", "2"]],
-    "mevToMrvProgression": [
-      [4],
-      [4, 4],
-      [5, 5, 2],
-      [6, 6, 3, 2],
-      [6, 6, 4, 3, 2]
-    ],
-    "mvToMevProgression": [[3], [2, 2], [2, 2, 1]],
     "restPeriod": 2,
     "systemicallyFatiguing": true,
     "localSystemicFatigue": ["triceps", "delts_front"]
@@ -178,20 +136,12 @@
     "mrv_progression_matrix": [
       ["2-2"],
       ["2-2", "2-2"],
-      ["2-3", "2-3", "3"],
-      ["3-3", "3-3", "4", "2"],
-      ["3-3", "3-3", "5", "3", "1"]
+      ["2-3", "2-3", "2-1"],
+      ["3-3", "3-3", "2-2", "1"],
+      ["3-4", "3-4", "2-2", "1", "1"]
     ],
     "mev_progression_matrix": [["3"], ["3", "2"], ["3", "3", "1"]],
     "mv_progression_matrix": [["2"], ["2", "2"]],
-    "mevToMrvProgression": [
-      [4],
-      [4, 4],
-      [5, 5, 3],
-      [6, 6, 4, 1],
-      [6, 6, 5, 2, 1]
-    ],
-    "mvToMevProgression": [[4], [3, 2], [3, 3, 1]],
     "restPeriod": 2,
     "systemicallyFatiguing": true,
     "localSystemicFatigue": ["hamstrings", "glutes"]
@@ -212,8 +162,6 @@
     ],
     "mev_progression_matrix": [["2"], ["2", "2"], ["2", "1", "1"]],
     "mv_progression_matrix": [["2"]],
-    "mevToMrvProgression": [[2], [2, 3], [3, 4, 3], [3, 4, 4, 2]],
-    "mvToMevProgression": [[3], [2, 1], [2, 1, 1]],
     "restPeriod": 2,
     "systemicallyFatiguing": true,
     "localSystemicFatigue": ["quads", "hamstrings"]
@@ -235,14 +183,6 @@
     ],
     "mev_progression_matrix": [],
     "mv_progression_matrix": [],
-    "mevToMrvProgression": [
-      [2],
-      [2, 3],
-      [3, 4, 3],
-      [3, 4, 4, 2],
-      [4, 4, 4, 3, 2]
-    ],
-    "mvToMevProgression": [[0], [0, 0], [0, 0, 0]],
     "restPeriod": 2,
     "systemicallyFatiguing": true,
     "localSystemicFatigue": ["hamstrings", "quads"]
@@ -263,8 +203,6 @@
     ],
     "mev_progression_matrix": [],
     "mv_progression_matrix": [],
-    "mevToMrvProgression": [[2], [2, 3], [3, 4, 3]],
-    "mvToMevProgression": [[0], [0, 0], [0, 0, 0]],
     "restPeriod": 2,
     "systemicallyFatiguing": false,
     "localSystemicFatigue": ["chest"]
@@ -286,14 +224,6 @@
     ],
     "mev_progression_matrix": [["3"], ["3", "2"], ["3", "3", "1"]],
     "mv_progression_matrix": [["3"], ["2", "2"], ["2", "2", "2"]],
-    "mevToMrvProgression": [
-      [4],
-      [4, 4],
-      [5, 5, 4],
-      [6, 6, 5, 2],
-      [6, 6, 6, 3, 2]
-    ],
-    "mvToMevProgression": [[3], [3, 2], [3, 3, 1]],
     "restPeriod": 1,
     "frequency": "3-5",
     "systemicallyFatiguing": false,
@@ -316,14 +246,6 @@
     ],
     "mev_progression_matrix": [["3"], ["2", "2"], ["2", "2", "2"]],
     "mv_progression_matrix": [],
-    "mevToMrvProgression": [
-      [3],
-      [3, 3],
-      [3, 3, 3],
-      [4, 4, 4, 3],
-      [5, 5, 5, 4, 3]
-    ],
-    "mvToMevProgression": [[3], [2, 2], [2, 2, 2]],
     "restPeriod": 1,
     "systemicallyFatiguing": false,
     "localSystemicFatigue": ["back", "delts_side", "delts_front"]
@@ -345,14 +267,6 @@
     ],
     "mev_progression_matrix": [["3"], ["3", "2"], ["3", "2", "1"]],
     "mv_progression_matrix": [["3"], ["2", "2"], ["2", "2", "2"]],
-    "mevToMrvProgression": [
-      [2],
-      [2, 3],
-      [3, 4, 3],
-      [3, 4, 4, 2],
-      [4, 4, 4, 3, 2]
-    ],
-    "mvToMevProgression": [[3], [3, 2], [3, 3, 1]],
     "restPeriod": 1,
     "systemicallyFatiguing": false,
     "localSystemicFatigue": ["hamstrings"]
@@ -374,14 +288,6 @@
     ],
     "mev_progression_matrix": [["2"]],
     "mv_progression_matrix": [],
-    "mevToMrvProgression": [
-      [2],
-      [2, 3],
-      [3, 4, 3],
-      [3, 4, 4, 2],
-      [4, 4, 4, 3, 2]
-    ],
-    "mvToMevProgression": [[0], [1, 0], [1, 1, 0]],
     "restPeriod": 1,
     "systemicallyFatiguing": false,
     "localSystemicFatigue": ["biceps"]

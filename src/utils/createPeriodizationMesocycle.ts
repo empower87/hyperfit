@@ -1,6 +1,6 @@
 import { MusclePriorityType } from "~/pages";
 
-export const subtractSetsForMeso = (sets: [string, number][]) => {
+const subtractSetsForMeso = (sets: [string, number][]) => {
   // let count = setsToSubtract
 
   let total = 5;
