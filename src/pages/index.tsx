@@ -135,6 +135,60 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
   },
 ];
 
+type DayType =
+  | "Sunday"
+  | "Monday"
+  | "Tuesday"
+  | "Wednesday"
+  | "Thursday"
+  | "Friday"
+  | "Saturday";
+type SplitType = "upper" | "lower" | "push" | "pull" | "full" | "off";
+
+type SessionDayType = {
+  day: DayType;
+  sessionNum: number;
+  sessions: [SplitType, SplitType];
+};
+
+const INITIAL_SPLIT: SessionDayType[] = [
+  {
+    day: "Sunday",
+    sessionNum: 0,
+    sessions: ["off", "off"],
+  },
+  {
+    day: "Monday",
+    sessionNum: 0,
+    sessions: ["off", "off"],
+  },
+  {
+    day: "Tuesday",
+    sessionNum: 0,
+    sessions: ["off", "off"],
+  },
+  {
+    day: "Wednesday",
+    sessionNum: 0,
+    sessions: ["off", "off"],
+  },
+  {
+    day: "Thursday",
+    sessionNum: 0,
+    sessions: ["off", "off"],
+  },
+  {
+    day: "Friday",
+    sessionNum: 0,
+    sessions: ["off", "off"],
+  },
+  {
+    day: "Saturday",
+    sessionNum: 0,
+    sessions: ["off", "off"],
+  },
+];
+
 export type SessionType = {
   day: number;
   sets: ExerciseType[][];
@@ -144,9 +198,10 @@ export type SessionType = {
 };
 
 const Home: NextPage = () => {
-  const [totalSessions, setTotalSessions] = useState<
-    [number, number] | undefined
-  >();
+  const [totalSessions, setTotalSessions] = useState<[number, number]>([3, 0]);
+  const [showTrainingBlock, setShowTrainingBlock] = useState<boolean>(false);
+
+  const [split, setSplit] = useState<SessionDayType[]>([...INITIAL_SPLIT]);
 
   const [workoutSplit, setWorkoutSplit] = useState<SessionType[]>([]);
   const [musclePriority, setMusclePriority] = useState<MusclePriorityType[]>([
@@ -157,6 +212,12 @@ const Home: NextPage = () => {
   const totalSessionsPerWeek = totalSessions
     ? totalSessions[0] + totalSessions[1]
     : 3;
+
+  const handleFrequencyChange = (first: number, second: number) => {
+    setTotalSessions([first, second]);
+    setShowTrainingBlock(true);
+  };
+
   return (
     <>
       <Title />
@@ -164,7 +225,7 @@ const Home: NextPage = () => {
       <div className="flex h-full w-full flex-row justify-center">
         <div className="flex w-1/4 flex-col border-r-2 border-slate-700 p-2">
           <PromptCardLayout title="Frequency">
-            <FrequencySelectPrompts setTotalSessions={setTotalSessions} />
+            <FrequencySelectPrompts onClick={handleFrequencyChange} />
           </PromptCardLayout>
 
           <PrioritySectionLayout>
@@ -183,7 +244,7 @@ const Home: NextPage = () => {
               <h2 className="ml-1 p-1 text-white">Training Block</h2>
             </div>
 
-            {totalSessions && (
+            {showTrainingBlock && (
               <TrainingBlock
                 workoutSplit={workoutSplit}
                 priorityRanking={musclePriority}

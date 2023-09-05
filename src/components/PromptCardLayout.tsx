@@ -1,4 +1,4 @@
-import { Dispatch, ReactNode, SetStateAction, useState } from "react";
+import { ReactNode, useState } from "react";
 
 type PromptCardProps = {
   title: string;
@@ -7,9 +7,9 @@ type PromptCardProps = {
 const OPTIONS = [0, 1, 2, 3, 4, 5, 6, 7];
 
 export const FrequencySelectPrompts = ({
-  setTotalSessions,
+  onClick,
 }: {
-  setTotalSessions: Dispatch<SetStateAction<[number, number] | undefined>>;
+  onClick: (first: number, second: number) => void;
 }) => {
   const [totalSessionsPerWeek, setTotalSessionsPerWeek] = useState<number>(3);
   const [totalDoubleSessionsPerWeek, setTotalDoubleSessionsPerWeek] =
@@ -26,7 +26,7 @@ export const FrequencySelectPrompts = ({
   };
 
   const onClickHandler = () => {
-    setTotalSessions([totalSessionsPerWeek, totalDoubleSessionsPerWeek]);
+    onClick(totalSessionsPerWeek, totalDoubleSessionsPerWeek);
   };
 
   return (

@@ -8,6 +8,60 @@ import { MusclePriorityType, SessionType } from "~/pages";
 import { getTrainingSplit } from "~/utils/getTrainingSplit";
 import { MesocycleLayout, MesocycleTable } from "./Mesocycle";
 
+type DayType =
+  | "Sunday"
+  | "Monday"
+  | "Tuesday"
+  | "Wednesday"
+  | "Thursday"
+  | "Friday"
+  | "Saturday";
+type SplitType = "upper" | "lower" | "push" | "pull" | "full" | "off";
+
+type SessionDayType = {
+  day: DayType;
+  sessionNum: number;
+  sessions: [SplitType, SplitType];
+};
+
+const INITIAL_SPLIT: SessionDayType[] = [
+  {
+    day: "Sunday",
+    sessionNum: 0,
+    sessions: ["off", "off"],
+  },
+  {
+    day: "Monday",
+    sessionNum: 0,
+    sessions: ["off", "off"],
+  },
+  {
+    day: "Tuesday",
+    sessionNum: 0,
+    sessions: ["off", "off"],
+  },
+  {
+    day: "Wednesday",
+    sessionNum: 0,
+    sessions: ["off", "off"],
+  },
+  {
+    day: "Thursday",
+    sessionNum: 0,
+    sessions: ["off", "off"],
+  },
+  {
+    day: "Friday",
+    sessionNum: 0,
+    sessions: ["off", "off"],
+  },
+  {
+    day: "Saturday",
+    sessionNum: 0,
+    sessions: ["off", "off"],
+  },
+];
+
 type TrainingBlockProps = {
   priorityRanking: MusclePriorityType[];
   workoutSplit: SessionType[];
@@ -163,21 +217,21 @@ export const determineWorkoutSplit = (
   const push_pull_max = session_maxes_per_week[0];
   const total = push + pull + lower;
 
-  var pushDecimal = push / total;
-  var pullDecimal = pull / total;
-  var lowerDecimal = lower / total;
+  let pushDecimal = push / total;
+  let pullDecimal = pull / total;
+  let lowerDecimal = lower / total;
 
-  var pushRatio = totalSessions * pushDecimal;
-  var pullRatio = totalSessions * pullDecimal;
-  var lowerRatio = totalSessions * lowerDecimal;
+  let pushRatio = totalSessions * pushDecimal;
+  let pullRatio = totalSessions * pullDecimal;
+  let lowerRatio = totalSessions * lowerDecimal;
 
-  var pushInteger = Math.floor(pushRatio);
-  var pullInteger = Math.floor(pullRatio);
-  var lowerInteger = Math.floor(lowerRatio);
+  let pushInteger = Math.floor(pushRatio);
+  let pullInteger = Math.floor(pullRatio);
+  let lowerInteger = Math.floor(lowerRatio);
 
-  var pushTenths = pushRatio - pushInteger;
-  var pullTenths = pullRatio - pullInteger;
-  var lowerTenths = lowerRatio - lowerInteger;
+  let pushTenths = pushRatio - pushInteger;
+  let pullTenths = pullRatio - pullInteger;
+  let lowerTenths = lowerRatio - lowerInteger;
 
   let pushSessions = pushInteger;
   let pullSessions = pullInteger;
@@ -244,6 +298,8 @@ export const determineWorkoutSplit = (
   let split: SessionSplitTESTType[][] = [];
   let index = 0;
 
+  console.log(setSessionNums(first_sessions, INITIAL_SPLIT), "CHECK THE SPLIT");
+  // const newSplit = populateSplit(pushSessions, pullSessions, lowerSessions, upperSessions, fullSessions, sessions, INITIAL_SPLIT)
   while (
     pushSessions + pullSessions + lowerSessions + upperSessions + fullSessions >
     0
@@ -323,3 +379,122 @@ export const determineWorkoutSplit = (
 
   return split;
 };
+
+const setSessionNums = (sessions: number, split: SessionDayType[]) => {
+  switch (sessions) {
+    case 3:
+      let odd = 0;
+      const oddSplit = split.map((each, index) => {
+        if (index % 2 !== 0) {
+          odd++;
+          return { ...each, sessionNum: odd };
+        } else return each;
+      });
+      return oddSplit;
+    case 4:
+      let four = 0;
+      const fourSplit = split.map((each, index) => {
+        if (index === 1 || index === 2 || index === 4 || index === 5) {
+          four++;
+          return { ...each, sessionNum: four };
+        } else return each;
+      });
+      return fourSplit;
+    case 5:
+      let five = 0;
+      const fiveSplit = split.map((each, index) => {
+        if (
+          index === 1 ||
+          index === 2 ||
+          index === 4 ||
+          index === 5 ||
+          index === 6
+        ) {
+          five++;
+          return { ...each, sessionNum: five };
+        } else return each;
+      });
+      return fiveSplit;
+    case 6:
+      let six = 0;
+      const sixSplit = split.map((each, index) => {
+        if (index !== 0) {
+          six++;
+          return { ...each, sessionNum: six };
+        } else return each;
+      });
+      return sixSplit;
+    default:
+      const sevenSplit = split.map((each, index) => ({
+        ...each,
+        sessionNum: index + 1,
+      }));
+      return sevenSplit;
+  }
+};
+
+// const populateSplit = (
+//   pushSessions: number,
+//   pullSessions: number,
+//   lowerSessions: number,
+//   upperSessions: number,
+//   fullSessions: number,
+//   sessions: [number, number],
+//   split: SessionDayType[],
+// ): SessionDayType[] => {
+//   let first_sessions = sessions[0];
+//   let second_sessions = sessions[1];
+
+//   let index = 0;
+
+//   let newSplit = setSessionNums(first_sessions, split)
+//   while (
+//     pushSessions + pullSessions + lowerSessions + upperSessions + fullSessions >
+//     0
+//   ) {
+//     if (first_sessions > 0) {
+
+//       if (pullSessions > 0) {
+//         split.push(["pull", "none"]);
+//         pullSessions--;
+//       } else if (pushSessions > 0) {
+//         split.push(["push", "none"]);
+//         pushSessions--;
+//       } else if (upperSessions > 0) {
+//         split.push(["upper", "none"]);
+//         upperSessions--;
+//       } else if (lowerSessions > 0) {
+//         split.push(["lower", "none"]);
+//         lowerSessions--;
+//       } else if (fullSessions > 0) {
+//         split.push(["full", "none"]);
+//         fullSessions--;
+//       }
+//       first_sessions--;
+//     } else if (second_sessions > 0) {
+//       if (pullSessions > 0) {
+//         split[index].splice(1, 1, "pull");
+//         pullSessions--;
+//         index++;
+//       } else if (pushSessions > 0) {
+//         split[index].splice(1, 1, "push");
+//         pushSessions--;
+//         index++;
+//       } else if (upperSessions > 0) {
+//         split[index].splice(1, 1, "upper");
+//         upperSessions--;
+//         index++;
+//       } else if (lowerSessions > 0) {
+//         split[index].splice(1, 1, "lower");
+//         lowerSessions--;
+//         index++;
+//       } else if (fullSessions > 0) {
+//         split[index].splice(1, 1, "full");
+//         fullSessions--;
+//         index++;
+//       }
+//       second_sessions--;
+//     }
+//   }
+//   return split
+// }
