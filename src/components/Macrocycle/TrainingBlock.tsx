@@ -433,68 +433,158 @@ const setSessionNums = (sessions: number, split: SessionDayType[]) => {
   }
 };
 
-// const populateSplit = (
-//   pushSessions: number,
-//   pullSessions: number,
-//   lowerSessions: number,
-//   upperSessions: number,
-//   fullSessions: number,
-//   sessions: [number, number],
-//   split: SessionDayType[],
-// ): SessionDayType[] => {
-//   let first_sessions = sessions[0];
-//   let second_sessions = sessions[1];
+const optimizeSplitFrequency = (
+  frequency: number, 
+  numOfDoubles: number,
+  split: SessionDayType[],
+  upper: number,
+  lower: number,
+  push: number,
+  pull: number,
+  full: number,
+  list: MusclePriorityType[],
+) => {
+  const setNewSplit: [SplitType, SplitType][] = []
 
-//   let index = 0;
+  let _lower = lower
+  let _upper = upper
+  let _push = push
+  let _pull = pull
+  let _full = full
 
-//   let newSplit = setSessionNums(first_sessions, split)
-//   while (
-//     pushSessions + pullSessions + lowerSessions + upperSessions + fullSessions >
-//     0
-//   ) {
-//     if (first_sessions > 0) {
+  let totalLower = lower + full
+  let totalPush = push + upper + full
+  let totalPull = pull + upper + full
 
-//       if (pullSessions > 0) {
-//         split.push(["pull", "none"]);
-//         pullSessions--;
-//       } else if (pushSessions > 0) {
-//         split.push(["push", "none"]);
-//         pushSessions--;
-//       } else if (upperSessions > 0) {
-//         split.push(["upper", "none"]);
-//         upperSessions--;
-//       } else if (lowerSessions > 0) {
-//         split.push(["lower", "none"]);
-//         lowerSessions--;
-//       } else if (fullSessions > 0) {
-//         split.push(["full", "none"]);
-//         fullSessions--;
-//       }
-//       first_sessions--;
-//     } else if (second_sessions > 0) {
-//       if (pullSessions > 0) {
-//         split[index].splice(1, 1, "pull");
-//         pullSessions--;
-//         index++;
-//       } else if (pushSessions > 0) {
-//         split[index].splice(1, 1, "push");
-//         pushSessions--;
-//         index++;
-//       } else if (upperSessions > 0) {
-//         split[index].splice(1, 1, "upper");
-//         upperSessions--;
-//         index++;
-//       } else if (lowerSessions > 0) {
-//         split[index].splice(1, 1, "lower");
-//         lowerSessions--;
-//         index++;
-//       } else if (fullSessions > 0) {
-//         split[index].splice(1, 1, "full");
-//         fullSessions--;
-//         index++;
-//       }
-//       second_sessions--;
-//     }
-//   }
-//   return split
-// }
+  for (let i = 0; i < split.length; i++) {
+    let currentSession = split[i].sessionNum
+    let sessionOne = split[i].sessions[0]
+    let sessiontwo = split[i].sessions[1]
+    let prevSessionOne = split[i - 1].sessions[0]
+    let prevSessionTwo = split[i - 1].sessions[1]
+
+    if (currentSession !== 0) {
+      // Meaning we have a training day on this iteration
+
+      if (prevSessionTwo === "off") {
+
+        if ((totalLower >= totalPush && totalLower >= totalPush && _lower > 0) || ((totalPush > totalPull && totalPush - 1 <= totalLower && _lower > 0) || (totalPull > totalPush && totalPull - 1 <= totalLower && _lower > 0))) {
+          // split[i].sessions[0] = "lower"
+          // _lower--
+        } else if (totalPush >= totalPull && upper === 0) {
+          // split[i].sessions[0] = "push"
+          // _push--
+        } else if (totalPull >= totalPush && upper == 0) {
+          // split[i].sessions[0] = "pull"
+          // _pull--
+        } else if (upper > 0) {
+          // split[i].sessions[0] = "upper"
+          // _upper--
+        } else {
+          // split[i].sessions[0] = "full"
+          // _full--
+        }
+
+      }
+    }
+  }
+
+  switch (frequency) {
+    case 3:
+
+    case 4:
+
+    case 5:
+
+    case 6:
+
+    default:
+
+  }
+}
+
+// 5 - 4
+
+// upper: 3
+// pull:  2
+// push:  2
+// lower: 2
+// full:  0
+
+// off upper pull off upper pull off
+// off lower push off lower push upper
+
+// off push lower off pull lower upper
+// off pull upper off push upper off
+
+// off upper lower off push lower pull
+// off off   upper off pull upper push
+
+// off upper lower off upper lower upper
+// off push  pull  off push  pull  off
+
+const populateSplit = (
+  pushSessions: number,
+  pullSessions: number,
+  lowerSessions: number,
+  upperSessions: number,
+  fullSessions: number,
+  sessions: [number, number],
+  split: SessionDayType[],
+): SessionDayType[] => {
+  let first_sessions = sessions[0];
+  let second_sessions = sessions[1];
+
+  let index = 0;
+
+  let newSplit = setSessionNums(first_sessions, split)
+  while (
+    pushSessions + pullSessions + lowerSessions + upperSessions + fullSessions >
+    0
+  ) {
+    if (first_sessions > 0) {
+
+      if (pullSessions > 0) {
+        split.push(["pull", "none"]);
+        pullSessions--;
+      } else if (pushSessions > 0) {
+        split.push(["push", "none"]);
+        pushSessions--;
+      } else if (upperSessions > 0) {
+        split.push(["upper", "none"]);
+        upperSessions--;
+      } else if (lowerSessions > 0) {
+        split.push(["lower", "none"]);
+        lowerSessions--;
+      } else if (fullSessions > 0) {
+        split.push(["full", "none"]);
+        fullSessions--;
+      }
+      first_sessions--;
+    } else if (second_sessions > 0) {
+      if (pullSessions > 0) {
+        split[index].splice(1, 1, "pull");
+        pullSessions--;
+        index++;
+      } else if (pushSessions > 0) {
+        split[index].splice(1, 1, "push");
+        pushSessions--;
+        index++;
+      } else if (upperSessions > 0) {
+        split[index].splice(1, 1, "upper");
+        upperSessions--;
+        index++;
+      } else if (lowerSessions > 0) {
+        split[index].splice(1, 1, "lower");
+        lowerSessions--;
+        index++;
+      } else if (fullSessions > 0) {
+        split[index].splice(1, 1, "full");
+        fullSessions--;
+        index++;
+      }
+      second_sessions--;
+    }
+  }
+  return split
+}
