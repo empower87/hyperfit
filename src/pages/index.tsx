@@ -1,6 +1,8 @@
 import { type NextPage } from "next";
-import { useState } from "react";
-import TrainingBlock from "~/components/Macrocycle/TrainingBlock";
+import { useEffect, useState } from "react";
+import TrainingBlock, {
+  setSessionNums,
+} from "~/components/Macrocycle/TrainingBlock";
 import PrioritizeFocus from "~/components/PrioritizeFocus";
 import PrioritySectionLayout from "~/components/PrioritySectionLayout";
 import PromptCardLayout, {
@@ -143,9 +145,9 @@ type DayType =
   | "Thursday"
   | "Friday"
   | "Saturday";
-type SplitType = "upper" | "lower" | "push" | "pull" | "full" | "off";
+export type SplitType = "upper" | "lower" | "push" | "pull" | "full" | "off";
 
-type SessionDayType = {
+export type SessionDayType = {
   day: DayType;
   sessionNum: number;
   sessions: [SplitType, SplitType];
@@ -218,6 +220,11 @@ const Home: NextPage = () => {
     setShowTrainingBlock(true);
   };
 
+  useEffect(() => {
+    let updateSplit = setSessionNums(totalSessions[0], INITIAL_SPLIT);
+    setSplit(updateSplit);
+  }, [totalSessions]);
+
   return (
     <>
       <Title />
@@ -249,6 +256,7 @@ const Home: NextPage = () => {
                 workoutSplit={workoutSplit}
                 priorityRanking={musclePriority}
                 totalSessions={totalSessions}
+                split={split}
               />
             )}
           </div>

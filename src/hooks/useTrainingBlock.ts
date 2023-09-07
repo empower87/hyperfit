@@ -2,9 +2,14 @@ import { useEffect, useState } from "react";
 import { getExercise } from "~/constants/exercises";
 import { MEV_RANK, MRV_RANK } from "~/constants/prioritizeRanks";
 import { UPPER_MUSCLES } from "~/constants/workoutSplits";
-import { MusclePriorityType, SessionType } from "~/pages";
+import {
+  MusclePriorityType,
+  SessionDayType,
+  SessionType,
+  SplitType,
+} from "~/pages";
 import { getMuscleData } from "~/utils/getMuscleData";
-import { SessionSplitTESTType, getPushPosition } from "./usePrioritizeMuscles";
+import { getPushPosition } from "./usePrioritizeMuscles";
 
 type MuscleTypeForTable = {
   name: string;
@@ -169,18 +174,20 @@ const getMesocycle = (
 export default function useTrainingBlock(
   split: SessionType[],
   list: MusclePriorityType[],
-  totalSessions: [number, number]
+  totalSessions: [number, number],
+  splitTest: SessionDayType[]
 ) {
   const [trainingBlock, setTrainingBlock] = useState<SessionType[][]>([]);
-  const [testSplit, setTestSplit] = useState<SessionSplitTESTType[][]>([]);
+  const [testSplit, setTestSplit] = useState<[SplitType, SplitType][]>([]);
 
   useEffect(() => {
     let meso1 = getMesocycle([...split], list, 0);
     let meso2 = getMesocycle([...split], list, 1);
     let meso3 = getMesocycle([...split], list, 2);
 
-    const data = getPushPosition(list, totalSessions);
-    setTestSplit(data);
+    const data = getPushPosition(list, totalSessions, splitTest);
+    const testData = data.map((each) => each.sessions);
+    setTestSplit(testData);
 
     setTrainingBlock([meso1, meso2, meso3]);
   }, [split, list, totalSessions]);

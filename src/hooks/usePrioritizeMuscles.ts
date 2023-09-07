@@ -9,7 +9,7 @@ import {
   PUSH_MUSCLES,
   UPPER_MUSCLES,
 } from "~/constants/workoutSplits";
-import { MusclePriorityType, SessionType } from "~/pages";
+import { MusclePriorityType, SessionDayType, SessionType } from "~/pages";
 import { getMuscleData } from "../utils/getMuscleData";
 import { ExerciseType, VolumeKey } from "./useTrainingBlock";
 
@@ -51,7 +51,8 @@ export const initializeSessions = (sessions: number) => {
 
 export const getPushPosition = (
   list: MusclePriorityType[],
-  totalSessions: [number, number]
+  totalSessions: [number, number],
+  split: SessionDayType[]
 ) => {
   let push = 0;
   let pull = 0;
@@ -79,9 +80,9 @@ export const getPushPosition = (
     }
   }
 
-  const split = determineWorkoutSplit(push, pull, lower, totalSessions);
+  const _split = determineWorkoutSplit(push, pull, lower, totalSessions, split);
 
-  return split;
+  return _split;
 };
 
 const getLowerPosition = (list: MusclePriorityType[]) => {

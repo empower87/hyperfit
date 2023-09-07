@@ -1,6 +1,6 @@
 import { MRV_RANK } from "~/constants/prioritizeRanks";
 import { LOWER_MUSCLES } from "~/constants/workoutSplits";
-import { MusclePriorityType } from "~/pages";
+import { MusclePriorityType, SplitType } from "~/pages";
 
 const getLowerPosition = (list: MusclePriorityType[]) => {
   let priority = [0, 0];
@@ -66,13 +66,13 @@ export type SessionSplitTESTType =
   | "full"
   | "push"
   | "pull"
-  | "none";
+  | "off";
 
 export const getTrainingSplit = (
   list: MusclePriorityType[],
   totalWeeklySessions: number,
   totalDoubleSessions: number
-): SessionSplitTESTType[][] => {
+): [SplitType, SplitType][] => {
   const sessions = totalWeeklySessions + totalDoubleSessions;
   const lowerRank = getLowerPosition(list);
 
@@ -81,39 +81,39 @@ export const getTrainingSplit = (
       switch (lowerRank) {
         case "MAX_MRV":
           return [
-            ["lower", "none"],
-            ["upper", "none"],
-            ["lower", "none"],
+            ["lower", "off"],
+            ["upper", "off"],
+            ["lower", "off"],
           ];
         case "FULL_MRV":
           return [
-            ["lower", "none"],
-            ["upper", "none"],
-            ["lower", "none"],
+            ["lower", "off"],
+            ["upper", "off"],
+            ["lower", "off"],
           ];
         case "MRV":
           return [
-            ["lower", "none"],
-            ["upper", "none"],
-            ["full", "none"],
+            ["lower", "off"],
+            ["upper", "off"],
+            ["full", "off"],
           ];
         case "LOW_MRV":
           return [
-            ["lower", "none"],
-            ["upper", "none"],
-            ["full", "none"],
+            ["lower", "off"],
+            ["upper", "off"],
+            ["full", "off"],
           ];
         case "MEV":
           return [
-            ["upper", "none"],
-            ["lower", "none"],
-            ["upper", "none"],
+            ["upper", "off"],
+            ["lower", "off"],
+            ["upper", "off"],
           ];
         default:
           return [
-            ["upper", "none"],
-            ["full", "none"],
-            ["upper", "none"],
+            ["upper", "off"],
+            ["full", "off"],
+            ["upper", "off"],
           ];
       }
     case 4:
@@ -121,84 +121,84 @@ export const getTrainingSplit = (
         switch (lowerRank) {
           case "MAX_MRV":
             return [
-              ["lower", "none"],
+              ["lower", "off"],
               ["upper", "full"],
-              ["lower", "none"],
+              ["lower", "off"],
             ];
           case "FULL_MRV":
             return [
-              ["lower", "none"],
+              ["lower", "off"],
               ["upper", "full"],
-              ["lower", "none"],
+              ["lower", "off"],
             ];
           case "MRV":
             return [
-              ["lower", "none"],
+              ["lower", "off"],
               ["upper", "full"],
-              ["upper", "none"],
+              ["upper", "off"],
             ];
           case "LOW_MRV":
             return [
-              ["lower", "none"],
+              ["lower", "off"],
               ["upper", "full"],
-              ["upper", "none"],
+              ["upper", "off"],
             ];
           case "MEV":
             return [
-              ["upper", "none"],
+              ["upper", "off"],
               ["lower", "upper"],
-              ["upper", "none"],
+              ["upper", "off"],
             ];
           default:
             return [
-              ["upper", "none"],
+              ["upper", "off"],
               ["upper", "full"],
-              ["upper", "none"],
+              ["upper", "off"],
             ];
         }
       }
       switch (lowerRank) {
         case "MAX_MRV":
           return [
-            ["lower", "none"],
-            ["upper", "none"],
-            ["lower", "none"],
-            ["full", "none"],
+            ["lower", "off"],
+            ["upper", "off"],
+            ["lower", "off"],
+            ["full", "off"],
           ];
         case "FULL_MRV":
           return [
-            ["lower", "none"],
-            ["upper", "none"],
-            ["lower", "none"],
-            ["full", "none"],
+            ["lower", "off"],
+            ["upper", "off"],
+            ["lower", "off"],
+            ["full", "off"],
           ];
         case "MRV":
           return [
-            ["lower", "none"],
-            ["upper", "none"],
-            ["upper", "none"],
-            ["full", "none"],
+            ["lower", "off"],
+            ["upper", "off"],
+            ["upper", "off"],
+            ["full", "off"],
           ];
         case "LOW_MRV":
           return [
-            ["lower", "none"],
-            ["upper", "none"],
-            ["upper", "none"],
-            ["full", "none"],
+            ["lower", "off"],
+            ["upper", "off"],
+            ["upper", "off"],
+            ["full", "off"],
           ];
         case "MEV":
           return [
-            ["upper", "none"],
-            ["lower", "none"],
-            ["upper", "none"],
-            ["upper", "none"],
+            ["upper", "off"],
+            ["lower", "off"],
+            ["upper", "off"],
+            ["upper", "off"],
           ];
         default:
           return [
-            ["upper", "none"],
-            ["full", "none"],
-            ["upper", "none"],
-            ["upper", "none"],
+            ["upper", "off"],
+            ["full", "off"],
+            ["upper", "off"],
+            ["upper", "off"],
           ];
       }
     case 5:
@@ -206,82 +206,82 @@ export const getTrainingSplit = (
         switch (lowerRank) {
           case "MAX_MRV":
             return [
-              ["lower", "none"],
-              ["upper", "none"],
-              ["lower", "none"],
+              ["lower", "off"],
+              ["upper", "off"],
+              ["lower", "off"],
               ["upper", "lower"],
             ];
           case "FULL_MRV":
             return [
-              ["lower", "none"],
-              ["upper", "none"],
-              ["lower", "none"],
+              ["lower", "off"],
+              ["upper", "off"],
+              ["lower", "off"],
               ["upper", "lower"],
             ];
           case "MRV":
             return [
-              ["upper", "none"],
-              ["lower", "none"],
+              ["upper", "off"],
+              ["lower", "off"],
               ["upper", "full"],
-              ["lower", "none"],
+              ["lower", "off"],
             ];
           case "LOW_MRV":
             return [
-              ["upper", "none"],
+              ["upper", "off"],
               ["lower", "upper"],
-              ["upper", "none"],
-              ["full", "none"],
+              ["upper", "off"],
+              ["full", "off"],
             ];
           case "MEV":
             return [
-              ["upper", "none"],
+              ["upper", "off"],
               ["lower", "upper"],
-              ["upper", "none"],
-              ["full", "none"],
+              ["upper", "off"],
+              ["full", "off"],
             ];
           default:
             return [
-              ["upper", "none"],
+              ["upper", "off"],
               ["lower", "upper"],
-              ["upper", "none"],
-              ["full", "none"],
+              ["upper", "off"],
+              ["full", "off"],
             ];
         }
       } else if (totalWeeklySessions === 3) {
         switch (lowerRank) {
           case "MAX_MRV":
             return [
-              ["lower", "none"],
+              ["lower", "off"],
               ["upper", "lower"],
               ["lower", "full"],
             ];
           case "FULL_MRV":
             return [
-              ["lower", "none"],
+              ["lower", "off"],
               ["upper", "lower"],
               ["lower", "full"],
             ];
           case "MRV":
             return [
               ["upper", "lower"],
-              ["lower", "none"],
+              ["lower", "off"],
               ["upper", "full"],
             ];
           case "LOW_MRV":
             return [
-              ["upper", "none"],
+              ["upper", "off"],
               ["lower", "upper"],
               ["upper", "full"],
             ];
           case "MEV":
             return [
-              ["upper", "none"],
+              ["upper", "off"],
               ["upper", "lower"],
               ["upper", "full"],
             ];
           default:
             return [
-              ["upper", "none"],
+              ["upper", "off"],
               ["upper", "lower"],
               ["upper", "full"],
             ];
@@ -290,51 +290,51 @@ export const getTrainingSplit = (
       switch (lowerRank) {
         case "MAX_MRV":
           return [
-            ["lower", "none"],
-            ["upper", "none"],
-            ["upper", "none"],
-            ["lower", "none"],
-            ["lower", "none"],
+            ["lower", "off"],
+            ["upper", "off"],
+            ["upper", "off"],
+            ["lower", "off"],
+            ["lower", "off"],
           ];
         case "FULL_MRV":
           return [
-            ["lower", "none"],
-            ["upper", "none"],
-            ["upper", "none"],
-            ["lower", "none"],
-            ["full", "none"],
+            ["lower", "off"],
+            ["upper", "off"],
+            ["upper", "off"],
+            ["lower", "off"],
+            ["full", "off"],
           ];
         case "MRV":
           return [
-            ["lower", "none"],
-            ["upper", "none"],
-            ["upper", "none"],
-            ["lower", "none"],
-            ["upper", "none"],
+            ["lower", "off"],
+            ["upper", "off"],
+            ["upper", "off"],
+            ["lower", "off"],
+            ["upper", "off"],
           ];
         case "LOW_MRV":
           return [
-            ["lower", "none"],
-            ["upper", "none"],
-            ["upper", "none"],
-            ["full", "none"],
-            ["upper", "none"],
+            ["lower", "off"],
+            ["upper", "off"],
+            ["upper", "off"],
+            ["full", "off"],
+            ["upper", "off"],
           ];
         case "MEV":
           return [
-            ["upper", "none"],
-            ["lower", "none"],
-            ["upper", "none"],
-            ["upper", "none"],
-            ["full", "none"],
+            ["upper", "off"],
+            ["lower", "off"],
+            ["upper", "off"],
+            ["upper", "off"],
+            ["full", "off"],
           ];
         default:
           return [
-            ["upper", "none"],
-            ["lower", "none"],
-            ["upper", "none"],
-            ["upper", "none"],
-            ["full", "none"],
+            ["upper", "off"],
+            ["lower", "off"],
+            ["upper", "off"],
+            ["upper", "off"],
+            ["full", "off"],
           ];
       }
     case 6:
@@ -381,44 +381,44 @@ export const getTrainingSplit = (
         switch (lowerRank) {
           case "MAX_MRV":
             return [
-              ["lower", "none"],
-              ["upper", "none"],
+              ["lower", "off"],
+              ["upper", "off"],
               ["lower", "upper"],
               ["upper", "lower"],
             ];
           case "FULL_MRV":
             return [
-              ["lower", "none"],
-              ["upper", "none"],
+              ["lower", "off"],
+              ["upper", "off"],
               ["lower", "upper"],
               ["upper", "lower"],
             ];
           case "MRV":
             return [
               ["upper", "lower"],
-              ["upper", "none"],
+              ["upper", "off"],
               ["upper", "lower"],
-              ["full", "none"],
+              ["full", "off"],
             ];
           case "LOW_MRV":
             return [
               ["upper", "lower"],
-              ["upper", "none"],
+              ["upper", "off"],
               ["upper", "lower"],
-              ["full", "none"],
+              ["full", "off"],
             ];
           case "MEV":
             return [
-              ["upper", "none"],
+              ["upper", "off"],
               ["upper", "lower"],
-              ["upper", "none"],
+              ["upper", "off"],
               ["upper", "lower"],
             ];
           default:
             return [
-              ["upper", "none"],
+              ["upper", "off"],
               ["upper", "lower"],
-              ["upper", "none"],
+              ["upper", "off"],
               ["upper", "lower"],
             ];
         }
@@ -426,50 +426,50 @@ export const getTrainingSplit = (
         switch (lowerRank) {
           case "MAX_MRV":
             return [
-              ["lower", "none"],
-              ["upper", "none"],
+              ["lower", "off"],
+              ["upper", "off"],
               ["lower", "upper"],
-              ["upper", "none"],
-              ["lower", "none"],
+              ["upper", "off"],
+              ["lower", "off"],
             ];
           case "FULL_MRV":
             return [
-              ["lower", "none"],
-              ["upper", "none"],
+              ["lower", "off"],
+              ["upper", "off"],
               ["lower", "upper"],
-              ["upper", "none"],
-              ["lower", "none"],
+              ["upper", "off"],
+              ["lower", "off"],
             ];
           case "MRV":
             return [
-              ["upper", "none"],
-              ["lower", "none"],
-              ["upper", "none"],
-              ["full", "none"],
+              ["upper", "off"],
+              ["lower", "off"],
+              ["upper", "off"],
+              ["full", "off"],
               ["upper", "lower"],
             ];
           case "LOW_MRV":
             return [
-              ["upper", "none"],
-              ["lower", "none"],
-              ["upper", "none"],
-              ["full", "none"],
+              ["upper", "off"],
+              ["lower", "off"],
+              ["upper", "off"],
+              ["full", "off"],
               ["upper", "lower"],
             ];
           case "MEV":
             return [
-              ["upper", "none"],
-              ["lower", "none"],
-              ["upper", "none"],
-              ["upper", "none"],
+              ["upper", "off"],
+              ["lower", "off"],
+              ["upper", "off"],
+              ["upper", "off"],
               ["lower", "upper"],
             ];
           default:
             return [
-              ["upper", "none"],
-              ["lower", "none"],
-              ["upper", "none"],
-              ["upper", "none"],
+              ["upper", "off"],
+              ["lower", "off"],
+              ["upper", "off"],
+              ["upper", "off"],
               ["lower", "upper"],
             ];
         }
@@ -477,57 +477,57 @@ export const getTrainingSplit = (
       switch (lowerRank) {
         case "MAX_MRV":
           return [
-            ["lower", "none"],
-            ["upper", "none"],
-            ["upper", "none"],
-            ["lower", "none"],
-            ["upper", "none"],
-            ["lower", "none"],
+            ["lower", "off"],
+            ["upper", "off"],
+            ["upper", "off"],
+            ["lower", "off"],
+            ["upper", "off"],
+            ["lower", "off"],
           ];
         case "FULL_MRV":
           return [
-            ["lower", "none"],
-            ["upper", "none"],
-            ["upper", "none"],
-            ["lower", "none"],
-            ["upper", "none"],
-            ["lower", "none"],
+            ["lower", "off"],
+            ["upper", "off"],
+            ["upper", "off"],
+            ["lower", "off"],
+            ["upper", "off"],
+            ["lower", "off"],
           ];
         case "MRV":
           return [
-            ["lower", "none"],
-            ["upper", "none"],
-            ["upper", "none"],
-            ["lower", "none"],
-            ["upper", "none"],
-            ["full", "none"],
+            ["lower", "off"],
+            ["upper", "off"],
+            ["upper", "off"],
+            ["lower", "off"],
+            ["upper", "off"],
+            ["full", "off"],
           ];
         case "LOW_MRV":
           return [
-            ["lower", "none"],
-            ["upper", "none"],
-            ["upper", "none"],
-            ["lower", "none"],
-            ["upper", "none"],
-            ["full", "none"],
+            ["lower", "off"],
+            ["upper", "off"],
+            ["upper", "off"],
+            ["lower", "off"],
+            ["upper", "off"],
+            ["full", "off"],
           ];
         case "MEV":
           return [
-            ["upper", "none"],
-            ["lower", "none"],
-            ["upper", "none"],
-            ["upper", "none"],
-            ["lower", "none"],
-            ["upper", "none"],
+            ["upper", "off"],
+            ["lower", "off"],
+            ["upper", "off"],
+            ["upper", "off"],
+            ["lower", "off"],
+            ["upper", "off"],
           ];
         default:
           return [
-            ["upper", "none"],
-            ["lower", "none"],
-            ["upper", "none"],
-            ["upper", "none"],
-            ["full", "none"],
-            ["upper", "none"],
+            ["upper", "off"],
+            ["lower", "off"],
+            ["upper", "off"],
+            ["upper", "off"],
+            ["full", "off"],
+            ["upper", "off"],
           ];
       }
     case 7:
@@ -535,14 +535,14 @@ export const getTrainingSplit = (
         switch (lowerRank) {
           case "MAX_MRV":
             return [
-              ["lower", "none"],
+              ["lower", "off"],
               ["lower", "upper"],
               ["upper", "lower"],
               ["lower", "upper"],
             ];
           case "FULL_MRV":
             return [
-              ["lower", "none"],
+              ["lower", "off"],
               ["lower", "upper"],
               ["upper", "full"],
               ["lower", "upper"],
@@ -551,26 +551,26 @@ export const getTrainingSplit = (
             return [
               ["lower", "upper"],
               ["lower", "upper"],
-              ["upper", "none"],
+              ["upper", "off"],
               ["full", "upper"],
             ];
           case "LOW_MRV":
             return [
               ["lower", "upper"],
               ["lower", "upper"],
-              ["upper", "none"],
+              ["upper", "off"],
               ["full", "upper"],
             ];
           case "MEV":
             return [
-              ["upper", "none"],
+              ["upper", "off"],
               ["upper", "lower"],
               ["push", "pull"],
               ["upper", "full"],
             ];
           default:
             return [
-              ["upper", "none"],
+              ["upper", "off"],
               ["upper", "lower"],
               ["push", "pull"],
               ["upper", "full"],
@@ -580,108 +580,108 @@ export const getTrainingSplit = (
         switch (lowerRank) {
           case "MAX_MRV":
             return [
-              ["lower", "none"],
+              ["lower", "off"],
               ["lower", "upper"],
-              ["upper", "none"],
-              ["upper", "none"],
-              ["lower", "none"],
-              ["lower", "none"],
+              ["upper", "off"],
+              ["upper", "off"],
+              ["lower", "off"],
+              ["lower", "off"],
             ];
           case "FULL_MRV":
             return [
-              ["lower", "none"],
+              ["lower", "off"],
               ["lower", "upper"],
-              ["upper", "none"],
-              ["upper", "none"],
-              ["lower", "none"],
-              ["full", "none"],
+              ["upper", "off"],
+              ["upper", "off"],
+              ["lower", "off"],
+              ["full", "off"],
             ];
           case "MRV":
             return [
-              ["lower", "none"],
+              ["lower", "off"],
               ["lower", "upper"],
-              ["upper", "none"],
-              ["upper", "none"],
-              ["full", "none"],
-              ["upper", "none"],
+              ["upper", "off"],
+              ["upper", "off"],
+              ["full", "off"],
+              ["upper", "off"],
             ];
           case "LOW_MRV":
             return [
-              ["lower", "none"],
+              ["lower", "off"],
               ["lower", "upper"],
-              ["upper", "none"],
-              ["upper", "none"],
-              ["full", "none"],
-              ["upper", "none"],
+              ["upper", "off"],
+              ["upper", "off"],
+              ["full", "off"],
+              ["upper", "off"],
             ];
           case "MEV":
             return [
-              ["upper", "none"],
+              ["upper", "off"],
               ["upper", "lower"],
-              ["upper", "none"],
-              ["upper", "none"],
-              ["upper", "none"],
-              ["lower", "none"],
+              ["upper", "off"],
+              ["upper", "off"],
+              ["upper", "off"],
+              ["lower", "off"],
             ];
           default:
             return [
-              ["upper", "none"],
+              ["upper", "off"],
               ["upper", "lower"],
-              ["upper", "none"],
-              ["upper", "none"],
-              ["upper", "none"],
-              ["lower", "none"],
+              ["upper", "off"],
+              ["upper", "off"],
+              ["upper", "off"],
+              ["lower", "off"],
             ];
         }
       }
       switch (lowerRank) {
         case "MAX_MRV":
           return [
-            ["lower", "none"],
+            ["lower", "off"],
             ["lower", "upper"],
-            ["upper", "none"],
+            ["upper", "off"],
             ["lower", "upper"],
-            ["lower", "none"],
+            ["lower", "off"],
           ];
         case "FULL_MRV":
           return [
-            ["lower", "none"],
+            ["lower", "off"],
             ["lower", "upper"],
-            ["upper", "none"],
+            ["upper", "off"],
             ["lower", "upper"],
-            ["full", "none"],
+            ["full", "off"],
           ];
         case "MRV":
           return [
-            ["lower", "none"],
+            ["lower", "off"],
             ["lower", "upper"],
-            ["upper", "none"],
+            ["upper", "off"],
             ["full", "upper"],
-            ["upper", "none"],
+            ["upper", "off"],
           ];
         case "LOW_MRV":
           return [
-            ["lower", "none"],
+            ["lower", "off"],
             ["lower", "upper"],
-            ["upper", "none"],
+            ["upper", "off"],
             ["full", "upper"],
-            ["upper", "none"],
+            ["upper", "off"],
           ];
         case "MEV":
           return [
-            ["upper", "none"],
+            ["upper", "off"],
             ["upper", "lower"],
-            ["upper", "none"],
+            ["upper", "off"],
             ["upper", "lower"],
-            ["upper", "none"],
+            ["upper", "off"],
           ];
         default:
           return [
-            ["upper", "none"],
+            ["upper", "off"],
             ["upper", "lower"],
-            ["upper", "none"],
+            ["upper", "off"],
             ["upper", "lower"],
-            ["upper", "none"],
+            ["upper", "off"],
           ];
       }
     case 8:
@@ -734,74 +734,74 @@ export const getTrainingSplit = (
         switch (lowerRank) {
           case "MAX_MRV":
             return [
-              ["lower", "none"],
-              ["upper", "none"],
+              ["lower", "off"],
+              ["upper", "off"],
               ["lower", "upper"],
-              ["upper", "none"],
-              ["lower", "none"],
+              ["upper", "off"],
+              ["lower", "off"],
               ["lower", "upper"],
             ];
           case "FULL_MRV":
             return [
-              ["lower", "none"],
-              ["upper", "none"],
+              ["lower", "off"],
+              ["upper", "off"],
               ["lower", "upper"],
-              ["upper", "none"],
-              ["lower", "none"],
+              ["upper", "off"],
+              ["lower", "off"],
               ["lower", "upper"],
             ];
           case "MRV":
             return [
-              ["upper", "none"],
-              ["lower", "none"],
-              ["upper", "none"],
+              ["upper", "off"],
+              ["lower", "off"],
+              ["upper", "off"],
               ["lower", "upper"],
-              ["upper", "none"],
+              ["upper", "off"],
               ["lower", "upper"],
             ];
           case "LOW_MRV":
             return [
-              ["upper", "none"],
-              ["lower", "none"],
-              ["upper", "none"],
+              ["upper", "off"],
+              ["lower", "off"],
+              ["upper", "off"],
               ["lower", "upper"],
-              ["upper", "none"],
+              ["upper", "off"],
               ["lower", "upper"],
             ];
           case "MEV":
             return [
-              ["upper", "none"],
+              ["upper", "off"],
               ["upper", "lower"],
               ["push", "pull"],
-              ["upper", "none"],
-              ["lower", "none"],
-              ["upper", "none"],
+              ["upper", "off"],
+              ["lower", "off"],
+              ["upper", "off"],
             ];
           default:
             return [
-              ["upper", "none"],
+              ["upper", "off"],
               ["upper", "lower"],
               ["push", "pull"],
-              ["upper", "none"],
-              ["lower", "none"],
-              ["upper", "none"],
+              ["upper", "off"],
+              ["lower", "off"],
+              ["upper", "off"],
             ];
         }
       }
       switch (lowerRank) {
         case "MAX_MRV":
           return [
-            ["lower", "none"],
+            ["lower", "off"],
             ["lower", "upper"],
-            ["upper", "none"],
+            ["upper", "off"],
             ["lower", "upper"],
             ["lower", "upper"],
           ];
         case "FULL_MRV":
           return [
-            ["lower", "none"],
+            ["lower", "off"],
             ["lower", "upper"],
-            ["upper", "none"],
+            ["upper", "off"],
             ["lower", "upper"],
             ["lower", "upper"],
           ];
@@ -809,40 +809,40 @@ export const getTrainingSplit = (
           return [
             ["lower", "upper"],
             ["lower", "upper"],
-            ["upper", "none"],
+            ["upper", "off"],
             ["lower", "upper"],
-            ["upper", "none"],
+            ["upper", "off"],
           ];
         case "LOW_MRV":
           return [
             ["lower", "upper"],
             ["lower", "upper"],
-            ["upper", "none"],
+            ["upper", "off"],
             ["lower", "upper"],
-            ["upper", "none"],
+            ["upper", "off"],
           ];
         case "MEV":
           return [
-            ["upper", "none"],
+            ["upper", "off"],
             ["upper", "lower"],
             ["push", "pull"],
             ["upper", "lower"],
-            ["upper", "none"],
+            ["upper", "off"],
           ];
         default:
           return [
-            ["upper", "none"],
+            ["upper", "off"],
             ["upper", "lower"],
             ["push", "pull"],
             ["upper", "lower"],
-            ["upper", "none"],
+            ["upper", "off"],
           ];
       }
     case 9:
       switch (lowerRank) {
         case "MAX_MRV":
           return [
-            ["lower", "none"],
+            ["lower", "off"],
             ["lower", "upper"],
             ["lower", "upper"],
             ["lower", "upper"],
@@ -850,7 +850,7 @@ export const getTrainingSplit = (
           ];
         case "FULL_MRV":
           return [
-            ["lower", "none"],
+            ["lower", "off"],
             ["lower", "upper"],
             ["lower", "upper"],
             ["lower", "upper"],
@@ -859,7 +859,7 @@ export const getTrainingSplit = (
         case "MRV":
           return [
             ["lower", "upper"],
-            ["upper", "none"],
+            ["upper", "off"],
             ["lower", "upper"],
             ["upper", "full"],
             ["lower", "upper"],
@@ -867,7 +867,7 @@ export const getTrainingSplit = (
         case "LOW_MRV":
           return [
             ["lower", "upper"],
-            ["upper", "none"],
+            ["upper", "off"],
             ["lower", "upper"],
             ["upper", "full"],
             ["lower", "upper"],
@@ -875,7 +875,7 @@ export const getTrainingSplit = (
         case "MEV":
           return [
             ["upper", "lower"],
-            ["upper", "none"],
+            ["upper", "off"],
             ["upper", "lower"],
             ["push", "pull"],
             ["upper", "full"],
@@ -883,7 +883,7 @@ export const getTrainingSplit = (
         default:
           return [
             ["upper", "lower"],
-            ["upper", "none"],
+            ["upper", "off"],
             ["upper", "lower"],
             ["upper", "pull"],
             ["upper", "push"],
@@ -893,64 +893,64 @@ export const getTrainingSplit = (
       switch (lowerRank) {
         case "MAX_MRV":
           return [
-            ["lower", "none"],
+            ["lower", "off"],
             ["lower", "upper"],
             ["lower", "upper"],
-            ["upper", "none"],
+            ["upper", "off"],
             ["lower", "upper"],
             ["lower", "upper"],
           ];
         case "FULL_MRV":
           return [
-            ["lower", "none"],
+            ["lower", "off"],
             ["lower", "upper"],
             ["lower", "upper"],
-            ["upper", "none"],
+            ["upper", "off"],
             ["lower", "upper"],
             ["lower", "upper"],
           ];
         case "MRV":
           return [
             ["lower", "upper"],
-            ["upper", "none"],
+            ["upper", "off"],
             ["lower", "upper"],
-            ["upper", "none"],
+            ["upper", "off"],
             ["lower", "upper"],
             ["lower", "upper"],
           ];
         case "LOW_MRV":
           return [
             ["lower", "upper"],
-            ["upper", "none"],
+            ["upper", "off"],
             ["lower", "upper"],
-            ["upper", "none"],
+            ["upper", "off"],
             ["lower", "upper"],
             ["lower", "upper"],
           ];
         case "MEV":
           return [
             ["upper", "lower"],
-            ["upper", "none"],
+            ["upper", "off"],
             ["upper", "lower"],
             ["pull", "push"],
             ["upper", "lower"],
-            ["upper", "none"],
+            ["upper", "off"],
           ];
         default:
           return [
             ["upper", "lower"],
-            ["upper", "none"],
+            ["upper", "off"],
             ["upper", "lower"],
             ["pull", "push"],
             ["upper", "lower"],
-            ["upper", "none"],
+            ["upper", "off"],
           ];
       }
     case 11:
       switch (lowerRank) {
         case "MAX_MRV":
           return [
-            ["lower", "none"],
+            ["lower", "off"],
             ["push", "pull"],
             ["lower", "upper"],
             ["lower", "upper"],
@@ -959,7 +959,7 @@ export const getTrainingSplit = (
           ];
         case "FULL_MRV":
           return [
-            ["lower", "none"],
+            ["lower", "off"],
             ["push", "pull"],
             ["lower", "upper"],
             ["lower", "upper"],
@@ -968,7 +968,7 @@ export const getTrainingSplit = (
           ];
         case "MRV":
           return [
-            ["lower", "none"],
+            ["lower", "off"],
             ["push", "pull"],
             ["lower", "upper"],
             ["push", "pull"],
@@ -977,7 +977,7 @@ export const getTrainingSplit = (
           ];
         case "LOW_MRV":
           return [
-            ["lower", "none"],
+            ["lower", "off"],
             ["push", "pull"],
             ["lower", "upper"],
             ["push", "pull"],
@@ -989,7 +989,7 @@ export const getTrainingSplit = (
             ["upper", "lower"],
             ["push", "pull"],
             ["lower", "upper"],
-            ["pull", "none"],
+            ["pull", "off"],
             ["lower", "upper"],
             ["push", "pull"],
           ];
@@ -998,7 +998,7 @@ export const getTrainingSplit = (
             ["upper", "lower"],
             ["push", "pull"],
             ["lower", "upper"],
-            ["pull", "none"],
+            ["pull", "off"],
             ["lower", "upper"],
             ["push", "pull"],
           ];
