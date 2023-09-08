@@ -240,15 +240,47 @@ export const determineWorkoutSplit = (
   let fullSessions = 0;
 
   let totalTenths = Math.round(pushTenths + pullTenths + lowerTenths);
-
   // -- Determine which session to create based on fractions of remainders
+
+  // TODO: create a min value for some values if exceeds a certain session total
+  //       i.e. sessions is greater than 8x and you only do 2 lower sessions, probably
+  //       should be a min of 3 lower sessions regardless of rank, since you'll have adequate
+  //       sessions for all your upper body volume.
+
+  // let lower_min = 0;
+  // if (totalSessions >= 8) {
+  //   lower_min = 3;
+  // }
+
+  // if (lower_min === 3 && lowerSessions < lower_min) {
+  //   if (totalTenths <= 1 && lowerTenths < 0.25) {
+  //     let lower_add_value = 0.55 - lowerTenths;
+  //     let push_pull_sub_value = Math.round(lower_add_value / 2);
+
+  //     lowerTenths = lowerTenths + lower_add_value;
+  //     pushTenths = pushTenths - push_pull_sub_value;
+  //     pullTenths = pullTenths - push_pull_sub_value;
+  //   } else if (totalTenths > 1 && lowerTenths <= 0.33) {
+  //     let lower_add_value = 0.33 - lowerTenths;
+  //     let push_pull_sub_value = Math.round(lower_add_value / 2);
+
+  //     lowerTenths = lowerTenths + lower_add_value;
+  //     pushTenths = pushTenths - push_pull_sub_value;
+  //     pullTenths = pullTenths - push_pull_sub_value;
+  //   }
+  // }
+
   if (totalTenths <= 1) {
-    if (pushTenths >= 0.6) {
-      pushSessions++;
-    } else if (pullTenths >= 0.6) {
-      pullSessions++;
-    } else if (lowerTenths >= 0.55) {
+    if (lowerTenths >= 0.55) {
       lowerSessions++;
+    } else if (lowerTenths >= 0.25 && lowerTenths < 0.55) {
+      fullSessions++;
+    } else if (Math.round(pullTenths) >= 0.6) {
+      pullSessions++;
+    } else if (Math.round(pushTenths) >= 0.6) {
+      pushSessions++;
+    } else if (pushTenths + pullTenths > 0.8) {
+      upperSessions++;
     } else {
       fullSessions++;
     }
@@ -295,11 +327,6 @@ export const determineWorkoutSplit = (
   let first_sessions = sessions[0];
   let second_sessions = sessions[1];
 
-  // let split: SessionSplitTESTType[][] = [];
-  let index = 0;
-
-  console.log(setSessionNums(first_sessions, INITIAL_SPLIT), "CHECK THE SPLIT");
-  // const newSplit = populateSplit(pushSessions, pullSessions, lowerSessions, upperSessions, fullSessions, sessions, INITIAL_SPLIT)
   const _split = optimizeSplitFrequency(
     first_sessions,
     second_sessions,
@@ -310,55 +337,6 @@ export const determineWorkoutSplit = (
     pullSessions,
     fullSessions
   );
-  // while (
-  //   pushSessions + pullSessions + lowerSessions + upperSessions + fullSessions >
-  //   0
-  // ) {
-  //   if (first_sessions > 0) {
-  //     if (pullSessions > 0) {
-  //       split.push(["pull", "none"]);
-  //       pullSessions--;
-  //     } else if (pushSessions > 0) {
-  //       split.push(["push", "none"]);
-  //       pushSessions--;
-  //     } else if (upperSessions > 0) {
-  //       split.push(["upper", "none"]);
-  //       upperSessions--;
-  //     } else if (lowerSessions > 0) {
-  //       split.push(["lower", "none"]);
-  //       lowerSessions--;
-  //     } else if (fullSessions > 0) {
-  //       split.push(["full", "none"]);
-  //       fullSessions--;
-  //     }
-  //     first_sessions--;
-  //   } else if (second_sessions > 0) {
-  //     if (pullSessions > 0) {
-  //       split[index].splice(1, 1, "pull");
-  //       pullSessions--;
-  //       index++;
-  //     } else if (pushSessions > 0) {
-  //       split[index].splice(1, 1, "push");
-  //       pushSessions--;
-  //       index++;
-  //     } else if (upperSessions > 0) {
-  //       split[index].splice(1, 1, "upper");
-  //       upperSessions--;
-  //       index++;
-  //     } else if (lowerSessions > 0) {
-  //       split[index].splice(1, 1, "lower");
-  //       lowerSessions--;
-  //       index++;
-  //     } else if (fullSessions > 0) {
-  //       split[index].splice(1, 1, "full");
-  //       fullSessions--;
-  //       index++;
-  //     }
-  //     second_sessions--;
-  //   }
-  // }
-
-  // TODO: have to figure out a sorting algorithm to optimally place sessions
 
   // LOGGING FOR TESTING ---------------------------------------------------
   // -----------------------------------------------------------------------
@@ -381,7 +359,11 @@ export const determineWorkoutSplit = (
   console.log(
     `push: ${pushRatioFixed} -- pull: ${pullRatioFixed} -- lower: ${lowerRatioFixed} total: ${totalSessions}`
   );
-  console.log(`push: ${split}`);
+  console.log(
+    `push: ${_split.map(
+      (each) => `[${each.sessions[0]}, ${each.sessions[1]}] -- `
+    )}`
+  );
   console.log("push: --------------------------------------");
   // LOGGING FOR TESTING ---------------------------------------------------
   // -----------------------------------------------------------------------
@@ -460,6 +442,7 @@ const optimizeSplitFrequency = (
     push: number,
     pull: number,
     full: number,
+    off: number,
     totalLower: number,
     totalPush: number,
     totalPull: number
@@ -470,6 +453,8 @@ const optimizeSplitFrequency = (
           return "lower";
         } else if (full > 0) {
           return "full";
+        } else if (off > 0) {
+          return "off";
         } else if (push > 0) {
           return "push";
         } else if (pull > 0) {
@@ -486,6 +471,8 @@ const optimizeSplitFrequency = (
           return "push";
         } else if (pull > 0) {
           return "pull";
+        } else if (off > 0) {
+          return "off";
         } else if (full > 0) {
           return "full";
         } else if (lower > 0) {
@@ -502,10 +489,10 @@ const optimizeSplitFrequency = (
           return "full";
         } else if (upper > 0) {
           return "upper";
-        } else if (push > 0) {
-          return "push";
-        } else {
+        } else if (off > 0) {
           return "off";
+        } else {
+          return "push";
         }
       case "pull":
         if (push > 0) {
@@ -516,10 +503,10 @@ const optimizeSplitFrequency = (
           return "full";
         } else if (upper > 0) {
           return "upper";
-        } else if (pull > 0) {
-          return "pull";
-        } else {
+        } else if (off > 0) {
           return "off";
+        } else {
+          return "pull";
         }
       case "full":
         if (upper > 0) {
@@ -530,71 +517,54 @@ const optimizeSplitFrequency = (
           return "push";
         } else if (pull > 0) {
           return "pull";
-        } else if (full > 0) {
-          return "full";
-        } else {
+        } else if (off > 0) {
           return "off";
+        } else {
+          return "full";
         }
       default:
         // off
-        if (lower > 0) {
+        if (
+          lower > 0 &&
+          ((totalLower >= totalPush && totalLower >= totalPull) ||
+            (totalPush >= totalPull && totalPush - 1 <= totalLower) ||
+            (totalPull >= totalPush && totalPull - 1 <= totalLower))
+        ) {
           return "lower";
         } else if (upper > 0) {
           return "upper";
-        } else if (push > 0) {
+        } else if (totalPush >= totalPull && push > 0) {
           return "push";
-        } else if (pull > 0) {
+        } else if (totalPull >= totalPush && pull > 0) {
           return "pull";
         } else if (full > 0) {
           return "full";
         } else {
           return "off";
         }
-      // if (
-      //   (totalLower >= totalPush && totalLower >= totalPull) ||
-      //   (((totalPush >= totalPull && totalPush - 1 <= totalLower) ||
-      //     (totalPull >= totalPush && totalPull - 1 <= totalLower)) &&
-      //     lower > 0)
-      // ) {
-      //   // newCurrentSessionOne = "lower"
-      //   // _lower--
-      //   return "lower";
-      // } else if (totalPush >= totalPull && upper === 0) {
-      //   // newCurrentSessionOne = "push"
-      //   // _push--
-      //   return "push";
-      // } else if (totalPull >= totalPush && upper == 0) {
-      //   // newCurrentSessionOne = "pull"
-      //   // _pull--
-      //   return "pull";
-      // } else if (upper > 0) {
-      //   // newCurrentSessionOne = "upper"
-      //   // _upper--
-      //   return "upper";
-      // } else {
-      //   // newCurrentSessionOne = "full"
-      //   // _full--
-      //   return "full";
-      // }
     }
   };
 
-  let setNewSplit: SessionDayType[] = [...split];
-
-  let _lower = lower;
-  let _upper = upper;
-  let _push = push;
-  let _pull = pull;
-  let _full = full;
+  let update_split: SessionDayType[] = [...split];
 
   let _doubles = numOfDoubles;
+  let off_count = numOfDoubles === 0 ? 0 : frequency - numOfDoubles;
 
-  let totalLower = lower + full;
-  let totalPush = push + upper + full;
-  let totalPull = pull + upper + full;
+  let counter = {
+    lower: lower,
+    upper: upper,
+    push: push,
+    pull: pull,
+    full: full,
+    off: off_count,
+  };
+
+  const totalLower = lower + full;
+  const totalPush = push + upper + full;
+  const totalPull = pull + upper + full;
 
   for (let i = 0; i < split.length; i++) {
-    let currentSession = split[i].sessionNum;
+    let isTrainingDay = split[i].sessionNum > 0 ? true : false;
     let sessionOne = split[i].sessions[0];
     let sessiontwo = split[i].sessions[1];
     let prevSessionOne = split[i - 1]?.sessions[0];
@@ -603,87 +573,61 @@ const optimizeSplitFrequency = (
     let newCurrentSessionOne = prevSessionOne;
     let newCurrentSessionTwo = prevSessionTwo;
 
-    if (currentSession !== 0) {
-      // Meaning we have a training day on this iteration
+    if (isTrainingDay) {
       const newCurrentSessionOneValue = getNextSession(
         _doubles > 0 ? newCurrentSessionTwo : newCurrentSessionOne,
-        _upper,
-        _lower,
-        _push,
-        _pull,
-        _full,
+        counter.upper,
+        counter.lower,
+        counter.push,
+        counter.pull,
+        counter.full,
+        counter.off,
         totalLower,
         totalPush,
         totalPull
       );
-      switch (newCurrentSessionOneValue) {
-        case "upper":
-          _upper--;
-          break;
-        case "lower":
-          _lower--;
-          break;
-        case "push":
-          _push--;
-          break;
-        case "pull":
-          _pull--;
-          break;
-        case "full":
-          _full--;
-          break;
-        default:
-          break;
-      }
+      counter = {
+        ...counter,
+        [newCurrentSessionOneValue]: counter[newCurrentSessionOneValue] - 1,
+      };
+
       newCurrentSessionOne = newCurrentSessionOneValue;
       newCurrentSessionTwo = "off";
 
       if (_doubles > 0) {
         const newCurrentSessionTwoValue = getNextSession(
           newCurrentSessionOne,
-          _upper,
-          _lower,
-          _push,
-          _pull,
-          _full,
+          counter.upper,
+          counter.lower,
+          counter.push,
+          counter.pull,
+          counter.full,
+          counter.off,
           totalLower,
           totalPush,
           totalPull
         );
-        switch (newCurrentSessionTwoValue) {
-          case "upper":
-            _upper--;
-            break;
-          case "lower":
-            _lower--;
-            break;
-          case "push":
-            _push--;
-            break;
-          case "pull":
-            _pull--;
-            break;
-          case "full":
-            _full--;
-            break;
-          default:
-            break;
-        }
+
+        counter = {
+          ...counter,
+          [newCurrentSessionTwoValue]: counter[newCurrentSessionTwoValue] - 1,
+        };
+
         newCurrentSessionTwo = newCurrentSessionTwoValue;
         _doubles--;
       } else {
         newCurrentSessionTwo = "off";
       }
 
-      setNewSplit[i] = {
-        ...setNewSplit[i],
+      update_split[i] = {
+        ...update_split[i],
         sessions: [newCurrentSessionOne, newCurrentSessionTwo],
       };
     }
-    console.log(split, setNewSplit, "IS THIS CHANGING???");
+    console.log(split, update_split, "IS THIS CHANGING???");
   }
 
-  return setNewSplit;
+  return update_split;
 };
 
 // 5 - 4
