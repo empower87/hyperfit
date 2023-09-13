@@ -1,7 +1,6 @@
 import { SplitType } from "~/pages";
 
 export const getNextSession = (
-  previousSession: SplitType,
   upper: number,
   lower: number,
   push: number,
@@ -11,41 +10,60 @@ export const getNextSession = (
   totalLower: number,
   totalPush: number,
   totalPull: number,
-  previousDaysSession?: SplitType
+  previousSession: SplitType,
+  previousDaysSessions?: [SplitType, SplitType],
+  nextDaysSessions?: [SplitType, SplitType]
 ) => {
+  const hasTrainedLowerBodyPreviously =
+    previousDaysSessions && previousDaysSessions.includes("lower")
+      ? true
+      : false;
+
+  const isTrainingLowerBodyTomorrow =
+    nextDaysSessions && nextDaysSessions.includes("lower") ? true : false;
+
+  const canNotTrainLowerTomorrow =
+    isTrainingLowerBodyTomorrow &&
+    lower === 1 &&
+    upper + push + pull + full + off === 1
+      ? true
+      : false;
+
+  const canSkipLowerCurrently =
+    hasTrainedLowerBodyPreviously &&
+    upper + push + pull + full + off > 0 &&
+    !canNotTrainLowerTomorrow
+      ? true
+      : false;
+
+  const hasTrainedFullBodyPreviously =
+    previousDaysSessions && previousDaysSessions.includes("full")
+      ? true
+      : false;
+  const canSkipFullCurrently =
+    hasTrainedFullBodyPreviously && upper + push + pull + off + lower > 0
+      ? true
+      : false;
+
   switch (previousSession) {
     case "upper":
       if (lower > 0) {
-        // if (previousDaysSession && previousDaysSession === "lower") {
-        //   if (off > 0) {
-        //     return "off";
-        //   } else if (full > 0) {
-        //     return "full";
-        //   } else if (pull > 0) {
-        //     return "pull";
-        //   } else if (push > 0) {
-        //     return "push";
-        //   } else {
-        //     return "upper";
-        //   }
-        // } else {
-        //   return "lower";
-        // }
-        return "lower";
+        if (hasTrainedLowerBodyPreviously && canSkipLowerCurrently) {
+          if (off > 0) {
+            return "off";
+          } else if (pull > 0) {
+            return "pull";
+          } else if (push > 0) {
+            return "push";
+          } else if (full > 0) {
+            return "full";
+          } else {
+            return "upper";
+          }
+        } else {
+          return "lower";
+        }
       } else if (full > 0) {
-        // if (previousDaysSession && previousDaysSession === "lower") {
-        //   if (off > 0) {
-        //     return "off";
-        //   } else if (pull > 0) {
-        //     return "pull";
-        //   } else if (push > 0) {
-        //     return "push";
-        //   } else {
-        //     return "full";
-        //   }
-        // } else {
-        //   return "full";
-        // }
         return "full";
       } else if (off > 0) {
         return "off";
@@ -53,28 +71,11 @@ export const getNextSession = (
         return "push";
       } else if (pull > 0) {
         return "pull";
-      } else if (upper > 0) {
-        return "upper";
       } else {
-        return "off";
+        return "upper";
       }
     case "lower":
       if (upper > 0) {
-        // if (previousDaysSession && previousDaysSession === "upper") {
-        //   if (off > 0) {
-        //     return "off";
-        //   } else if (pull > 0) {
-        //     return "pull";
-        //   } else if (push > 0) {
-        //     return "push";
-        //   } else if (full > 0) {
-        //     return "full";
-        //   } else {
-        //     return "lower";
-        //   }
-        // } else {
-        //   return "upper";
-        // }
         return "upper";
       } else if (push > 0) {
         return "push";

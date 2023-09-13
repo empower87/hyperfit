@@ -15,7 +15,7 @@ import { ExerciseType, VolumeKey } from "./useTrainingBlock";
 
 export type SessionSplitType = "upper" | "lower" | "full";
 
-export const initializeSessions = (sessions: number) => {
+export const pushPullLowerFrequencyMax = (sessions: number) => {
   // KEY
   // [0, 1, 2]
   // [push, pull, lower]

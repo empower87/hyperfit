@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { initializeSessions } from "~/hooks/usePrioritizeMuscles";
+import { pushPullLowerFrequencyMax } from "~/hooks/usePrioritizeMuscles";
 import useTrainingBlock from "~/hooks/useTrainingBlock";
 import { MusclePriorityType, SessionType } from "~/pages";
 import { getNextSession } from "~/utils/getNextSession";
@@ -214,7 +214,7 @@ export const determineWorkoutSplit = (
   split: SessionDayType[]
 ) => {
   const totalSessions = sessions[0] + sessions[1];
-  const session_maxes_per_week = initializeSessions(totalSessions);
+  const session_maxes_per_week = pushPullLowerFrequencyMax(totalSessions);
   const push_pull_max = session_maxes_per_week[0];
   const total = push + pull + lower;
 
@@ -453,33 +453,27 @@ const optimizeSplitFrequency = (
   const totalPush = push + upper + full;
   const totalPull = pull + upper + full;
 
-  for (let i = 0; i < split.length; i++) {
-    let isTrainingDay = split[i].sessionNum > 0 ? true : false;
-    let sessionOne = split[i].sessions[0];
-    let sessiontwo = split[i].sessions[1];
+  for (let i = 0; i < update_split.length; i++) {
+    let isTrainingDay = update_split[i].sessionNum > 0 ? true : false;
     let prevSessionOne = update_split[i - 1]?.sessions[0];
-    let prevSessionTwo = update_split[i - 1]?.sessions[1];
-
-    let newCurrentSessionOne = prevSessionOne;
-    let newCurrentSessionTwo = prevSessionTwo;
 
     if (isTrainingDay) {
       const newCurrentSessionOneValue = getNextSession(
-        newCurrentSessionOne,
         counter.upper,
         counter.lower,
         counter.push,
         counter.pull,
         counter.full,
-        counter.off,
+        0,
         totalLower,
         totalPush,
-        totalPull
+        totalPull,
+        prevSessionOne
       );
 
       update_split[i] = {
         ...update_split[i],
-        sessions: [newCurrentSessionOneValue, split[i].sessions[1]],
+        sessions: [newCurrentSessionOneValue, update_split[i].sessions[1]],
       };
 
       counter = {
@@ -490,62 +484,29 @@ const optimizeSplitFrequency = (
   }
 
   if (numOfDoubles === 0) return update_split;
-  console.log(update_split, split, "ARE WE GETTING LEGIT DATA HERE?");
 
   for (let j = 0; j < update_split.length; j++) {
     let isTrainingDay = update_split[j].sessionNum > 0 ? true : false;
     let sessionOne = update_split[j].sessions[0];
-    let sessiontwo = update_split[j].sessions[1];
-    let prevSessionOne = update_split[j - 1]?.sessions[0];
-    let prevSessionTwo = update_split[j - 1]?.sessions[1];
 
     let prevSessions = update_split[j - 1]?.sessions;
-
-    let newCurrentSessionOne = prevSessionOne;
-    let newCurrentSessionTwo = prevSessionTwo;
+    let nextSessions = update_split[j + 1]?.sessions;
 
     if (isTrainingDay) {
-      const isLowerTrainedYesterday =
-        counter.upper +
-          counter.full +
-          counter.pull +
-          counter.push +
-          counter.off >
-          0 &&
-        prevSessions &&
-        prevSessions.includes("lower")
-          ? true
-          : false;
-
-      let newSession: SplitType = "off";
-
-      if (isLowerTrainedYesterday) {
-        newSession = getNextSession(
-          newCurrentSessionOne,
-          counter.upper,
-          0,
-          counter.push,
-          counter.pull,
-          counter.full,
-          counter.off,
-          totalLower,
-          totalPush,
-          totalPull
-        );
-      } else {
-        newSession = getNextSession(
-          newCurrentSessionOne,
-          counter.upper,
-          counter.lower,
-          counter.push,
-          counter.pull,
-          counter.full,
-          counter.off,
-          totalLower,
-          totalPush,
-          totalPull
-        );
-      }
+      const newSession = getNextSession(
+        counter.upper,
+        counter.lower,
+        counter.push,
+        counter.pull,
+        counter.full,
+        counter.off,
+        totalLower,
+        totalPush,
+        totalPull,
+        sessionOne,
+        prevSessions,
+        nextSessions
+      );
 
       update_split[j] = {
         ...update_split[j],
@@ -561,94 +522,3 @@ const optimizeSplitFrequency = (
 
   return update_split;
 };
-// const optimizeSplitFrequency = (
-//   frequency: number,
-//   numOfDoubles: number,
-//   split: SessionDayType[],
-//   upper: number,
-//   lower: number,
-//   push: number,
-//   pull: number,
-//   full: number
-// ) => {
-//   let update_split: SessionDayType[] = [...split];
-
-//   let off_count = numOfDoubles === 0 ? 0 : frequency - numOfDoubles;
-
-//   let counter = {
-//     lower: lower,
-//     upper: upper,
-//     push: push,
-//     pull: pull,
-//     full: full,
-//     off: off_count,
-//   };
-
-//   const totalLower = lower + full;
-//   const totalPush = push + upper + full;
-//   const totalPull = pull + upper + full;
-
-//   for (let i = 0; i < split.length; i++) {
-//     let isTrainingDay = split[i].sessionNum > 0 ? true : false;
-//     let sessionOne = split[i].sessions[0];
-//     let sessiontwo = split[i].sessions[1];
-//     let prevSessionOne = update_split[i - 1]?.sessions[0];
-//     let prevSessionTwo = update_split[i - 1]?.sessions[1];
-
-//     let newCurrentSessionOne = prevSessionOne;
-//     let newCurrentSessionTwo = prevSessionTwo;
-
-//     if (isTrainingDay) {
-//       const newCurrentSessionOneValue = getNextSession(
-//         counter.off > 0 ? newCurrentSessionTwo : newCurrentSessionOne,
-//         counter.upper,
-//         counter.lower,
-//         counter.push,
-//         counter.pull,
-//         counter.full,
-//         counter.off,
-//         totalLower,
-//         totalPush,
-//         totalPull,
-//         prevSessionOne
-//       );
-
-//       counter = {
-//         ...counter,
-//         [newCurrentSessionOneValue]: counter[newCurrentSessionOneValue] - 1,
-//       };
-
-//       newCurrentSessionOne = newCurrentSessionOneValue;
-
-//       if (numOfDoubles > 0) {
-//         const newCurrentSessionTwoValue = getNextSession(
-//           newCurrentSessionOne,
-//           counter.upper,
-//           counter.lower,
-//           counter.push,
-//           counter.pull,
-//           counter.full,
-//           counter.off,
-//           totalLower,
-//           totalPush,
-//           totalPull,
-//           prevSessionTwo
-//         );
-//         newCurrentSessionTwo = newCurrentSessionTwoValue;
-
-//         counter = {
-//           ...counter,
-//           [newCurrentSessionTwoValue]: counter[newCurrentSessionTwoValue] - 1,
-//         };
-//       }
-
-//       update_split[i] = {
-//         ...update_split[i],
-//         sessions: [newCurrentSessionOne, newCurrentSessionTwo],
-//       };
-//     }
-//     console.log(split, update_split, "IS THIS CHANGING???");
-//   }
-
-//   return update_split;
-// };
