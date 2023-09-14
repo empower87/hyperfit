@@ -179,7 +179,7 @@ export default function TrainingBlock({
   }, [totalSessions, priorityRanking]);
 
   return (
-    <div className="flex flex-wrap">
+    <div className="flex flex-col">
       <div className="m-2 rounded border border-slate-500 bg-gray-100 p-2">
         <TestingAlgorithmUI
           title="Hard Coded Sessions"

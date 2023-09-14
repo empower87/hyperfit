@@ -30,26 +30,29 @@ export const FrequencySelectPrompts = ({
   };
 
   return (
-    <div className="flex flex-col">
+    <div className="flex h-full flex-col">
       <FrequencySelect
-        title="Weekly Sessions: How many days per week you can train?"
+        title="Weekly Sessions: "
         options={[...OPTIONS].slice(3)}
         onChange={handleSelectChange}
       />
       {showPrompt && (
         <FrequencySelect
-          title="Daily Sessions: How many daily sessions will you be training double?"
+          title="Daily Sessions: "
           options={[...OPTIONS].slice(0, totalSessionsPerWeek + 1)}
           onChange={handleSelectChange}
         />
       )}
       {showPrompt && (
-        <button
-          className="m-1 rounded bg-slate-700 p-1 text-xs font-bold text-white hover:bg-slate-500"
-          onClick={() => onClickHandler()}
-        >
-          Get Training Block
-        </button>
+        <div className="flex h-1/3 items-center justify-center">
+          <button
+            className="rounded bg-slate-700 p-1 text-xs font-bold text-white hover:bg-slate-500"
+            style={{ height: "80%", width: "95%" }}
+            onClick={() => onClickHandler()}
+          >
+            Get Training Block
+          </button>
+        </div>
       )}
     </div>
   );
@@ -74,7 +77,7 @@ export const FrequencySelect = ({
   };
 
   return (
-    <div className="flex">
+    <div className="flex h-1/3">
       <p className="w-5/6 p-1 text-xs leading-3 text-slate-700">{title}</p>
 
       <select className="w-1/6" onChange={handleSelectChange}>
@@ -90,11 +93,16 @@ export const FrequencySelect = ({
 
 export default function PromptCardLayout({ title, children }: PromptCardProps) {
   return (
-    <div className="w-full rounded border-2 border-slate-500">
-      <div className="w-full rounded-t-sm bg-slate-700">
-        <h2 className="ml-1 p-1 text-white">{title}</h2>
+    <div className="flex h-1/4 w-full items-end justify-center">
+      <div
+        className="flex flex-col rounded border-2 border-slate-500"
+        style={{ height: "94%", width: "92%" }}
+      >
+        <div className="h-6 w-full rounded-t-sm bg-slate-700">
+          <h2 className="ml-1 p-1 text-white">{title}</h2>
+        </div>
+        {children}
       </div>
-      <div className="flex flex-col">{children}</div>
     </div>
   );
 }
