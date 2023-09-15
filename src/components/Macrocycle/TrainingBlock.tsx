@@ -1,64 +1,15 @@
 import { useEffect, useState } from "react";
 import { pushPullLowerFrequencyMax } from "~/hooks/usePrioritizeMuscles";
 import useTrainingBlock from "~/hooks/useTrainingBlock";
-import { MusclePriorityType, SessionType } from "~/pages";
+import {
+  MusclePriorityType,
+  SessionDayType,
+  SessionType,
+  SplitType,
+} from "~/pages";
 import { getNextSession } from "~/utils/getNextSession";
 import { getTrainingSplit } from "~/utils/getTrainingSplit";
 import { MesocycleLayout, MesocycleTable } from "./Mesocycle";
-
-type DayType =
-  | "Sunday"
-  | "Monday"
-  | "Tuesday"
-  | "Wednesday"
-  | "Thursday"
-  | "Friday"
-  | "Saturday";
-type SplitType = "upper" | "lower" | "push" | "pull" | "full" | "off";
-
-type SessionDayType = {
-  day: DayType;
-  sessionNum: number;
-  sessions: [SplitType, SplitType];
-};
-
-const INITIAL_SPLIT: SessionDayType[] = [
-  {
-    day: "Sunday",
-    sessionNum: 0,
-    sessions: ["off", "off"],
-  },
-  {
-    day: "Monday",
-    sessionNum: 0,
-    sessions: ["off", "off"],
-  },
-  {
-    day: "Tuesday",
-    sessionNum: 0,
-    sessions: ["off", "off"],
-  },
-  {
-    day: "Wednesday",
-    sessionNum: 0,
-    sessions: ["off", "off"],
-  },
-  {
-    day: "Thursday",
-    sessionNum: 0,
-    sessions: ["off", "off"],
-  },
-  {
-    day: "Friday",
-    sessionNum: 0,
-    sessions: ["off", "off"],
-  },
-  {
-    day: "Saturday",
-    sessionNum: 0,
-    sessions: ["off", "off"],
-  },
-];
 
 type TrainingBlockProps = {
   priorityRanking: MusclePriorityType[];

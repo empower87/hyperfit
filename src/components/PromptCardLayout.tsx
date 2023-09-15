@@ -69,10 +69,7 @@ export const FrequencySelect = ({
 }) => {
   const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedValue = parseInt(event.target.value);
-    const type =
-      title === "Weekly Sessions: How many days per week you can train?"
-        ? "week"
-        : "day";
+    const type = title === "Weekly Sessions: " ? "week" : "day";
     onChange(selectedValue, type);
   };
 

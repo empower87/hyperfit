@@ -146,49 +146,117 @@ type DayType =
   | "Saturday";
 export type SplitType = "upper" | "lower" | "push" | "pull" | "full" | "off";
 
-export type SessionDayType = {
-  day: DayType;
-  sessionNum: number;
-  sessions: [SplitType, SplitType];
-};
+// const INITIAL_SPLIT: SessionDayType[] = [
+//   {
+//     day: "Sunday",
+//     sessionNum: 0,
+//     sessions: ["off", "off"],
+//   },
+//   {
+//     day: "Monday",
+//     sessionNum: 0,
+//     sessions: ["off", "off"],
+//   },
+//   {
+//     day: "Tuesday",
+//     sessionNum: 0,
+//     sessions: ["off", "off"],
+//   },
+//   {
+//     day: "Wednesday",
+//     sessionNum: 0,
+//     sessions: ["off", "off"],
+//   },
+//   {
+//     day: "Thursday",
+//     sessionNum: 0,
+//     sessions: ["off", "off"],
+//   },
+//   {
+//     day: "Friday",
+//     sessionNum: 0,
+//     sessions: ["off", "off"],
+//   },
+//   {
+//     day: "Saturday",
+//     sessionNum: 0,
+//     sessions: ["off", "off"],
+//   },
+// ];
 
 const INITIAL_SPLIT: SessionDayType[] = [
   {
     day: "Sunday",
     sessionNum: 0,
+    sets: [[], []],
+    totalSets: [0, 0],
+    maxSets: [0, 0],
     sessions: ["off", "off"],
   },
   {
     day: "Monday",
     sessionNum: 0,
+    sets: [[], []],
+    totalSets: [0, 0],
+    maxSets: [0, 0],
     sessions: ["off", "off"],
   },
   {
     day: "Tuesday",
     sessionNum: 0,
+    sets: [[], []],
+    totalSets: [0, 0],
+    maxSets: [0, 0],
     sessions: ["off", "off"],
   },
   {
     day: "Wednesday",
     sessionNum: 0,
+    sets: [[], []],
+    totalSets: [0, 0],
+    maxSets: [0, 0],
     sessions: ["off", "off"],
   },
   {
     day: "Thursday",
     sessionNum: 0,
+    sets: [[], []],
+    totalSets: [0, 0],
+    maxSets: [0, 0],
     sessions: ["off", "off"],
   },
   {
     day: "Friday",
     sessionNum: 0,
+    sets: [[], []],
+    totalSets: [0, 0],
+    maxSets: [0, 0],
     sessions: ["off", "off"],
   },
   {
     day: "Saturday",
     sessionNum: 0,
+    sets: [[], []],
+    totalSets: [0, 0],
+    maxSets: [0, 0],
     sessions: ["off", "off"],
   },
 ];
+
+export type SessionDayType = {
+  day: DayType;
+  sessionNum: number;
+  sets: [ExerciseType[][], ExerciseType[][]];
+  totalSets: [number, number];
+  maxSets: [number, number];
+  sessions: [SplitType, SplitType];
+};
+
+// export type SessionDayType = {
+//   day: DayType;
+//   sessionNum: number;
+//   sessions: [SplitType, SplitType];
+// };
 
 export type SessionType = {
   day: number;
@@ -221,6 +289,7 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     let updateSplit = setSessionNums(totalSessions[0], INITIAL_SPLIT);
+    console.log(updateSplit, "WHAT DOES THIS LOOK LIKE??");
     setSplit(updateSplit);
   }, [totalSessions]);
 
