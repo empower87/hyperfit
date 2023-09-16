@@ -13,13 +13,16 @@ import {
 } from "react-beautiful-dnd";
 import { MEV_RANK, MRV_RANK } from "~/constants/prioritizeRanks";
 import usePrioritizeMuscles from "~/hooks/usePrioritizeMuscles";
-import { MusclePriorityType, SessionType } from "~/pages";
+import { MusclePriorityType, SessionDayType, SessionType } from "~/pages";
 
 type PrioritizeFocusProps = {
   totalWorkouts: number;
   musclePriority: MusclePriorityType[];
   setMusclePriority: Dispatch<SetStateAction<MusclePriorityType[]>>;
   setWorkoutSplit: Dispatch<SetStateAction<SessionType[]>>;
+  split: SessionDayType[];
+  setSplit: Dispatch<SetStateAction<SessionDayType[]>>;
+  totalSessions: [number, number];
 };
 
 function StrictModeDroppable({ children, ...props }: DroppableProps) {
@@ -44,11 +47,17 @@ export default function PrioritizeFocus({
   musclePriority,
   setMusclePriority,
   setWorkoutSplit,
+  split,
+  setSplit,
+  totalSessions,
 }: PrioritizeFocusProps) {
   const { newList } = usePrioritizeMuscles(
     musclePriority,
     totalWorkouts,
-    setWorkoutSplit
+    setWorkoutSplit,
+    split,
+    setSplit,
+    totalSessions
   );
 
   const onDragEnd = useCallback(

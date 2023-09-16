@@ -411,25 +411,33 @@ const updateWorkoutSplit = (split: ("upper" | "lower" | "full")[]) => {
   for (let i = 0; i < split.length; i++) {
     newSplit.push({ ...INITIAL_SESSION, day: i + 1, split: split[i] });
   }
+
   return newSplit;
 };
 
 export default function usePrioritizeMuscles(
   musclePriorityList: MusclePriorityType[],
   max_workouts: number,
-  setWorkoutSplit: Dispatch<SetStateAction<SessionType[]>>
+  setWorkoutSplit: Dispatch<SetStateAction<SessionType[]>>,
+  split: SessionDayType[],
+  setSplit: Dispatch<SetStateAction<SessionDayType[]>>,
+  totalSessions: [number, number]
 ) {
   const [newList, setNewList] = useState<MusclePriorityType[]>([
     ...musclePriorityList,
   ]);
 
   useEffect(() => {
-    const split = getTrainingSplit(newList, max_workouts);
-    const getNewList = updateMuscleListSets(musclePriorityList, split);
-    const updatedWorkoutSplit = updateWorkoutSplit(split);
+    const _split = getTrainingSplit(newList, max_workouts);
+    const getNewList = updateMuscleListSets(musclePriorityList, _split);
+    const updatedWorkoutSplit = updateWorkoutSplit(_split);
 
     setNewList(getNewList);
     setWorkoutSplit(updatedWorkoutSplit);
+    // const getTestSplit = determineWorkoutSplit()
+
+    const data = getPushPosition(getNewList, totalSessions, split);
+    setSplit(data);
   }, [max_workouts, musclePriorityList, newList]);
 
   return { newList };

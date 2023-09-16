@@ -293,6 +293,10 @@ const Home: NextPage = () => {
     setSplit(updateSplit);
   }, [totalSessions]);
 
+  useEffect(() => {
+    console.log(split, "NEED TO KEEP AN EYE ON THIS");
+  }, [split]);
+
   return (
     <div className="flex h-screen w-full flex-col">
       <div className="fixed flex h-8 w-full items-center justify-center bg-slate-700 ">
@@ -311,6 +315,9 @@ const Home: NextPage = () => {
               musclePriority={musclePriority}
               setMusclePriority={setMusclePriority}
               setWorkoutSplit={setWorkoutSplit}
+              split={split}
+              setSplit={setSplit}
+              totalSessions={totalSessions}
             />
           </PrioritySectionLayout>
         </div>
