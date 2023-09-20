@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { pushPullLowerFrequencyMax } from "~/hooks/usePrioritizeMuscles";
-import useTrainingBlock from "~/hooks/useTrainingBlock";
+import useTrainingBlockTest from "~/hooks/useTrainingBlockTest";
 import {
   MusclePriorityType,
   SessionDayType,
@@ -9,7 +9,7 @@ import {
 } from "~/pages";
 import { getNextSession } from "~/utils/getNextSession";
 import { getTrainingSplit } from "~/utils/getTrainingSplit";
-import { MesocycleLayout, MesocycleTable } from "./Mesocycle";
+import { MesocycleLayout } from "./Mesocycle";
 
 type TrainingBlockProps = {
   priorityRanking: MusclePriorityType[];
@@ -112,12 +112,12 @@ export default function TrainingBlock({
   totalSessions,
   split,
 }: TrainingBlockProps) {
-  const { trainingBlock, testSplit } = useTrainingBlock(
-    workoutSplit,
+  const { trainingBlock, testSplit } = useTrainingBlockTest(
     priorityRanking,
     totalSessions,
     split
   );
+
   const [test, setTest] = useState<[SplitType, SplitType][]>([]);
 
   useEffect(() => {
@@ -149,7 +149,7 @@ export default function TrainingBlock({
             key={`${index}_${each[index]?.day}_mesocycles`}
             title={`Mesocycle ${index + 1}`}
           >
-            <MesocycleTable split={each} />
+            {/* <MesocycleTable split={each} /> */}
           </MesocycleLayout>
         );
       })}

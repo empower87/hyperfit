@@ -284,18 +284,14 @@ const Home: NextPage = () => {
 
   const handleFrequencyChange = (first: number, second: number) => {
     setTotalSessions([first, second]);
-    setShowTrainingBlock(true);
+    // setShowTrainingBlock(true);
   };
 
   useEffect(() => {
     let updateSplit = setSessionNums(totalSessions[0], INITIAL_SPLIT);
-    console.log(updateSplit, "WHAT DOES THIS LOOK LIKE??");
     setSplit(updateSplit);
+    setShowTrainingBlock(true);
   }, [totalSessions]);
-
-  useEffect(() => {
-    console.log(split, "NEED TO KEEP AN EYE ON THIS");
-  }, [split]);
 
   return (
     <div className="flex h-screen w-full flex-col">

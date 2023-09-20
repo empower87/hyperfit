@@ -2,12 +2,7 @@ import { useEffect, useState } from "react";
 import { getExercise } from "~/constants/exercises";
 import { MEV_RANK, MRV_RANK } from "~/constants/prioritizeRanks";
 import { UPPER_MUSCLES } from "~/constants/workoutSplits";
-import {
-  MusclePriorityType,
-  SessionDayType,
-  SessionType,
-  SplitType,
-} from "~/pages";
+import { MusclePriorityType, SessionDayType, SplitType } from "~/pages";
 import { getMuscleData } from "~/utils/getMuscleData";
 import { getPushPosition } from "./usePrioritizeMuscles";
 
@@ -100,7 +95,7 @@ const getIt = (
     }
     muscleExercises.exercises.push(exerciseList);
   }
-
+  console.log(muscleExercises, "IS THIS ACCURATE");
   return muscleExercises;
 };
 
@@ -119,29 +114,59 @@ const doIt = (
   }
 
   let newSplit = [...split];
-  const exercisesForSessions: Array<ExerciseType[] | number> = [];
 
-  for (let i = 0; i < split.length; i++) {
-    if (decrement >= 0) {
-      for (let j = 0; j < split[i].sessions.length; j++) {
-        let currentSession = split[i].sessions[j];
-        if (
-          (currentSession === "push" || currentSession === "pull") &&
-          sessions === "upper"
-        ) {
-          newSplit[i].sets[j].push(obj.exercises[iterator]);
-          iterator++;
-          decrement--;
-        } else if (currentSession === sessions) {
-          newSplit[i].sets[j].push(obj.exercises[iterator]);
-          iterator++;
-          decrement--;
-        }
+  let INITIAL_SET = {
+    sessionNum: 1,
+    exercises: [],
+  };
+  type BLAH = {
+    sessionNum: number;
+    sets: [number, ExerciseType[]];
+  };
+  let sets: BLAH[] = [];
+
+  for (let i = 0; i < newSplit.length; i++) {
+    if (decrement <= 0) continue;
+
+    for (let j = 0; j < newSplit[i].sessions.length; j++) {
+      let currentSession = newSplit[i].sessions[j];
+
+      if (
+        (currentSession === "push" || currentSession === "pull") &&
+        sessions === "upper"
+      ) {
+        sets.push({
+          sessionNum: newSplit[i].sessionNum,
+          sets: [j, obj.exercises[iterator]],
+        });
+        iterator++;
+        decrement--;
+      } else if (currentSession === sessions) {
+        sets.push({
+          sessionNum: newSplit[i].sessionNum,
+          sets: [j, obj.exercises[iterator]],
+        });
+        iterator++;
+        decrement--;
       }
+
+      // if (
+      //   (currentSession === "push" || currentSession === "pull") &&
+      //   sessions === "upper"
+      // ) {
+      //   newSplit[i].sets[j].push(obj.exercises[iterator]);
+      //   iterator++;
+      //   decrement--;
+      // } else if (currentSession === sessions) {
+      //   newSplit[i].sets[j].push(obj.exercises[iterator]);
+      //   iterator++;
+      //   decrement--;
+      // }
     }
   }
-  console.log(exercisesForSessions, obj, split, "LETS TAKE A LOOK");
-  return newSplit;
+
+  console.log(obj, split, newSplit, sets, "LETS TAKE A LOOK");
+  return sets;
 };
 
 export type VolumeKey =
@@ -166,11 +191,20 @@ const getMesocycle = (
     let initial_frequency = list[i].mesoProgression[mesoNum];
     let freq_index = initial_frequency > 0 ? initial_frequency - 1 : 0;
 
-    const gotIt = getIt(i, split, list[i].muscle, freq_index, key);
+    const gotIt = getIt(i, meso, list[i].muscle, freq_index, key);
 
-    let newMeso1 = doIt(split, list[i].mesoProgression, mesoNum, gotIt);
+    let newMeso1 = doIt(meso, list[i].mesoProgression, mesoNum, gotIt);
 
-    meso = newMeso1;
+    for (let j = 0; j < newMeso1.length; j++) {
+      for (let k = 0; k < meso.length; k++) {
+        if (newMeso1[j].sessionNum === meso[k].sessionNum) {
+          let newSets = newMeso1[j].sets[1];
+          let newSetsIndex = newMeso1[j].sets[0];
+          meso[k].sets[newSetsIndex].push(newSets);
+        }
+      }
+    }
+    // meso = newMeso1;
     // for (let j = 0; j < meso.length; j++) {
     //   let sets = newMeso1[j];
     //   if (typeof sets !== "number" && typeof sets !== "undefined") {
@@ -178,30 +212,34 @@ const getMesocycle = (
     //   }
     // }
   }
-
+  console.log(meso, "OH GOD HTIS GONNA");
   return meso;
 };
 
-export default function useTrainingBlock(
-  split: SessionType[],
+export default function useTrainingBlockTest(
   list: MusclePriorityType[],
   totalSessions: [number, number],
   splitTest: SessionDayType[]
 ) {
   const [trainingBlock, setTrainingBlock] = useState<SessionDayType[][]>([]);
   const [testSplit, setTestSplit] = useState<[SplitType, SplitType][]>([]);
+  const [newSplit, setNewSplit] = useState<SessionDayType[]>([...splitTest]);
 
   useEffect(() => {
-    let meso1 = getMesocycle([...splitTest], list, 0);
-    let meso2 = getMesocycle([...splitTest], list, 1);
-    let meso3 = getMesocycle([...splitTest], list, 2);
-
     const data = getPushPosition(list, totalSessions, splitTest);
-    const testData = data.map((each) => each.sessions);
-    setTestSplit(testData);
+    const testSplit = data.map((each) => each.sessions);
+    setTestSplit(testSplit);
+    setNewSplit(data);
+  }, [list, totalSessions, splitTest]);
+
+  useEffect(() => {
+    console.log(splitTest, newSplit, list, "IS THERE AN ISSUE HERE?");
+    let meso1 = getMesocycle([...newSplit], list, 0);
+    let meso2 = getMesocycle([...newSplit], list, 1);
+    let meso3 = getMesocycle([...newSplit], list, 2);
 
     setTrainingBlock([meso1, meso2, meso3]);
-  }, [split, list, totalSessions]);
+  }, [newSplit]);
 
   return {
     trainingBlock,
