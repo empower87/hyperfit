@@ -129,6 +129,10 @@ export default function TrainingBlock({
     setTest(getTest);
   }, [totalSessions, priorityRanking]);
 
+  useEffect(() => {
+    console.log(split, totalSessions, "this is the value");
+  }, [split, totalSessions]);
+
   return (
     <div className="flex flex-col">
       <div className="m-2 rounded border border-slate-500 bg-gray-100 p-2">

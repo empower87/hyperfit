@@ -8,6 +8,7 @@ import PrioritySectionLayout from "~/components/PrioritySectionLayout";
 import PromptCardLayout, {
   FrequencySelectPrompts,
 } from "~/components/PromptCardLayout";
+import { getPushPosition } from "~/hooks/usePrioritizeMuscles";
 import { ExerciseType } from "~/hooks/useTrainingBlock";
 
 export type MusclePriorityType = {
@@ -270,7 +271,7 @@ const Home: NextPage = () => {
   const [totalSessions, setTotalSessions] = useState<[number, number]>([3, 0]);
   const [showTrainingBlock, setShowTrainingBlock] = useState<boolean>(false);
 
-  const [split, setSplit] = useState<SessionDayType[]>([...INITIAL_SPLIT]);
+  const [split, setSplit] = useState<SessionDayType[]>([]);
 
   const [workoutSplit, setWorkoutSplit] = useState<SessionType[]>([]);
   const [musclePriority, setMusclePriority] = useState<MusclePriorityType[]>([
@@ -278,21 +279,27 @@ const Home: NextPage = () => {
   ]);
 
   // for not updated PrioritizeFocus table
-  const totalSessionsPerWeek = totalSessions
-    ? totalSessions[0] + totalSessions[1]
-    : 3;
 
   const handleFrequencyChange = (first: number, second: number) => {
     setTotalSessions([first, second]);
     // setShowTrainingBlock(true);
   };
 
+  // useEffect(() => {
+  //   let updateSplit = setSessionNums(totalSessions[0], INITIAL_SPLIT);
+  //   setSplit(updateSplit);
+  // }, [totalSessions]);
+
   useEffect(() => {
     let updateSplit = setSessionNums(totalSessions[0], INITIAL_SPLIT);
-    setSplit(updateSplit);
-    setShowTrainingBlock(true);
-  }, [totalSessions]);
+    const ugh = getPushPosition(musclePriority, totalSessions, updateSplit);
+    setSplit(ugh);
+    console.log(split, updateSplit, ugh, "OK WTF IS GOING ON??");
+  }, [musclePriority, totalSessions]);
 
+  const totalSessionsPerWeek = totalSessions
+    ? totalSessions[0] + totalSessions[1]
+    : 3;
   return (
     <div className="flex h-screen w-full flex-col">
       <div className="fixed flex h-8 w-full items-center justify-center bg-slate-700 ">
@@ -327,14 +334,12 @@ const Home: NextPage = () => {
               <h2 className="ml-1 p-1 text-white">Training Block</h2>
             </div>
 
-            {showTrainingBlock && (
-              <TrainingBlock
-                workoutSplit={workoutSplit}
-                priorityRanking={musclePriority}
-                totalSessions={totalSessions}
-                split={split}
-              />
-            )}
+            <TrainingBlock
+              workoutSplit={workoutSplit}
+              priorityRanking={musclePriority}
+              totalSessions={totalSessions}
+              split={split}
+            />
           </div>
         </div>
       </div>

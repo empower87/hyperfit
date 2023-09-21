@@ -80,7 +80,9 @@ export const getPushPosition = (
     }
   }
 
-  const _split = determineWorkoutSplit(push, pull, lower, totalSessions, split);
+  const _split = determineWorkoutSplit(push, pull, lower, totalSessions, [
+    ...split,
+  ]);
 
   return _split;
 };
@@ -436,8 +438,9 @@ export default function usePrioritizeMuscles(
     setWorkoutSplit(updatedWorkoutSplit);
     // const getTestSplit = determineWorkoutSplit()
 
-    const data = getPushPosition(getNewList, totalSessions, split);
-    setSplit(data);
+    // const data = getPushPosition(getNewList, totalSessions, split);
+    // setSplit(data);
+    console.log(getNewList, "OK WHAT IS THIS ACTUALLY??");
   }, [max_workouts, musclePriorityList, newList]);
 
   return { newList };
