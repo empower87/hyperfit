@@ -1,10 +1,4 @@
-import {
-  Dispatch,
-  SetStateAction,
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   DragDropContext,
   Draggable,
@@ -12,17 +6,17 @@ import {
   DroppableProps,
 } from "react-beautiful-dnd";
 import { MEV_RANK, MRV_RANK } from "~/constants/prioritizeRanks";
-import usePrioritizeMuscles from "~/hooks/usePrioritizeMuscles";
-import { MusclePriorityType, SessionDayType, SessionType } from "~/pages";
+import { MusclePriorityType } from "~/pages";
 
 type PrioritizeFocusProps = {
-  totalWorkouts: number;
+  // totalWorkouts: number;
   musclePriority: MusclePriorityType[];
-  setMusclePriority: Dispatch<SetStateAction<MusclePriorityType[]>>;
-  setWorkoutSplit: Dispatch<SetStateAction<SessionType[]>>;
-  split: SessionDayType[];
-  setSplit: Dispatch<SetStateAction<SessionDayType[]>>;
-  totalSessions: [number, number];
+  updateMusclePriority: (items: MusclePriorityType[]) => void;
+  // setMusclePriority: Dispatch<SetStateAction<MusclePriorityType[]>>;
+  // setWorkoutSplit: Dispatch<SetStateAction<SessionType[]>>;
+  // split: SessionDayType[];
+  // setSplit: Dispatch<SetStateAction<SessionDayType[]>>;
+  // totalSessions: [number, number];
 };
 
 function StrictModeDroppable({ children, ...props }: DroppableProps) {
@@ -43,34 +37,58 @@ function StrictModeDroppable({ children, ...props }: DroppableProps) {
 }
 
 export default function PrioritizeFocus({
-  totalWorkouts,
+  // totalWorkouts,
   musclePriority,
-  setMusclePriority,
-  setWorkoutSplit,
-  split,
-  setSplit,
-  totalSessions,
-}: PrioritizeFocusProps) {
-  const { newList } = usePrioritizeMuscles(
-    musclePriority,
-    totalWorkouts,
-    setWorkoutSplit,
-    split,
-    setSplit,
-    totalSessions
-  );
+  updateMusclePriority,
+}: // setMusclePriority,
+// setWorkoutSplit,
+// split,
+// setSplit,
+// totalSessions,
+PrioritizeFocusProps) {
+  // const { newList } = usePrioritizeMuscles(
+  //   musclePriority,
+  //   totalWorkouts,
+  //   setWorkoutSplit,
+  //   split,
+  //   setSplit,
+  //   totalSessions
+  // );
+  const [copyList, setCopyList] = useState<MusclePriorityType[]>([]);
+  const [updateList, setUpdateList] = useState<boolean>(false);
 
-  const onDragEnd = useCallback(
-    (result: any) => {
-      if (!result.destination) return;
-      const items = [...newList];
-      const [removed] = items.splice(result.source.index, 1);
-      items.splice(result.destination.index, 0, removed);
+  useEffect(() => {
+    setCopyList([...musclePriority]);
+  }, [musclePriority]);
 
-      setMusclePriority(items);
-    },
-    [newList, totalWorkouts]
-  );
+  useEffect(() => {
+    if (updateList && copyList.length) {
+      updateMusclePriority(copyList);
+      setUpdateList(false);
+    }
+  }, [updateList, copyList]);
+
+  const onDragEnd = useCallback((result: any) => {
+    if (!result.destination) return;
+    const items = [...musclePriority];
+    const [removed] = items.splice(result.source.index, 1);
+    items.splice(result.destination.index, 0, removed);
+    // updateMusclePriority(items);
+    setCopyList(items);
+    setUpdateList(true);
+  }, []);
+
+  // const onDragEnd = useCallback(
+  //   (result: any) => {
+  //     if (!result.destination) return;
+  //     const items = [...newList];
+  //     const [removed] = items.splice(result.source.index, 1);
+  //     items.splice(result.destination.index, 0, removed);
+
+  //     setMusclePriority(items);
+  //   },
+  //   [newList, totalWorkouts]
+  // );
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
@@ -81,7 +99,7 @@ export default function PrioritizeFocus({
             {...provided.droppableProps}
             ref={provided.innerRef}
           >
-            {newList.map((each, index) => {
+            {copyList.map((each, index) => {
               return (
                 <Draggable
                   key={`${each.id}`}

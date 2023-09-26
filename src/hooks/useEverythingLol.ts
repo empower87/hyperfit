@@ -320,13 +320,14 @@ const initializePrioritizedTrainingWeek = (
   return _split;
 };
 
-const updateMuscleListSets = (
-  items: MusclePriorityType[],
+export const updateMuscleListSets = (
+  _items: MusclePriorityType[],
   split: SessionDayType[]
 ) => {
   let upper = [];
   let lower = [];
 
+  let items = [..._items];
   for (let h = 0; h < split.length; h++) {
     if (split[h].sessions[0] === "lower") {
       lower.push("lower");
@@ -490,30 +491,66 @@ const updateMuscleListSets = (
   return items;
 };
 
-export default function useEverythingLol(
-  musclePriorityList: MusclePriorityType[]
-) {
+export default function useEverythingLol() {
+  // musclePriorityList: MusclePriorityType[]
   const [totalSessions, setTotalSessions] = useState<[number, number]>([3, 0]);
+  const [newItems, setNewItems] = useState<MusclePriorityType[]>([]);
+
   const [split, setSplit] = useState<SessionDayType[]>([]);
-  const [musclePriority, setMusclePriority] = useState<MusclePriorityType[]>([
-    ...MUSCLE_PRIORITY_LIST,
-  ]);
+  const [musclePriority, setMusclePriority] = useState<MusclePriorityType[]>(
+    []
+  );
+  const [isMusclePriorityListUpdated, setIsMusclePriorityListUpdated] =
+    useState<boolean>(false);
 
   useEffect(() => {
+    const updated_items = updateMuscleListSets(
+      [...MUSCLE_PRIORITY_LIST],
+      [...INITIAL_SPLIT]
+    );
+
     const initializeSplit = initializePrioritizedTrainingWeek(
-      musclePriorityList,
+      updated_items,
       totalSessions,
       [...INITIAL_SPLIT]
     );
+    setMusclePriority(updated_items);
     setSplit(initializeSplit);
-  }, [totalSessions, musclePriorityList]);
+  }, [totalSessions]);
+
+  useEffect(() => {
+    const updated_items = updateMuscleListSets(musclePriority, split);
+    setMusclePriority(updated_items);
+  }, [split]);
+
+  // useEffect(() => {
+  //   const updated_items = updateMuscleListSets(musclePriority, split);
+  //   setNewItems(updated_items);
+  // }, [musclePriority, split]);
+
+  // useEffect(() => {
+  //   setMusclePriority(newItems);
+  // }, [newItems]);
 
   const handleFrequencyChange = (first: number, second: number) => {
     setTotalSessions([first, second]);
   };
 
+  const handleUpdateMuscleList = (items: MusclePriorityType[]) => {
+    const updated_items = updateMuscleListSets(items, split);
+    setMusclePriority(updated_items);
+  };
+
+  useEffect(() => {
+    console.log(split, musclePriority, "TEST: lets see this massive hook data");
+  }, [split, musclePriority]);
+
   return {
+    split,
+    totalSessions,
     handleFrequencyChange,
+    musclePriority,
+    handleUpdateMuscleList,
   };
 }
 

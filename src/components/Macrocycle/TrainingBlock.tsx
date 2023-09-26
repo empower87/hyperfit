@@ -1,19 +1,14 @@
 import { useEffect, useState } from "react";
 import { pushPullLowerFrequencyMax } from "~/hooks/usePrioritizeMuscles";
 import useTrainingBlockTest from "~/hooks/useTrainingBlockTest";
-import {
-  MusclePriorityType,
-  SessionDayType,
-  SessionType,
-  SplitType,
-} from "~/pages";
+import { MusclePriorityType, SessionDayType, SplitType } from "~/pages";
 import { getNextSession } from "~/utils/getNextSession";
 import { getTrainingSplit } from "~/utils/getTrainingSplit";
 import { MesocycleLayout } from "./Mesocycle";
 
 type TrainingBlockProps = {
   priorityRanking: MusclePriorityType[];
-  workoutSplit: SessionType[];
+  // workoutSplit: SessionType[];
   totalSessions: [number, number];
   split: SessionDayType[];
 };
@@ -107,7 +102,7 @@ const TestingCard = ({
 };
 
 export default function TrainingBlock({
-  workoutSplit,
+  // workoutSplit,
   priorityRanking,
   totalSessions,
   split,
