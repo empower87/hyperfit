@@ -12,6 +12,7 @@ import {
   MUSCLE_PRIORITY_LIST,
   MusclePriorityType,
   SessionDayType,
+  SplitType,
 } from "~/pages";
 import { getMuscleData } from "~/utils/getMuscleData";
 import { getNextSession } from "~/utils/getNextSession";
@@ -317,7 +318,102 @@ const initializePrioritizedTrainingWeek = (
     ...split,
   ]);
 
-  return _split;
+  const _list = updateMuscleListSets(list, _split);
+
+  const meso = distributeExercisesAmongSplit(_list, _split, 2);
+
+  return meso;
+};
+
+const distributeExercisesAmongSplit = (
+  list: MusclePriorityType[],
+  split: SessionDayType[],
+  mesoNum: number
+) => {
+  let meso: SessionDayType[] = [...split].map((each) => {
+    let emptySets: [ExerciseType[][], ExerciseType[][]] = [[], []];
+    return { ...each, sets: emptySets };
+  });
+
+  for (let i = 0; i < list.length; i++) {
+    const lastIndex = list[i].mesoProgression[mesoNum];
+    let exercises = list[i].exercises.slice(0, lastIndex);
+    // let exercises = list[i].exercises;
+
+    type VolumeKey =
+      | "mrv_progression_matrix"
+      | "mev_progression_matrix"
+      | "mv_progression_matrix";
+
+    let key: VolumeKey =
+      i < MRV_RANK
+        ? "mrv_progression_matrix"
+        : i >= MRV_RANK && i < MEV_RANK
+        ? "mev_progression_matrix"
+        : "mv_progression_matrix";
+    let initial_frequency = list[i].mesoProgression[mesoNum];
+    // let freq_index = initial_frequency > 0 ? initial_frequency - 1 : 0;
+
+    let session: "upper" | "lower" = "lower";
+
+    if (UPPER_MUSCLES.includes(list[i].muscle)) {
+      session = "upper";
+    }
+
+    const handleSession = (session: SplitType, group: "lower" | "upper") => {
+      switch (session) {
+        case "push":
+          if (group === "upper") {
+            return true;
+          } else {
+            return false;
+          }
+        case "pull":
+          if (group === "upper") {
+            return true;
+          } else {
+            return false;
+          }
+        case "upper":
+          if (group === "upper") {
+            return true;
+          } else {
+            return false;
+          }
+        case "lower":
+          if (group === "lower") {
+            return true;
+          } else {
+            return false;
+          }
+        case "full":
+          return true;
+        default:
+          return false;
+      }
+    };
+
+    for (let j = 0; j < meso.length; j++) {
+      if (exercises.length) {
+        let sessionOne = meso[j].sessions[0];
+        let sessionTwo = meso[j].sessions[1];
+        const canAddExercise = handleSession(sessionOne, session);
+
+        if (canAddExercise && exercises.length) {
+          meso[j].sets[0].push(exercises[0]);
+          exercises.shift();
+        }
+
+        const canAddSecondExercise = handleSession(sessionTwo, session);
+
+        if (canAddSecondExercise && exercises.length) {
+          meso[j].sets[1].push(exercises[0]);
+          exercises.shift();
+        }
+      }
+    }
+  }
+  return meso;
 };
 
 export const updateMuscleListSets = (
@@ -328,31 +424,28 @@ export const updateMuscleListSets = (
   let lower = [];
 
   let items = [..._items];
-  for (let h = 0; h < split.length; h++) {
-    if (split[h].sessions[0] === "lower") {
-      lower.push("lower");
-    } else if (
-      split[h].sessions[0] === "push" ||
-      split[h].sessions[0] === "pull"
-    ) {
-      upper.push("upper");
-    } else if (split[h].sessions[0] === "full") {
-      upper.push("full");
-      lower.push("full");
-    }
 
-    if (split[h].sessions[1] === "lower") {
-      lower.push("lower");
-    } else if (
-      split[h].sessions[1] === "push" ||
-      split[h].sessions[1] === "pull"
-    ) {
-      upper.push("upper");
-    } else if (split[h].sessions[1] === "full") {
-      upper.push("full");
-      lower.push("full");
+  for (let h = 0; h < split.length; h++) {
+    let sessionOne = split[h].sessions[0];
+    let sessionTwo = split[h].sessions[1];
+    let uppers = ["upper", "push", "pull", "full"];
+    let lowers = ["lower", "full"];
+
+    if (uppers.includes(sessionOne)) {
+      upper.push(sessionOne);
+    }
+    if (uppers.includes(sessionTwo)) {
+      upper.push(sessionTwo);
+    }
+    if (lowers.includes(sessionOne)) {
+      lower.push(sessionOne);
+    }
+    if (lowers.includes(sessionTwo)) {
+      lower.push(sessionTwo);
     }
   }
+
+  console.log(upper, lower, "TEST: gotta see these");
 
   for (let i = 0; i < items.length; i++) {
     const muscleData = getMuscleData(items[i].muscle);
@@ -361,6 +454,7 @@ export const updateMuscleListSets = (
       | "mrv_progression_matrix"
       | "mev_progression_matrix"
       | "mv_progression_matrix";
+
     let key: VolumeKey =
       i < MRV_RANK
         ? "mrv_progression_matrix"
@@ -368,13 +462,13 @@ export const updateMuscleListSets = (
         ? "mev_progression_matrix"
         : "mv_progression_matrix";
 
-    let sessions = lower;
+    let sessions = lower.length;
 
     const volume_landmark =
       i < MRV_RANK ? "MRV" : i >= MRV_RANK && i < MEV_RANK ? "MEV" : "MV";
 
     if (UPPER_MUSCLES.includes(items[i].muscle)) {
-      sessions = upper;
+      sessions = upper.length;
     }
 
     let mesoProgression = [1, 1, 1];
@@ -399,12 +493,13 @@ export const updateMuscleListSets = (
             return [0, 0, 0];
         }
       };
-      let prog = getFrequencyProgression(sessions.length);
+
+      let prog = getFrequencyProgression(sessions);
 
       mesoProgression = prog;
       matrixIndex = prog[prog.length - 1] - 1;
     } else if (key === "mev_progression_matrix") {
-      if (sessions.length <= 2) {
+      if (sessions <= 2) {
         mesoProgression = [1, 2, 2];
         matrixIndex = 1;
       } else if (
@@ -504,24 +599,20 @@ export default function useEverythingLol() {
     useState<boolean>(false);
 
   useEffect(() => {
-    const updated_items = updateMuscleListSets(
-      [...MUSCLE_PRIORITY_LIST],
-      [...INITIAL_SPLIT]
-    );
+    if (!musclePriority.length) {
+      setMusclePriority([...MUSCLE_PRIORITY_LIST]);
+    }
+  }, []);
 
-    const initializeSplit = initializePrioritizedTrainingWeek(
-      updated_items,
+  useEffect(() => {
+    const _split = initializePrioritizedTrainingWeek(
+      musclePriority,
       totalSessions,
       [...INITIAL_SPLIT]
     );
-    setMusclePriority(updated_items);
-    setSplit(initializeSplit);
-  }, [totalSessions]);
 
-  useEffect(() => {
-    const updated_items = updateMuscleListSets(musclePriority, split);
-    setMusclePriority(updated_items);
-  }, [split]);
+    setSplit(_split);
+  }, [totalSessions, musclePriority]);
 
   // useEffect(() => {
   //   const updated_items = updateMuscleListSets(musclePriority, split);
@@ -537,8 +628,8 @@ export default function useEverythingLol() {
   };
 
   const handleUpdateMuscleList = (items: MusclePriorityType[]) => {
-    const updated_items = updateMuscleListSets(items, split);
-    setMusclePriority(updated_items);
+    // const updated_items = updateMuscleListSets(items, split);
+    setMusclePriority(items);
   };
 
   useEffect(() => {

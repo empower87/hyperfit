@@ -58,7 +58,9 @@ PrioritizeFocusProps) {
   const [updateList, setUpdateList] = useState<boolean>(false);
 
   useEffect(() => {
-    setCopyList([...musclePriority]);
+    if (!copyList.length) {
+      setCopyList([...musclePriority]);
+    }
   }, [musclePriority]);
 
   useEffect(() => {
@@ -70,7 +72,7 @@ PrioritizeFocusProps) {
 
   const onDragEnd = useCallback((result: any) => {
     if (!result.destination) return;
-    const items = [...musclePriority];
+    const items = [...copyList];
     const [removed] = items.splice(result.source.index, 1);
     items.splice(result.destination.index, 0, removed);
     // updateMusclePriority(items);

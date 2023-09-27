@@ -107,13 +107,14 @@ export default function TrainingBlock({
   totalSessions,
   split,
 }: TrainingBlockProps) {
-  const { trainingBlock, testSplit } = useTrainingBlockTest(
+  const { trainingBlock } = useTrainingBlockTest(
     priorityRanking,
     totalSessions,
     split
   );
 
   const [test, setTest] = useState<[SplitType, SplitType][]>([]);
+  const [testSplit, setTestSplit] = useState<[SplitType, SplitType][]>([]);
 
   useEffect(() => {
     const getTest = getTrainingSplit(
@@ -125,6 +126,11 @@ export default function TrainingBlock({
   }, [totalSessions, priorityRanking]);
 
   useEffect(() => {
+    const list: [SplitType, SplitType][] = [];
+    for (let i = 0; i < split.length; i++) {
+      list.push(split[i].sessions);
+    }
+    setTestSplit(list);
     console.log(split, totalSessions, "this is the value");
   }, [split, totalSessions]);
 
