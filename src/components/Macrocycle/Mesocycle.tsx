@@ -1,9 +1,10 @@
 import { ReactNode } from "react";
-import { SessionType } from "~/pages";
+import { ExerciseType } from "~/hooks/useTrainingBlockTest";
+import { SessionDayType, SplitType } from "~/pages";
 import Microcycle from "./Microcycle";
 
 type MesocycleTableProps = {
-  split: SessionType[];
+  split: SessionDayType[];
 };
 
 function TableHeadColumns() {
@@ -36,11 +37,11 @@ function MesocycleCell({ children }: { children: ReactNode }) {
   return <td className="">{children}</td>;
 }
 
-function TableBody({ split }: { split: SessionType }) {
+function TableBody({ split, sets }: { split: SplitType, sets: ExerciseType[][] }) {
   const backgroundColor =
-    split.split === "upper"
+    split === "upper"
       ? "bg-blue-400"
-      : split.split === "lower"
+      : split === "lower"
       ? "bg-red-400"
       : "bg-purple-400";
 
@@ -48,8 +49,8 @@ function TableBody({ split }: { split: SessionType }) {
     <tr className="">
       <MesocycleCell>
         <Microcycle
-          head={split.split}
-          body={split.sets}
+          head={split}
+          body={sets}
           bgColor={backgroundColor}
         />
       </MesocycleCell>
@@ -57,7 +58,7 @@ function TableBody({ split }: { split: SessionType }) {
       <MesocycleCell>
         <Microcycle
           head={"week 1"}
-          body={split.sets}
+          body={sets}
           bgColor={backgroundColor}
         />
       </MesocycleCell>
@@ -65,7 +66,7 @@ function TableBody({ split }: { split: SessionType }) {
       <MesocycleCell>
         <Microcycle
           head={"week 2"}
-          body={split.sets}
+          body={sets}
           bgColor={backgroundColor}
         />
       </MesocycleCell>
@@ -73,7 +74,7 @@ function TableBody({ split }: { split: SessionType }) {
       <MesocycleCell>
         <Microcycle
           head={"week 3"}
-          body={split.sets}
+          body={sets}
           bgColor={backgroundColor}
         />
       </MesocycleCell>
@@ -81,7 +82,7 @@ function TableBody({ split }: { split: SessionType }) {
       <MesocycleCell>
         <Microcycle
           head={"week 4"}
-          body={split.sets}
+          body={sets}
           bgColor={backgroundColor}
         />
       </MesocycleCell>
@@ -89,7 +90,7 @@ function TableBody({ split }: { split: SessionType }) {
       <MesocycleCell>
         <Microcycle
           head={"deload"}
-          body={split.sets}
+          body={sets}
           bgColor={backgroundColor}
         />
       </MesocycleCell>
@@ -107,14 +108,34 @@ export function MesocycleTable({ split }: MesocycleTableProps) {
         <TableHeadColumns />
         <tbody className="">
           {split.map((each, index) => {
-            if (each.sets.length) {
+            let sessionOne = each.sessions[0]
+            let sessionTwo = each.sessions[1]
+            if (sessionOne !== "off" && sessionTwo !== "off") {
+              return (
+                <>
+                  <TableBody
+                    // key={`${each.day}_${index}_tablebodymesocycle`}
+                    split={each.sessions[0]}
+                    sets={each.sets[0]}
+                  />
+                  <TableBody
+                    // key={`${each.day}_${index}_tablebodymesocycle`}
+                    split={each.sessions[1]}
+                    sets={each.sets[1]}
+                  />
+                </>
+              );
+            } else if (sessionOne !== "off" || sessionTwo !== "off") {
+              let num = sessionOne !== "off" ? 0 : 1
               return (
                 <TableBody
-                  key={`${each.split}_${index}_tablebodymesocycle`}
-                  split={each}
+                  key={`${each.day}_${index}_tablebodymesocycle`}
+                  split={each.sessions[num]}
+                  sets={each.sets[num]}
                 />
               );
             }
+          
           })}
         </tbody>
       </table>

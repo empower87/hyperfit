@@ -1,16 +1,12 @@
 import { useEffect, useState } from "react";
 import { pushPullLowerFrequencyMax } from "~/hooks/usePrioritizeMuscles";
-import useTrainingBlockTest from "~/hooks/useTrainingBlockTest";
-import { MusclePriorityType, SessionDayType, SplitType } from "~/pages";
+import { SessionDayType, SplitType } from "~/pages";
 import { getNextSession } from "~/utils/getNextSession";
-import { getTrainingSplit } from "~/utils/getTrainingSplit";
-import { MesocycleLayout } from "./Mesocycle";
+import { MesocycleLayout, MesocycleTable } from "./Mesocycle";
 
 type TrainingBlockProps = {
-  priorityRanking: MusclePriorityType[];
-  // workoutSplit: SessionType[];
-  totalSessions: [number, number];
-  split: SessionDayType[];
+  hardCodedSessions: [SplitType, SplitType][];
+  trainingBlock: SessionDayType[][];
 };
 
 type TestingAlgorithmUIType = {
@@ -24,27 +20,28 @@ const TestingAlgorithmUI = ({
   split,
   margin,
 }: TestingAlgorithmUIType) => {
-  const DEFAULT: [SplitType, SplitType][] = [
-    ["off", "off"],
-    ["off", "off"],
-    ["off", "off"],
-    ["off", "off"],
-    ["off", "off"],
-    ["off", "off"],
-    ["off", "off"],
-  ];
+  const [updateSplit, setUpdateSplit] = useState<[SplitType, SplitType][]>([]);
 
-  const updateSplit = DEFAULT.map((each, index) => {
-    if (split[index]) {
-      return split[index];
-    } else return each;
-  });
+  useEffect(() => {
+    let numOfOffDaysToAdd = 7 - split.length;
+    if (numOfOffDaysToAdd > 0) {
+      let copySplit = [...split];
+
+      for (let i = 0; i < numOfOffDaysToAdd; i++) {
+        copySplit.push(["off", "off"]);
+      }
+      setUpdateSplit(copySplit);
+    } else {
+      setUpdateSplit(split);
+    }
+  }, [split]);
 
   return (
     <div className={margin ? margin : "" + " flex flex-col"}>
       <p className="text-xs font-bold">{title}</p>
       <div className="flex border border-slate-500">
         {updateSplit.map((each, index) => {
+          console.log(each, updateSplit, "TEST: THIS SHIT MESSING ME UP??");
           return <TestingCard session={each} index={index + 1} />;
         })}
       </div>
@@ -75,7 +72,10 @@ const TestingCard = ({
         return "text-blue-300";
     }
   };
-  const isOffDay = session[0] === "off" && session[1] === "off" ? true : false;
+  const isOffDay =
+    session.length && session[0] === "off" && session[1] === "off"
+      ? true
+      : false;
   const isLastElement = index === 7 ? true : false;
   return (
     <div
@@ -102,49 +102,32 @@ const TestingCard = ({
 };
 
 export default function TrainingBlock({
-  // workoutSplit,
-  priorityRanking,
-  totalSessions,
-  split,
+  hardCodedSessions,
+  trainingBlock,
 }: TrainingBlockProps) {
-  const { trainingBlock } = useTrainingBlockTest(
-    priorityRanking,
-    totalSessions,
-    split
-  );
-
-  const [test, setTest] = useState<[SplitType, SplitType][]>([]);
-  const [testSplit, setTestSplit] = useState<[SplitType, SplitType][]>([]);
-
-  useEffect(() => {
-    const getTest = getTrainingSplit(
-      priorityRanking,
-      totalSessions[0],
-      totalSessions[1]
-    );
-    setTest(getTest);
-  }, [totalSessions, priorityRanking]);
+  const [algorithmicSessions, setAlgorithmicSessions] = useState<
+    [SplitType, SplitType][]
+  >([]);
 
   useEffect(() => {
     const list: [SplitType, SplitType][] = [];
-    for (let i = 0; i < split.length; i++) {
-      list.push(split[i].sessions);
+    for (let i = 0; i < trainingBlock[2]?.length; i++) {
+      list.push(trainingBlock[2][i].sessions);
     }
-    setTestSplit(list);
-    console.log(split, totalSessions, "this is the value");
-  }, [split, totalSessions]);
+    setAlgorithmicSessions(list);
+  }, [trainingBlock]);
 
   return (
     <div className="flex flex-col">
       <div className="m-2 rounded border border-slate-500 bg-gray-100 p-2">
         <TestingAlgorithmUI
           title="Hard Coded Sessions"
-          split={test}
+          split={hardCodedSessions}
           margin={"mb-2"}
         />
         <TestingAlgorithmUI
           title="Algorithmic Coded Sessions"
-          split={testSplit}
+          split={algorithmicSessions}
         />
       </div>
 
@@ -154,7 +137,7 @@ export default function TrainingBlock({
             key={`${index}_${each[index]?.day}_mesocycles`}
             title={`Mesocycle ${index + 1}`}
           >
-            {/* <MesocycleTable split={each} /> */}
+            <MesocycleTable split={each} />
           </MesocycleLayout>
         );
       })}

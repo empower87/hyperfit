@@ -16,6 +16,7 @@ import {
 } from "~/pages";
 import { getMuscleData } from "~/utils/getMuscleData";
 import { getNextSession } from "~/utils/getNextSession";
+import { getTrainingSplit } from "~/utils/getTrainingSplit";
 import { pushPullLowerFrequencyMax } from "./usePrioritizeMuscles";
 import { ExerciseType } from "./useTrainingBlock";
 
@@ -320,9 +321,11 @@ const initializePrioritizedTrainingWeek = (
 
   const _list = updateMuscleListSets(list, _split);
 
-  const meso = distributeExercisesAmongSplit(_list, _split, 2);
+  const meso_one = distributeExercisesAmongSplit(_list, _split, 0);
+  const meso_two = distributeExercisesAmongSplit(_list, _split, 1);
+  const meso_three = distributeExercisesAmongSplit(_list, _split, 2);
 
-  return meso;
+  return [meso_one, meso_two, meso_three];
 };
 
 const distributeExercisesAmongSplit = (
@@ -589,14 +592,16 @@ export const updateMuscleListSets = (
 export default function useEverythingLol() {
   // musclePriorityList: MusclePriorityType[]
   const [totalSessions, setTotalSessions] = useState<[number, number]>([3, 0]);
-  const [newItems, setNewItems] = useState<MusclePriorityType[]>([]);
 
-  const [split, setSplit] = useState<SessionDayType[]>([]);
   const [musclePriority, setMusclePriority] = useState<MusclePriorityType[]>(
     []
   );
-  const [isMusclePriorityListUpdated, setIsMusclePriorityListUpdated] =
-    useState<boolean>(false);
+  const [split, setSplit] = useState<SessionDayType[]>([]);
+  const [trainingBlock, setTrainingBlock] = useState<SessionDayType[][]>([]);
+
+  const [hardCodedSessions, setHardCodedSessions] = useState<
+    [SplitType, SplitType][]
+  >([]);
 
   useEffect(() => {
     if (!musclePriority.length) {
@@ -611,24 +616,25 @@ export default function useEverythingLol() {
       [...INITIAL_SPLIT]
     );
 
-    setSplit(_split);
+    setSplit(_split[2]);
+    setTrainingBlock(_split);
   }, [totalSessions, musclePriority]);
 
-  // useEffect(() => {
-  //   const updated_items = updateMuscleListSets(musclePriority, split);
-  //   setNewItems(updated_items);
-  // }, [musclePriority, split]);
-
-  // useEffect(() => {
-  //   setMusclePriority(newItems);
-  // }, [newItems]);
+  useEffect(() => {
+    const _hardcodedSessions = getTrainingSplit(
+      musclePriority,
+      totalSessions[0],
+      totalSessions[1]
+    );
+    console.log(_hardcodedSessions, "TEST: THIS WORKING??");
+    setHardCodedSessions(_hardcodedSessions);
+  }, [totalSessions, musclePriority]);
 
   const handleFrequencyChange = (first: number, second: number) => {
     setTotalSessions([first, second]);
   };
 
   const handleUpdateMuscleList = (items: MusclePriorityType[]) => {
-    // const updated_items = updateMuscleListSets(items, split);
     setMusclePriority(items);
   };
 
@@ -638,10 +644,12 @@ export default function useEverythingLol() {
 
   return {
     split,
+    trainingBlock,
     totalSessions,
     handleFrequencyChange,
     musclePriority,
     handleUpdateMuscleList,
+    hardCodedSessions,
   };
 }
 

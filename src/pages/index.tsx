@@ -267,10 +267,12 @@ export type SessionType = {
 const Home: NextPage = () => {
   const {
     split,
+    trainingBlock,
     totalSessions,
     handleFrequencyChange,
     musclePriority,
     handleUpdateMuscleList,
+    hardCodedSessions,
   } = useEverythingLol();
   // const [totalSessions, setTotalSessions] = useState<[number, number]>([3, 0]);
   // const [showTrainingBlock, setShowTrainingBlock] = useState<boolean>(false);
@@ -340,10 +342,8 @@ const Home: NextPage = () => {
             </div>
 
             <TrainingBlock
-              // workoutSplit={workoutSplit}
-              priorityRanking={musclePriority}
-              totalSessions={totalSessions}
-              split={split}
+              hardCodedSessions={hardCodedSessions}
+              trainingBlock={trainingBlock}
             />
           </div>
         </div>

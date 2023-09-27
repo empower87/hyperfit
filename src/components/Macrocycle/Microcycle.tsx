@@ -1,24 +1,17 @@
 import { useEffect, useState } from "react";
 import { ExerciseType } from "~/hooks/useTrainingBlock";
+import { SplitType } from "~/pages";
 
-type HeadType =
-  | "week 1"
-  | "week 2"
-  | "week 3"
-  | "week 4"
-  | "deload"
-  | "upper"
-  | "lower"
-  | "full";
+type HeadType = "week 1" | "week 2" | "week 3" | "week 4" | "deload";
 
 type TableCellProps = {
-  head: HeadType;
+  head: SplitType | HeadType;
   body: ExerciseType[][];
   bgColor: string;
 };
 
 function useMesocycleProgression(
-  head: HeadType,
+  head: HeadType | SplitType,
   exerciseList: ExerciseType[][]
 ) {
   const [exercises, setExercises] = useState<ExerciseType[][]>([]);
@@ -67,7 +60,10 @@ function useMesocycleProgression(
     setExercises(exercises);
   }, [exerciseList, head]);
 
-  const progressWeeks = (head: HeadType, values: ExerciseType[]) => {
+  const progressWeeks = (
+    head: HeadType | SplitType,
+    values: ExerciseType[]
+  ) => {
     const PROGRESSION_HOLDER = {
       sets: null,
       weight: 0,
@@ -98,7 +94,7 @@ function useMesocycleProgression(
     }
   };
 
-  const getCellHeads = (head: HeadType) => {
+  const getCellHeads = (head: HeadType | SplitType) => {
     const CELL_HEADS_WEEK_1 = ["Sets", "Reps", "Weight", "RiR"];
     const CELL_HEADS_WEEK_2PLUS = ["Sets", "Weight", "RiR"];
 
@@ -235,7 +231,7 @@ const TR = ({
   index,
 }: {
   exercises: ExerciseType[];
-  head: HeadType;
+  head: HeadType | SplitType;
   index: number[];
 }) => {
   return (
