@@ -41,7 +41,6 @@ const TestingAlgorithmUI = ({
       <p className="text-xs font-bold">{title}</p>
       <div className="flex border border-slate-500">
         {updateSplit.map((each, index) => {
-          console.log(each, updateSplit, "TEST: THIS SHIT MESSING ME UP??");
           return <TestingCard session={each} index={index + 1} />;
         })}
       </div>

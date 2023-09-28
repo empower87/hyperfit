@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { ExerciseType } from "~/hooks/useTrainingBlockTest";
+import { ExerciseType } from "~/hooks/useEverythingLol";
 import { SessionDayType, SplitType } from "~/pages";
 import Microcycle from "./Microcycle";
 
@@ -37,7 +37,13 @@ function MesocycleCell({ children }: { children: ReactNode }) {
   return <td className="">{children}</td>;
 }
 
-function TableBody({ split, sets }: { split: SplitType, sets: ExerciseType[][] }) {
+function TableBody({
+  split,
+  sets,
+}: {
+  split: SplitType;
+  sets: ExerciseType[][];
+}) {
   const backgroundColor =
     split === "upper"
       ? "bg-blue-400"
@@ -48,51 +54,27 @@ function TableBody({ split, sets }: { split: SplitType, sets: ExerciseType[][] }
   return (
     <tr className="">
       <MesocycleCell>
-        <Microcycle
-          head={split}
-          body={sets}
-          bgColor={backgroundColor}
-        />
+        <Microcycle head={split} body={sets} bgColor={backgroundColor} />
       </MesocycleCell>
 
       <MesocycleCell>
-        <Microcycle
-          head={"week 1"}
-          body={sets}
-          bgColor={backgroundColor}
-        />
+        <Microcycle head={"week 1"} body={sets} bgColor={backgroundColor} />
       </MesocycleCell>
 
       <MesocycleCell>
-        <Microcycle
-          head={"week 2"}
-          body={sets}
-          bgColor={backgroundColor}
-        />
+        <Microcycle head={"week 2"} body={sets} bgColor={backgroundColor} />
       </MesocycleCell>
 
       <MesocycleCell>
-        <Microcycle
-          head={"week 3"}
-          body={sets}
-          bgColor={backgroundColor}
-        />
+        <Microcycle head={"week 3"} body={sets} bgColor={backgroundColor} />
       </MesocycleCell>
 
       <MesocycleCell>
-        <Microcycle
-          head={"week 4"}
-          body={sets}
-          bgColor={backgroundColor}
-        />
+        <Microcycle head={"week 4"} body={sets} bgColor={backgroundColor} />
       </MesocycleCell>
 
       <MesocycleCell>
-        <Microcycle
-          head={"deload"}
-          body={sets}
-          bgColor={backgroundColor}
-        />
+        <Microcycle head={"deload"} body={sets} bgColor={backgroundColor} />
       </MesocycleCell>
     </tr>
   );
@@ -108,25 +90,17 @@ export function MesocycleTable({ split }: MesocycleTableProps) {
         <TableHeadColumns />
         <tbody className="">
           {split.map((each, index) => {
-            let sessionOne = each.sessions[0]
-            let sessionTwo = each.sessions[1]
+            let sessionOne = each.sessions[0];
+            let sessionTwo = each.sessions[1];
             if (sessionOne !== "off" && sessionTwo !== "off") {
               return (
                 <>
-                  <TableBody
-                    // key={`${each.day}_${index}_tablebodymesocycle`}
-                    split={each.sessions[0]}
-                    sets={each.sets[0]}
-                  />
-                  <TableBody
-                    // key={`${each.day}_${index}_tablebodymesocycle`}
-                    split={each.sessions[1]}
-                    sets={each.sets[1]}
-                  />
+                  <TableBody split={each.sessions[0]} sets={each.sets[0]} />
+                  <TableBody split={each.sessions[1]} sets={each.sets[1]} />
                 </>
               );
             } else if (sessionOne !== "off" || sessionTwo !== "off") {
-              let num = sessionOne !== "off" ? 0 : 1
+              let num = sessionOne !== "off" ? 0 : 1;
               return (
                 <TableBody
                   key={`${each.day}_${index}_tablebodymesocycle`}
@@ -135,7 +109,6 @@ export function MesocycleTable({ split }: MesocycleTableProps) {
                 />
               );
             }
-          
           })}
         </tbody>
       </table>

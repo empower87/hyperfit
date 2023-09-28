@@ -18,6 +18,7 @@ type MuscleTypeForTable = {
 };
 
 export type ExerciseType = {
+  id: string;
   exercise: string;
   group: string;
   session: number;
@@ -29,6 +30,7 @@ export type ExerciseType = {
 };
 
 const exercise: ExerciseType = {
+  id: "01",
   exercise: "Triceps Extension (cable, single-arm)",
   group: "back",
   rank: "MRV",

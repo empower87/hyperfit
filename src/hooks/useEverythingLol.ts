@@ -18,7 +18,18 @@ import { getMuscleData } from "~/utils/getMuscleData";
 import { getNextSession } from "~/utils/getNextSession";
 import { getTrainingSplit } from "~/utils/getTrainingSplit";
 import { pushPullLowerFrequencyMax } from "./usePrioritizeMuscles";
-import { ExerciseType } from "./useTrainingBlock";
+
+export type ExerciseType = {
+  id: string;
+  exercise: string;
+  group: string;
+  session: number;
+  rank: "MRV" | "MEV" | "MV";
+  sets: number;
+  reps: number;
+  weight: number;
+  rir: number;
+};
 
 const initializeOnOffDays = (sessions: number, split: SessionDayType[]) => {
   switch (sessions) {
@@ -73,7 +84,238 @@ const initializeOnOffDays = (sessions: number, split: SessionDayType[]) => {
   }
 };
 
-export const determineWorkoutSplit = (
+const getSessionTotals = (
+  sessions: [number, number],
+  push: number,
+  pull: number,
+  lower: number
+) => {
+  const total_sessions = sessions[0] + sessions[1];
+  const first_sessions = sessions[0];
+  const second_sessions = sessions[1];
+
+  const session_maxes_per_week = pushPullLowerFrequencyMax(total_sessions);
+  const push_pull_max = session_maxes_per_week[0];
+  const total = push + pull + lower;
+
+  let pushDecimal = push / total;
+  let pullDecimal = pull / total;
+  let lowerDecimal = lower / total;
+
+  let pushRatio = total_sessions * pushDecimal;
+  let pullRatio = total_sessions * pullDecimal;
+  let lowerRatio = total_sessions * lowerDecimal;
+
+  let pushInteger = Math.floor(pushRatio);
+  let pullInteger = Math.floor(pullRatio);
+  let lowerInteger = Math.floor(lowerRatio);
+
+  let pushTenths = pushRatio - pushInteger;
+  let pullTenths = pullRatio - pullInteger;
+  let lowerTenths = lowerRatio - lowerInteger;
+
+  let pushSessions = pushInteger;
+  let pullSessions = pullInteger;
+  let lowerSessions = lowerInteger;
+  let upperSessions = 0;
+  let fullSessions = 0;
+  let offSessions =
+    second_sessions === 0 ? 0 : first_sessions - second_sessions;
+
+  let totalTenths = Math.round(pushTenths + pullTenths + lowerTenths);
+
+  if (totalTenths <= 1) {
+    if (lowerTenths >= 0.55) {
+      lowerSessions++;
+    } else if (lowerTenths >= 0.25 && lowerTenths < 0.55) {
+      fullSessions++;
+    } else if (Math.round(pullTenths) >= 0.6) {
+      pullSessions++;
+    } else if (Math.round(pushTenths) >= 0.6) {
+      pushSessions++;
+    } else if (pushTenths + pullTenths > 0.8) {
+      upperSessions++;
+    } else {
+      fullSessions++;
+    }
+  } else {
+    if (lowerTenths <= 0.33) {
+      pushSessions++;
+      pullSessions++;
+    } else if (lowerTenths >= 0.6) {
+      lowerSessions++;
+      if (pullTenths > pushTenths) {
+        pullSessions++;
+      } else {
+        pushSessions++;
+      }
+    } else {
+      fullSessions = fullSessions + 1;
+      if (pullTenths > pushTenths) {
+        pullSessions++;
+      } else {
+        pushSessions++;
+      }
+    }
+  }
+
+  // -- Maximize frequency by combining push and pulls --
+  while (pullSessions + upperSessions < push_pull_max) {
+    if (pushSessions > 0) {
+      upperSessions++;
+      pushSessions--;
+    } else {
+      break;
+    }
+  }
+  while (pushSessions + upperSessions < push_pull_max) {
+    if (pullSessions > 0) {
+      upperSessions++;
+      pullSessions--;
+    } else {
+      break;
+    }
+  }
+  return {
+    upper: upperSessions,
+    lower: lowerSessions,
+    full: fullSessions,
+    push: pushSessions,
+    pull: pullSessions,
+    off: offSessions,
+  };
+};
+
+const distributeSessionsAmongWeek = (
+  sessions: [number, number],
+  split: SessionDayType[],
+  lowerSessions: number,
+  upperSessions: number,
+  pushSessions: number,
+  pullSessions: number,
+  fullSessions: number,
+  offSessions: number
+) => {
+  let first_sessions = sessions[0];
+  let second_sessions = sessions[1];
+
+  let update_split = initializeOnOffDays(first_sessions, [...split]);
+
+  let counter = {
+    lower: lowerSessions,
+    upper: upperSessions,
+    push: pushSessions,
+    pull: pullSessions,
+    full: fullSessions,
+    off: offSessions,
+  };
+
+  const totalLower = lowerSessions + fullSessions;
+  const totalPush = pushSessions + upperSessions + fullSessions;
+  const totalPull = pullSessions + upperSessions + fullSessions;
+
+  for (let i = 0; i < update_split.length; i++) {
+    let isTrainingDay = update_split[i].sessionNum > 0 ? true : false;
+    let prevSessionOne = update_split[i - 1]?.sessions[0];
+
+    if (isTrainingDay) {
+      const newCurrentSessionOneValue = getNextSession(
+        counter.upper,
+        counter.lower,
+        counter.push,
+        counter.pull,
+        counter.full,
+        0,
+        totalLower,
+        totalPush,
+        totalPull,
+        prevSessionOne
+      );
+
+      update_split[i] = {
+        ...update_split[i],
+        sessions: [newCurrentSessionOneValue, update_split[i].sessions[1]],
+      };
+
+      counter = {
+        ...counter,
+        [newCurrentSessionOneValue]: counter[newCurrentSessionOneValue] - 1,
+      };
+    }
+  }
+
+  if (second_sessions === 0) return update_split;
+
+  for (let j = 0; j < update_split.length; j++) {
+    let isTrainingDay = update_split[j].sessionNum > 0 ? true : false;
+    let sessionOne = update_split[j].sessions[0];
+
+    let prevSessions = update_split[j - 1]?.sessions;
+    let nextSessions = update_split[j + 1]?.sessions;
+
+    if (isTrainingDay) {
+      const newSession = getNextSession(
+        counter.upper,
+        counter.lower,
+        counter.push,
+        counter.pull,
+        counter.full,
+        counter.off,
+        totalLower,
+        totalPush,
+        totalPull,
+        sessionOne,
+        prevSessions,
+        nextSessions
+      );
+
+      update_split[j] = {
+        ...update_split[j],
+        sessions: [update_split[j].sessions[0], newSession],
+      };
+
+      counter = {
+        ...counter,
+        [newSession]: counter[newSession] - 1,
+      };
+    }
+  }
+
+  // LOGGING FOR TESTING ---------------------------------------------------
+  // -----------------------------------------------------------------------
+  // -----------------------------------------------------------------------
+  // const pushRatioFixed = pushRatio.toFixed(2);
+  // const pullRatioFixed = pullRatio.toFixed(2);
+  // const lowerRatioFixed = lowerRatio.toFixed(2);
+
+  // const pushPercentage = Math.round((push / total) * 100);
+  // const pullPercentage = Math.round((pull / total) * 100);
+  // const lowerPercentage = Math.round((lower / total) * 100);
+
+  // console.log("push: --------------------------------------");
+  // console.log(
+  //   `push: ${push} -- pull: ${pull} -- lower: ${lower} total: ${total}`
+  // );
+  // console.log(
+  //   `push: ${pushPercentage}% -- pull: ${pullPercentage}% -- lower: ${lowerPercentage}% total: 100%`
+  // );
+  // console.log(
+  //   `push: ${pushRatioFixed} -- pull: ${pullRatioFixed} -- lower: ${lowerRatioFixed} total: ${totalSessions}`
+  // );
+  // console.log(
+  //   `push: ${update_split.map(
+  //     (each) => `[${each.sessions[0]}, ${each.sessions[1]}] -- `
+  //   )}`
+  // );
+  // console.log("push: --------------------------------------");
+  // LOGGING FOR TESTING ---------------------------------------------------
+  // -----------------------------------------------------------------------
+  // -----------------------------------------------------------------------
+
+  return update_split;
+};
+
+const determineWorkoutSplit = (
   push: number,
   pull: number,
   lower: number,
@@ -326,6 +568,23 @@ const initializePrioritizedTrainingWeek = (
   const meso_three = distributeExercisesAmongSplit(_list, _split, 2);
 
   return [meso_one, meso_two, meso_three];
+
+  // return _split;
+
+  // const _sessions = getSessionTotals(totalSessions, push, pull, lower)
+  // return _sessions
+};
+
+const getTrainingBlock = (
+  _list: MusclePriorityType[],
+  _split: SessionDayType[]
+) => {
+  const _splitCopied = [..._split];
+  const meso_one = distributeExercisesAmongSplit(_list, _splitCopied, 0);
+  const meso_two = distributeExercisesAmongSplit(_list, _splitCopied, 1);
+  const meso_three = distributeExercisesAmongSplit(_list, _splitCopied, 2);
+
+  return [meso_one, meso_two, meso_three];
 };
 
 const distributeExercisesAmongSplit = (
@@ -448,8 +707,6 @@ export const updateMuscleListSets = (
     }
   }
 
-  console.log(upper, lower, "TEST: gotta see these");
-
   for (let i = 0; i < items.length; i++) {
     const muscleData = getMuscleData(items[i].muscle);
 
@@ -529,6 +786,7 @@ export const updateMuscleListSets = (
 
     const exercise: ExerciseType = {
       exercise: "Triceps Extension (cable, single-arm)",
+      id: "001_Triceps Extension (cable, single-arm)",
       group: "back",
       rank: "MRV",
       session: 1,
@@ -542,37 +800,43 @@ export const updateMuscleListSets = (
 
     for (let j = 0; j < matrix?.length; j++) {
       let exerciseList: ExerciseType[] = [];
-
       const splitVol = matrix[j].split("-").map((each) => parseInt(each));
+      const exercise_one = getExercise(muscleData.name, count).name;
+      const exercise_two = getExercise(muscleData.name, count + 1).name;
+      const id_one = `${i}${j + 1}_${exercise_one}`;
+      const id_two = `${i}${j + 2}_${exercise_two}`;
 
       if (splitVol.length > 1) {
         exerciseList.push(
           {
             ...exercise,
+            id: id_one,
             rank: volume_landmark,
             sets: splitVol[0],
             session: j + 1,
             group: muscleData.name,
-            exercise: getExercise(muscleData.name, count).name,
+            exercise: exercise_one,
           },
           {
             ...exercise,
+            id: id_two,
             rank: volume_landmark,
             sets: splitVol[1],
             session: j + 1,
             group: muscleData.name,
-            exercise: getExercise(muscleData.name, count + 1).name,
+            exercise: exercise_two,
           }
         );
         count = count + 2;
       } else {
         exerciseList.push({
           ...exercise,
+          id: id_one,
           rank: volume_landmark,
           sets: splitVol[0],
           session: j + 1,
           group: muscleData.name,
-          exercise: getExercise(muscleData.name, count).name,
+          exercise: exercise_one,
         });
         count = count + 1;
       }
@@ -590,7 +854,6 @@ export const updateMuscleListSets = (
 };
 
 export default function useEverythingLol() {
-  // musclePriorityList: MusclePriorityType[]
   const [totalSessions, setTotalSessions] = useState<[number, number]>([3, 0]);
 
   const [musclePriority, setMusclePriority] = useState<MusclePriorityType[]>(
@@ -598,7 +861,6 @@ export default function useEverythingLol() {
   );
   const [split, setSplit] = useState<SessionDayType[]>([]);
   const [trainingBlock, setTrainingBlock] = useState<SessionDayType[][]>([]);
-
   const [hardCodedSessions, setHardCodedSessions] = useState<
     [SplitType, SplitType][]
   >([]);
@@ -615,20 +877,26 @@ export default function useEverythingLol() {
       totalSessions,
       [...INITIAL_SPLIT]
     );
-
-    setSplit(_split[2]);
-    setTrainingBlock(_split);
-  }, [totalSessions, musclePriority]);
-
-  useEffect(() => {
     const _hardcodedSessions = getTrainingSplit(
       musclePriority,
       totalSessions[0],
       totalSessions[1]
     );
-    console.log(_hardcodedSessions, "TEST: THIS WORKING??");
+
+    setSplit(_split[2]);
+    setTrainingBlock(_split);
+    // setSplit(_split);
     setHardCodedSessions(_hardcodedSessions);
   }, [totalSessions, musclePriority]);
+
+  useEffect(() => {
+    console.log(
+      split,
+      musclePriority,
+      trainingBlock,
+      "TEST: Use Everything lol"
+    );
+  }, [split, musclePriority, trainingBlock]);
 
   const handleFrequencyChange = (first: number, second: number) => {
     setTotalSessions([first, second]);
@@ -637,10 +905,6 @@ export default function useEverythingLol() {
   const handleUpdateMuscleList = (items: MusclePriorityType[]) => {
     setMusclePriority(items);
   };
-
-  useEffect(() => {
-    console.log(split, musclePriority, "TEST: lets see this massive hook data");
-  }, [split, musclePriority]);
 
   return {
     split,

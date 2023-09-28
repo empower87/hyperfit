@@ -11,7 +11,8 @@ import {
 } from "~/constants/workoutSplits";
 import { MusclePriorityType, SessionDayType, SessionType } from "~/pages";
 import { getMuscleData } from "../utils/getMuscleData";
-import { ExerciseType, VolumeKey } from "./useTrainingBlock";
+import { ExerciseType } from "./useEverythingLol";
+import { VolumeKey } from "./useTrainingBlock";
 
 export type SessionSplitType = "upper" | "lower" | "full";
 
@@ -338,6 +339,7 @@ const updateMuscleListSets = (
     let exercises: ExerciseType[][] = [];
 
     const exercise: ExerciseType = {
+      id: "001",
       exercise: "Triceps Extension (cable, single-arm)",
       group: "back",
       rank: "MRV",

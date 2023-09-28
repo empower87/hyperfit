@@ -11,7 +11,7 @@ type MuscleTypeForTable = {
   exercises: ExerciseType[][];
 };
 
-export type ExerciseType = {
+type ExerciseType = {
   exercise: string;
   group: string;
   session: number;
@@ -173,7 +173,7 @@ const getMesocycle = (
   list: MusclePriorityType[],
   mesoNum: number
 ) => {
-  let meso = [...split].map((each) => {
+  let meso: SessionDayType[] = [...split].map((each) => {
     let emptySets: [ExerciseType[][], ExerciseType[][]] = [[], []];
     return { ...each, sets: emptySets };
   });
@@ -188,6 +188,7 @@ const getMesocycle = (
         : i >= MRV_RANK && i < MEV_RANK
         ? "mev_progression_matrix"
         : "mv_progression_matrix";
+
     let initial_frequency = list[i].mesoProgression[mesoNum];
     let freq_index = initial_frequency > 0 ? initial_frequency - 1 : 0;
 
@@ -250,39 +251,6 @@ const getMesocycle = (
     }
   }
 
-  // let meso = [...split];
-
-  // for (let i = 0; i < list.length; i++) {
-  //   let key: VolumeKey =
-  //     i < MRV_RANK
-  //       ? "mrv_progression_matrix"
-  //       : i >= MRV_RANK && i < MEV_RANK
-  //       ? "mev_progression_matrix"
-  //       : "mv_progression_matrix";
-  //   let initial_frequency = list[i].mesoProgression[mesoNum];
-  //   let freq_index = initial_frequency > 0 ? initial_frequency - 1 : 0;
-
-  //   const gotIt = getIt(i, list[i].muscle, freq_index, key);
-
-  //   let newMeso1 = doIt(meso, list[i].mesoProgression, mesoNum, gotIt);
-
-  //   for (let j = 0; j < newMeso1.length; j++) {
-  //     for (let k = 0; k < meso.length; k++) {
-  //       if (newMeso1[j].sessionNum === meso[k].sessionNum) {
-  //         let newSets = newMeso1[j].sets[1];
-  //         let newSetsIndex = newMeso1[j].sets[0];
-  //         meso[k].sets[newSetsIndex].push(newSets);
-  //       }
-  //     }
-  //   }
-  //   // meso = newMeso1;
-  //   // for (let j = 0; j < meso.length; j++) {
-  //   //   let sets = newMeso1[j];
-  //   //   if (typeof sets !== "number" && typeof sets !== "undefined") {
-  //   //     meso[j] = { ...meso[j], sets: [...meso[j].sets, sets] };
-  //   //   }
-  //   // }
-  // }
   console.log(meso, "OH GOD HTIS GONNA");
   return meso;
 };

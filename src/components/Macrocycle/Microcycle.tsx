@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ExerciseType } from "~/hooks/useTrainingBlock";
+import { ExerciseType } from "~/hooks/useEverythingLol";
 import { SplitType } from "~/pages";
 
 type HeadType = "week 1" | "week 2" | "week 3" | "week 4" | "deload";
