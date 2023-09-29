@@ -2,7 +2,7 @@
 // -- Add in logic for supersets and staggering rest time instead of jumping back to back into exercises
 // -- supersets should be antagonist muscles. ie. bicep curls > tricep extensions .. bench press > bent-over row .. etc.
 
-type ExerciseType = {
+export type ExerciseType = {
   name: string;
   rank: number;
   group: string;
@@ -515,7 +515,7 @@ const BICEPS_EXERCISES: ExerciseType[] = [
   },
 ];
 
-export const getGrouplist = (group: string) => {
+export const getGrouplist = (group: string): ExerciseType[] => {
   switch (group) {
     case "back":
       return BACK_EXERCISES;
@@ -528,7 +528,7 @@ export const getGrouplist = (group: string) => {
     case "chest":
       return CHEST_EXERCISES;
     case "triceps":
-      return TRICEPS_EXERCISES;
+      return CHEST_EXERCISES;
     case "biceps":
       return BICEPS_EXERCISES;
     case "forearms":

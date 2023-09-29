@@ -171,26 +171,64 @@ type SelectExerciseProps = {
   group: string;
   currentValue: string;
   onChange: (value: string) => void;
+  bgColor: string;
 };
+
+const GROUPS = [
+  "chest",
+  "back",
+  "biceps",
+  "triceps",
+  "delts_side",
+  "delts_rear",
+  "delts_front",
+  "traps",
+  "forearms",
+  "abs",
+  "quads",
+  "hamstrings",
+  "glutes",
+  "calves",
+];
 
 function SelectExercise({
   group,
   currentValue,
   onChange,
+  bgColor,
 }: SelectExerciseProps) {
-  const groupList = getGrouplist(group);
+  const exercises = getGrouplist(group);
+  const groups = [...GROUPS];
 
   const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     onChange(event.target.value);
   };
 
   return (
-    <select className="w-1/6" onChange={handleSelectChange}>
-      {groupList.map((option) => (
-        <option key={option.name} value={option.name}>
-          {option.name}
-        </option>
-      ))}
+    <select className={bgColor + " w-full"} onChange={handleSelectChange}>
+      {group === currentValue
+        ? groups.map((option) => {
+            return (
+              <option
+                key={option}
+                value={option}
+                selected={option === currentValue ? true : false}
+              >
+                {option}
+              </option>
+            );
+          })
+        : exercises.map((option) => {
+            return (
+              <option
+                key={option.name}
+                value={option.name}
+                selected={option.name === currentValue ? true : false}
+              >
+                {option.name}
+              </option>
+            );
+          })}
     </select>
   );
 }
@@ -221,21 +259,17 @@ function InputTD({
   const onChangeHandler = (value: string) => {
     setCurrentValue(value);
   };
+
   return (
     <td
-      className={
-        bgColor +
-        border +
-        _center +
-        " flex justify-between truncate border-l-2 text-white"
-      }
+      className={bgColor + border + _center + " truncate border-l-2 text-white"}
       style={{ fontSize: "10px", height: "20px" }}
     >
-      {currentValue}
       <SelectExercise
         group={group}
         currentValue={value}
         onChange={onChangeHandler}
+        bgColor={bgColor}
       />
     </td>
   );
@@ -323,7 +357,8 @@ const TR = ({
                 rank={each.rank}
                 bottomBorder={hasBorder}
               />
-              <TD
+              <InputTD
+                group={each.group}
                 value={`${each.group}`}
                 rank={each.rank}
                 bottomBorder={hasBorder}

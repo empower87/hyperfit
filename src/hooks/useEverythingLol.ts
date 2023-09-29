@@ -857,21 +857,15 @@ export const updateMuscleListSets = (
 
 export default function useEverythingLol() {
   const [totalSessions, setTotalSessions] = useState<[number, number]>([3, 0]);
-  const [musclePriority, setMusclePriority] = useState<MusclePriorityType[]>(
-    []
-  );
+  const [musclePriority, setMusclePriority] = useState<MusclePriorityType[]>([
+    ...MUSCLE_PRIORITY_LIST,
+  ]);
 
   const [split, setSplit] = useState<SessionDayType[]>([]);
   const [trainingBlock, setTrainingBlock] = useState<SessionDayType[][]>([]);
   const [hardCodedSessions, setHardCodedSessions] = useState<
     [SplitType, SplitType][]
   >([]);
-
-  useEffect(() => {
-    if (!musclePriority.length) {
-      setMusclePriority([...MUSCLE_PRIORITY_LIST]);
-    }
-  }, []);
 
   useEffect(() => {
     const _split = initializePrioritizedTrainingWeek(
