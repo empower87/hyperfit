@@ -514,3 +514,38 @@ const BICEPS_EXERCISES: ExerciseType[] = [
     variations: [],
   },
 ];
+
+export const getGrouplist = (group: string) => {
+  switch (group) {
+    case "back":
+      return BACK_EXERCISES;
+    case "delts_side":
+      return DELTS_SIDE_FRONT_EXERCISES;
+    case "delts_front":
+      return DELTS_SIDE_FRONT_EXERCISES;
+    case "delts_rear":
+      return DELTS_REAR_EXERCISES;
+    case "chest":
+      return CHEST_EXERCISES;
+    case "triceps":
+      return TRICEPS_EXERCISES;
+    case "biceps":
+      return BICEPS_EXERCISES;
+    case "forearms":
+      return BICEPS_EXERCISES;
+    case "traps":
+      return DELTS_SIDE_FRONT_EXERCISES;
+    case "quads":
+      return BACK_EXERCISES;
+    case "hamstrings":
+      return BACK_EXERCISES;
+    case "glutes":
+      return BACK_EXERCISES;
+    case "calves":
+      return BACK_EXERCISES;
+    case "abs":
+      return BACK_EXERCISES;
+    default:
+      return BACK_EXERCISES;
+  }
+};

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { getGrouplist } from "~/constants/exercises";
 import { ExerciseType } from "~/hooks/useEverythingLol";
 import { SplitType } from "~/pages";
 
@@ -166,6 +167,80 @@ function TD({
   );
 }
 
+type SelectExerciseProps = {
+  group: string;
+  currentValue: string;
+  onChange: (value: string) => void;
+};
+
+function SelectExercise({
+  group,
+  currentValue,
+  onChange,
+}: SelectExerciseProps) {
+  const groupList = getGrouplist(group);
+
+  const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    onChange(event.target.value);
+  };
+
+  return (
+    <select className="w-1/6" onChange={handleSelectChange}>
+      {groupList.map((option) => (
+        <option key={option.name} value={option.name}>
+          {option.name}
+        </option>
+      ))}
+    </select>
+  );
+}
+
+function InputTD({
+  group,
+  value,
+  rank,
+  bottomBorder,
+  center,
+}: {
+  group: string;
+  value: string;
+  rank: "MRV" | "MEV" | "MV";
+  bottomBorder: boolean;
+  center?: "text-center";
+}) {
+  const bgColor =
+    rank === "MRV"
+      ? "bg-red-400"
+      : rank === "MEV"
+      ? "bg-orange-400"
+      : "bg-green-400";
+  const border = bottomBorder ? " border-b-2 border-slate-300" : "";
+  const _center = center ? " text-center" : "";
+  const [currentValue, setCurrentValue] = useState<string>(value);
+
+  const onChangeHandler = (value: string) => {
+    setCurrentValue(value);
+  };
+  return (
+    <td
+      className={
+        bgColor +
+        border +
+        _center +
+        " flex justify-between truncate border-l-2 text-white"
+      }
+      style={{ fontSize: "10px", height: "20px" }}
+    >
+      {currentValue}
+      <SelectExercise
+        group={group}
+        currentValue={value}
+        onChange={onChangeHandler}
+      />
+    </td>
+  );
+}
+
 const getIndices = (exercises: ExerciseType[][]) => {
   let addIndices = 0;
 
@@ -253,7 +328,8 @@ const TR = ({
                 rank={each.rank}
                 bottomBorder={hasBorder}
               />
-              <TD
+              <InputTD
+                group={each.group}
                 value={`${each.exercise}`}
                 rank={each.rank}
                 bottomBorder={hasBorder}

@@ -561,6 +561,8 @@ const initializePrioritizedTrainingWeek = (
     ...split,
   ]);
 
+  // const _sessions = getSessionTotals(totalSessions, push, pull, lower);
+
   const _list = updateMuscleListSets(list, _split);
 
   const meso_one = distributeExercisesAmongSplit(_list, _split, 0);
@@ -571,8 +573,8 @@ const initializePrioritizedTrainingWeek = (
 
   // return _split;
 
-  // const _sessions = getSessionTotals(totalSessions, push, pull, lower)
-  // return _sessions
+  // const final_meso = distributeExercisesAmongSplit(_list, _split, 2);
+  // return final_meso;
 };
 
 const getTrainingBlock = (
@@ -722,13 +724,13 @@ export const updateMuscleListSets = (
         ? "mev_progression_matrix"
         : "mv_progression_matrix";
 
-    let sessions = lower.length;
+    let sessions = lower;
 
     const volume_landmark =
       i < MRV_RANK ? "MRV" : i >= MRV_RANK && i < MEV_RANK ? "MEV" : "MV";
 
     if (UPPER_MUSCLES.includes(items[i].muscle)) {
-      sessions = upper.length;
+      sessions = upper;
     }
 
     let mesoProgression = [1, 1, 1];
@@ -754,12 +756,12 @@ export const updateMuscleListSets = (
         }
       };
 
-      let prog = getFrequencyProgression(sessions);
+      let prog = getFrequencyProgression(sessions.length);
 
       mesoProgression = prog;
       matrixIndex = prog[prog.length - 1] - 1;
     } else if (key === "mev_progression_matrix") {
-      if (sessions <= 2) {
+      if (sessions.length <= 2) {
         mesoProgression = [1, 2, 2];
         matrixIndex = 1;
       } else if (
@@ -855,10 +857,10 @@ export const updateMuscleListSets = (
 
 export default function useEverythingLol() {
   const [totalSessions, setTotalSessions] = useState<[number, number]>([3, 0]);
-
   const [musclePriority, setMusclePriority] = useState<MusclePriorityType[]>(
     []
   );
+
   const [split, setSplit] = useState<SessionDayType[]>([]);
   const [trainingBlock, setTrainingBlock] = useState<SessionDayType[][]>([]);
   const [hardCodedSessions, setHardCodedSessions] = useState<
@@ -877,6 +879,7 @@ export default function useEverythingLol() {
       totalSessions,
       [...INITIAL_SPLIT]
     );
+
     const _hardcodedSessions = getTrainingSplit(
       musclePriority,
       totalSessions[0],
@@ -885,9 +888,20 @@ export default function useEverythingLol() {
 
     setSplit(_split[2]);
     setTrainingBlock(_split);
-    // setSplit(_split);
+    // setSessions(_split);
     setHardCodedSessions(_hardcodedSessions);
   }, [totalSessions, musclePriority]);
+
+  // useEffect(() => {
+  //   const block = getTrainingBlock(musclePriority, split)
+  //   setTrainingBlock(block)
+  // }, [split])
+
+  // useEffect(() => {
+  //   if (!sessions) return;
+  //   const _list = updateMuscleListSets(musclePriority, sessions);
+  //   setMusclePriority(_list);
+  // }, [sessions]);
 
   useEffect(() => {
     console.log(
