@@ -34,58 +34,75 @@ export default function PrioritizeFocus({
   musclePriority,
   updateMusclePriority,
 }: PrioritizeFocusProps) {
+  const [list, setList] = useState<MusclePriorityType[]>([...musclePriority]);
+
   const onDragEnd = useCallback(
     (result: any) => {
       if (!result.destination) return;
-      const items = [...musclePriority];
+      const items = [...list];
       const [removed] = items.splice(result.source.index, 1);
       items.splice(result.destination.index, 0, removed);
-      updateMusclePriority(items);
+      setList(items);
     },
-    [musclePriority]
+    [list]
   );
 
+  const updateListHandler = () => {
+    updateMusclePriority(list);
+  };
+
+  const resetListHandler = () => {
+    setList([...musclePriority]);
+  };
+
   return (
-    <DragDropContext onDragEnd={onDragEnd}>
-      <StrictModeDroppable droppableId="droppable">
-        {(provided, snapshot) => (
-          <ul
-            id="droppable"
-            {...provided.droppableProps}
-            ref={provided.innerRef}
-          >
-            {musclePriority.map((each, index) => {
-              return (
-                <Draggable
-                  key={`${each.id}`}
-                  draggableId={each.id}
-                  index={index}
-                >
-                  {(provided, snapshot) => (
-                    <div
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                      {...provided.dragHandleProps}
-                    >
-                      <Muscle
-                        muscle={each.muscle}
-                        sets={each.sets[0]}
-                        index={index}
-                      />
-                    </div>
-                  )}
-                </Draggable>
-              );
-            })}
-            {provided.placeholder}
-          </ul>
-        )}
-      </StrictModeDroppable>
-    </DragDropContext>
+    <div className="flex h-full w-full flex-col justify-between p-2">
+      <DragDropContext onDragEnd={onDragEnd}>
+        <StrictModeDroppable droppableId="droppable">
+          {(provided, snapshot) => (
+            <ul
+              id="droppable"
+              {...provided.droppableProps}
+              ref={provided.innerRef}
+            >
+              {list.map((each, index) => {
+                return (
+                  <Draggable
+                    key={`${each.id}`}
+                    draggableId={each.id}
+                    index={index}
+                  >
+                    {(provided, snapshot) => (
+                      <div
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                      >
+                        <MuscleItem
+                          muscle={each.muscle}
+                          sets={each.sets[0]}
+                          index={index}
+                        />
+                      </div>
+                    )}
+                  </Draggable>
+                );
+              })}
+              {provided.placeholder}
+            </ul>
+          )}
+        </StrictModeDroppable>
+      </DragDropContext>
+
+      <div className="flex justify-between">
+        <Button value="Reset" onClick={resetListHandler} />
+        <Button value="Set" onClick={updateListHandler} />
+      </div>
+    </div>
   );
 }
 
-const Muscle = ({
+const MuscleItem = ({
   muscle,
   sets,
   index,
@@ -103,13 +120,31 @@ const Muscle = ({
   return (
     <li
       className={
-        "mt-1 flex justify-between rounded border-2 border-slate-700 p-1 text-xs text-white " +
+        "mt-1 flex h-5 items-center justify-between rounded border-2 border-slate-700 p-1 text-white " +
         bgColor
       }
     >
-      <div>{index + 1}</div>
-      <div className="font-bold">{muscle}</div>
-      <div className="font-bold">{sets}</div>
+      <div className="text-xs">{index + 1}</div>
+      <div className="text-xs font-bold">{muscle}</div>
+      <div className="text-xs font-bold">{sets}</div>
     </li>
+  );
+};
+
+const Button = ({ value, onClick }: { value: string; onClick: () => void }) => {
+  const classes =
+    value === "Reset"
+      ? "w-1/3 bg-slate-200 text-slate-500 mr-1"
+      : "w-2/3 bg-slate-500 text-white";
+
+  return (
+    <button
+      onClick={onClick}
+      className={
+        classes + " rounded border-2 border-slate-500 p-1 text-xs font-bold"
+      }
+    >
+      {value}
+    </button>
   );
 };

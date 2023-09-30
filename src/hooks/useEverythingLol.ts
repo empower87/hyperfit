@@ -84,12 +84,38 @@ const initializeOnOffDays = (sessions: number, split: SessionDayType[]) => {
   }
 };
 
-const getSessionTotals = (
+// NOTE: based on total sessions and prioritized muscle list, get the optimal session splits
+const determineOptimalSessionSplits = (
   sessions: [number, number],
-  push: number,
-  pull: number,
-  lower: number
+  list: MusclePriorityType[]
 ) => {
+  // NOTE: weight coefficients to better determine session split
+  let push = 0;
+  let pull = 0;
+  let lower = 0;
+
+  const SYSTEMIC_FATIGUE_MODIFIER = 2;
+  const LOWER_MODIFIER = 1.15;
+  const RANK_WEIGHTS = [14, 12, 10, 8, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0];
+
+  for (let i = 0; i < list.length; i++) {
+    if (PUSH_MUSCLES.includes(list[i].muscle)) {
+      push = push + RANK_WEIGHTS[i];
+    } else if (PULL_MUSCLES.includes(list[i].muscle)) {
+      pull = pull + RANK_WEIGHTS[i];
+    } else if (PUSH_AND_PULL_MUSCLES.includes(list[i].muscle)) {
+      let split = Math.round(RANK_WEIGHTS[i] / 2);
+      push = push + split;
+      pull = pull + split;
+    } else if (LOWER_MUSCLES.includes(list[i].muscle)) {
+      let lowerMod = Math.round(RANK_WEIGHTS[i] * LOWER_MODIFIER);
+      if (list[i].muscle === "quads" && i < 3) {
+        lowerMod = lowerMod * SYSTEMIC_FATIGUE_MODIFIER;
+      }
+      lower = lower + lowerMod;
+    }
+  }
+
   const total_sessions = sessions[0] + sessions[1];
   const first_sessions = sessions[0];
   const second_sessions = sessions[1];
@@ -124,6 +150,7 @@ const getSessionTotals = (
 
   let totalTenths = Math.round(pushTenths + pullTenths + lowerTenths);
 
+  // NOTE: determine remaining session splits based on fractional remains of push/pull/lower
   if (totalTenths <= 1) {
     if (lowerTenths >= 0.55) {
       lowerSessions++;
@@ -176,6 +203,33 @@ const getSessionTotals = (
       break;
     }
   }
+
+  // LOGGING FOR TESTING ---------------------------------------------------
+  // -----------------------------------------------------------------------
+  // -----------------------------------------------------------------------
+  const pushRatioFixed = pushRatio.toFixed(2);
+  const pullRatioFixed = pullRatio.toFixed(2);
+  const lowerRatioFixed = lowerRatio.toFixed(2);
+
+  const pushPercentage = Math.round((push / total) * 100);
+  const pullPercentage = Math.round((pull / total) * 100);
+  const lowerPercentage = Math.round((lower / total) * 100);
+
+  console.log("push: --------------------------------------");
+  console.log(
+    `push: ${push} -- pull: ${pull} -- lower: ${lower} total: ${total}`
+  );
+  console.log(
+    `push: ${pushPercentage}% -- pull: ${pullPercentage}% -- lower: ${lowerPercentage}% total: 100%`
+  );
+  console.log(
+    `push: ${pushRatioFixed} -- pull: ${pullRatioFixed} -- lower: ${lowerRatioFixed} total: ${total_sessions}`
+  );
+  console.log("push: --------------------------------------");
+  // LOGGING FOR TESTING ---------------------------------------------------
+  // -----------------------------------------------------------------------
+  // -----------------------------------------------------------------------
+
   return {
     upper: upperSessions,
     lower: lowerSessions,
@@ -280,38 +334,6 @@ const distributeSessionsAmongWeek = (
       };
     }
   }
-
-  // LOGGING FOR TESTING ---------------------------------------------------
-  // -----------------------------------------------------------------------
-  // -----------------------------------------------------------------------
-  // const pushRatioFixed = pushRatio.toFixed(2);
-  // const pullRatioFixed = pullRatio.toFixed(2);
-  // const lowerRatioFixed = lowerRatio.toFixed(2);
-
-  // const pushPercentage = Math.round((push / total) * 100);
-  // const pullPercentage = Math.round((pull / total) * 100);
-  // const lowerPercentage = Math.round((lower / total) * 100);
-
-  // console.log("push: --------------------------------------");
-  // console.log(
-  //   `push: ${push} -- pull: ${pull} -- lower: ${lower} total: ${total}`
-  // );
-  // console.log(
-  //   `push: ${pushPercentage}% -- pull: ${pullPercentage}% -- lower: ${lowerPercentage}% total: 100%`
-  // );
-  // console.log(
-  //   `push: ${pushRatioFixed} -- pull: ${pullRatioFixed} -- lower: ${lowerRatioFixed} total: ${totalSessions}`
-  // );
-  // console.log(
-  //   `push: ${update_split.map(
-  //     (each) => `[${each.sessions[0]}, ${each.sessions[1]}] -- `
-  //   )}`
-  // );
-  // console.log("push: --------------------------------------");
-  // LOGGING FOR TESTING ---------------------------------------------------
-  // -----------------------------------------------------------------------
-  // -----------------------------------------------------------------------
-
   return update_split;
 };
 
@@ -528,38 +550,54 @@ const determineWorkoutSplit = (
 
 const initializePrioritizedTrainingWeek = (
   list: MusclePriorityType[],
-  totalSessions: [number, number],
-  split: SessionDayType[]
+  totalSessions: [number, number]
+  // split: SessionDayType[]
 ) => {
-  let push = 0;
-  let pull = 0;
-  let lower = 0;
+  // let push = 0;
+  // let pull = 0;
+  // let lower = 0;
 
-  const SYSTEMIC_FATIGUE_MODIFIER = 2;
-  const LOWER_MODIFIER = 1.15;
-  const RANK_WEIGHTS = [14, 12, 10, 8, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0];
+  // const SYSTEMIC_FATIGUE_MODIFIER = 2;
+  // const LOWER_MODIFIER = 1.15;
+  // const RANK_WEIGHTS = [14, 12, 10, 8, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0];
 
-  for (let i = 0; i < list.length; i++) {
-    if (PUSH_MUSCLES.includes(list[i].muscle)) {
-      push = push + RANK_WEIGHTS[i];
-    } else if (PULL_MUSCLES.includes(list[i].muscle)) {
-      pull = pull + RANK_WEIGHTS[i];
-    } else if (PUSH_AND_PULL_MUSCLES.includes(list[i].muscle)) {
-      let split = Math.round(RANK_WEIGHTS[i] / 2);
-      push = push + split;
-      pull = pull + split;
-    } else if (LOWER_MUSCLES.includes(list[i].muscle)) {
-      let lowerMod = Math.round(RANK_WEIGHTS[i] * LOWER_MODIFIER);
-      if (list[i].muscle === "quads" && i < 3) {
-        lowerMod = lowerMod * SYSTEMIC_FATIGUE_MODIFIER;
-      }
-      lower = lower + lowerMod;
-    }
-  }
+  // for (let i = 0; i < list.length; i++) {
+  //   if (PUSH_MUSCLES.includes(list[i].muscle)) {
+  //     push = push + RANK_WEIGHTS[i];
+  //   } else if (PULL_MUSCLES.includes(list[i].muscle)) {
+  //     pull = pull + RANK_WEIGHTS[i];
+  //   } else if (PUSH_AND_PULL_MUSCLES.includes(list[i].muscle)) {
+  //     let split = Math.round(RANK_WEIGHTS[i] / 2);
+  //     push = push + split;
+  //     pull = pull + split;
+  //   } else if (LOWER_MUSCLES.includes(list[i].muscle)) {
+  //     let lowerMod = Math.round(RANK_WEIGHTS[i] * LOWER_MODIFIER);
+  //     if (list[i].muscle === "quads" && i < 3) {
+  //       lowerMod = lowerMod * SYSTEMIC_FATIGUE_MODIFIER;
+  //     }
+  //     lower = lower + lowerMod;
+  //   }
+  // }
+  const split = [...INITIAL_SPLIT];
+  const { upper, lower, push, pull, full, off } = determineOptimalSessionSplits(
+    totalSessions,
+    list
+  );
 
-  const _split = determineWorkoutSplit(push, pull, lower, totalSessions, [
-    ...split,
-  ]);
+  const _split = distributeSessionsAmongWeek(
+    totalSessions,
+    split,
+    lower,
+    upper,
+    push,
+    pull,
+    full,
+    off
+  );
+
+  // const _split = determineWorkoutSplit(push, pull, lower, totalSessions, [
+  //   ...split,
+  // ]);
 
   // const _sessions = getSessionTotals(totalSessions, push, pull, lower);
 
@@ -870,8 +908,7 @@ export default function useEverythingLol() {
   useEffect(() => {
     const _split = initializePrioritizedTrainingWeek(
       musclePriority,
-      totalSessions,
-      [...INITIAL_SPLIT]
+      totalSessions
     );
 
     const _hardcodedSessions = getTrainingSplit(
@@ -911,7 +948,9 @@ export default function useEverythingLol() {
   };
 
   const handleUpdateMuscleList = (items: MusclePriorityType[]) => {
-    setMusclePriority(items);
+    const update_items = updateMuscleListSets(items, split);
+    console.log(items, update_items, "TEST: ARE THESE CHANIGN???/");
+    setMusclePriority(update_items);
   };
 
   return {

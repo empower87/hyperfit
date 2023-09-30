@@ -205,26 +205,22 @@ function SelectExercise({
   };
 
   return (
-    <select className={bgColor + " w-full"} onChange={handleSelectChange}>
+    <select
+      className={bgColor + " w-full"}
+      onChange={handleSelectChange}
+      defaultValue={currentValue}
+    >
       {group === currentValue
         ? groups.map((option) => {
             return (
-              <option
-                key={option}
-                value={option}
-                selected={option === currentValue ? true : false}
-              >
+              <option key={option} value={option}>
                 {option}
               </option>
             );
           })
         : exercises.map((option) => {
             return (
-              <option
-                key={option.name}
-                value={option.name}
-                selected={option.name === currentValue ? true : false}
-              >
+              <option key={option.name} value={option.name}>
                 {option.name}
               </option>
             );

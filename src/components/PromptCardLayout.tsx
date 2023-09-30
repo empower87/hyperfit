@@ -90,12 +90,12 @@ export const FrequencySelect = ({
 
 export default function PromptCardLayout({ title, children }: PromptCardProps) {
   return (
-    <div className="flex h-1/4 w-full items-end justify-center">
+    <div className="flex h-1/5 w-full items-end justify-center">
       <div
         className="flex flex-col rounded border-2 border-slate-500"
         style={{ height: "94%", width: "92%" }}
       >
-        <div className="h-6 w-full rounded-t-sm bg-slate-700">
+        <div className="flex h-6 w-full items-center rounded-t-sm bg-slate-700">
           <h2 className="ml-1 p-1 text-white">{title}</h2>
         </div>
         {children}
