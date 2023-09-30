@@ -7,6 +7,7 @@ import { MesocycleLayout, MesocycleTable } from "./Mesocycle";
 type TrainingBlockProps = {
   hardCodedSessions: [SplitType, SplitType][];
   trainingBlock: SessionDayType[][];
+  split: SessionDayType[];
 };
 
 type TestingAlgorithmUIType = {
@@ -103,6 +104,7 @@ const TestingCard = ({
 export default function TrainingBlock({
   hardCodedSessions,
   trainingBlock,
+  split,
 }: TrainingBlockProps) {
   const [algorithmicSessions, setAlgorithmicSessions] = useState<
     [SplitType, SplitType][]
@@ -110,11 +112,11 @@ export default function TrainingBlock({
 
   useEffect(() => {
     const list: [SplitType, SplitType][] = [];
-    for (let i = 0; i < trainingBlock[2]?.length; i++) {
-      list.push(trainingBlock[2][i].sessions);
+    for (let i = 0; i < split.length; i++) {
+      list.push(split[i].sessions);
     }
     setAlgorithmicSessions(list);
-  }, [trainingBlock]);
+  }, [split]);
 
   return (
     <div className="flex flex-col">

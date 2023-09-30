@@ -1,4 +1,5 @@
-import useTrainingBlock from "~/hooks/useTrainingBlockTest";
+import { MusclePriorityType, SessionDayType } from "~/pages";
+import useTrainingBlock from "~/z-unused/useTrainingBlockTest";
 
 const LayoutHeaderCell = ({
   name,

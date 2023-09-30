@@ -2,12 +2,7 @@ import { useEffect, useState } from "react";
 import { getExercise } from "~/constants/exercises";
 import { MEV_RANK, MRV_RANK } from "~/constants/prioritizeRanks";
 import { UPPER_MUSCLES } from "~/constants/workoutSplits";
-import {
-  MusclePriorityType,
-  SessionDayType,
-  SessionType,
-  SplitType,
-} from "~/pages";
+import { MusclePriorityType, SessionDayType, SplitType } from "~/pages";
 import { getMuscleData } from "~/utils/getMuscleData";
 import { getPushPosition } from "./usePrioritizeMuscles";
 
@@ -43,7 +38,7 @@ const exercise: ExerciseType = {
 
 const getIt = (
   index: number,
-  split: SessionType[],
+  split: SessionDayType[],
   name: string,
   mesoProgress: number,
   key: VolumeKey
@@ -75,7 +70,7 @@ const getIt = (
           ...exercise,
           rank: volume_landmark,
           sets: splitVol[0],
-          session: split[i] ? split[i].day : 1,
+          session: split[i].sessionNum !== 0 ? split[i].sessionNum : 1,
           group: data.name,
           exercise: getExercise(data.name, count).name,
         },
@@ -83,7 +78,7 @@ const getIt = (
           ...exercise,
           rank: volume_landmark,
           sets: splitVol[1],
-          session: split[i] ? split[i].day : 1,
+          session: split[i].sessionNum !== 0 ? split[i].sessionNum : 1,
           group: data.name,
           exercise: getExercise(data.name, count + 1).name,
         }
@@ -94,7 +89,7 @@ const getIt = (
         ...exercise,
         rank: volume_landmark,
         sets: splitVol[0],
-        session: split[i] ? split[i].day : 1,
+        session: split[i].sessionNum !== 0 ? split[i].sessionNum : 1,
         group: data.name,
         exercise: getExercise(data.name, count).name,
       });
@@ -107,7 +102,7 @@ const getIt = (
 };
 
 const doIt = (
-  split: SessionType[],
+  split: SessionDayType[],
   prog: number[],
   totalSessions: number,
   obj: MuscleTypeForTable
@@ -124,7 +119,10 @@ const doIt = (
 
   for (let i = 0; i < split.length; i++) {
     if (decrement <= 0) exercisesForSessions.push(0);
-    else if (split[i].split === sessions || split[i].split === "full") {
+    else if (
+      split[i].sessions[0] === sessions ||
+      split[i].sessions[0] === "full"
+    ) {
       exercisesForSessions.push(obj.exercises[iterator]);
       iterator++;
       decrement--;
@@ -142,7 +140,7 @@ export type VolumeKey =
   | "mv_progression_matrix";
 
 const getMesocycle = (
-  split: SessionType[],
+  split: SessionDayType[],
   list: MusclePriorityType[],
   mesoNum: number
 ) => {
@@ -165,7 +163,7 @@ const getMesocycle = (
     for (let j = 0; j < meso.length; j++) {
       let sets = newMeso1[j];
       if (typeof sets !== "number" && typeof sets !== "undefined") {
-        meso[j] = { ...meso[j], sets: [...meso[j].sets, sets] };
+        // meso[j] = { ...meso[j], sets: [...meso[j].sets, sets] };
       }
     }
   }
@@ -174,12 +172,12 @@ const getMesocycle = (
 };
 
 export default function useTrainingBlock(
-  split: SessionType[],
+  split: SessionDayType[],
   list: MusclePriorityType[],
   totalSessions: [number, number],
   splitTest: SessionDayType[]
 ) {
-  const [trainingBlock, setTrainingBlock] = useState<SessionType[][]>([]);
+  const [trainingBlock, setTrainingBlock] = useState<SessionDayType[][]>([]);
   const [testSplit, setTestSplit] = useState<[SplitType, SplitType][]>([]);
 
   useEffect(() => {
@@ -193,18 +191,6 @@ export default function useTrainingBlock(
 
     setTrainingBlock([meso1, meso2, meso3]);
   }, [split, list, totalSessions]);
-
-  // useEffect(() => {
-  //   let meso1 = getMesocycle([...split], list, 0);
-  //   let meso2 = getMesocycle([...split], list, 1);
-  //   let meso3 = getMesocycle([...split], list, 2);
-
-  //   const data = getPushPosition(list, totalSessions, splitTest);
-  //   const testData = data.map((each) => each.sessions);
-  //   setTestSplit(testData);
-
-  //   setTrainingBlock([meso1, meso2, meso3]);
-  // }, [split, list, totalSessions]);
 
   return {
     trainingBlock,

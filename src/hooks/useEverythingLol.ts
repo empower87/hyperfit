@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useReducer, useState } from "react";
 import { getExercise } from "~/constants/exercises";
 import { MEV_RANK, MRV_RANK } from "~/constants/prioritizeRanks";
 import {
@@ -8,15 +8,9 @@ import {
   PUSH_MUSCLES,
   UPPER_MUSCLES,
 } from "~/constants/workoutSplits";
-import {
-  MUSCLE_PRIORITY_LIST,
-  MusclePriorityType,
-  SessionDayType,
-  SplitType,
-} from "~/pages";
+import { MusclePriorityType, SessionDayType, SplitType } from "~/pages";
 import { getMuscleData } from "~/utils/getMuscleData";
 import { getNextSession } from "~/utils/getNextSession";
-import { getTrainingSplit } from "~/utils/getTrainingSplit";
 import { pushPullLowerFrequencyMax } from "./usePrioritizeMuscles";
 
 export type ExerciseType = {
@@ -238,6 +232,104 @@ const determineOptimalSessionSplits = (
     pull: pullSessions,
     off: offSessions,
   };
+};
+
+const updateWeekWithSessionSplits = (
+  sessions: [number, number],
+  split: SessionDayType[],
+  lowerSessions: number,
+  upperSessions: number,
+  pushSessions: number,
+  pullSessions: number,
+  fullSessions: number,
+  offSessions: number
+) => {
+  let first_sessions = sessions[0];
+  let second_sessions = sessions[1];
+
+  let update_split = initializeOnOffDays(first_sessions, [...split]);
+  // let update_week = initTrainingDays(first_sessions, [...week]);
+
+  let counter = {
+    lower: lowerSessions,
+    upper: upperSessions,
+    push: pushSessions,
+    pull: pullSessions,
+    full: fullSessions,
+    off: offSessions,
+  };
+
+  const totalLower = lowerSessions + fullSessions;
+  const totalPush = pushSessions + upperSessions + fullSessions;
+  const totalPull = pullSessions + upperSessions + fullSessions;
+
+  for (let i = 0; i < update_split.length; i++) {
+    let isTrainingDay = update_split[i].sessionNum > 0 ? true : false;
+    let prevSessionOne = update_split[i - 1]?.sessions[0];
+
+    if (isTrainingDay) {
+      const newCurrentSessionOneValue = getNextSession(
+        counter.upper,
+        counter.lower,
+        counter.push,
+        counter.pull,
+        counter.full,
+        0,
+        totalLower,
+        totalPush,
+        totalPull,
+        prevSessionOne
+      );
+
+      update_split[i] = {
+        ...update_split[i],
+        sessions: [newCurrentSessionOneValue, update_split[i].sessions[1]],
+      };
+
+      counter = {
+        ...counter,
+        [newCurrentSessionOneValue]: counter[newCurrentSessionOneValue] - 1,
+      };
+    }
+  }
+
+  if (second_sessions === 0) return update_split;
+
+  for (let j = 0; j < update_split.length; j++) {
+    let isTrainingDay = update_split[j].sessionNum > 0 ? true : false;
+    let sessionOne = update_split[j].sessions[0];
+
+    let prevSessions = update_split[j - 1]?.sessions;
+    let nextSessions = update_split[j + 1]?.sessions;
+
+    if (isTrainingDay) {
+      const newSession = getNextSession(
+        counter.upper,
+        counter.lower,
+        counter.push,
+        counter.pull,
+        counter.full,
+        counter.off,
+        totalLower,
+        totalPush,
+        totalPull,
+        sessionOne,
+        prevSessions,
+        nextSessions
+      );
+
+      update_split[j] = {
+        ...update_split[j],
+        sessions: [update_split[j].sessions[0], newSession],
+      };
+
+      counter = {
+        ...counter,
+        [newSession]: counter[newSession] - 1,
+      };
+    }
+  }
+  return update_split;
 };
 
 const distributeSessionsAmongWeek = (
@@ -579,6 +671,7 @@ const initializePrioritizedTrainingWeek = (
   //   }
   // }
   const split = [...INITIAL_SPLIT];
+  // const split = [...WEEK]
   const { upper, lower, push, pull, full, off } = determineOptimalSessionSplits(
     totalSessions,
     list
@@ -601,13 +694,13 @@ const initializePrioritizedTrainingWeek = (
 
   // const _sessions = getSessionTotals(totalSessions, push, pull, lower);
 
-  const _list = updateMuscleListSets(list, _split);
+  // const _list = updateMuscleListSets(list, _split);
 
-  const meso_one = distributeExercisesAmongSplit(_list, _split, 0);
-  const meso_two = distributeExercisesAmongSplit(_list, _split, 1);
-  const meso_three = distributeExercisesAmongSplit(_list, _split, 2);
+  // const meso_one = distributeExercisesAmongSplit(_list, _split, 0);
+  // const meso_two = distributeExercisesAmongSplit(_list, _split, 1);
+  // const meso_three = distributeExercisesAmongSplit(_list, _split, 2);
 
-  return [meso_one, meso_two, meso_three];
+  // return [meso_one, meso_two, meso_three];
 
   // return _split;
 
@@ -893,77 +986,6 @@ export const updateMuscleListSets = (
   return items;
 };
 
-export default function useEverythingLol() {
-  const [totalSessions, setTotalSessions] = useState<[number, number]>([3, 0]);
-  const [musclePriority, setMusclePriority] = useState<MusclePriorityType[]>([
-    ...MUSCLE_PRIORITY_LIST,
-  ]);
-
-  const [split, setSplit] = useState<SessionDayType[]>([]);
-  const [trainingBlock, setTrainingBlock] = useState<SessionDayType[][]>([]);
-  const [hardCodedSessions, setHardCodedSessions] = useState<
-    [SplitType, SplitType][]
-  >([]);
-
-  useEffect(() => {
-    const _split = initializePrioritizedTrainingWeek(
-      musclePriority,
-      totalSessions
-    );
-
-    const _hardcodedSessions = getTrainingSplit(
-      musclePriority,
-      totalSessions[0],
-      totalSessions[1]
-    );
-
-    setSplit(_split[2]);
-    setTrainingBlock(_split);
-    // setSessions(_split);
-    setHardCodedSessions(_hardcodedSessions);
-  }, [totalSessions, musclePriority]);
-
-  // useEffect(() => {
-  //   const block = getTrainingBlock(musclePriority, split)
-  //   setTrainingBlock(block)
-  // }, [split])
-
-  // useEffect(() => {
-  //   if (!sessions) return;
-  //   const _list = updateMuscleListSets(musclePriority, sessions);
-  //   setMusclePriority(_list);
-  // }, [sessions]);
-
-  useEffect(() => {
-    console.log(
-      split,
-      musclePriority,
-      trainingBlock,
-      "TEST: Use Everything lol"
-    );
-  }, [split, musclePriority, trainingBlock]);
-
-  const handleFrequencyChange = (first: number, second: number) => {
-    setTotalSessions([first, second]);
-  };
-
-  const handleUpdateMuscleList = (items: MusclePriorityType[]) => {
-    const update_items = updateMuscleListSets(items, split);
-    console.log(items, update_items, "TEST: ARE THESE CHANIGN???/");
-    setMusclePriority(update_items);
-  };
-
-  return {
-    split,
-    trainingBlock,
-    totalSessions,
-    handleFrequencyChange,
-    musclePriority,
-    handleUpdateMuscleList,
-    hardCodedSessions,
-  };
-}
-
 const INITIAL_SPLIT: SessionDayType[] = [
   {
     day: "Sunday",
@@ -1022,3 +1044,240 @@ const INITIAL_SPLIT: SessionDayType[] = [
     sessions: ["off", "off"],
   },
 ];
+
+type State = {
+  total_sessions: [number, number];
+  list: MusclePriorityType[];
+  split: SessionDayType[];
+  training_block: SessionDayType[][];
+};
+
+export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
+  {
+    id: "back-002",
+    rank: 1,
+    muscle: "back",
+    sets: [10, 20, 25, 30, 35, 35, 35],
+    mesoProgression: [0, 0, 0],
+    exercises: [],
+  },
+  {
+    id: "delts_side-008",
+    rank: 2,
+    muscle: "delts_side",
+    sets: [12, 25, 30, 35, 40, 40, 40],
+    mesoProgression: [0, 0, 0],
+    exercises: [],
+  },
+  {
+    id: "triceps-014",
+    rank: 3,
+    muscle: "triceps",
+    sets: [8, 16, 20, 25, 35, 35, 35],
+    mesoProgression: [0, 0, 0],
+    exercises: [],
+  },
+  {
+    id: "hamstrings-011",
+    rank: 4,
+    muscle: "hamstrings",
+    sets: [6, 12, 16, 18, 18, 18, 18],
+    mesoProgression: [0, 0, 0],
+    exercises: [],
+  },
+  {
+    id: "quads-012",
+    rank: 5,
+    muscle: "quads",
+    sets: [8, 8, 8, 8, 8, 8, 8],
+    mesoProgression: [0, 0, 0],
+    exercises: [],
+  },
+  {
+    id: "delts_rear-007",
+    rank: 6,
+    muscle: "delts_rear",
+    sets: [6, 6, 6, 6, 6, 6, 6],
+    mesoProgression: [0, 0, 0],
+    exercises: [],
+  },
+  {
+    id: "forearms-009",
+    rank: 7,
+    muscle: "forearms",
+    sets: [2, 2, 2, 2, 2, 2, 2],
+    mesoProgression: [0, 0, 0],
+    exercises: [],
+  },
+  {
+    id: "traps-013",
+    rank: 8,
+    muscle: "traps",
+    sets: [4, 4, 4, 4, 4, 4, 4],
+    mesoProgression: [0, 0, 0],
+    exercises: [],
+  },
+  {
+    id: "biceps-003",
+    rank: 9,
+    muscle: "biceps",
+    sets: [6, 6, 6, 6, 6, 6, 6],
+    mesoProgression: [0, 0, 0],
+    exercises: [],
+  },
+
+  {
+    id: "chest-005",
+    rank: 10,
+    muscle: "chest",
+    sets: [4, 4, 4, 4, 4, 4, 4],
+    mesoProgression: [0, 0, 0],
+    exercises: [],
+  },
+  {
+    id: "calves-004",
+    rank: 11,
+    muscle: "calves",
+    sets: [6, 6, 6, 6, 6, 6, 6],
+    mesoProgression: [0, 0, 0],
+    exercises: [],
+  },
+
+  {
+    id: "delts_front-006",
+    rank: 12,
+    muscle: "delts_front",
+    sets: [0, 0, 0, 0, 0, 0, 0],
+    mesoProgression: [0, 0, 0],
+    exercises: [],
+  },
+  {
+    id: "abs-001",
+    rank: 13,
+    muscle: "abs",
+    sets: [0, 0, 0, 0, 0, 0, 0],
+    mesoProgression: [0, 0, 0],
+    exercises: [],
+  },
+  {
+    id: "glutes-010",
+    rank: 14,
+    muscle: "glutes",
+    sets: [0, 0, 0, 0, 0, 0, 0],
+    mesoProgression: [0, 0, 0],
+    exercises: [],
+  },
+];
+
+const INITIAL_STATE: State = {
+  total_sessions: [3, 0],
+  list: [...MUSCLE_PRIORITY_LIST],
+  split: [...INITIAL_SPLIT],
+  training_block: [[...INITIAL_SPLIT], [...INITIAL_SPLIT], [...INITIAL_SPLIT]],
+};
+
+type Action = {
+  type: "UPDATE_SESSIONS" | "UPDATE_LIST" | "GET_TRAINING_BLOCK";
+  payload?: {
+    new_sessions?: [number, number];
+    new_list?: MusclePriorityType[];
+  };
+};
+
+function dataReducer(state: State, action: Action) {
+  switch (action.type) {
+    case "UPDATE_SESSIONS":
+      if (!action.payload || !action.payload.new_sessions) return state;
+      let new_sessions = action.payload.new_sessions;
+      const sessions = determineOptimalSessionSplits(new_sessions, state.list);
+      const new_split = updateWeekWithSessionSplits(
+        new_sessions,
+        state.split,
+        sessions.lower,
+        sessions.upper,
+        sessions.push,
+        sessions.pull,
+        sessions.full,
+        sessions.off
+      );
+      const updated_list = updateMuscleListSets(state.list, new_split);
+      return {
+        ...state,
+        total_sessions: new_sessions,
+        list: updated_list,
+        split: new_split,
+      };
+    case "UPDATE_LIST":
+      if (!action.payload || !action.payload.new_list) return state;
+      let new_list = action.payload.new_list;
+      const sessions_list = determineOptimalSessionSplits(
+        state.total_sessions,
+        new_list
+      );
+      const new_split_list = updateWeekWithSessionSplits(
+        state.total_sessions,
+        state.split,
+        sessions_list.lower,
+        sessions_list.upper,
+        sessions_list.push,
+        sessions_list.pull,
+        sessions_list.full,
+        sessions_list.off
+      );
+      const updated_list_list = updateMuscleListSets(new_list, new_split_list);
+      return { ...state, list: updated_list_list, split: new_split_list };
+    case "GET_TRAINING_BLOCK":
+      const block: SessionDayType[][] = getTrainingBlock(
+        state.list,
+        state.split
+      );
+      return { ...state, training_block: block };
+    default:
+      return state;
+  }
+}
+
+export default function useEverythingLol() {
+  const [{ total_sessions, list, split, training_block }, dispatch] =
+    useReducer(dataReducer, INITIAL_STATE);
+
+  const [trainingBlock, setTrainingBlock] = useState<SessionDayType[][]>([]);
+  const [hardCodedSessions, setHardCodedSessions] = useState<
+    [SplitType, SplitType][]
+  >([]);
+
+  useEffect(() => {
+    dispatch({ type: "GET_TRAINING_BLOCK" });
+  }, [split]);
+
+  const handleFrequencyChange = (first: number, second: number) => {
+    dispatch({
+      type: "UPDATE_SESSIONS",
+      payload: { new_sessions: [first, second] },
+    });
+  };
+
+  useEffect(() => {
+    console.log(
+      split,
+      list,
+      total_sessions,
+      training_block,
+      "TEST: OMG IF THIS WORKS"
+    );
+  }, [total_sessions, list, split, training_block]);
+
+  const handleUpdateMuscleList = useCallback((items: MusclePriorityType[]) => {
+    dispatch({ type: "UPDATE_LIST", payload: { new_list: items } });
+  }, []);
+
+  return {
+    split,
+    trainingBlock,
+    total_sessions,
+    musclePriority: list,
+    handleUpdateMuscleList,
+    handleFrequencyChange,
+    hardCodedSessions,
+  };
+}
