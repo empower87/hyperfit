@@ -5,6 +5,7 @@ import PrioritySectionLayout from "~/components/PrioritySectionLayout";
 import PromptCardLayout, {
   FrequencySelectPrompts,
 } from "~/components/PromptCardLayout";
+import TestingWeeklySplit from "~/components/WeeklySplit/TrainingWeek";
 import useEverythingLol, { ExerciseType } from "~/hooks/useEverythingLol";
 
 export type MusclePriorityType = {
@@ -38,11 +39,11 @@ export type SessionDayType = {
 const Home: NextPage = () => {
   const {
     split,
-    trainingBlock,
+    training_block,
+    total_sessions,
     musclePriority,
     handleUpdateMuscleList,
     handleFrequencyChange,
-    hardCodedSessions,
   } = useEverythingLol();
 
   return (
@@ -74,11 +75,13 @@ const Home: NextPage = () => {
               <h2 className="ml-1 p-1 text-white">Training Block</h2>
             </div>
 
-            <TrainingBlock
-              hardCodedSessions={hardCodedSessions}
-              trainingBlock={trainingBlock}
+            <TestingWeeklySplit
               split={split}
+              list={musclePriority}
+              total_sessions={total_sessions}
             />
+
+            <TrainingBlock trainingBlock={training_block} />
           </div>
         </div>
       </div>

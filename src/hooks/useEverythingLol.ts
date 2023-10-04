@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useReducer, useState } from "react";
+import { useCallback, useEffect, useReducer } from "react";
 import { getExercise } from "~/constants/exercises";
 import { MEV_RANK, MRV_RANK } from "~/constants/prioritizeRanks";
 import {
@@ -1241,21 +1241,9 @@ export default function useEverythingLol() {
   const [{ total_sessions, list, split, training_block }, dispatch] =
     useReducer(dataReducer, INITIAL_STATE);
 
-  const [trainingBlock, setTrainingBlock] = useState<SessionDayType[][]>([]);
-  const [hardCodedSessions, setHardCodedSessions] = useState<
-    [SplitType, SplitType][]
-  >([]);
-
   useEffect(() => {
     dispatch({ type: "GET_TRAINING_BLOCK" });
   }, [split]);
-
-  const handleFrequencyChange = (first: number, second: number) => {
-    dispatch({
-      type: "UPDATE_SESSIONS",
-      payload: { new_sessions: [first, second] },
-    });
-  };
 
   useEffect(() => {
     console.log(
@@ -1267,17 +1255,23 @@ export default function useEverythingLol() {
     );
   }, [total_sessions, list, split, training_block]);
 
+  const handleFrequencyChange = (first: number, second: number) => {
+    dispatch({
+      type: "UPDATE_SESSIONS",
+      payload: { new_sessions: [first, second] },
+    });
+  };
+
   const handleUpdateMuscleList = useCallback((items: MusclePriorityType[]) => {
     dispatch({ type: "UPDATE_LIST", payload: { new_list: items } });
   }, []);
 
   return {
     split,
-    trainingBlock,
+    training_block,
     total_sessions,
     musclePriority: list,
     handleUpdateMuscleList,
     handleFrequencyChange,
-    hardCodedSessions,
   };
 }
