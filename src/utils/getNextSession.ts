@@ -1,4 +1,4 @@
-import { SplitType } from "~/pages";
+import { SplitType } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
 
 export const getNextSession = (
   upper: number,

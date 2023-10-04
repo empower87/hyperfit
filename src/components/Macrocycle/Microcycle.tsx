@@ -1,7 +1,9 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { getGrouplist } from "~/constants/exercises";
-import { ExerciseType } from "~/hooks/useEverythingLol";
-import { SplitType } from "~/pages";
+import {
+  ExerciseType,
+  SplitType,
+} from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
 
 type HeadType = "week 1" | "week 2" | "week 3" | "week 4" | "deload";
 
@@ -271,28 +273,28 @@ function InputTD({
   );
 }
 
-const getIndices = (exercises: ExerciseType[][]) => {
-  let addIndices = 0;
-
-  let indices = [];
-  for (let i = 0; i < exercises.length; i++) {
-    if (exercises[i].length > 1) {
-      indices.push([addIndices + 1, addIndices + 2]);
-      addIndices = addIndices + 2;
-    } else {
-      indices.push([addIndices + 1]);
-      addIndices = addIndices + 1;
-    }
-  }
-  return indices;
-};
-
 const WEEK_1 = [20, 30, 30, 20];
 const WEEK_2PLUS = [30, 40, 30];
 const SESSION = [5, 15, 50, 15, 15];
 
 export default function Microcycle({ head, body, bgColor }: TableCellProps) {
   const { heads, exercises } = useMesocycleProgression(head, body);
+
+  const getIndices = useCallback((exercises: ExerciseType[][]) => {
+    let addIndices = 0;
+
+    let indices = [];
+    for (let i = 0; i < exercises.length; i++) {
+      if (exercises[i].length > 1) {
+        indices.push([addIndices + 1, addIndices + 2]);
+        addIndices = addIndices + 2;
+      } else {
+        indices.push([addIndices + 1]);
+        addIndices = addIndices + 1;
+      }
+    }
+    return indices;
+  }, []);
 
   const indices = getIndices(exercises);
   const widths =
@@ -343,11 +345,11 @@ const TR = ({
     <>
       {exercises.map((each, i) => {
         const hasBorder = i === exercises.length - 1 ? true : false;
-        const sessions = ["upper", "lower", "full"];
+        const SESSIONS = ["upper", "lower", "full", "push", "pull"];
 
-        if (sessions.includes(head)) {
+        if (SESSIONS.includes(head)) {
           return (
-            <tr className="leading-none">
+            <tr key={`${each.id}_${i}`} className="leading-none">
               <TD
                 value={`${index[i]}`}
                 rank={each.rank}
@@ -379,7 +381,7 @@ const TR = ({
           );
         } else if (head === "week 1") {
           return (
-            <tr className="leading-none">
+            <tr key={`${each.id}_${i}`} className="leading-none">
               <TD
                 value={each.sets}
                 rank={each.rank}
@@ -408,7 +410,7 @@ const TR = ({
           );
         } else {
           return (
-            <tr className="leading-none">
+            <tr key={`${each.id}_${i}`} className="leading-none">
               <TD
                 value={each.sets}
                 rank={each.rank}

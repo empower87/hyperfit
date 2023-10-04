@@ -1,5 +1,9 @@
 import { useEffect, useState } from "react";
-import { MusclePriorityType, SessionDayType, SplitType } from "~/pages";
+import {
+  MusclePriorityType,
+  SessionDayType,
+  SplitType,
+} from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
 import { getTrainingSplit } from "~/utils/getTrainingSplit";
 
 type TestingAlgorithmUIType = {
@@ -34,7 +38,13 @@ const TestingAlgorithmUI = ({
       <p className="text-xs font-bold">{title}</p>
       <div className="flex border border-slate-500">
         {updateSplit.map((each, index) => {
-          return <TestingCard session={each} index={index + 1} />;
+          return (
+            <TestingCard
+              key={`${each[0]}_${each[1]}_${index}`}
+              session={each}
+              index={index + 1}
+            />
+          );
         })}
       </div>
     </div>

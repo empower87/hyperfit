@@ -6,45 +6,17 @@ import PromptCardLayout, {
   FrequencySelectPrompts,
 } from "~/components/PromptCardLayout";
 import TestingWeeklySplit from "~/components/WeeklySplit/TrainingWeek";
-import useEverythingLol, { ExerciseType } from "~/hooks/useEverythingLol";
-
-export type MusclePriorityType = {
-  id: string;
-  rank: number;
-  muscle: string;
-  sets: number[];
-  mesoProgression: number[];
-  exercises: ExerciseType[][];
-};
-
-type DayType =
-  | "Sunday"
-  | "Monday"
-  | "Tuesday"
-  | "Wednesday"
-  | "Thursday"
-  | "Friday"
-  | "Saturday";
-export type SplitType = "upper" | "lower" | "push" | "pull" | "full" | "off";
-
-export type SessionDayType = {
-  day: DayType;
-  sessionNum: number;
-  sets: [ExerciseType[][], ExerciseType[][]];
-  totalSets: [number, number];
-  maxSets: [number, number];
-  sessions: [SplitType, SplitType];
-};
+import useWeeklySessionSplit from "~/hooks/useWeeklySessionSplit/useWeeklySessionSplit";
 
 const Home: NextPage = () => {
   const {
     split,
     training_block,
     total_sessions,
-    musclePriority,
+    prioritized_muscle_list,
     handleUpdateMuscleList,
     handleFrequencyChange,
-  } = useEverythingLol();
+  } = useWeeklySessionSplit();
 
   return (
     <div className="flex h-screen w-full flex-col">
@@ -60,7 +32,7 @@ const Home: NextPage = () => {
 
           <PrioritySectionLayout>
             <PrioritizeFocus
-              musclePriority={musclePriority}
+              musclePriority={prioritized_muscle_list}
               updateMusclePriority={handleUpdateMuscleList}
             />
           </PrioritySectionLayout>
@@ -77,7 +49,7 @@ const Home: NextPage = () => {
 
             <TestingWeeklySplit
               split={split}
-              list={musclePriority}
+              list={prioritized_muscle_list}
               total_sessions={total_sessions}
             />
 

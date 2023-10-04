@@ -1,6 +1,9 @@
 import { ReactNode } from "react";
-import { ExerciseType } from "~/hooks/useEverythingLol";
-import { SessionDayType, SplitType } from "~/pages";
+import {
+  ExerciseType,
+  SessionDayType,
+  SplitType,
+} from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
 import Microcycle from "./Microcycle";
 
 type MesocycleTableProps = {
