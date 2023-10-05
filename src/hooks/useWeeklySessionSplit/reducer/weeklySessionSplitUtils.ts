@@ -429,7 +429,7 @@ function updateMuscleListSets(
       const getFrequencyProgression = (sessions: number) => {
         switch (sessions) {
           case 6:
-            return [3, 5, 6];
+            return [4, 5, 6];
           case 5:
             return [3, 4, 5];
           case 4:
@@ -472,7 +472,9 @@ function updateMuscleListSets(
       }
     }
 
-    let matrix = muscleData[key][matrixIndex];
+    let matrix =
+      muscleData[key][matrixIndex] ??
+      muscleData[key][muscleData[key].length - 1];
     let exercises: ExerciseType[][] = [];
 
     const exercise: ExerciseType = {
@@ -494,8 +496,8 @@ function updateMuscleListSets(
       const splitVol = matrix[j].split("-").map((each) => parseInt(each));
       const exercise_one = getExercise(muscleData.name, count).name;
       const exercise_two = getExercise(muscleData.name, count + 1).name;
-      const id_one = `${i}${j + 1}_${exercise_one}`;
-      const id_two = `${i}${j + 2}_${exercise_two}`;
+      const id_one = `${i}-${count + 1}_${exercise_one}`;
+      const id_two = `${i}-${count + 2}_${exercise_two}`;
 
       if (splitVol.length > 1) {
         exerciseList.push(
@@ -542,103 +544,6 @@ function updateMuscleListSets(
   }
 
   return items;
-}
-
-function distributeSessionsAmongWeek(
-  sessions: [number, number],
-  split: SessionDayType[],
-  lowerSessions: number,
-  upperSessions: number,
-  pushSessions: number,
-  pullSessions: number,
-  fullSessions: number,
-  offSessions: number
-) {
-  let first_sessions = sessions[0];
-  let second_sessions = sessions[1];
-
-  let update_split = initializeOnOffDays(first_sessions, [...split]);
-
-  let counter = {
-    lower: lowerSessions,
-    upper: upperSessions,
-    push: pushSessions,
-    pull: pullSessions,
-    full: fullSessions,
-    off: offSessions,
-  };
-
-  const totalLower = lowerSessions + fullSessions;
-  const totalPush = pushSessions + upperSessions + fullSessions;
-  const totalPull = pullSessions + upperSessions + fullSessions;
-
-  for (let i = 0; i < update_split.length; i++) {
-    let isTrainingDay = update_split[i].sessionNum > 0 ? true : false;
-    let prevSessionOne = update_split[i - 1]?.sessions[0];
-
-    if (isTrainingDay) {
-      const newCurrentSessionOneValue = getNextSession(
-        counter.upper,
-        counter.lower,
-        counter.push,
-        counter.pull,
-        counter.full,
-        0,
-        totalLower,
-        totalPush,
-        totalPull,
-        prevSessionOne
-      );
-
-      update_split[i] = {
-        ...update_split[i],
-        sessions: [newCurrentSessionOneValue, update_split[i].sessions[1]],
-      };
-
-      counter = {
-        ...counter,
-        [newCurrentSessionOneValue]: counter[newCurrentSessionOneValue] - 1,
-      };
-    }
-  }
-
-  if (second_sessions === 0) return update_split;
-
-  for (let j = 0; j < update_split.length; j++) {
-    let isTrainingDay = update_split[j].sessionNum > 0 ? true : false;
-    let sessionOne = update_split[j].sessions[0];
-
-    let prevSessions = update_split[j - 1]?.sessions;
-    let nextSessions = update_split[j + 1]?.sessions;
-
-    if (isTrainingDay) {
-      const newSession = getNextSession(
-        counter.upper,
-        counter.lower,
-        counter.push,
-        counter.pull,
-        counter.full,
-        counter.off,
-        totalLower,
-        totalPush,
-        totalPull,
-        sessionOne,
-        prevSessions,
-        nextSessions
-      );
-
-      update_split[j] = {
-        ...update_split[j],
-        sessions: [update_split[j].sessions[0], newSession],
-      };
-
-      counter = {
-        ...counter,
-        [newSession]: counter[newSession] - 1,
-      };
-    }
-  }
-  return update_split;
 }
 
 const getTrainingBlock = (
@@ -728,14 +633,32 @@ const distributeExercisesAmongSplit = (
         const canAddExercise = handleSession(sessionOne, session);
 
         if (canAddExercise && exercises.length) {
-          meso[j].sets[0].push(exercises[0]);
+          let add_exercises = exercises[0];
+
+          for (let k = 0; k < add_exercises.length; k++) {
+            add_exercises[k] = {
+              ...add_exercises[k],
+              session: meso[j].sessionNum,
+            };
+          }
+
+          meso[j].sets[0].push(add_exercises);
           exercises.shift();
         }
 
         const canAddSecondExercise = handleSession(sessionTwo, session);
 
         if (canAddSecondExercise && exercises.length) {
-          meso[j].sets[1].push(exercises[0]);
+          let add_exercises = exercises[0];
+
+          for (let k = 0; k < add_exercises.length; k++) {
+            add_exercises[k] = {
+              ...add_exercises[k],
+              session: meso[j].sessionNum,
+            };
+          }
+
+          meso[j].sets[1].push(add_exercises);
           exercises.shift();
         }
       }
@@ -743,10 +666,37 @@ const distributeExercisesAmongSplit = (
   }
   return meso;
 };
-export {
-  determineOptimalSessionSplits,
-  distributeSessionsAmongWeek,
-  getTrainingBlock,
-  updateMuscleListSets,
-  updateWeekWithSessionSplits,
-};
+
+function updateReducerStateHandler(
+  total_sessions: [number, number],
+  list: MusclePriorityType[],
+  split: SessionDayType[]
+) {
+  const sessions_list = determineOptimalSessionSplits(total_sessions, list);
+
+  const new_split = updateWeekWithSessionSplits(
+    total_sessions,
+    split,
+    sessions_list.lower,
+    sessions_list.upper,
+    sessions_list.push,
+    sessions_list.pull,
+    sessions_list.full,
+    sessions_list.off
+  );
+
+  const updated_list = updateMuscleListSets(list, new_split);
+
+  const new_split_with_exercises = distributeExercisesAmongSplit(
+    updated_list,
+    new_split,
+    2
+  );
+
+  return {
+    list: updated_list,
+    split: new_split_with_exercises,
+  };
+}
+
+export { getTrainingBlock, updateReducerStateHandler };

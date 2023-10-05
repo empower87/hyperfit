@@ -1,8 +1,6 @@
 import {
-  determineOptimalSessionSplits,
   getTrainingBlock,
-  updateMuscleListSets,
-  updateWeekWithSessionSplits,
+  updateReducerStateHandler,
 } from "./weeklySessionSplitUtils";
 
 type DayType =
@@ -252,43 +250,34 @@ export default function weeklySessionSplitReducer(
     case "UPDATE_SESSIONS":
       if (!action.payload || !action.payload.new_sessions) return state;
       let new_sessions = action.payload.new_sessions;
-      const sessions = determineOptimalSessionSplits(new_sessions, state.list);
-      const new_split = updateWeekWithSessionSplits(
+
+      const updated_sessions = updateReducerStateHandler(
         new_sessions,
-        state.split,
-        sessions.lower,
-        sessions.upper,
-        sessions.push,
-        sessions.pull,
-        sessions.full,
-        sessions.off
+        state.list,
+        state.split
       );
-      const updated_list = updateMuscleListSets(state.list, new_split);
+
       return {
         ...state,
         total_sessions: new_sessions,
-        list: updated_list,
-        split: new_split,
+        list: updated_sessions.list,
+        split: updated_sessions.split,
       };
     case "UPDATE_LIST":
       if (!action.payload || !action.payload.new_list) return state;
       let new_list = action.payload.new_list;
-      const sessions_list = determineOptimalSessionSplits(
+
+      const updated_list = updateReducerStateHandler(
         state.total_sessions,
-        new_list
+        new_list,
+        state.split
       );
-      const new_split_list = updateWeekWithSessionSplits(
-        state.total_sessions,
-        state.split,
-        sessions_list.lower,
-        sessions_list.upper,
-        sessions_list.push,
-        sessions_list.pull,
-        sessions_list.full,
-        sessions_list.off
-      );
-      const updated_list_list = updateMuscleListSets(new_list, new_split_list);
-      return { ...state, list: updated_list_list, split: new_split_list };
+
+      return {
+        ...state,
+        list: updated_list.list,
+        split: updated_list.split,
+      };
     case "GET_TRAINING_BLOCK":
       const block: SessionDayType[][] = getTrainingBlock(
         state.list,
