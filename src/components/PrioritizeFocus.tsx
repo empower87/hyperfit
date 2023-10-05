@@ -6,7 +6,7 @@ import {
   DroppableProps,
 } from "react-beautiful-dnd";
 import { MEV_RANK, MRV_RANK } from "~/constants/prioritizeRanks";
-import { MusclePriorityType } from "~/pages";
+import { MusclePriorityType } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
 
 type PrioritizeFocusProps = {
   musclePriority: MusclePriorityType[];

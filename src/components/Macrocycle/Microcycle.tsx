@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { ReactNode, useCallback, useEffect, useState } from "react";
 import { getGrouplist } from "~/constants/exercises";
 import {
   ExerciseType,
@@ -11,6 +11,18 @@ type TableCellProps = {
   head: SplitType | HeadType;
   body: ExerciseType[][];
   bgColor: string;
+};
+
+type MesoProgressionRowType = {
+  id: string;
+  sessionNum: string;
+  group: string;
+  session: [number, string, string, string, string];
+  deload: [number, string, number, number];
+  week_one: [number, string, number, number];
+  week_two: [number, number, number];
+  week_three: [number, number, number];
+  week_four?: [number, number, number];
 };
 
 function useMesocycleProgression(
@@ -141,30 +153,30 @@ function TH({
 }
 
 function TD({
-  value,
+  children,
   rank,
   bottomBorder,
   center,
 }: {
-  value: string | number;
+  children: ReactNode;
   rank: "MRV" | "MEV" | "MV";
   bottomBorder: boolean;
   center?: "text-center";
 }) {
-  const bgColor =
-    rank === "MRV"
-      ? "bg-red-400"
-      : rank === "MEV"
-      ? "bg-orange-400"
-      : "bg-green-400";
+  // const bgColor =
+  //   rank === "MRV"
+  //     ? "bg-red-400"
+  //     : rank === "MEV"
+  //     ? "bg-orange-400"
+  //     : "bg-green-400";
   const border = bottomBorder ? " border-b-2 border-slate-300" : "";
   const _center = center ? " text-center" : "";
   return (
     <td
-      className={bgColor + border + _center + " truncate border-l-2 text-white"}
+      className={border + _center + " truncate border-l-2 text-white"}
       style={{ fontSize: "10px", height: "20px" }}
     >
-      {value}
+      {children}
     </td>
   );
 }
@@ -228,48 +240,6 @@ function SelectExercise({
             );
           })}
     </select>
-  );
-}
-
-function InputTD({
-  group,
-  value,
-  rank,
-  bottomBorder,
-  center,
-}: {
-  group: string;
-  value: string;
-  rank: "MRV" | "MEV" | "MV";
-  bottomBorder: boolean;
-  center?: "text-center";
-}) {
-  const bgColor =
-    rank === "MRV"
-      ? "bg-red-400"
-      : rank === "MEV"
-      ? "bg-orange-400"
-      : "bg-green-400";
-  const border = bottomBorder ? " border-b-2 border-slate-300" : "";
-  const _center = center ? " text-center" : "";
-  const [currentValue, setCurrentValue] = useState<string>(value);
-
-  const onChangeHandler = (value: string) => {
-    setCurrentValue(value);
-  };
-
-  return (
-    <td
-      className={bgColor + border + _center + " truncate border-l-2 text-white"}
-      style={{ fontSize: "10px", height: "20px" }}
-    >
-      <SelectExercise
-        group={group}
-        currentValue={value}
-        onChange={onChangeHandler}
-        bgColor={bgColor}
-      />
-    </td>
   );
 }
 
@@ -341,94 +311,110 @@ const TR = ({
   head: HeadType | SplitType;
   index: number[];
 }) => {
+  const onChangeHandler = (value: string) => {
+    console.log(value, "TR");
+  };
+
   return (
     <>
       {exercises.map((each, i) => {
         const hasBorder = i === exercises.length - 1 ? true : false;
         const SESSIONS = ["upper", "lower", "full", "push", "pull"];
 
+        const bgColor =
+          each.rank === "MRV"
+            ? "bg-red-400"
+            : each.rank === "MEV"
+            ? "bg-orange-400"
+            : "bg-green-400";
+
         if (SESSIONS.includes(head)) {
           return (
-            <tr key={`${each.id}_${i}`} className="leading-none">
-              <TD
-                value={`${index[i]}`}
-                rank={each.rank}
-                bottomBorder={hasBorder}
-              />
-              <InputTD
-                group={each.group}
-                value={`${each.group}`}
-                rank={each.rank}
-                bottomBorder={hasBorder}
-              />
-              <InputTD
-                group={each.group}
-                value={`${each.exercise}`}
-                rank={each.rank}
-                bottomBorder={hasBorder}
-              />
-              <TD
-                value={`dumbbell`}
-                rank={each.rank}
-                bottomBorder={hasBorder}
-              />
-              <TD
-                value={`straight`}
-                rank={each.rank}
-                bottomBorder={hasBorder}
-              />
+            <tr key={`${each.id}_${i}`} className={bgColor + " leading-none"}>
+              <TD rank={each.rank} bottomBorder={hasBorder}>
+                {index[i]}
+              </TD>
+              <TD rank={each.rank} bottomBorder={hasBorder}>
+                <SelectExercise
+                  group={each.group}
+                  currentValue={each.group}
+                  onChange={onChangeHandler}
+                  bgColor={bgColor}
+                />
+              </TD>
+              <TD rank={each.rank} bottomBorder={hasBorder}>
+                <SelectExercise
+                  group={each.group}
+                  currentValue={each.exercise}
+                  onChange={onChangeHandler}
+                  bgColor={bgColor}
+                />
+              </TD>
+              <TD rank={each.rank} bottomBorder={hasBorder}>
+                {`dumbbell`}
+              </TD>
+              <TD rank={each.rank} bottomBorder={hasBorder}>
+                {`straight`}
+              </TD>
             </tr>
           );
         } else if (head === "week 1") {
           return (
-            <tr key={`${each.id}_${i}`} className="leading-none">
+            <tr key={`${each.id}_${i}`} className={bgColor + " leading-none"}>
               <TD
-                value={each.sets}
                 rank={each.rank}
                 bottomBorder={hasBorder}
                 center="text-center"
-              />
+              >
+                {each.sets}
+              </TD>
               <TD
-                value={each.reps}
                 rank={each.rank}
                 bottomBorder={hasBorder}
                 center="text-center"
-              />
+              >
+                {each.reps}
+              </TD>
               <TD
-                value={each.weight}
                 rank={each.rank}
                 bottomBorder={hasBorder}
                 center="text-center"
-              />
+              >
+                {each.weight}
+              </TD>
               <TD
-                value={each.rir}
                 rank={each.rank}
                 bottomBorder={hasBorder}
                 center="text-center"
-              />
+              >
+                {each.rir}
+              </TD>
             </tr>
           );
         } else {
           return (
-            <tr key={`${each.id}_${i}`} className="leading-none">
+            <tr key={`${each.id}_${i}`} className={bgColor + " leading-none"}>
               <TD
-                value={each.sets}
                 rank={each.rank}
                 bottomBorder={hasBorder}
                 center="text-center"
-              />
+              >
+                {each.sets}
+              </TD>
               <TD
-                value={each.weight}
                 rank={each.rank}
                 bottomBorder={hasBorder}
                 center="text-center"
-              />
+              >
+                {each.weight}
+              </TD>
               <TD
-                value={each.rir}
                 rank={each.rank}
                 bottomBorder={hasBorder}
                 center="text-center"
-              />
+              >
+                {each.rir}
+              </TD>
             </tr>
           );
         }

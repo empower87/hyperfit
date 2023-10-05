@@ -53,7 +53,11 @@ const Home: NextPage = () => {
               total_sessions={total_sessions}
             />
 
-            <TrainingBlock trainingBlock={training_block} />
+            <TrainingBlock
+              // trainingBlock={training_block}
+              list={prioritized_muscle_list}
+              split={split}
+            />
           </div>
         </div>
       </div>
