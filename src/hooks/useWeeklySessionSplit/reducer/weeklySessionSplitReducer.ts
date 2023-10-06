@@ -1,7 +1,4 @@
-import {
-  getTrainingBlock,
-  updateReducerStateHandler,
-} from "./weeklySessionSplitUtils";
+import { updateReducerStateHandler } from "./weeklySessionSplitUtils";
 
 type DayType =
   | "Sunday"
@@ -24,6 +21,7 @@ export type ExerciseType = {
   reps: number;
   weight: number;
   rir: number;
+  meso_start: number;
 };
 
 export type SessionDayType = {
@@ -48,11 +46,10 @@ type State = {
   total_sessions: [number, number];
   list: MusclePriorityType[];
   split: SessionDayType[];
-  training_block: SessionDayType[][];
 };
 
 type Action = {
-  type: "UPDATE_SESSIONS" | "UPDATE_LIST" | "GET_TRAINING_BLOCK";
+  type: "UPDATE_SESSIONS" | "UPDATE_LIST";
   payload?: {
     new_sessions?: [number, number];
     new_list?: MusclePriorityType[];
@@ -239,8 +236,13 @@ export const INITIAL_STATE: State = {
   total_sessions: [3, 0],
   list: [...MUSCLE_PRIORITY_LIST],
   split: [...INITIAL_SPLIT],
-  training_block: [[...INITIAL_SPLIT], [...INITIAL_SPLIT], [...INITIAL_SPLIT]],
 };
+
+// TODO: Should add state for total mesocycles 1-4
+
+// Notes: updating an exercise should update it within muscle list > split > training_block
+
+// Notes: SessionDaySplit should get built in TrainingBlock
 
 export default function weeklySessionSplitReducer(
   state: State,
@@ -278,12 +280,6 @@ export default function weeklySessionSplitReducer(
         list: updated_list.list,
         split: updated_list.split,
       };
-    case "GET_TRAINING_BLOCK":
-      const block: SessionDayType[][] = getTrainingBlock(
-        state.list,
-        state.split
-      );
-      return { ...state, training_block: block };
     default:
       return state;
   }

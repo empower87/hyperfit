@@ -11,7 +11,6 @@ import useWeeklySessionSplit from "~/hooks/useWeeklySessionSplit/useWeeklySessio
 const Home: NextPage = () => {
   const {
     split,
-    training_block,
     total_sessions,
     prioritized_muscle_list,
     handleUpdateMuscleList,
@@ -55,7 +54,6 @@ const Home: NextPage = () => {
 
             <TrainingBlock
               // trainingBlock={training_block}
-              list={prioritized_muscle_list}
               split={split}
             />
           </div>

@@ -487,9 +487,12 @@ function updateMuscleListSets(
       reps: 10,
       weight: 100,
       rir: 3,
+      meso_start: 1,
     };
 
     let count = 0;
+    let meso_start = 1;
+    let meso_count = 1;
 
     for (let j = 0; j < matrix?.length; j++) {
       let exerciseList: ExerciseType[] = [];
@@ -498,6 +501,17 @@ function updateMuscleListSets(
       const exercise_two = getExercise(muscleData.name, count + 1).name;
       const id_one = `${i}-${count + 1}_${exercise_one}`;
       const id_two = `${i}-${count + 2}_${exercise_two}`;
+
+      if (meso_count <= mesoProgression[0]) {
+        meso_start = 1;
+      } else if (
+        meso_count > mesoProgression[0] &&
+        meso_count <= mesoProgression[1]
+      ) {
+        meso_start = 2;
+      } else {
+        meso_start = 3;
+      }
 
       if (splitVol.length > 1) {
         exerciseList.push(
@@ -509,6 +523,7 @@ function updateMuscleListSets(
             session: j + 1,
             group: muscleData.name,
             exercise: exercise_one,
+            meso_start: meso_start,
           },
           {
             ...exercise,
@@ -518,9 +533,11 @@ function updateMuscleListSets(
             session: j + 1,
             group: muscleData.name,
             exercise: exercise_two,
+            meso_start: meso_start,
           }
         );
         count = count + 2;
+        meso_count++;
       } else {
         exerciseList.push({
           ...exercise,
@@ -530,8 +547,10 @@ function updateMuscleListSets(
           session: j + 1,
           group: muscleData.name,
           exercise: exercise_one,
+          meso_start: meso_start,
         });
         count = count + 1;
+        meso_count++;
       }
       exercises.push(exerciseList);
     }
@@ -546,14 +565,34 @@ function updateMuscleListSets(
   return items;
 }
 
-const getTrainingBlock = (
-  _list: MusclePriorityType[],
-  _split: SessionDayType[]
-) => {
+const getTrainingBlock = (_split: SessionDayType[]) => {
   const _splitCopied = [..._split];
-  const meso_one = distributeExercisesAmongSplit(_list, _splitCopied, 0);
-  const meso_two = distributeExercisesAmongSplit(_list, _splitCopied, 1);
-  const meso_three = distributeExercisesAmongSplit(_list, _splitCopied, 2);
+
+  function getSplitForMesocycle(split: SessionDayType[], mesocycle: number) {
+    const newSplit = split.map((session) => {
+      const seshone = session.sets[0];
+      const seshtwo = session.sets[1];
+
+      let setsOne = seshone.map((exercises) => {
+        return exercises.filter((ex) => {
+          if (ex.meso_start <= mesocycle) return ex;
+        });
+      });
+      let setsTwo = seshtwo.map((exercises) => {
+        return exercises.filter((ex) => {
+          if (ex.meso_start <= mesocycle) return ex;
+        });
+      });
+
+      const newSets: [ExerciseType[][], ExerciseType[][]] = [setsOne, setsTwo];
+      return { ...session, sets: newSets };
+    });
+    return newSplit;
+  }
+
+  const meso_one = getSplitForMesocycle(_splitCopied, 1);
+  const meso_two = getSplitForMesocycle(_splitCopied, 2);
+  const meso_three = getSplitForMesocycle(_splitCopied, 3);
 
   return [meso_one, meso_two, meso_three];
 };

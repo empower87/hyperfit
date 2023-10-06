@@ -1,23 +1,17 @@
 import { ReactNode, useEffect, useState } from "react";
 import {
   ExerciseType,
-  MusclePriorityType,
   SessionDayType,
 } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
 import { getTrainingBlock } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitUtils";
 import { MesocycleLayout, MesocycleTable } from "./Mesocycle";
 
 type TrainingBlockProps = {
-  list: MusclePriorityType[];
   split: SessionDayType[];
   children?: ReactNode;
 };
 
-export default function TrainingBlock({
-  list,
-  split,
-  children,
-}: TrainingBlockProps) {
+export default function TrainingBlock({ split, children }: TrainingBlockProps) {
   const [splitState, setSplitState] = useState<SessionDayType[]>([]);
   const [trainingBlock, setTrainingBlock] = useState<SessionDayType[][]>([]);
 
@@ -26,9 +20,10 @@ export default function TrainingBlock({
   }, [split]);
 
   useEffect(() => {
-    const block = getTrainingBlock(list, splitState);
+    const block = getTrainingBlock(splitState);
+    console.log(splitState, block, "EDIT EXERCISE CHANGE??? 2");
     setTrainingBlock(block);
-  }, [splitState, list]);
+  }, [splitState]);
 
   const editExerciseHandler = (id: string, value: string) => {
     const test = splitState.map((session) => {
@@ -42,6 +37,7 @@ export default function TrainingBlock({
           } else return ex;
         });
       });
+
       let sessionTwo = seshtwo.map((exercises) => {
         return exercises.map((ex) => {
           if (ex.id === id) {
@@ -57,14 +53,7 @@ export default function TrainingBlock({
     });
     console.log(splitState, test, "EDIT EXERCISE CHANGE??? 1");
     setSplitState(test);
-
-    const block = getTrainingBlock(list, test);
-    setTrainingBlock(block);
   };
-
-  useEffect(() => {
-    console.log(splitState, trainingBlock, "EDIT EXERCISE CHANGE??? 2");
-  }, [splitState, trainingBlock]);
 
   return (
     <div className="flex flex-col">
