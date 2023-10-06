@@ -8,6 +8,7 @@ import Microcycle from "./Microcycle";
 
 type MesocycleTableProps = {
   split: SessionDayType[];
+  onEdit: (id: string, value: string) => void;
 };
 
 function TableHeadColumns() {
@@ -43,9 +44,11 @@ function MesocycleCell({ children }: { children: ReactNode }) {
 function TableBody({
   split,
   sets,
+  onEdit,
 }: {
   split: SplitType;
   sets: ExerciseType[][];
+  onEdit: (id: string, value: string) => void;
 }) {
   const backgroundColor =
     split === "upper"
@@ -57,7 +60,12 @@ function TableBody({
   return (
     <tr className="">
       <MesocycleCell>
-        <Microcycle head={split} body={sets} bgColor={backgroundColor} />
+        <Microcycle
+          head={split}
+          body={sets}
+          bgColor={backgroundColor}
+          onEdit={onEdit}
+        />
       </MesocycleCell>
 
       <MesocycleCell>
@@ -83,7 +91,7 @@ function TableBody({
   );
 }
 
-export function MesocycleTable({ split }: MesocycleTableProps) {
+export function MesocycleTable({ split, onEdit }: MesocycleTableProps) {
   return (
     <div className="flex flex-col">
       <table
@@ -98,8 +106,16 @@ export function MesocycleTable({ split }: MesocycleTableProps) {
             if (sessionOne !== "off" && sessionTwo !== "off") {
               return (
                 <>
-                  <TableBody split={each.sessions[0]} sets={each.sets[0]} />
-                  <TableBody split={each.sessions[1]} sets={each.sets[1]} />
+                  <TableBody
+                    split={each.sessions[0]}
+                    sets={each.sets[0]}
+                    onEdit={onEdit}
+                  />
+                  <TableBody
+                    split={each.sessions[1]}
+                    sets={each.sets[1]}
+                    onEdit={onEdit}
+                  />
                 </>
               );
             } else if (sessionOne !== "off" || sessionTwo !== "off") {
@@ -109,6 +125,7 @@ export function MesocycleTable({ split }: MesocycleTableProps) {
                   key={`${each.day}_${index}_tablebodymesocycle`}
                   split={each.sessions[num]}
                   sets={each.sets[num]}
+                  onEdit={onEdit}
                 />
               );
             }

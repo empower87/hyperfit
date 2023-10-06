@@ -8,14 +8,12 @@ import { getTrainingBlock } from "~/hooks/useWeeklySessionSplit/reducer/weeklySe
 import { MesocycleLayout, MesocycleTable } from "./Mesocycle";
 
 type TrainingBlockProps = {
-  // trainingBlock: SessionDayType[][];
   list: MusclePriorityType[];
   split: SessionDayType[];
   children?: ReactNode;
 };
 
 export default function TrainingBlock({
-  // trainingBlock,
   list,
   split,
   children,
@@ -33,68 +31,40 @@ export default function TrainingBlock({
   }, [splitState, list]);
 
   const editExerciseHandler = (id: string, value: string) => {
-    let index = 0;
-    let sessionIndex = 0;
-    let setIndex = 0;
-    let exerciseIndex = 0;
+    const test = splitState.map((session) => {
+      let seshone = session.sets[0];
+      let seshtwo = session.sets[1];
 
-    for (let i = 0; i < splitState.length; i++) {
-      let sets = splitState[i].sets;
-      let setOne = sets[0];
-      let setTwo = sets[1];
-
-      for (let j = 0; j < setOne.length; j++) {
-        if (setOne[j][0].id === id) {
-          index = i;
-          sessionIndex = 0;
-          setIndex = j;
-          exerciseIndex = 0;
-        } else if (setOne[j][1].id === id) {
-          index = i;
-          sessionIndex = 1;
-          setIndex = j;
-          exerciseIndex = 1;
-        }
-      }
-
-      for (let k = 0; k < setTwo.length; k++) {
-        if (setTwo[k][0].id === id) {
-          index = i;
-          sessionIndex = 0;
-          setIndex = k;
-          exerciseIndex = 0;
-        } else if (setTwo[k][1].id === id) {
-          index = i;
-          sessionIndex = 1;
-          setIndex = k;
-          exerciseIndex = 1;
-        }
-      }
-    }
-
-    const newSplit = splitState.map((each) => {
-      if (each.sessionNum === index) {
-        return {
-          ...each,
-          sets: each.sets.map((eachSet, eachSetIndex) => {
-            if (eachSetIndex === sessionIndex) {
-              return eachSet.map((eachEachSet, eachEachSetIndex) => {
-                if (eachEachSetIndex === setIndex) {
-                  return eachEachSet.map((wow, wowIndex) => {
-                    if (wowIndex === exerciseIndex) {
-                      let newWow: ExerciseType = { ...wow, exercise: value };
-                      return newWow;
-                    } else return wow;
-                  });
-                } else return eachEachSet;
-              });
-            } else return eachSet;
-          }),
-        };
-      } else return each;
+      let sessionOne = seshone.map((exercises) => {
+        return exercises.map((ex) => {
+          if (ex.id === id) {
+            return { ...ex, exercise: value };
+          } else return ex;
+        });
+      });
+      let sessionTwo = seshtwo.map((exercises) => {
+        return exercises.map((ex) => {
+          if (ex.id === id) {
+            return { ...ex, exercise: value };
+          } else return ex;
+        });
+      });
+      const newSets: [ExerciseType[][], ExerciseType[][]] = [
+        sessionOne,
+        sessionTwo,
+      ];
+      return { ...session, sets: newSets };
     });
-    setSplitState(newSplit);
+    console.log(splitState, test, "EDIT EXERCISE CHANGE??? 1");
+    setSplitState(test);
+
+    const block = getTrainingBlock(list, test);
+    setTrainingBlock(block);
   };
+
+  useEffect(() => {
+    console.log(splitState, trainingBlock, "EDIT EXERCISE CHANGE??? 2");
+  }, [splitState, trainingBlock]);
 
   return (
     <div className="flex flex-col">
@@ -106,7 +76,7 @@ export default function TrainingBlock({
             key={`${index}_${each[index]?.day}_mesocycles`}
             title={`Mesocycle ${index + 1}`}
           >
-            <MesocycleTable split={each} />
+            <MesocycleTable split={each} onEdit={editExerciseHandler} />
           </MesocycleLayout>
         );
       })}

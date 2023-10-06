@@ -11,6 +11,7 @@ type TableCellProps = {
   head: SplitType | HeadType;
   body: ExerciseType[][];
   bgColor: string;
+  onEdit?: (id: string, value: string) => void;
 };
 
 type MesoProgressionRowType = {
@@ -163,12 +164,6 @@ function TD({
   bottomBorder: boolean;
   center?: "text-center";
 }) {
-  // const bgColor =
-  //   rank === "MRV"
-  //     ? "bg-red-400"
-  //     : rank === "MEV"
-  //     ? "bg-orange-400"
-  //     : "bg-green-400";
   const border = bottomBorder ? " border-b-2 border-slate-300" : "";
   const _center = center ? " text-center" : "";
   return (
@@ -182,9 +177,10 @@ function TD({
 }
 
 type SelectExerciseProps = {
+  id: string;
   group: string;
   currentValue: string;
-  onChange: (value: string) => void;
+  onChange: (id: string, value: string) => void;
   bgColor: string;
 };
 
@@ -206,6 +202,7 @@ const GROUPS = [
 ];
 
 function SelectExercise({
+  id,
   group,
   currentValue,
   onChange,
@@ -215,7 +212,7 @@ function SelectExercise({
   const groups = [...GROUPS];
 
   const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    onChange(event.target.value);
+    onChange(id, event.target.value);
   };
 
   return (
@@ -247,7 +244,12 @@ const WEEK_1 = [20, 30, 30, 20];
 const WEEK_2PLUS = [30, 40, 30];
 const SESSION = [5, 15, 50, 15, 15];
 
-export default function Microcycle({ head, body, bgColor }: TableCellProps) {
+export default function Microcycle({
+  head,
+  body,
+  bgColor,
+  onEdit,
+}: TableCellProps) {
   const { heads, exercises } = useMesocycleProgression(head, body);
 
   const getIndices = useCallback((exercises: ExerciseType[][]) => {
@@ -294,6 +296,7 @@ export default function Microcycle({ head, body, bgColor }: TableCellProps) {
               exercises={each}
               head={head}
               index={indices[index]}
+              onEdit={onEdit}
             />
           );
         })}
@@ -306,13 +309,16 @@ const TR = ({
   exercises,
   head,
   index,
+  onEdit,
 }: {
   exercises: ExerciseType[];
   head: HeadType | SplitType;
   index: number[];
+  onEdit: ((id: string, value: string) => void) | undefined;
 }) => {
-  const onChangeHandler = (value: string) => {
-    console.log(value, "TR");
+  const onChangeHandler = (id: string, value: string) => {
+    if (!onEdit) return;
+    onEdit(id, value);
   };
 
   return (
@@ -336,6 +342,7 @@ const TR = ({
               </TD>
               <TD rank={each.rank} bottomBorder={hasBorder}>
                 <SelectExercise
+                  id={each.id}
                   group={each.group}
                   currentValue={each.group}
                   onChange={onChangeHandler}
@@ -344,6 +351,7 @@ const TR = ({
               </TD>
               <TD rank={each.rank} bottomBorder={hasBorder}>
                 <SelectExercise
+                  id={each.id}
                   group={each.group}
                   currentValue={each.exercise}
                   onChange={onChangeHandler}
