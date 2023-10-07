@@ -7,7 +7,8 @@
     "region": "upper",
     "requirements": ["barbell"],
     "variations": ["lat-focused", "Pendlay"],
-    "tips": ""
+    "tips": "",
+    "movement_type": "compound"
   },
   {
     "id": "0002-back-seatedrows",
@@ -17,7 +18,8 @@
     "region": "upper",
     "requirements": ["machine"],
     "variations": ["lat-focused"],
-    "tips": ""
+    "tips": "",
+    "movement_type": "compound"
   },
   {
     "id": "0003-back-meadowsrow",
@@ -27,7 +29,8 @@
     "region": "upper",
     "requirements": ["barbell"],
     "variations": [],
-    "tips": ""
+    "tips": "",
+    "movement_type": "compound"
   },
   {
     "id": "0004-back-dumbbellrow",
@@ -37,7 +40,8 @@
     "region": "upper",
     "requirements": ["dumbbell"],
     "variations": ["chest-supported"],
-    "tips": ""
+    "tips": "",
+    "movement_type": "compound"
   },
   {
     "id": "0005-back-pullups",
@@ -47,7 +51,8 @@
     "region": "upper",
     "requirements": ["bar"],
     "variations": ["underhand", "wide-grip"],
-    "tips": ""
+    "tips": "",
+    "movement_type": "compound"
   },
   {
     "id": "0006-back-pulldowns",
@@ -66,7 +71,8 @@
     "region": "lat",
     "requirements": ["barbell"],
     "variations": [],
-    "tips": ""
+    "tips": "",
+    "movement_type": "compound"
   },
   {
     "id": "0008-back-latfocusedseatedrows",
@@ -76,7 +82,8 @@
     "region": "lat",
     "requirements": ["machine"],
     "variations": ["lat-focused"],
-    "tips": ""
+    "tips": "",
+    "movement_type": "compound"
   },
   {
     "id": "0009-back-dumbbelllatrows",
@@ -86,7 +93,8 @@
     "region": "lat",
     "requirements": ["dumbbell", "bench"],
     "variations": ["chest-supported"],
-    "tips": ""
+    "tips": "",
+    "movement_type": "compound"
   },
   {
     "id": "0010-back-singlearmpulldowns",
@@ -96,7 +104,8 @@
     "region": "lat",
     "requirements": ["cable"],
     "variations": [],
-    "tips": ""
+    "tips": "",
+    "movement_type": "compound"
   },
   {
     "id": "0011-back-singlearmpulldowns",
@@ -106,7 +115,8 @@
     "region": "lat",
     "requirements": ["cable"],
     "variations": [],
-    "tips": ""
+    "tips": "",
+    "movement_type": "isolation"
   },
   {
     "id": "0012-back-pullovers",
@@ -116,6 +126,7 @@
     "region": "lat",
     "requirements": ["dumbbell", "bench"],
     "variations": [],
-    "tips": ""
+    "tips": "",
+    "movement_type": "compound"
   }
 ]

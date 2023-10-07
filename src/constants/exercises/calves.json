@@ -1,0 +1,46 @@
+[
+  {
+    "id": "0001-calves-machinecalves",
+    "name": "Machine Calves",
+    "rank": 1,
+    "group": "calves",
+    "region": "",
+    "requirements": ["machine"],
+    "variations": ["single-leg"],
+    "tips": "",
+    "movement_type": "isolation"
+  },
+  {
+    "id": "0002-calves-calfraiseonlegpress",
+    "name": "Calf Raise on Leg Press",
+    "rank": 2,
+    "group": "calves",
+    "region": "",
+    "requirements": ["machine"],
+    "variations": ["single-leg"],
+    "tips": "",
+    "movement_type": "isolation"
+  },
+  {
+    "id": "0003-calves-standingcalfraise",
+    "name": "Standing Dumbbell Calf Raise",
+    "rank": 3,
+    "group": "calves",
+    "region": "",
+    "requirements": ["dumbbell"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "isolation"
+  },
+  {
+    "id": "0004-calves-standingbarbellcalfraise",
+    "name": "Standing Barbell Calf Raise",
+    "rank": 4,
+    "group": "calves",
+    "region": "",
+    "requirements": ["barbell"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "isolation"
+  }
+]

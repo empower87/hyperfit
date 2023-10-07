@@ -1,0 +1,57 @@
+[
+  {
+    "id": "0001-hamstrings-romaniandeadlifts",
+    "name": "Romanian Deadlifts",
+    "rank": 1,
+    "group": "hamstrings",
+    "region": "",
+    "requirements": ["barbell"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "compound"
+  },
+  {
+    "id": "0002-hamstrings-stiffleggeddeadlifts",
+    "name": "Stiff-Legged Deadlifts",
+    "rank": 2,
+    "group": "hamstrings",
+    "region": "",
+    "requirements": ["barbell"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "compound"
+  },
+  {
+    "id": "0003-hamstrings-legcurls",
+    "name": "Seated Leg Curls",
+    "rank": 3,
+    "group": "hamstrings",
+    "region": "",
+    "requirements": ["machine"],
+    "variations": ["single-leg"],
+    "tips": "",
+    "movement_type": "isolation"
+  },
+  {
+    "id": "0004-hamstrings-legcurls",
+    "name": "Lying Leg Curls",
+    "rank": 4,
+    "group": "hamstrings",
+    "region": "",
+    "requirements": ["machine"],
+    "variations": ["single-leg"],
+    "tips": "",
+    "movement_type": "isolation"
+  },
+  {
+    "id": "0005-hamstrings-glutehamstringraises",
+    "name": "Glute-Hamstring Raises",
+    "rank": 5,
+    "group": "hamstrings",
+    "region": "",
+    "requirements": ["machine"],
+    "variations": ["weighted"],
+    "tips": "",
+    "movement_type": "compound"
+  }
+]

@@ -1,0 +1,68 @@
+[
+  {
+    "id": "0001-deltsrear-crossbodycablereversefly",
+    "name": "Cross-Body Cable Reverse Fly",
+    "rank": 1,
+    "group": "delts_rear",
+    "region": "",
+    "requirements": ["cable"],
+    "variations": ["single-arm"],
+    "tips": "",
+    "movement_type": "isolation"
+  },
+  {
+    "id": "0002-deltsrear-machinereversefly",
+    "name": "Machine Reverse Fly",
+    "rank": 2,
+    "group": "delts_rear",
+    "region": "",
+    "requirements": ["machine"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "isolation"
+  },
+  {
+    "id": "0003-deltsrear-dumbbellreversefly",
+    "name": "Dumbbell Reverse Fly",
+    "rank": 3,
+    "group": "delts_rear",
+    "region": "",
+    "requirements": ["dumbbell"],
+    "variations": ["chest-supported"],
+    "tips": "",
+    "movement_type": "isolation"
+  },
+  {
+    "id": "0004-deltsrear-inclinedumbbellrow",
+    "name": "Incline Dumbbell Row",
+    "rank": 4,
+    "group": "delts_rear",
+    "region": "",
+    "requirements": ["dumbbell", "bench"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "compound"
+  },
+  {
+    "id": "0005-deltsrear-barbellhighrow",
+    "name": "Barbell High Row",
+    "rank": 5,
+    "group": "delts_rear",
+    "region": "",
+    "requirements": ["barbell"],
+    "variations": ["chest-supported"],
+    "tips": "",
+    "movement_type": "compound"
+  },
+  {
+    "id": "0006-deltsrear-facepulls",
+    "name": "Face Pulls",
+    "rank": 6,
+    "group": "delts_rear",
+    "region": "",
+    "requirements": ["cable"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "isolation"
+  }
+]

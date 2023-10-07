@@ -1,0 +1,112 @@
+[
+  {
+    "id": "0001-triceps-pushdowns",
+    "name": "Pushdowns",
+    "rank": 1,
+    "group": "triceps",
+    "region": "lateral-head",
+    "requirements": ["cable"],
+    "variations": ["v-bar", "straight-bar", "rope"],
+    "tips": "",
+    "movement_type": "isolation"
+  },
+  {
+    "id": "0002-triceps-overheadcabletricepsextensions",
+    "name": "Overhead Cable Triceps Extensions",
+    "rank": 2,
+    "group": "triceps",
+    "region": "long-head",
+    "requirements": ["cable"],
+    "variations": ["single-arm"],
+    "tips": "",
+    "movement_type": "isolation"
+  },
+  {
+    "id": "0003-triceps-jmpress",
+    "name": "JM Press",
+    "rank": 3,
+    "group": "triceps",
+    "region": "lateral-head",
+    "requirements": ["barbell", "bench"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "compound"
+  },
+  {
+    "id": "0004-triceps-dips",
+    "name": "Dips",
+    "rank": 4,
+    "group": "triceps",
+    "region": "lateral-head",
+    "requirements": ["bar"],
+    "variations": ["weighted"],
+    "tips": "",
+    "movement_type": "compound"
+  },
+  {
+    "id": "0005-triceps-dumbbelltricepsextensions",
+    "name": "Dumbbell Triceps Extensions",
+    "rank": 5,
+    "group": "triceps",
+    "region": "long-head",
+    "requirements": ["dumbbell", "bench"],
+    "variations": ["incline", "lying", "single-arm", "lying cross-body"],
+    "tips": "",
+    "movement_type": "isolation"
+  },
+  {
+    "id": "0006-triceps-machinedips",
+    "name": "Machine Dips",
+    "rank": 6,
+    "group": "triceps",
+    "region": "lateral-head",
+    "requirements": ["machine"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "compound"
+  },
+  {
+    "id": "0007-triceps-closegripbenchpress",
+    "name": "Close-Grip Bench Press",
+    "rank": 7,
+    "group": "triceps",
+    "region": "lateral-head",
+    "requirements": ["bench", "barbell"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "compound"
+  },
+  {
+    "id": "0008-triceps-benchdips",
+    "name": "Bench Dips",
+    "rank": 8,
+    "group": "triceps",
+    "region": "medial-head",
+    "requirements": ["bench"],
+    "variations": ["weighted"],
+    "tips": "",
+    "movement_type": "compound"
+  },
+  {
+    "id": "0009-triceps-trianglepushups",
+    "name": "Triangle Pushups",
+    "rank": 9,
+    "group": "triceps",
+    "region": "medial-head",
+    "requirements": [],
+    "variations": [],
+    "tips": "",
+    "movement_type": "compound"
+  },
+  {
+    "id": "0010-triceps-skullcrushers",
+    "name": "Skullcrushers",
+    "rank": 10,
+    "group": "triceps",
+    "region": "lateral-head",
+    "requirements": ["barbell", "bench"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "isolation"
+  }
+]

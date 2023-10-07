@@ -1,0 +1,68 @@
+[
+  {
+    "id": "0001-quads-squats",
+    "name": "Barbell Squats",
+    "rank": 1,
+    "group": "quads",
+    "region": "",
+    "requirements": ["rack", "barbell"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "compound"
+  },
+  {
+    "id": "0002-quads-frontsquats",
+    "name": "Front Squats",
+    "rank": 2,
+    "group": "quads",
+    "region": "",
+    "requirements": ["barbell"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "compound"
+  },
+  {
+    "id": "0003-quads-legpress",
+    "name": "Leg Press",
+    "rank": 3,
+    "group": "quads",
+    "region": "",
+    "requirements": ["machine"],
+    "variations": ["single-leg"],
+    "tips": "",
+    "movement_type": "compound"
+  },
+  {
+    "id": "0004-quads-bulgariansplitsquat",
+    "name": "Bulgarian Split Squat",
+    "rank": 4,
+    "group": "quads",
+    "region": "",
+    "requirements": ["dumbbell", "bench"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "compound"
+  },
+  {
+    "id": "0005-quads-lunges",
+    "name": "Lunges",
+    "rank": 5,
+    "group": "quads",
+    "region": "",
+    "requirements": ["barbell", "dumbbell"],
+    "variations": ["barbell", "dumbbell"],
+    "tips": "",
+    "movement_type": "compound"
+  },
+  {
+    "id": "0006-quads-legextensions",
+    "name": "Leg Extensions",
+    "rank": 6,
+    "group": "quads",
+    "region": "",
+    "requirements": ["machine"],
+    "variations": ["single-leg"],
+    "tips": "",
+    "movement_type": "compound"
+  }
+]

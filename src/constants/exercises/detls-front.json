@@ -1,0 +1,90 @@
+[
+  {
+    "id": "0001-deltsfront-frontraise",
+    "name": "Front Raise",
+    "rank": 1,
+    "group": "delts_front",
+    "region": "",
+    "requirements": ["dumbbell"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "isolation"
+  },
+  {
+    "id": "0002-deltsfront-seateddumbbelloverheadpress",
+    "name": "Seated Dumbbell Overhead Press",
+    "rank": 2,
+    "group": "delts_front",
+    "region": "",
+    "requirements": ["bench", "dumbbell"],
+    "variations": ["single-arm"],
+    "tips": "",
+    "movement_type": "compound"
+  },
+  {
+    "id": "0003-deltsfront-seatedoverheadpress",
+    "name": "Seated Overhead Press",
+    "rank": 3,
+    "group": "delts_front",
+    "region": "",
+    "requirements": ["bench", "barbell"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "compound"
+  },
+  {
+    "id": "0004-deltsfront-dumbelloverheadpress",
+    "name": "Dumbbell Overhead Press",
+    "rank": 4,
+    "group": "delts_front",
+    "region": "",
+    "requirements": ["dumbbell"],
+    "variations": ["single-arm"],
+    "tips": "",
+    "movement_type": "compound"
+  },
+  {
+    "id": "0005-deltsfront-overheadpress",
+    "name": "Overhead Press",
+    "rank": 5,
+    "group": "delts_front",
+    "region": "",
+    "requirements": ["barbell"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "compound"
+  },
+  {
+    "id": "0006-deltsfront-arnoldpress",
+    "name": "Arnold Press",
+    "rank": 6,
+    "group": "delts_front",
+    "region": "",
+    "requirements": ["bench", "dumbbell"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "compound"
+  },
+  {
+    "id": "0007-deltsfront-cablefrontraise",
+    "name": "Cable Front Raise",
+    "rank": 7,
+    "group": "delts_front",
+    "region": "",
+    "requirements": ["cable"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "isolation"
+  },
+  {
+    "id": "0008-deltsfront-machineoverheadpress",
+    "name": "Machine Overhead Press",
+    "rank": 8,
+    "group": "delts_front",
+    "region": "",
+    "requirements": ["machine"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "compound"
+  }
+]

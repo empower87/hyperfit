@@ -1,0 +1,68 @@
+[
+  {
+    "id": "0001-deltsside-lateralraise",
+    "name": "Lateral Raise",
+    "rank": 1,
+    "group": "delts_side",
+    "region": "",
+    "requirements": ["dumbbell"],
+    "variations": ["full-rom"],
+    "tips": "",
+    "movement_type": "isolation"
+  },
+  {
+    "id": "0002-deltsside-cablelateralraise",
+    "name": "Cable Lateral Raise",
+    "rank": 2,
+    "group": "delts_side",
+    "region": "",
+    "requirements": ["cable"],
+    "variations": ["behind-the-back"],
+    "tips": "",
+    "movement_type": "isolation"
+  },
+  {
+    "id": "0003-deltsside-crossbodycableyraise",
+    "name": "Cross-body Cable Y-Raise",
+    "rank": 3,
+    "group": "delts_side",
+    "region": "",
+    "requirements": ["cable"],
+    "variations": ["single-arm"],
+    "tips": "",
+    "movement_type": "isolation"
+  },
+  {
+    "id": "0004-deltsside-machinelateralraise",
+    "name": "Machine Lateral Raise",
+    "rank": 4,
+    "group": "delts_side",
+    "region": "",
+    "requirements": ["machine"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "isolation"
+  },
+  {
+    "id": "0005-deltsside-uprightrow",
+    "name": "Upright Row",
+    "rank": 5,
+    "group": "delts_side",
+    "region": "",
+    "requirements": ["barbell"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "compound"
+  },
+  {
+    "id": "0006-deltsside-dumbbelluprightrow",
+    "name": "Dumbbell Upright Row",
+    "rank": 6,
+    "group": "delts_side",
+    "region": "",
+    "requirements": ["dumbbell"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "compound"
+  }
+]

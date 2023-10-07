@@ -1,0 +1,46 @@
+[
+  {
+    "id": "0001-glutes-hipthrust",
+    "name": "Hip Thrust",
+    "rank": 1,
+    "group": "glutes",
+    "region": "",
+    "requirements": ["barbell", "bench"],
+    "variations": ["single-leg"],
+    "tips": "",
+    "movement_type": "compound"
+  },
+  {
+    "id": "0002-glutes-machineglutekickbacks",
+    "name": "Machine Glute Kickbacks",
+    "rank": 2,
+    "group": "glutes",
+    "region": "",
+    "requirements": ["machine"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "compound"
+  },
+  {
+    "id": "0003-glutes-glutebridge",
+    "name": "Glute Bridge",
+    "rank": 3,
+    "group": "glutes",
+    "region": "",
+    "requirements": ["bench"],
+    "variations": ["single-leg"],
+    "tips": "",
+    "movement_type": "isolation"
+  },
+  {
+    "id": "0004-glutes-deadlift",
+    "name": "Deadlift",
+    "rank": 4,
+    "group": "glutes",
+    "region": "",
+    "requirements": ["barbell"],
+    "variations": ["sumo"],
+    "tips": "",
+    "movement_type": "compound"
+  }
+]

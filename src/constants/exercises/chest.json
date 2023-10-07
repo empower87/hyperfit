@@ -1,0 +1,101 @@
+[
+  {
+    "id": "0001-chest-benchpress",
+    "name": "Bench Press",
+    "rank": 1,
+    "group": "chest",
+    "region": "",
+    "requirements": ["barbell", "bench"],
+    "variations": ["wide-grip"],
+    "tips": "",
+    "movement_type": "compound"
+  },
+  {
+    "id": "0002-chest-inclinebenchpress",
+    "name": "Incline Bench Press",
+    "rank": 2,
+    "group": "chest",
+    "region": "",
+    "requirements": ["barbell", "bench"],
+    "variations": ["wide-grip"],
+    "tips": "",
+    "movement_type": "compound"
+  },
+  {
+    "id": "0003-chest-dumbbellbenchpress",
+    "name": "Dumbbell Bench Press",
+    "rank": 3,
+    "group": "chest",
+    "region": "",
+    "requirements": ["dumbbell", "bench"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "compound"
+  },
+  {
+    "id": "0004-chest-inclinedumbbellbenchpress",
+    "name": "Incline Dumbbell Bench Press",
+    "rank": 4,
+    "group": "chest",
+    "region": "",
+    "requirements": ["dumbbell", "bench"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "compound"
+  },
+  {
+    "id": "0005-chest-chestpress",
+    "name": "Chest Press",
+    "rank": 5,
+    "group": "chest",
+    "region": "long-head",
+    "requirements": ["machine"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "compound"
+  },
+  {
+    "id": "0006-chest-dumbbellfly",
+    "name": "Dumbbell Fly",
+    "rank": 6,
+    "group": "chest",
+    "region": "",
+    "requirements": ["dumbbell", "bench"],
+    "variations": ["incline"],
+    "tips": "",
+    "movement_type": "isolation"
+  },
+  {
+    "id": "0007-chest-cablefly",
+    "name": "Cable Fly",
+    "rank": 7,
+    "group": "chest",
+    "region": "",
+    "requirements": ["cable"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "isolation"
+  },
+  {
+    "id": "0008-chest-machinefly",
+    "name": "Machine Fly",
+    "rank": 8,
+    "group": "chest",
+    "region": "",
+    "requirements": ["machine"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "isolation"
+  },
+  {
+    "id": "0009-chest-pushups",
+    "name": "Pushups",
+    "rank": 9,
+    "group": "chest",
+    "region": "",
+    "requirements": [],
+    "variations": [],
+    "tips": "",
+    "movement_type": "compound"
+  }
+]

@@ -1,0 +1,46 @@
+[
+  {
+    "id": "0001-traps-barbellshrug",
+    "name": "Barbell Shrug",
+    "rank": 1,
+    "group": "traps",
+    "region": "upper",
+    "requirements": ["barbell"],
+    "variations": ["single-arm"],
+    "tips": "",
+    "movement_type": "isolation"
+  },
+  {
+    "id": "0002-traps-dumbellshrug",
+    "name": "Dumbbell Shrug",
+    "rank": 2,
+    "group": "traps",
+    "region": "upper",
+    "requirements": ["dumbbell"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "isolation"
+  },
+  {
+    "id": "0003-traps-machineshrug",
+    "name": "Machine Shrug",
+    "rank": 3,
+    "group": "traps",
+    "region": "upper",
+    "requirements": ["machine"],
+    "variations": ["single-arm"],
+    "tips": "",
+    "movement_type": "isolation"
+  },
+  {
+    "id": "0004-traps-yraises",
+    "name": "Y-Raises",
+    "rank": 4,
+    "group": "traps",
+    "region": "middle",
+    "requirements": ["dumbbell"],
+    "variations": ["prone"],
+    "tips": "",
+    "movement_type": "compound"
+  }
+]

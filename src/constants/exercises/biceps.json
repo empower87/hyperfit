@@ -1,0 +1,145 @@
+[
+  {
+    "id": "0001-biceps-dumbbellcurl",
+    "name": "Incline Dumbbell Curl",
+    "rank": 1,
+    "group": "biceps",
+    "region": "long-head",
+    "requirements": ["bench", "dumbbell"],
+    "variations": ["alternating"],
+    "tips": "",
+    "movement_type": "isolation"
+  },
+  {
+    "id": "0002-biceps-barbellcurl",
+    "name": "Barbell Curl",
+    "rank": 2,
+    "group": "biceps",
+    "region": "short-head",
+    "requirements": ["barbell"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "isolation"
+  },
+  {
+    "id": "0003-biceps-dumbbellcurl",
+    "name": "Dumbbell Curl",
+    "rank": 3,
+    "group": "biceps",
+    "region": "short-head",
+    "requirements": ["dumbbell"],
+    "variations": ["alternating"],
+    "tips": "",
+    "movement_type": "isolation"
+  },
+  {
+    "id": "0004-biceps-cammercurl",
+    "name": "Hammer Curl",
+    "rank": 4,
+    "group": "biceps",
+    "region": "brachialis",
+    "requirements": ["dumbbell"],
+    "variations": ["alternating"],
+    "tips": "",
+    "movement_type": "isolation"
+  },
+  {
+    "id": "0005-biceps-cablecurl",
+    "name": "Cable Curl",
+    "rank": 5,
+    "group": "biceps",
+    "region": "long-head",
+    "requirements": ["cable"],
+    "variations": ["single-arm", "v-bar"],
+    "tips": "",
+    "movement_type": "isolation"
+  },
+  {
+    "id": "0006-biceps-barbellpreachercurl",
+    "name": "Barbell Preacher Curl",
+    "rank": 6,
+    "group": "biceps",
+    "region": "short-head",
+    "requirements": ["barbell", "preacher"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "isolation"
+  },
+  {
+    "id": "0007-biceps-dumbbellpreachercurl",
+    "name": "Dumbbell Preacher Curl",
+    "rank": 7,
+    "group": "biceps",
+    "region": "short-head",
+    "requirements": ["dumbbell", "preacher"],
+    "variations": ["single-arm"],
+    "tips": "",
+    "movement_type": "isolation"
+  },
+  {
+    "id": "0008-biceps-barbellspidercurl",
+    "name": "Barbell Spider Curl",
+    "rank": 8,
+    "group": "biceps",
+    "region": "short-head",
+    "requirements": ["barbell"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "isolation"
+  },
+  {
+    "id": "0009-biceps-dumbbellspidercurl",
+    "name": "Dumbbell Spider Curl",
+    "rank": 9,
+    "group": "biceps",
+    "region": "short-head",
+    "requirements": ["dumbbell"],
+    "variations": ["single-arm"],
+    "tips": "",
+    "movement_type": "isolation"
+  },
+  {
+    "id": "0010-biceps-concentrationcurl",
+    "name": "Concentration Curl",
+    "rank": 10,
+    "group": "biceps",
+    "region": "short-head",
+    "requirements": ["dumbbell", "bench"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "isolation"
+  },
+  {
+    "id": "0011-biceps-chinups",
+    "name": "Chin Ups",
+    "rank": 11,
+    "group": "biceps",
+    "region": "short-head",
+    "requirements": ["bar"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "compound"
+  },
+  {
+    "id": "0012-biceps-machinecurl",
+    "name": "Machine Curl",
+    "rank": 12,
+    "group": "biceps",
+    "region": "short-head",
+    "requirements": ["machine"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "isolation"
+  },
+  {
+    "id": "0013-biceps-reversecurl",
+    "name": "Reverse Curl",
+    "rank": 13,
+    "group": "biceps",
+    "region": "brachialis",
+    "requirements": ["barbell"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "isolation"
+  }
+]
