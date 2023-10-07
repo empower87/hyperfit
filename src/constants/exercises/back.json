@@ -1,0 +1,121 @@
+[
+  {
+    "id": "0001-back-barbellrows",
+    "name": "Barbell Rows",
+    "rank": 1,
+    "group": "back",
+    "region": "upper",
+    "requirements": ["barbell"],
+    "variations": ["lat-focused", "Pendlay"],
+    "tips": ""
+  },
+  {
+    "id": "0002-back-seatedrows",
+    "name": "Seated Rows",
+    "rank": 2,
+    "group": "back",
+    "region": "upper",
+    "requirements": ["machine"],
+    "variations": ["lat-focused"],
+    "tips": ""
+  },
+  {
+    "id": "0003-back-meadowsrow",
+    "name": "Meadow's Row",
+    "rank": 3,
+    "group": "back",
+    "region": "upper",
+    "requirements": ["barbell"],
+    "variations": [],
+    "tips": ""
+  },
+  {
+    "id": "0004-back-dumbbellrow",
+    "name": "Dumbbell Row",
+    "rank": 4,
+    "group": "back",
+    "region": "upper",
+    "requirements": ["dumbbell"],
+    "variations": ["chest-supported"],
+    "tips": ""
+  },
+  {
+    "id": "0005-back-pullups",
+    "name": "Pull Ups",
+    "rank": 5,
+    "group": "back",
+    "region": "upper",
+    "requirements": ["bar"],
+    "variations": ["underhand", "wide-grip"],
+    "tips": ""
+  },
+  {
+    "id": "0006-back-pulldowns",
+    "name": "Pulldowns",
+    "rank": 6,
+    "group": "back",
+    "region": "upper",
+    "requirements": ["machine"],
+    "variations": ["close-grip", "wide-grip", "neutral-grip"]
+  },
+  {
+    "id": "0007-back-latfocusedbarbellrows",
+    "name": "Lat-Focused Barbell Rows",
+    "rank": 1,
+    "group": "back",
+    "region": "lat",
+    "requirements": ["barbell"],
+    "variations": [],
+    "tips": ""
+  },
+  {
+    "id": "0008-back-latfocusedseatedrows",
+    "name": "Lat-Focused Seated Rows",
+    "rank": 2,
+    "group": "back",
+    "region": "lat",
+    "requirements": ["machine"],
+    "variations": ["lat-focused"],
+    "tips": ""
+  },
+  {
+    "id": "0009-back-dumbbelllatrows",
+    "name": "Dumbbell Lat Rows",
+    "rank": 3,
+    "group": "back",
+    "region": "lat",
+    "requirements": ["dumbbell", "bench"],
+    "variations": ["chest-supported"],
+    "tips": ""
+  },
+  {
+    "id": "0010-back-singlearmpulldowns",
+    "name": "Single-Arm Pulldowns",
+    "rank": 4,
+    "group": "back",
+    "region": "lat",
+    "requirements": ["cable"],
+    "variations": [],
+    "tips": ""
+  },
+  {
+    "id": "0011-back-singlearmpulldowns",
+    "name": "Straight-Arm Pulldown",
+    "rank": 5,
+    "group": "back",
+    "region": "lat",
+    "requirements": ["cable"],
+    "variations": [],
+    "tips": ""
+  },
+  {
+    "id": "0012-back-pullovers",
+    "name": "Pullovers",
+    "rank": 6,
+    "group": "back",
+    "region": "lat",
+    "requirements": ["dumbbell", "bench"],
+    "variations": [],
+    "tips": ""
+  }
+]
