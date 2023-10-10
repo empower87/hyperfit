@@ -1,9 +1,9 @@
 import { ReactNode, useCallback, useEffect, useState } from "react";
-import { getGrouplist } from "~/constants/exercises";
 import {
   ExerciseType,
   SplitType,
 } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
+import { getGroupList } from "~/utils/getExercises";
 
 type HeadType = "week 1" | "week 2" | "week 3" | "week 4" | "deload";
 
@@ -208,13 +208,14 @@ function SelectExercise({
   onChange,
   bgColor,
 }: SelectExerciseProps) {
-  const exercises = getGrouplist(group);
+  const exercises = getGroupList(group);
   const groups = [...GROUPS];
 
   const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     onChange(id, event.target.value);
   };
 
+  console.log(exercises, "ok is there an error here??");
   return (
     <select
       className={bgColor + " w-full"}
@@ -321,6 +322,7 @@ const TR = ({
     onEdit(id, value);
   };
 
+  console.log(exercises, "TR TR TR EXERCISES");
   return (
     <>
       {exercises.map((each, i) => {

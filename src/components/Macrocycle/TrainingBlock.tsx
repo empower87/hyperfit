@@ -45,12 +45,15 @@ export default function TrainingBlock({ split, children }: TrainingBlockProps) {
           } else return ex;
         });
       });
+
       const newSets: [ExerciseType[][], ExerciseType[][]] = [
         sessionOne,
         sessionTwo,
       ];
+
       return { ...session, sets: newSets };
     });
+
     console.log(splitState, test, "EDIT EXERCISE CHANGE??? 1");
     setSplitState(test);
   };

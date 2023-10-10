@@ -7,6 +7,7 @@ import {
   PUSH_MUSCLES,
   UPPER_MUSCLES,
 } from "~/constants/workoutSplits";
+import { getTopExercises } from "~/utils/getExercises";
 import { getMuscleData } from "~/utils/getMuscleData";
 import { getNextSession } from "~/utils/getNextSession";
 import {
@@ -600,8 +601,7 @@ const getTrainingBlock = (_split: SessionDayType[]) => {
 
 const distributeExercisesAmongSplit = (
   list: MusclePriorityType[],
-  split: SessionDayType[],
-  mesoNum: number
+  split: SessionDayType[]
 ) => {
   let meso: SessionDayType[] = [...split].map((each) => {
     let emptySets: [ExerciseType[][], ExerciseType[][]] = [[], []];
@@ -609,8 +609,9 @@ const distributeExercisesAmongSplit = (
   });
 
   for (let i = 0; i < list.length; i++) {
-    const lastIndex = list[i].mesoProgression[mesoNum];
-    let exercises = list[i].exercises.slice(0, lastIndex);
+    const lastIndex = list[i].mesoProgression[2];
+    // let exercises = list[i].exercises.slice(0, lastIndex);
+
     // let exercises = list[i].exercises;
 
     type VolumeKey =
@@ -624,7 +625,8 @@ const distributeExercisesAmongSplit = (
         : i >= MRV_RANK && i < MEV_RANK
         ? "mev_progression_matrix"
         : "mv_progression_matrix";
-    let initial_frequency = list[i].mesoProgression[mesoNum];
+
+    let exercises = getTopExercises(list[i].muscle, key, lastIndex);
     // let freq_index = initial_frequency > 0 ? initial_frequency - 1 : 0;
 
     let session: "upper" | "lower" = "lower";
@@ -729,8 +731,7 @@ function updateReducerStateHandler(
 
   const new_split_with_exercises = distributeExercisesAmongSplit(
     updated_list,
-    new_split,
-    2
+    new_split
   );
 
   return {
@@ -740,3 +741,113 @@ function updateReducerStateHandler(
 }
 
 export { getTrainingBlock, updateReducerStateHandler };
+
+// const distributeExercisesAmongSplit = (
+//   list: MusclePriorityType[],
+//   split: SessionDayType[],
+//   mesoNum: number
+// ) => {
+//   let meso: SessionDayType[] = [...split].map((each) => {
+//     let emptySets: [ExerciseType[][], ExerciseType[][]] = [[], []];
+//     return { ...each, sets: emptySets };
+//   });
+
+//   for (let i = 0; i < list.length; i++) {
+//     const lastIndex = list[i].mesoProgression[mesoNum];
+//     let exercises = list[i].exercises.slice(0, lastIndex);
+//     // let exercises = list[i].exercises;
+
+//     type VolumeKey =
+//       | "mrv_progression_matrix"
+//       | "mev_progression_matrix"
+//       | "mv_progression_matrix";
+
+//     let key: VolumeKey =
+//       i < MRV_RANK
+//         ? "mrv_progression_matrix"
+//         : i >= MRV_RANK && i < MEV_RANK
+//         ? "mev_progression_matrix"
+//         : "mv_progression_matrix";
+
+//     let initial_frequency = list[i].mesoProgression[mesoNum];
+//     // let freq_index = initial_frequency > 0 ? initial_frequency - 1 : 0;
+
+//     let session: "upper" | "lower" = "lower";
+
+//     if (UPPER_MUSCLES.includes(list[i].muscle)) {
+//       session = "upper";
+//     }
+
+//     const handleSession = (session: SplitType, group: "lower" | "upper") => {
+//       switch (session) {
+//         case "push":
+//           if (group === "upper") {
+//             return true;
+//           } else {
+//             return false;
+//           }
+//         case "pull":
+//           if (group === "upper") {
+//             return true;
+//           } else {
+//             return false;
+//           }
+//         case "upper":
+//           if (group === "upper") {
+//             return true;
+//           } else {
+//             return false;
+//           }
+//         case "lower":
+//           if (group === "lower") {
+//             return true;
+//           } else {
+//             return false;
+//           }
+//         case "full":
+//           return true;
+//         default:
+//           return false;
+//       }
+//     };
+
+//     for (let j = 0; j < meso.length; j++) {
+//       if (exercises.length) {
+//         let sessionOne = meso[j].sessions[0];
+//         let sessionTwo = meso[j].sessions[1];
+//         const canAddExercise = handleSession(sessionOne, session);
+
+//         if (canAddExercise && exercises.length) {
+//           let add_exercises = exercises[0];
+
+//           for (let k = 0; k < add_exercises.length; k++) {
+//             add_exercises[k] = {
+//               ...add_exercises[k],
+//               session: meso[j].sessionNum,
+//             };
+//           }
+
+//           meso[j].sets[0].push(add_exercises);
+//           exercises.shift();
+//         }
+
+//         const canAddSecondExercise = handleSession(sessionTwo, session);
+
+//         if (canAddSecondExercise && exercises.length) {
+//           let add_exercises = exercises[0];
+
+//           for (let k = 0; k < add_exercises.length; k++) {
+//             add_exercises[k] = {
+//               ...add_exercises[k],
+//               session: meso[j].sessionNum,
+//             };
+//           }
+
+//           meso[j].sets[1].push(add_exercises);
+//           exercises.shift();
+//         }
+//       }
+//     }
+//   }
+//   return meso;
+// };

@@ -1,3 +1,4 @@
+import { ExerciseType } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
 import {
   ABS_EXERCISES,
   BACK_EXERCISES,
@@ -14,8 +15,21 @@ import {
   TRAPS_EXERCISES,
   TRICEPS_EXERCISES,
 } from "../constants/exercises/index";
+import { getMuscleData } from "./getMuscleData";
 
-export const getGrouplist = (group: string) => {
+type Exercise = {
+  id: string;
+  name: string;
+  rank: number;
+  group: string;
+  region: string;
+  requirements: string[];
+  variations: string[];
+  tips?: string;
+  movement_type?: string;
+};
+
+export const getGroupList = (group: string): Exercise[] => {
   switch (group) {
     case "back":
       return BACK_EXERCISES;
@@ -48,4 +62,78 @@ export const getGrouplist = (group: string) => {
     default:
       return BACK_EXERCISES;
   }
+};
+
+type VolumeKey =
+  | "mrv_progression_matrix"
+  | "mev_progression_matrix"
+  | "mv_progression_matrix";
+
+const INITIAL_EXERCISE: ExerciseType = {
+  exercise: "Triceps Extension (cable, single-arm)",
+  id: "001_Triceps Extension (cable, single-arm)",
+  group: "back",
+  rank: "MRV",
+  session: 0,
+  sets: 2,
+  reps: 10,
+  weight: 100,
+  rir: 3,
+  meso_start: 1,
+};
+
+export const getTopExercises = (
+  group: string,
+  key: VolumeKey,
+  total: number
+) => {
+  const getGroup = getMuscleData(group);
+  const getVolume = getGroup[key];
+  if (!getVolume.length) return [];
+  const getVolumeString =
+    getVolume[total - 1] ?? getVolume[getVolume.length - 1];
+
+  console.log(getVolumeString, key, total, "OH BOY HERES AN UNDEFINED?");
+  const exercises = getGroupList(group);
+
+  let exercise_list: ExerciseType[][] = [];
+  let exercises_index = 0;
+
+  let split_key = key.split("_");
+  let rank = split_key[0].toUpperCase();
+
+  for (let i = 0; i < getVolumeString.length; i++) {
+    let split = getVolumeString[i].split("-");
+
+    if (exercises[exercises_index]) {
+      let exercise_one = {
+        ...INITIAL_EXERCISE,
+        id: exercises[exercises_index].id,
+        exercise: exercises[exercises_index].name,
+        group: group,
+        rank: rank as "MEV" | "MRV" | "MV",
+      };
+
+      let exercise_two = {
+        ...INITIAL_EXERCISE,
+        id: exercises[exercises_index + 1].id,
+        exercise: exercises[exercises_index + 1].name,
+        group: group,
+        rank: rank as "MEV" | "MRV" | "MV",
+      };
+
+      if (split.length === 2) {
+        const getSetsOne = { ...exercise_one, sets: parseInt(split[0]) };
+        const getSetsTwo = { ...exercise_two, sets: parseInt(split[1]) };
+        exercise_list.push([getSetsOne, getSetsTwo]);
+        exercises_index = exercises_index + 2;
+      } else if (split.length === 1) {
+        const getSetsOne = { ...exercise_one, sets: parseInt(split[0]) };
+        exercise_list.push([getSetsOne]);
+        exercises_index++;
+      }
+    }
+  }
+
+  return exercise_list;
 };

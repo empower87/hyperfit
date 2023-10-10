@@ -6,7 +6,7 @@
     "group": "back",
     "region": "upper",
     "requirements": ["barbell"],
-    "variations": ["lat-focused", "Pendlay"],
+    "variations": ["Pendlay"],
     "tips": "",
     "movement_type": "compound"
   },
@@ -17,7 +17,7 @@
     "group": "back",
     "region": "upper",
     "requirements": ["machine"],
-    "variations": ["lat-focused"],
+    "variations": [],
     "tips": "",
     "movement_type": "compound"
   },
