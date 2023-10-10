@@ -578,6 +578,7 @@ const getTrainingBlock = (_split: SessionDayType[]) => {
           if (ex.meso_start <= mesocycle) return ex;
         });
       });
+
       let setsTwo = seshtwo.map((exercises) => {
         return exercises.filter((ex) => {
           if (ex.meso_start <= mesocycle) return ex;

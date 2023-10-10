@@ -1,0 +1,57 @@
+[
+  {
+    "id": "0001-abs-hangingkneeraise",
+    "name": "Hanging Knee Raise",
+    "rank": 1,
+    "group": "abs",
+    "region": "",
+    "requirements": ["bar"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "isolation"
+  },
+  {
+    "id": "0002-abs-hangingstraightlegraise",
+    "name": "Hanging Straight-Leg Raise",
+    "rank": 2,
+    "group": "abs",
+    "region": "",
+    "requirements": ["bar"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "isolation"
+  },
+  {
+    "id": "0003-abs-machinecrunch",
+    "name": "Machine Crunch",
+    "rank": 3,
+    "group": "abs",
+    "region": "",
+    "requirements": ["machine"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "isolation"
+  },
+  {
+    "id": "0004-abs-ropecrunch",
+    "name": "Rope Crunch",
+    "rank": 4,
+    "group": "abs",
+    "region": "",
+    "requirements": ["cable"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "isolation"
+  },
+  {
+    "id": "0005-abs-vup",
+    "name": "V-Up",
+    "rank": 5,
+    "group": "abs",
+    "region": "",
+    "requirements": [],
+    "variations": [],
+    "tips": "",
+    "movement_type": "compound"
+  }
+]

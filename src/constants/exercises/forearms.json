@@ -1,0 +1,24 @@
+[
+  {
+    "id": "0001-forearms-barbellwristcurl",
+    "name": "Barbell Wrist Curl",
+    "rank": 1,
+    "group": "forearms",
+    "region": "",
+    "requirements": ["barbell"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "isolation"
+  },
+  {
+    "id": "0002-forearms-dumbbellwristcurl",
+    "name": "Dumbbell Wrist Curl",
+    "rank": 2,
+    "group": "forearms",
+    "region": "",
+    "requirements": ["dumbbell"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "isolation"
+  }
+]

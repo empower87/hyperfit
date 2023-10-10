@@ -61,7 +61,9 @@
     "group": "back",
     "region": "upper",
     "requirements": ["machine"],
-    "variations": ["close-grip", "wide-grip", "neutral-grip"]
+    "variations": ["close-grip", "wide-grip", "neutral-grip"],
+    "tips": "",
+    "movement_type": "compound"
   },
   {
     "id": "0007-back-latfocusedbarbellrows",
