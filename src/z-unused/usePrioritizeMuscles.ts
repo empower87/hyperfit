@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { MEV_RANK, MRV_RANK } from "src/constants/prioritizeRanks";
-import { determineWorkoutSplit } from "~/components/Macrocycle/TrainingBlock";
+import { determineWorkoutSplit } from "~/components/Macrocycle/TrainingBlock/TrainingBlock";
 import { getExercise } from "~/constants/exercises";
 import {
   LOWER_MUSCLES,

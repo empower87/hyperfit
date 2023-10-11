@@ -11,6 +11,13 @@ type DayType =
 
 export type SplitType = "upper" | "lower" | "push" | "pull" | "full" | "off";
 
+type ExerciseDetails = {
+  sets: number;
+  reps: number;
+  weight: number;
+  rir: number;
+};
+
 export type ExerciseType = {
   id: string;
   exercise: string;
@@ -22,6 +29,7 @@ export type ExerciseType = {
   weight: number;
   rir: number;
   meso_start: number;
+  meso_details: ExerciseDetails[];
 };
 
 export type SessionDayType = {

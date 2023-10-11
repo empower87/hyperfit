@@ -322,7 +322,6 @@ const TR = ({
     onEdit(id, value);
   };
 
-  console.log(exercises, "TR TR TR EXERCISES");
   return (
     <>
       {exercises.map((each, i) => {

@@ -1,4 +1,3 @@
-import { getExercise } from "~/constants/exercises";
 import { MEV_RANK, MRV_RANK } from "~/constants/prioritizeRanks";
 import {
   LOWER_MUSCLES,
@@ -8,7 +7,6 @@ import {
   UPPER_MUSCLES,
 } from "~/constants/workoutSplits";
 import { getTopExercises } from "~/utils/getExercises";
-import { getMuscleData } from "~/utils/getMuscleData";
 import { getNextSession } from "~/utils/getNextSession";
 import {
   ExerciseType,
@@ -16,6 +14,21 @@ import {
   SessionDayType,
   SplitType,
 } from "./weeklySessionSplitReducer";
+
+type SplitsType = {
+  upper: number;
+  lower: number;
+  push: number;
+  pull: number;
+  full: number;
+  off: number;
+};
+
+export type VolumeLandmarkType = "MRV" | "MEV" | "MV";
+export type VolumeKey =
+  | "mrv_progression_matrix"
+  | "mev_progression_matrix"
+  | "mv_progression_matrix";
 
 function initializeOnOffDays(sessions: number, split: SessionDayType[]) {
   switch (sessions) {
@@ -275,31 +288,27 @@ function determineOptimalSessionSplits(
 function updateWeekWithSessionSplits(
   sessions: [number, number],
   split: SessionDayType[],
-  lowerSessions: number,
-  upperSessions: number,
-  pushSessions: number,
-  pullSessions: number,
-  fullSessions: number,
-  offSessions: number
+  splits: SplitsType
 ) {
-  let first_sessions = sessions[0];
-  let second_sessions = sessions[1];
+  const { lower, upper, push, pull, full, off } = splits;
 
-  let update_split = initializeOnOffDays(first_sessions, [...split]);
-  // let update_week = initTrainingDays(first_sessions, [...week]);
+  const first_sessions = sessions[0];
+  const second_sessions = sessions[1];
+
+  const update_split = initializeOnOffDays(first_sessions, [...split]);
 
   let counter = {
-    lower: lowerSessions,
-    upper: upperSessions,
-    push: pushSessions,
-    pull: pullSessions,
-    full: fullSessions,
-    off: offSessions,
+    lower: lower,
+    upper: upper,
+    push: push,
+    pull: pull,
+    full: full,
+    off: off,
   };
 
-  const totalLower = lowerSessions + fullSessions;
-  const totalPush = pushSessions + upperSessions + fullSessions;
-  const totalPull = pullSessions + upperSessions + fullSessions;
+  const totalLower = lower + full;
+  const totalPush = push + upper + full;
+  const totalPull = pull + upper + full;
 
   for (let i = 0; i < update_split.length; i++) {
     let isTrainingDay = update_split[i].sessionNum > 0 ? true : false;
@@ -370,254 +379,88 @@ function updateWeekWithSessionSplits(
   return update_split;
 }
 
-function updateMuscleListSets(
-  _items: MusclePriorityType[],
-  split: SessionDayType[]
-) {
-  let upper = [];
-  let lower = [];
+function addMesoProgression(_items: MusclePriorityType[], splits: SplitsType) {
+  let upper = splits.upper + splits.pull + splits.push + splits.full;
+  let lower = splits.lower + splits.full;
 
   let items = [..._items];
 
-  for (let h = 0; h < split.length; h++) {
-    let sessionOne = split[h].sessions[0];
-    let sessionTwo = split[h].sessions[1];
-    let uppers = ["upper", "push", "pull", "full"];
-    let lowers = ["lower", "full"];
-
-    if (uppers.includes(sessionOne)) {
-      upper.push(sessionOne);
-    }
-    if (uppers.includes(sessionTwo)) {
-      upper.push(sessionTwo);
-    }
-    if (lowers.includes(sessionOne)) {
-      lower.push(sessionOne);
-    }
-    if (lowers.includes(sessionTwo)) {
-      lower.push(sessionTwo);
-    }
-  }
-
   for (let i = 0; i < items.length; i++) {
-    const muscleData = getMuscleData(items[i].muscle);
-
-    type VolumeKey =
-      | "mrv_progression_matrix"
-      | "mev_progression_matrix"
-      | "mv_progression_matrix";
-
-    let key: VolumeKey =
-      i < MRV_RANK
-        ? "mrv_progression_matrix"
-        : i >= MRV_RANK && i < MEV_RANK
-        ? "mev_progression_matrix"
-        : "mv_progression_matrix";
+    let key: VolumeLandmarkType =
+      i < MRV_RANK ? "MRV" : i >= MRV_RANK && i < MEV_RANK ? "MEV" : "MV";
 
     let sessions = lower;
-
-    const volume_landmark =
-      i < MRV_RANK ? "MRV" : i >= MRV_RANK && i < MEV_RANK ? "MEV" : "MV";
 
     if (UPPER_MUSCLES.includes(items[i].muscle)) {
       sessions = upper;
     }
 
     let mesoProgression = [1, 1, 1];
-    let matrixIndex = 0;
 
-    if (key === "mrv_progression_matrix") {
-      const getFrequencyProgression = (sessions: number) => {
-        switch (sessions) {
-          case 6:
-            return [4, 5, 6];
-          case 5:
-            return [3, 4, 5];
-          case 4:
-            return [2, 3, 4];
-          case 3:
-            return [2, 3, 3];
-          case 2:
-            return [1, 2, 2];
-          case 1:
-            return [1, 1, 1];
-          default:
-            return [0, 0, 0];
-        }
-      };
-
-      let prog = getFrequencyProgression(sessions.length);
-
-      mesoProgression = prog;
-      matrixIndex = prog[prog.length - 1] - 1;
-    } else if (key === "mev_progression_matrix") {
-      if (sessions.length <= 2) {
-        mesoProgression = [1, 2, 2];
-        matrixIndex = 1;
-      } else if (
-        items[i].muscle === "back" ||
-        items[i].muscle === "quads" ||
-        items[i].muscle === "calves"
-      ) {
-        mesoProgression = [2, 3, 3];
-        matrixIndex = 2;
-      }
-    } else {
-      if (
-        items[i].muscle === "back" ||
-        items[i].muscle === "quads" ||
-        items[i].muscle === "calves"
-      ) {
-        mesoProgression = [1, 2, 2];
-        matrixIndex = 1;
-      }
-    }
-
-    let matrix =
-      muscleData[key][matrixIndex] ??
-      muscleData[key][muscleData[key].length - 1];
-    let exercises: ExerciseType[][] = [];
-
-    const exercise: ExerciseType = {
-      exercise: "Triceps Extension (cable, single-arm)",
-      id: "001_Triceps Extension (cable, single-arm)",
-      group: "back",
-      rank: "MRV",
-      session: 1,
-      sets: 2,
-      reps: 10,
-      weight: 100,
-      rir: 3,
-      meso_start: 1,
-    };
-
-    let count = 0;
-    let meso_start = 1;
-    let meso_count = 1;
-
-    for (let j = 0; j < matrix?.length; j++) {
-      let exerciseList: ExerciseType[] = [];
-      const splitVol = matrix[j].split("-").map((each) => parseInt(each));
-      const exercise_one = getExercise(muscleData.name, count).name;
-      const exercise_two = getExercise(muscleData.name, count + 1).name;
-      const id_one = `${i}-${count + 1}_${exercise_one}`;
-      const id_two = `${i}-${count + 2}_${exercise_two}`;
-
-      if (meso_count <= mesoProgression[0]) {
-        meso_start = 1;
-      } else if (
-        meso_count > mesoProgression[0] &&
-        meso_count <= mesoProgression[1]
-      ) {
-        meso_start = 2;
-      } else {
-        meso_start = 3;
-      }
-
-      if (splitVol.length > 1) {
-        exerciseList.push(
-          {
-            ...exercise,
-            id: id_one,
-            rank: volume_landmark,
-            sets: splitVol[0],
-            session: j + 1,
-            group: muscleData.name,
-            exercise: exercise_one,
-            meso_start: meso_start,
-          },
-          {
-            ...exercise,
-            id: id_two,
-            rank: volume_landmark,
-            sets: splitVol[1],
-            session: j + 1,
-            group: muscleData.name,
-            exercise: exercise_two,
-            meso_start: meso_start,
+    switch (key) {
+      case "MRV":
+        const getFrequencyProgression = (sessions: number) => {
+          switch (sessions) {
+            case 6:
+              return [4, 5, 6];
+            case 5:
+              return [3, 4, 5];
+            case 4:
+              return [2, 3, 4];
+            case 3:
+              return [2, 3, 3];
+            case 2:
+              return [1, 2, 2];
+            case 1:
+              return [1, 1, 1];
+            default:
+              return [0, 0, 0];
           }
-        );
-        count = count + 2;
-        meso_count++;
-      } else {
-        exerciseList.push({
-          ...exercise,
-          id: id_one,
-          rank: volume_landmark,
-          sets: splitVol[0],
-          session: j + 1,
-          group: muscleData.name,
-          exercise: exercise_one,
-          meso_start: meso_start,
-        });
-        count = count + 1;
-        meso_count++;
-      }
-      exercises.push(exerciseList);
+        };
+
+        let prog = getFrequencyProgression(sessions);
+
+        mesoProgression = prog;
+        break;
+      case "MEV":
+        if (sessions <= 2) {
+          mesoProgression = [1, 2, 2];
+        } else if (
+          items[i].muscle === "back" ||
+          items[i].muscle === "quads" ||
+          items[i].muscle === "calves"
+        ) {
+          mesoProgression = [2, 3, 3];
+        }
+        break;
+      default:
+        if (
+          items[i].muscle === "back" ||
+          items[i].muscle === "quads" ||
+          items[i].muscle === "calves"
+        ) {
+          mesoProgression = [1, 2, 2];
+        }
+        break;
     }
 
-    items[i] = {
-      ...items[i],
-      mesoProgression: mesoProgression,
-      exercises: exercises,
-    };
+    items[i].mesoProgression = mesoProgression;
   }
 
   return items;
 }
-
-const getTrainingBlock = (_split: SessionDayType[]) => {
-  const _splitCopied = [..._split];
-
-  function getSplitForMesocycle(split: SessionDayType[], mesocycle: number) {
-    const newSplit = split.map((session) => {
-      const seshone = session.sets[0];
-      const seshtwo = session.sets[1];
-
-      let setsOne = seshone.map((exercises) => {
-        return exercises.filter((ex) => {
-          if (ex.meso_start <= mesocycle) return ex;
-        });
-      });
-
-      let setsTwo = seshtwo.map((exercises) => {
-        return exercises.filter((ex) => {
-          if (ex.meso_start <= mesocycle) return ex;
-        });
-      });
-
-      const newSets: [ExerciseType[][], ExerciseType[][]] = [setsOne, setsTwo];
-      return { ...session, sets: newSets };
-    });
-    return newSplit;
-  }
-
-  const meso_one = getSplitForMesocycle(_splitCopied, 1);
-  const meso_two = getSplitForMesocycle(_splitCopied, 2);
-  const meso_three = getSplitForMesocycle(_splitCopied, 3);
-
-  return [meso_one, meso_two, meso_three];
-};
 
 const distributeExercisesAmongSplit = (
   list: MusclePriorityType[],
   split: SessionDayType[]
 ) => {
   let meso: SessionDayType[] = [...split].map((each) => {
-    let emptySets: [ExerciseType[][], ExerciseType[][]] = [[], []];
+    const emptySets: [ExerciseType[][], ExerciseType[][]] = [[], []];
     return { ...each, sets: emptySets };
   });
 
   for (let i = 0; i < list.length; i++) {
     const lastIndex = list[i].mesoProgression[2];
-    // let exercises = list[i].exercises.slice(0, lastIndex);
-
-    // let exercises = list[i].exercises;
-
-    type VolumeKey =
-      | "mrv_progression_matrix"
-      | "mev_progression_matrix"
-      | "mv_progression_matrix";
 
     let key: VolumeKey =
       i < MRV_RANK
@@ -626,8 +469,12 @@ const distributeExercisesAmongSplit = (
         ? "mev_progression_matrix"
         : "mv_progression_matrix";
 
-    let exercises = getTopExercises(list[i].muscle, key, lastIndex);
-    // let freq_index = initial_frequency > 0 ? initial_frequency - 1 : 0;
+    let exercises = getTopExercises(
+      list[i].muscle,
+      key,
+      lastIndex,
+      list[i].mesoProgression
+    );
 
     let session: "upper" | "lower" = "lower";
 
@@ -719,15 +566,10 @@ function updateReducerStateHandler(
   const new_split = updateWeekWithSessionSplits(
     total_sessions,
     split,
-    sessions_list.lower,
-    sessions_list.upper,
-    sessions_list.push,
-    sessions_list.pull,
-    sessions_list.full,
-    sessions_list.off
+    sessions_list
   );
 
-  const updated_list = updateMuscleListSets(list, new_split);
+  const updated_list = addMesoProgression(list, sessions_list);
 
   const new_split_with_exercises = distributeExercisesAmongSplit(
     updated_list,
@@ -740,114 +582,4 @@ function updateReducerStateHandler(
   };
 }
 
-export { getTrainingBlock, updateReducerStateHandler };
-
-// const distributeExercisesAmongSplit = (
-//   list: MusclePriorityType[],
-//   split: SessionDayType[],
-//   mesoNum: number
-// ) => {
-//   let meso: SessionDayType[] = [...split].map((each) => {
-//     let emptySets: [ExerciseType[][], ExerciseType[][]] = [[], []];
-//     return { ...each, sets: emptySets };
-//   });
-
-//   for (let i = 0; i < list.length; i++) {
-//     const lastIndex = list[i].mesoProgression[mesoNum];
-//     let exercises = list[i].exercises.slice(0, lastIndex);
-//     // let exercises = list[i].exercises;
-
-//     type VolumeKey =
-//       | "mrv_progression_matrix"
-//       | "mev_progression_matrix"
-//       | "mv_progression_matrix";
-
-//     let key: VolumeKey =
-//       i < MRV_RANK
-//         ? "mrv_progression_matrix"
-//         : i >= MRV_RANK && i < MEV_RANK
-//         ? "mev_progression_matrix"
-//         : "mv_progression_matrix";
-
-//     let initial_frequency = list[i].mesoProgression[mesoNum];
-//     // let freq_index = initial_frequency > 0 ? initial_frequency - 1 : 0;
-
-//     let session: "upper" | "lower" = "lower";
-
-//     if (UPPER_MUSCLES.includes(list[i].muscle)) {
-//       session = "upper";
-//     }
-
-//     const handleSession = (session: SplitType, group: "lower" | "upper") => {
-//       switch (session) {
-//         case "push":
-//           if (group === "upper") {
-//             return true;
-//           } else {
-//             return false;
-//           }
-//         case "pull":
-//           if (group === "upper") {
-//             return true;
-//           } else {
-//             return false;
-//           }
-//         case "upper":
-//           if (group === "upper") {
-//             return true;
-//           } else {
-//             return false;
-//           }
-//         case "lower":
-//           if (group === "lower") {
-//             return true;
-//           } else {
-//             return false;
-//           }
-//         case "full":
-//           return true;
-//         default:
-//           return false;
-//       }
-//     };
-
-//     for (let j = 0; j < meso.length; j++) {
-//       if (exercises.length) {
-//         let sessionOne = meso[j].sessions[0];
-//         let sessionTwo = meso[j].sessions[1];
-//         const canAddExercise = handleSession(sessionOne, session);
-
-//         if (canAddExercise && exercises.length) {
-//           let add_exercises = exercises[0];
-
-//           for (let k = 0; k < add_exercises.length; k++) {
-//             add_exercises[k] = {
-//               ...add_exercises[k],
-//               session: meso[j].sessionNum,
-//             };
-//           }
-
-//           meso[j].sets[0].push(add_exercises);
-//           exercises.shift();
-//         }
-
-//         const canAddSecondExercise = handleSession(sessionTwo, session);
-
-//         if (canAddSecondExercise && exercises.length) {
-//           let add_exercises = exercises[0];
-
-//           for (let k = 0; k < add_exercises.length; k++) {
-//             add_exercises[k] = {
-//               ...add_exercises[k],
-//               session: meso[j].sessionNum,
-//             };
-//           }
-
-//           meso[j].sets[1].push(add_exercises);
-//           exercises.shift();
-//         }
-//       }
-//     }
-//   }
-//   return meso;
-// };
+export { updateReducerStateHandler };

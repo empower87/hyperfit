@@ -75,9 +75,9 @@ export const FrequencySelect = ({
 
   return (
     <div className="flex h-1/3">
-      <p className="w-5/6 p-1 text-xs leading-3 text-slate-700">{title}</p>
+      <p className="w-4/5 p-1 text-xs leading-3 text-slate-700">{title}</p>
 
-      <select className="w-1/6" onChange={handleSelectChange}>
+      <select className="w-1/5" onChange={handleSelectChange}>
         {options.map((option) => (
           <option key={option} value={option}>
             {option === 7 ? `${option}: Not Recommended` : option}

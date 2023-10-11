@@ -1,5 +1,5 @@
 import { type NextPage } from "next";
-import TrainingBlock from "~/components/Macrocycle/TrainingBlock";
+import TrainingBlock from "~/components/Macrocycle/TrainingBlock/TrainingBlock";
 import PrioritizeFocus from "~/components/PrioritizeFocus";
 import PrioritySectionLayout from "~/components/PrioritySectionLayout";
 import PromptCardLayout, {
@@ -52,10 +52,7 @@ const Home: NextPage = () => {
               total_sessions={total_sessions}
             />
 
-            <TrainingBlock
-              // trainingBlock={training_block}
-              split={split}
-            />
+            <TrainingBlock split={split} />
           </div>
         </div>
       </div>

@@ -1,17 +1,10 @@
-import { ReactNode, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ExerciseType,
   SessionDayType,
 } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
-import { getTrainingBlock } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitUtils";
-import { MesocycleLayout, MesocycleTable } from "./Mesocycle";
 
-type TrainingBlockProps = {
-  split: SessionDayType[];
-  children?: ReactNode;
-};
-
-export default function TrainingBlock({ split, children }: TrainingBlockProps) {
+export default function useTrainingBlock(split: SessionDayType[]) {
   const [splitState, setSplitState] = useState<SessionDayType[]>([]);
   const [trainingBlock, setTrainingBlock] = useState<SessionDayType[][]>([]);
 
@@ -21,9 +14,46 @@ export default function TrainingBlock({ split, children }: TrainingBlockProps) {
 
   useEffect(() => {
     const block = getTrainingBlock(splitState);
-    console.log(splitState, block, "EDIT EXERCISE CHANGE??? 2");
     setTrainingBlock(block);
   }, [splitState]);
+
+  const getTrainingBlock = (_split: SessionDayType[]) => {
+    const getSplitForMesocycle = (
+      split: SessionDayType[],
+      mesocycle: number
+    ) => {
+      const newSplit = split.map((session) => {
+        const sets_one = session.sets[0];
+        const sets_two = session.sets[1];
+
+        let setsOne = sets_one.map((exercises) => {
+          return exercises.filter((exercise) => {
+            if (exercise.meso_start <= mesocycle) return exercise;
+          });
+        });
+
+        let setsTwo = sets_two.map((exercises) => {
+          return exercises.filter((exercise) => {
+            if (exercise.meso_start <= mesocycle) return exercise;
+          });
+        });
+
+        const newSets: [ExerciseType[][], ExerciseType[][]] = [
+          setsOne,
+          setsTwo,
+        ];
+        return { ...session, sets: newSets };
+      });
+
+      return newSplit;
+    };
+
+    const meso_one = getSplitForMesocycle(_split, 1);
+    const meso_two = getSplitForMesocycle(_split, 2);
+    const meso_three = getSplitForMesocycle(_split, 3);
+
+    return [meso_one, meso_two, meso_three];
+  };
 
   const editExerciseHandler = (id: string, value: string) => {
     const test = splitState.map((session) => {
@@ -58,22 +88,8 @@ export default function TrainingBlock({ split, children }: TrainingBlockProps) {
     setSplitState(test);
   };
 
-  return (
-    <div className="flex flex-col">
-      {children}
-
-      {trainingBlock.map((each, index) => {
-        return (
-          <MesocycleLayout
-            key={`${index}_${each[index]?.day}_mesocycles`}
-            title={`Mesocycle ${index + 1}`}
-          >
-            <MesocycleTable split={each} onEdit={editExerciseHandler} />
-          </MesocycleLayout>
-        );
-      })}
-    </div>
-  );
+  return {
+    trainingBlock,
+    editExerciseHandler,
+  };
 }
-
-const useTrainingBlock = (split: SessionDayType[]) => {};
