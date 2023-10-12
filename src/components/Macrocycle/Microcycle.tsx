@@ -215,7 +215,6 @@ function SelectExercise({
     onChange(id, event.target.value);
   };
 
-  console.log(exercises, "ok is there an error here??");
   return (
     <select
       className={bgColor + " w-full"}
@@ -306,6 +305,8 @@ export default function Microcycle({
   );
 }
 
+// TODO: SHOULD LOGICALLY BE ABLE TO HANDLE PROGRESSION RIGHT HERE W/O
+//       HAVING TO CREATE SPECIFIC KEYS AND ADDING THEM TO EACH EXERCISE.
 const TR = ({
   exercises,
   head,

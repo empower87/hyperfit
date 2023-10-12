@@ -29,7 +29,8 @@ export type ExerciseType = {
   weight: number;
   rir: number;
   meso_start: number;
-  meso_details: ExerciseDetails[];
+  meso_progression: number[];
+  meso_details: (ExerciseDetails | null)[];
 };
 
 export type SessionDayType = {

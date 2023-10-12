@@ -460,8 +460,6 @@ const distributeExercisesAmongSplit = (
   });
 
   for (let i = 0; i < list.length; i++) {
-    const lastIndex = list[i].mesoProgression[2];
-
     let key: VolumeKey =
       i < MRV_RANK
         ? "mrv_progression_matrix"
@@ -472,7 +470,6 @@ const distributeExercisesAmongSplit = (
     let exercises = getTopExercises(
       list[i].muscle,
       key,
-      lastIndex,
       list[i].mesoProgression
     );
 

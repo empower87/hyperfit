@@ -16,7 +16,7 @@
       ["3", "3", "3", "3", "2", "1"]
     ],
     "mev_progression_matrix": [["2"], ["2", "2"], ["2", "1", "1"]],
-    "mv_progression_matrix": [["3"], ["2", "2"], ["2", "2", "2"]],
+    "mv_progression_matrix": [["2"], ["2", "2"], ["2", "1", "1"]],
     "restPeriod": 1,
     "systemicallyFatiguing": false,
     "localSystemicFatigue": ["back"]
@@ -74,7 +74,7 @@
     "frequency_min": 2,
     "frequency_max": 5,
     "mrv_progression_matrix": [
-      ["3"],
+      ["2"],
       ["2", "3"],
       ["3", "4", "3"],
       ["4", "4", "4", "2"],
@@ -162,7 +162,7 @@
     "frequency_max": 4,
     "MRV": [6, 12, 16, 18, 18],
     "mrv_progression_matrix": [
-      ["3"],
+      ["2"],
       ["2", "3"],
       ["3", "4", "3"],
       ["3", "4", "4", "2"],

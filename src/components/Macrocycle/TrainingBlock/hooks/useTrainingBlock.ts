@@ -28,13 +28,32 @@ export default function useTrainingBlock(split: SessionDayType[]) {
 
         let setsOne = sets_one.map((exercises) => {
           return exercises.filter((exercise) => {
-            if (exercise.meso_start <= mesocycle) return exercise;
+            let details = exercise.meso_details[mesocycle - 1];
+
+            if (details !== null) {
+              let update_exercise = {
+                ...exercise,
+                sets: details.sets,
+                weight: details.weight,
+              };
+              console.log(exercise, update_exercise, "TEST: WHAT?");
+              return update_exercise;
+            }
           });
         });
 
         let setsTwo = sets_two.map((exercises) => {
           return exercises.filter((exercise) => {
-            if (exercise.meso_start <= mesocycle) return exercise;
+            let details = exercise.meso_details[mesocycle - 1];
+
+            if (details !== null) {
+              let update_exercise = {
+                ...exercise,
+                sets: details.sets,
+                weight: details.weight,
+              };
+              return update_exercise;
+            }
           });
         });
 
