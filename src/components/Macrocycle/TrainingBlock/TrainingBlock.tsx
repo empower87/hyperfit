@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import { SessionDayType } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
-import { MesocycleLayout, MesocycleTable } from "../Mesocycle";
+// import { MesocycleLayout, MesocycleTable } from "../Mesocycle";
+import { MesocycleLayout } from "~/components/Session/Session";
 import useTrainingBlock from "./hooks/useTrainingBlock";
 
 type TrainingBlockProps = {
@@ -19,10 +20,9 @@ export default function TrainingBlock({ split, children }: TrainingBlockProps) {
         return (
           <MesocycleLayout
             key={`${index}_${each[index]?.day}_mesocycles`}
-            title={`Mesocycle ${index + 1}`}
-          >
-            <MesocycleTable split={each} onEdit={editExerciseHandler} />
-          </MesocycleLayout>
+            split={each}
+            currentMesocycleIndex={index}
+          />
         );
       })}
     </div>

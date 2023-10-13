@@ -85,7 +85,6 @@ const INITIAL_EXERCISE: ExerciseType = {
   reps: 10,
   weight: 100,
   rir: 3,
-  meso_start: 1,
   meso_progression: [0, 0, 0],
   meso_details: [null, null, null],
 };
@@ -132,26 +131,11 @@ export const getTopExercises = (
       ? "MEV"
       : "MV";
 
-  let meso_start = 1;
-  let meso_count = 1;
-
   for (let i = 0; i < volume_meso_three.length; i++) {
     let split_three = volume_meso_three[i].split("-");
 
     let split_two = volume_meso_two[i] ? volume_meso_two[i].split("-") : [];
     let split_one = volume_meso_one[i] ? volume_meso_one[i].split("-") : [];
-
-    // NOTE: allows for progressing the mesocycles from 1 to 3 by marking them
-    if (meso_count <= mesoProgression[0]) {
-      meso_start = 1;
-    } else if (
-      meso_count > mesoProgression[0] &&
-      meso_count <= mesoProgression[1]
-    ) {
-      meso_start = 2;
-    } else {
-      meso_start = 3;
-    }
 
     let meso_details_one = [];
     let meso_details_two = [];
@@ -208,26 +192,21 @@ export const getTopExercises = (
         const getSetsOne = {
           ...exercise_one,
           sets: parseInt(split_three[0]),
-          meso_start: meso_start,
         };
         const getSetsTwo = {
           ...exercise_two,
           sets: parseInt(split_three[1]),
-          meso_start: meso_start,
         };
 
         exercise_list.push([getSetsOne, getSetsTwo]);
         exercises_index = exercises_index + 2;
-        meso_count++;
       } else if (split_three.length === 1) {
         const getSetsOne = {
           ...exercise_one,
           sets: parseInt(split_three[0]),
-          meso_start: meso_start,
         };
         exercise_list.push([getSetsOne]);
         exercises_index++;
-        meso_count++;
       }
     }
   }
