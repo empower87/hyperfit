@@ -1,7 +1,6 @@
 import { ReactNode } from "react";
+import Mesocycle from "~/components/Mesocycle";
 import { SessionDayType } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
-// import { MesocycleLayout, MesocycleTable } from "../Mesocycle";
-import { MesocycleLayout } from "~/components/Session/Session";
 import useTrainingBlock from "./hooks/useTrainingBlock";
 
 type TrainingBlockProps = {
@@ -18,7 +17,7 @@ export default function TrainingBlock({ split, children }: TrainingBlockProps) {
 
       {trainingBlock.map((each, index) => {
         return (
-          <MesocycleLayout
+          <Mesocycle
             key={`${index}_${each[index]?.day}_mesocycles`}
             split={each}
             currentMesocycleIndex={index}

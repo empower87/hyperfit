@@ -1,6 +1,6 @@
 import { updateReducerStateHandler } from "./weeklySessionSplitUtils";
 
-type DayType =
+export type DayType =
   | "Sunday"
   | "Monday"
   | "Tuesday"

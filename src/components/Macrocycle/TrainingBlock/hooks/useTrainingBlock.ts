@@ -57,9 +57,11 @@ export default function useTrainingBlock(split: SessionDayType[]) {
           });
         });
 
+        const filterEmptySetsOne = setsOne.filter((each) => each.length);
+        const filterEmptySetsTwo = setsTwo.filter((each) => each.length);
         const newSets: [ExerciseType[][], ExerciseType[][]] = [
-          setsOne,
-          setsTwo,
+          filterEmptySetsOne,
+          filterEmptySetsTwo,
         ];
         return { ...session, sets: newSets };
       });
