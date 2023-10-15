@@ -1,6 +1,7 @@
 import {
   ExerciseDetails,
   ExerciseType,
+  SplitType,
 } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
 
 type ExerciseCellProps = {
@@ -8,6 +9,7 @@ type ExerciseCellProps = {
   index: number;
   width: string;
   cellWidths: string[];
+  position: "last" | "first" | "mid";
 };
 type HeaderCellProps = {
   values: string[];
@@ -20,20 +22,29 @@ type MicrocycleCellsProps = {
   details: ExerciseDetails;
   width: string;
   cellWidths: string[];
+  position: "last" | "first" | "mid";
 };
 type SessionCellProps = {
-  day: string;
-  sessionSplitIndex: 0 | 1;
-  split: string;
+  split: SplitType;
+  index: number;
+  width: string;
 };
 
-function Cell({ value, width }: { value: string; width: string }) {
+function Cell({
+  value,
+  width,
+  alignment,
+}: {
+  value: string;
+  width: string;
+  alignment: string;
+}) {
   return (
     <div
-      className="flex justify-center border-r border-slate-500"
+      className={alignment + " flex border-r border-slate-500"}
       style={{ width: width }}
     >
-      <p className="overflow-hidden text-ellipsis" style={{ fontSize: "10px" }}>
+      <p className="truncate" style={{ fontSize: "10px" }}>
         {value}
       </p>
     </div>
@@ -45,6 +56,7 @@ function ExerciseCell({
   index,
   width,
   cellWidths,
+  position,
 }: ExerciseCellProps) {
   const bgColor =
     exercise.rank === "MRV"
@@ -52,26 +64,57 @@ function ExerciseCell({
       : exercise.rank === "MEV"
       ? "bg-orange-400"
       : "bg-green-400";
-
+  const bottomBorder = position !== "last" ? " border-b" : " border-b-2";
+  const topBorder = position === "first" ? " border-t-2" : "";
   return (
     <div
-      className={bgColor + " flex flex-row border-r-2 border-slate-500"}
+      className={
+        bgColor +
+        bottomBorder +
+        topBorder +
+        " flex flex-row border-x-2 border-slate-500"
+      }
       style={{ width: width }}
     >
-      <Cell value={`${index}`} width={cellWidths[0]} />
-      <Cell value={exercise.group} width={cellWidths[1]} />
-      <Cell value={exercise.exercise} width={cellWidths[2]} />
-      <Cell value={"dumbbell"} width={cellWidths[3]} />
-      <Cell value={"straight"} width={cellWidths[4]} />
+      <Cell
+        value={`${index}`}
+        width={cellWidths[0]}
+        alignment="justify-center"
+      />
+      <Cell
+        value={exercise.group}
+        width={cellWidths[1]}
+        alignment="justify-start"
+      />
+      <Cell
+        value={exercise.exercise}
+        width={cellWidths[2]}
+        alignment="justify-start"
+      />
+      <Cell
+        value={"dumbbell"}
+        width={cellWidths[3]}
+        alignment="justify-start"
+      />
+      <Cell
+        value={"straight"}
+        width={cellWidths[4]}
+        alignment="justify-start"
+      />
     </div>
   );
 }
 
 function HeaderCell({ values, width, cellWidths }: HeaderCellProps) {
+  let bgColor = values[0] === "" ? "" : "bg-slate-400";
   return (
-    <div className="flex flex-row bg-slate-300" style={{ width: width }}>
+    <div className={bgColor + " flex flex-row"} style={{ width: width }}>
       {values.map((each, index) => (
-        <Cell value={each} width={cellWidths[index]} />
+        <Cell
+          value={each}
+          width={cellWidths[index]}
+          alignment="justify-center"
+        />
       ))}
     </div>
   );
@@ -82,6 +125,7 @@ function MicrocycleCell({
   details,
   width,
   cellWidths,
+  position,
 }: MicrocycleCellsProps) {
   const getCellData = (week: Week, details: ExerciseDetails) => {
     let _details = details;
@@ -117,18 +161,28 @@ function MicrocycleCell({
     }
   };
 
+  const bottomBorder = position !== "last" ? " border-b" : " border-b-2";
+  const topBorder = position === "first" ? " border-t-2" : " ";
+
   const cells = getCellData(week, details);
-  const borderRight = week !== "deload" ? "border-r-2 border-slate-500" : "";
+  // const borderRight = week !== "deload" ? "border-r-2 border-slate-500" : "";
   return (
-    <div className={borderRight + " flex"} style={{ width: width }}>
+    <div
+      className={bottomBorder + topBorder + " flex border-r-2 border-slate-500"}
+      style={{ width: width }}
+    >
       {cells.map((cell, index) => (
-        <Cell value={cell} width={cellWidths[index]} />
+        <Cell
+          value={cell}
+          width={cellWidths[index]}
+          alignment="justify-center"
+        />
       ))}
     </div>
   );
 }
 
-function SessionCell({ day, sessionSplitIndex, split }: SessionCellProps) {
+function SessionCell({ split, index, width }: SessionCellProps) {
   const backgroundColor =
     split === "upper"
       ? "bg-blue-400"
@@ -136,24 +190,20 @@ function SessionCell({ day, sessionSplitIndex, split }: SessionCellProps) {
       ? "bg-red-400"
       : "bg-purple-400";
   return (
-    <div className="flex flex-col justify-start" style={{ width: "80px" }}>
-      {sessionSplitIndex === 0 ? (
-        <div className="bg-slate-300 text-xs">{day}</div>
-      ) : (
-        <div className="h-4 text-xs"></div>
+    <div className={"flex justify-end"} style={{ width: width }}>
+      {index === 1 && (
+        <div className="flex">
+          <p
+            className={
+              backgroundColor +
+              " flex w-9 justify-center border-y-2 border-l-2 border-slate-500 font-bold text-white"
+            }
+            style={{ fontSize: "10px" }}
+          >
+            {split}
+          </p>
+        </div>
       )}
-
-      <div className="flex justify-end">
-        <p
-          className={
-            backgroundColor +
-            " flex w-9 justify-center border-2 border-slate-500 font-bold text-white"
-          }
-          style={{ fontSize: "10px" }}
-        >
-          {split}
-        </p>
-      </div>
     </div>
   );
 }

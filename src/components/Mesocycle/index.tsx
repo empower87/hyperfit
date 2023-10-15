@@ -5,8 +5,13 @@ import { ROW_SECTION_WIDTHS } from "./constants";
 // TODO: Still need to move this into Cell.tsx and add customization
 function SessionHeaderLayout() {
   return (
-    <div className="flex w-full">
-      <div className="" style={{ width: ROW_SECTION_WIDTHS[0] }}></div>
+    <div className="m-1 flex w-full">
+      <div
+        className="mr-1 border-2 border-slate-700 bg-slate-500 text-white"
+        style={{ width: ROW_SECTION_WIDTHS[0] }}
+      >
+        Day
+      </div>
       <div
         className="mr-1 border-2 border-slate-700 bg-slate-500 text-white"
         style={{ width: ROW_SECTION_WIDTHS[1] }}
@@ -62,10 +67,11 @@ export default function Mesocycle({
         Mesocycle {currentMesocycleIndex + 1}
       </div>
 
-      <div className="mt-1 flex flex-col">
+      <div className="flex flex-col">
         <SessionHeaderLayout />
         <div className="flex flex-col">
           {split.map((each) => {
+            if (each.sessionNum === 0) return null;
             return (
               <SessionRow
                 split={each}
