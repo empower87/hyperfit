@@ -4,6 +4,7 @@ import {
   SessionDayType,
   SplitType,
 } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
+import { BG_COLOR_M7 } from "~/utils/themes";
 import { ExerciseCell, HeaderCell, MicrocycleCell, SessionCell } from "./Cells";
 import {
   ROW_CELL_WIDTHS,
@@ -146,7 +147,7 @@ function SessionSplitRow({
   const lastIndex = exercises.length - 1;
 
   return (
-    <div className="mb-1 flex flex-col">
+    <div className={" mb-1 flex flex-col"}>
       {sessionSplitIndex === 0 ? <HeaderRow sessionHeader={day} /> : null}
 
       <div className="flex flex-col">
@@ -182,8 +183,9 @@ function SessionRow({ split, currentMesocycleIndex }: SessionRowProps) {
   const sets_one = split.sets[0];
   const sets_two = split.sets[1];
 
+  if (!sets_one.length && !sets_two.length) return null;
   return (
-    <div className="m-1 box-border flex flex-col border border-slate-300 bg-slate-100 shadow-md">
+    <div className={BG_COLOR_M7 + " m-1 flex flex-col shadow-xl"}>
       {sets_one.length ? (
         <SessionSplitRow
           day={split.day}

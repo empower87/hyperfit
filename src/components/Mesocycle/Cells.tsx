@@ -3,6 +3,7 @@ import {
   ExerciseType,
   SplitType,
 } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
+import { BG_COLOR_M7 } from "~/utils/themes";
 
 type ExerciseCellProps = {
   exercise: ExerciseType;
@@ -44,7 +45,7 @@ function Cell({
       className={alignment + " flex border-r border-slate-500"}
       style={{ width: width }}
     >
-      <p className="truncate" style={{ fontSize: "10px" }}>
+      <p className="truncate text-white" style={{ fontSize: "10px" }}>
         {value}
       </p>
     </div>
@@ -106,7 +107,7 @@ function ExerciseCell({
 }
 
 function HeaderCell({ values, width, cellWidths }: HeaderCellProps) {
-  let bgColor = values[0] === "" ? "" : "bg-slate-400";
+  let bgColor = values[0] === "" ? "" : BG_COLOR_M7;
   return (
     <div className={bgColor + " flex flex-row"} style={{ width: width }}>
       {values.map((each, index) => (
@@ -165,10 +166,14 @@ function MicrocycleCell({
   const topBorder = position === "first" ? " border-t-2" : " ";
 
   const cells = getCellData(week, details);
-  // const borderRight = week !== "deload" ? "border-r-2 border-slate-500" : "";
+
   return (
     <div
-      className={bottomBorder + topBorder + " flex border-r-2 border-slate-500"}
+      className={
+        bottomBorder +
+        topBorder +
+        " flex border-r-2 border-slate-500 bg-slate-400"
+      }
       style={{ width: width }}
     >
       {cells.map((cell, index) => (

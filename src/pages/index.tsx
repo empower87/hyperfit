@@ -8,6 +8,8 @@ import PromptCardLayout, {
 import TestingWeeklySplit from "~/components/WeeklySplit/TrainingWeek";
 import useWeeklySessionSplit from "~/hooks/useWeeklySessionSplit/useWeeklySessionSplit";
 
+import { BG_COLOR_M5, BG_COLOR_M7, BG_COLOR_M8 } from "~/utils/themes";
+
 const Home: NextPage = () => {
   const {
     split,
@@ -18,13 +20,17 @@ const Home: NextPage = () => {
   } = useWeeklySessionSplit();
 
   return (
-    <div className="flex h-screen w-full flex-col">
-      <div className="fixed flex h-8 w-full items-center justify-center bg-slate-700 ">
+    <div className={BG_COLOR_M8 + " flex h-screen w-full flex-col"}>
+      <div
+        className={
+          BG_COLOR_M7 + " fixed flex h-8 w-full items-center justify-center"
+        }
+      >
         <h1 className="text-lg font-bold text-white">Hyperfit</h1>
       </div>
 
       <div className="flex h-full w-full pt-8">
-        <div className="flex h-full w-1/4 flex-col border-r-2 border-slate-700">
+        <div className={BG_COLOR_M5 + " flex h-full w-1/4 flex-col"}>
           <PromptCardLayout title="Frequency">
             <FrequencySelectPrompts onClick={handleFrequencyChange} />
           </PromptCardLayout>
@@ -39,13 +45,9 @@ const Home: NextPage = () => {
 
         <div className="flex h-full w-3/4 items-center justify-center">
           <div
-            className="flex h-full w-full flex-col overflow-y-scroll rounded border border-slate-700"
+            className="flex h-full w-full flex-col overflow-y-scroll"
             style={{ height: "97%", width: "98%" }}
           >
-            <div className="rounded-t-sm bg-slate-700">
-              <h2 className="ml-1 p-1 text-white">Training Block</h2>
-            </div>
-
             <TestingWeeklySplit
               split={split}
               list={prioritized_muscle_list}
