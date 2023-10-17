@@ -134,16 +134,11 @@ const MuscleItem = ({
 const Button = ({ value, onClick }: { value: string; onClick: () => void }) => {
   const classes =
     value === "Reset"
-      ? "w-1/3 bg-slate-200 text-slate-500 mr-1"
-      : "w-2/3 bg-slate-500 text-white";
+      ? "w-1/3 bg-slate-500 text-slate-700 mr-1"
+      : "w-2/3 bg-slate-800 text-white";
 
   return (
-    <button
-      onClick={onClick}
-      className={
-        classes + " rounded border-2 border-slate-500 p-1 text-xs font-bold"
-      }
-    >
+    <button onClick={onClick} className={classes + " p-1 text-xs font-bold"}>
       {value}
     </button>
   );

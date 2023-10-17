@@ -1,4 +1,7 @@
-import { ExerciseType } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
+import {
+  ExerciseDetails,
+  ExerciseType,
+} from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
 import {
   VolumeKey,
   VolumeLandmarkType,
@@ -68,7 +71,7 @@ export const getGroupList = (group: string): Exercise[] => {
   }
 };
 
-const INITIAL_DETAILS = {
+const INITIAL_DETAILS: ExerciseDetails = {
   sets: 2,
   reps: 10,
   weight: 100,

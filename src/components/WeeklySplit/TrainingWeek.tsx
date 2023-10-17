@@ -5,6 +5,7 @@ import {
   SplitType,
 } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
 import { getTrainingSplit } from "~/utils/getTrainingSplit";
+import { BORDER_COLOR_M6 } from "~/utils/themes";
 
 type TestingAlgorithmUIType = {
   title: string;
@@ -138,7 +139,10 @@ export default function TestingWeeklySplit({
   }, [split]);
 
   return (
-    <div className="m-2 rounded border border-slate-500 bg-gray-100 p-2">
+    <div className="">
+      <div className={BORDER_COLOR_M6 + " mb-2 border-b-2"}>
+        <h2 className="ml-1 p-1 text-white">Training Week</h2>
+      </div>
       <TestingAlgorithmUI
         title="Hard Coded Sessions"
         split={hardCodedSessions}

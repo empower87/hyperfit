@@ -42,7 +42,7 @@ function Cell({
 }) {
   return (
     <div
-      className={alignment + " flex border-r border-slate-500"}
+      className={alignment + " flex border-r border-slate-600"}
       style={{ width: width }}
     >
       <p className="truncate text-white" style={{ fontSize: "10px" }}>
@@ -73,7 +73,7 @@ function ExerciseCell({
         bgColor +
         bottomBorder +
         topBorder +
-        " flex flex-row border-x-2 border-slate-500"
+        " flex flex-row border-x-2 border-slate-600"
       }
       style={{ width: width }}
     >
@@ -172,7 +172,7 @@ function MicrocycleCell({
       className={
         bottomBorder +
         topBorder +
-        " flex border-r-2 border-slate-500 bg-slate-400"
+        " flex border-r-2 border-slate-600 bg-slate-400"
       }
       style={{ width: width }}
     >
@@ -201,7 +201,7 @@ function SessionCell({ split, index, width }: SessionCellProps) {
           <p
             className={
               backgroundColor +
-              " flex w-9 justify-center border-y-2 border-l-2 border-slate-500 font-bold text-white"
+              " flex w-9 justify-center border-y-2 border-l-2 border-slate-600 font-bold text-white"
             }
             style={{ fontSize: "10px" }}
           >

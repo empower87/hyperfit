@@ -5,22 +5,14 @@ import weeklySessionSplitReducer, {
 } from "./reducer/weeklySessionSplitReducer";
 
 export default function useWeeklySessionSplit() {
-  const [{ total_sessions, list, split, training_block }, dispatch] =
-    useReducer(weeklySessionSplitReducer, INITIAL_STATE);
+  const [{ total_sessions, list, split }, dispatch] = useReducer(
+    weeklySessionSplitReducer,
+    INITIAL_STATE
+  );
 
   useEffect(() => {
-    dispatch({ type: "GET_TRAINING_BLOCK" });
-  }, [split]);
-
-  useEffect(() => {
-    console.log(
-      split,
-      list,
-      total_sessions,
-      training_block,
-      "TEST: OMG IF THIS WORKS"
-    );
-  }, [total_sessions, list, split, training_block]);
+    console.log(split, list, total_sessions, "TEST: OMG IF THIS WORKS");
+  }, [total_sessions, list, split]);
 
   const handleFrequencyChange = (first: number, second: number) => {
     dispatch({
@@ -35,7 +27,6 @@ export default function useWeeklySessionSplit() {
 
   return {
     split,
-    training_block,
     total_sessions,
     prioritized_muscle_list: list,
     handleUpdateMuscleList,
