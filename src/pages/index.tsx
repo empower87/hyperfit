@@ -5,7 +5,7 @@ import PrioritySectionLayout from "~/components/PrioritySectionLayout";
 import PromptCardLayout, {
   FrequencySelectPrompts,
 } from "~/components/PromptCardLayout";
-import TestingWeeklySplit from "~/components/WeeklySplit/TrainingWeek";
+import TrainingSplit from "~/components/TrainingSplit/TrainingSplit";
 import useWeeklySessionSplit from "~/hooks/useWeeklySessionSplit/useWeeklySessionSplit";
 
 import { BG_COLOR_M6, BG_COLOR_M7, BG_COLOR_M8 } from "~/utils/themes";
@@ -48,7 +48,7 @@ const Home: NextPage = () => {
             className="flex h-full w-full flex-col overflow-y-scroll"
             style={{ height: "97%", width: "98%" }}
           >
-            <TestingWeeklySplit
+            <TrainingSplit
               split={split}
               list={prioritized_muscle_list}
               total_sessions={total_sessions}

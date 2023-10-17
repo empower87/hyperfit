@@ -47,7 +47,7 @@ export const FrequencySelectPrompts = ({
       {showPrompt && (
         <div className="flex h-1/3 items-center justify-center">
           <button
-            className="rounded bg-slate-800 p-1 text-xs font-bold text-white hover:bg-slate-700"
+            className="bg-slate-800 p-1 text-xs font-bold text-white hover:bg-slate-700"
             style={{ height: "80%", width: "95%" }}
             onClick={() => onClickHandler()}
           >

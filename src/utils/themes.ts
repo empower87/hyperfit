@@ -8,12 +8,12 @@ export const MAIN_COLOR_300 = "slate-300";
 export const SECONDARY_COLOR = "slate-500";
 export const TERTIARY_COLOR = "slate-300";
 
-export const BG_COLOR_M8 = "bg-" + MAIN_COLOR_800;
-export const BG_COLOR_M7 = "bg-" + MAIN_COLOR_700;
-export const BG_COLOR_M6 = "bg-" + MAIN_COLOR_600;
-export const BG_COLOR_M5 = "bg-" + MAIN_COLOR_500;
-export const BG_COLOR_M4 = "bg-" + MAIN_COLOR_400;
-export const BG_COLOR_M3 = "bg-" + MAIN_COLOR_300;
+export const BG_COLOR_M8 = "bg-slate-800";
+export const BG_COLOR_M7 = "bg-slate-700";
+export const BG_COLOR_M6 = "bg-slate-600";
+export const BG_COLOR_M5 = "bg-slate-500";
+export const BG_COLOR_M4 = "bg-slate-400";
+export const BG_COLOR_M3 = "bg-slate-300";
 
 export const BG_COLOR_SECONDARY = `bg-${SECONDARY_COLOR}`;
 export const BG_COLOR_TERTIARY = `bg-${TERTIARY_COLOR}`;
