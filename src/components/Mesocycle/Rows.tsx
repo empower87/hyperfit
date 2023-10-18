@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   DayType,
   ExerciseType,
@@ -5,6 +6,7 @@ import {
   SplitType,
 } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
 import { BG_COLOR_M6 } from "~/utils/themes";
+import EditExerciseModal from "../Modals/EditExerciseModal";
 import { ExerciseCell, HeaderCell, MicrocycleCell, SessionCell } from "./Cells";
 import {
   ROW_CELL_WIDTHS,
@@ -34,9 +36,26 @@ function DataRow({
 }: DataRowProps) {
   const details = exercise.meso_details[currentMesocycleIndex];
   if (!details) return null;
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+
+  const closeModal = () => {
+    setIsOpen(false);
+  };
+
+  const openModal = () => {
+    setIsOpen(true);
+  };
 
   return (
     <div className="flex flex-row">
+      <EditExerciseModal
+        isOpen={isOpen}
+        onClose={closeModal}
+        split={split}
+        group={exercise.group}
+        exercise={exercise}
+      />
+
       <SessionCell split={split} index={index} width={ROW_SECTION_WIDTHS[0]} />
       <ExerciseCell
         exercise={exercise}
@@ -44,6 +63,7 @@ function DataRow({
         width={ROW_SECTION_WIDTHS[1]}
         cellWidths={ROW_CELL_WIDTHS["exercise"]}
         position={position}
+        openModal={openModal}
       />
       <MicrocycleCell
         week="week 1"

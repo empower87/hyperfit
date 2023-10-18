@@ -11,6 +11,7 @@ type ExerciseCellProps = {
   width: string;
   cellWidths: string[];
   position: "last" | "first" | "mid";
+  openModal: () => void;
 };
 type HeaderCellProps = {
   values: string[];
@@ -58,6 +59,7 @@ function ExerciseCell({
   width,
   cellWidths,
   position,
+  openModal,
 }: ExerciseCellProps) {
   const bgColor =
     exercise.rank === "MRV"
@@ -75,6 +77,7 @@ function ExerciseCell({
         topBorder +
         " flex flex-row border-x-2 border-slate-600"
       }
+      onClick={() => openModal()}
       style={{ width: width }}
     >
       <Cell

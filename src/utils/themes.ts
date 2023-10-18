@@ -15,6 +15,8 @@ export const BG_COLOR_M5 = "bg-slate-500";
 export const BG_COLOR_M4 = "bg-slate-400";
 export const BG_COLOR_M3 = "bg-slate-300";
 
+export const HOVER_COLOR_M5 = "hover:bg-slate-500";
+
 export const BG_COLOR_SECONDARY = `bg-${SECONDARY_COLOR}`;
 export const BG_COLOR_TERTIARY = `bg-${TERTIARY_COLOR}`;
 

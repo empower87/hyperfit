@@ -43,7 +43,10 @@ const Home: NextPage = () => {
           </PrioritySectionLayout>
         </div>
 
-        <div className="flex h-full w-3/4 items-center justify-center">
+        <div
+          id="edit-modal"
+          className="relative flex h-full w-3/4 items-center justify-center"
+        >
           <div
             className="flex h-full w-full flex-col overflow-y-scroll"
             style={{ height: "97%", width: "98%" }}
