@@ -48,13 +48,16 @@ function DataRow({
 
   return (
     <div className="flex flex-row">
-      <EditExerciseModal
-        isOpen={isOpen}
-        onClose={closeModal}
-        split={split}
-        group={exercise.group}
-        exercise={exercise}
-      />
+      {isOpen && (
+        <EditExerciseModal
+          isOpen={isOpen}
+          onClose={closeModal}
+          split={split}
+          group={exercise.group}
+          exercise={exercise}
+          currentMesocycle={currentMesocycleIndex}
+        />
+      )}
 
       <SessionCell split={split} index={index} width={ROW_SECTION_WIDTHS[0]} />
       <ExerciseCell

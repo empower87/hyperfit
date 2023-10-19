@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import {
+  ExerciseDetails,
   ExerciseType,
   SplitType,
 } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
@@ -32,12 +33,21 @@ const GROUPS = [
   "calves",
 ];
 
+type EditExerciseModalProps = {
+  isOpen: boolean;
+  onClose: () => void;
+  split: SplitType;
+  group: string;
+  exercise: ExerciseType;
+  currentMesocycle: number;
+};
 export default function EditExerciseModal({
   isOpen,
   onClose,
   split,
   group,
   exercise,
+  currentMesocycle,
 }: EditExerciseModalProps) {
   const root = document.getElementById("edit-modal")!;
   const [selectedExercise, setSelectedExercise] =
@@ -59,7 +69,7 @@ export default function EditExerciseModal({
     >
       <div
         className={BG_COLOR_M7 + " flex flex-col"}
-        style={{ width: "550px", height: "300px" }}
+        style={{ width: "720px", height: "300px" }}
       >
         <div className={BORDER_COLOR_M6 + " flex justify-between border-b-2"}>
           <div className="flex h-6 justify-center">
@@ -80,7 +90,7 @@ export default function EditExerciseModal({
             onSelect={selectExerciseHandler}
           />
 
-          <div className=" flex w-4/6 flex-col p-2">
+          <div className=" flex w-3/4 flex-col p-2">
             <div className=" h-full">
               <div className={BG_COLOR_M6 + " mb-2 flex flex-col p-1"}>
                 <div className="text-sm leading-3 text-white">
@@ -91,11 +101,23 @@ export default function EditExerciseModal({
                 </div>
               </div>
 
-              <div className=" flex ">
-                <ExerciseDetail name="Sets" value={exercise.sets} />
-                <ExerciseDetail name="Reps" value={exercise.reps} />
-                <ExerciseDetail name="Weight" value={exercise.weight} />
-              </div>
+              <MesocycleDetails
+                mesocycle={1}
+                exercise={selectedExercise}
+                selectedMesocycle={currentMesocycle - 1}
+              />
+
+              <MesocycleDetails
+                mesocycle={2}
+                exercise={selectedExercise}
+                selectedMesocycle={currentMesocycle - 1}
+              />
+
+              <MesocycleDetails
+                mesocycle={3}
+                exercise={selectedExercise}
+                selectedMesocycle={currentMesocycle - 1}
+              />
             </div>
 
             <div className=" flex h-6 justify-end">
@@ -127,32 +149,99 @@ export default function EditExerciseModal({
   );
 }
 
+type MesocycleDetailsProps = {
+  mesocycle: number;
+  exercise: ExerciseType;
+  selectedMesocycle: number;
+};
+
+const MesocycleDetails = ({
+  mesocycle,
+  exercise,
+  selectedMesocycle,
+}: MesocycleDetailsProps) => {
+  const exerciseDetails = exercise.meso_details[mesocycle - 1];
+  const isSelected = mesocycle === selectedMesocycle ? true : false;
+
+  // const defaultClass = " text-white w-1/5";
+  const defaultClass = " flex h-14 w-full";
+  const selectedClass = BG_COLOR_M5 + defaultClass;
+  return (
+    <div className={isSelected ? selectedClass : defaultClass}>
+      <div className={" w-2/12 text-white"}>
+        <div className="indent-1 text-xs">Mesocycle {mesocycle}</div>
+      </div>
+      {exerciseDetails == null ? (
+        <div className="text-xs text-slate-400">
+          Exercise initiated in another Mesocycle
+        </div>
+      ) : (
+        <div className="flex w-10/12">
+          <WeekDetail week={1} exerciseDetails={exerciseDetails} />
+          <WeekDetail week={2} exerciseDetails={exerciseDetails} />
+          <WeekDetail week={3} exerciseDetails={exerciseDetails} />
+          <WeekDetail week={4} exerciseDetails={exerciseDetails} />
+        </div>
+      )}
+    </div>
+  );
+};
+
+type WeekProps = {
+  week: number;
+  exerciseDetails: ExerciseDetails;
+};
+
+const WeekDetail = ({ week, exerciseDetails }: WeekProps) => {
+  const exerciseIncrements = {
+    sets: 1,
+    weight: 5,
+  };
+
+  const sets =
+    week === 1
+      ? exerciseDetails.sets
+      : exerciseDetails.sets + exerciseIncrements.sets;
+  const weight =
+    week === 1
+      ? exerciseDetails.weight
+      : exerciseDetails.weight + exerciseIncrements.weight;
+  return (
+    <div className=" flex flex-col pr-1">
+      <div className="">
+        <p className="text-xs text-white">Week {week}</p>
+      </div>
+      <div className="flex">
+        <ExerciseDetail name="Sets" value={sets} />
+        <ExerciseDetail name="Reps" value={exerciseDetails.reps} />
+        <ExerciseDetail name="Weight" value={weight} />
+      </div>
+    </div>
+  );
+};
+
 type ExerciseDetailProps = {
   name: string;
   value: number;
 };
-
 const ExerciseDetail = ({ name, value }: ExerciseDetailProps) => {
   return (
     <div className=" flex flex-col">
-      <div className={BG_COLOR_M6 + " mr-1 p-1 text-xs text-white"}>{name}</div>
+      <div className={BG_COLOR_M6 + " text-xxs mr-1 p-0.5 text-white"}>
+        {name}
+      </div>
 
-      <div className={" mr-1 flex justify-center p-1 text-xs text-white"}>
+      <div className={" text-xxs mr-1 flex justify-center p-0.5 text-white"}>
         {value}
       </div>
     </div>
   );
 };
 
-type EditExerciseModalProps = {
-  isOpen: boolean;
-  onClose: () => void;
-  split: SplitType;
-  group: string;
-  exercise: ExerciseType;
-};
-
-type GroupListProps = Omit<EditExerciseModalProps, "onClose" | "isOpen">;
+type GroupListProps = Omit<
+  EditExerciseModalProps,
+  "onClose" | "isOpen" | "currentMesocycle"
+>;
 
 interface IGroupListProps extends GroupListProps {
   onSelect: (value: string, group: string) => void;
@@ -176,7 +265,7 @@ function GroupList({ split, group, exercise, onSelect }: IGroupListProps) {
   };
 
   return (
-    <div className={BG_COLOR_M7 + " flex h-full w-2/6 flex-col p-2"}>
+    <div className={BG_COLOR_M7 + " flex h-full w-1/4 flex-col p-2"}>
       <div className={BORDER_COLOR_M6 + " w-full border-b-2 p-1"}>
         {/* -- list of groups -- */}
         <ul className={" no-scrollbar flex flex-nowrap overflow-x-scroll"}>

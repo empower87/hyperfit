@@ -24,7 +24,7 @@ import {
 } from "../constants/exercises/index";
 import { getMuscleData } from "./getMuscleData";
 
-type Exercise = {
+export type Exercise = {
   id: string;
   name: string;
   rank: number;
