@@ -20,7 +20,10 @@ const Home: NextPage = () => {
   } = useWeeklySessionSplit();
 
   return (
-    <div className={BG_COLOR_M8 + " flex h-screen w-full flex-col"}>
+    <div
+      id="modal-body"
+      className={BG_COLOR_M8 + " flex h-screen w-full flex-col"}
+    >
       <div
         className={
           BG_COLOR_M7 + " fixed flex h-8 w-full items-center justify-center"

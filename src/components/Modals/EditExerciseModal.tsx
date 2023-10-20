@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import {
-  ExerciseDetails,
   ExerciseType,
   SplitType,
 } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
@@ -15,6 +14,7 @@ import {
   HOVER_COLOR_M5,
   HOVER_COLOR_M6,
 } from "~/utils/themes";
+import EditSets from "./EditSet";
 
 const GROUPS = [
   "chest",
@@ -41,6 +41,7 @@ type EditExerciseModalProps = {
   exercise: ExerciseType;
   currentMesocycle: number;
 };
+
 export default function EditExerciseModal({
   isOpen,
   onClose,
@@ -49,7 +50,7 @@ export default function EditExerciseModal({
   exercise,
   currentMesocycle,
 }: EditExerciseModalProps) {
-  const root = document.getElementById("edit-modal")!;
+  const root = document.getElementById("modal-body")!;
   const [selectedExercise, setSelectedExercise] =
     useState<ExerciseType>(exercise);
 
@@ -69,7 +70,7 @@ export default function EditExerciseModal({
     >
       <div
         className={BG_COLOR_M7 + " flex flex-col"}
-        style={{ width: "720px", height: "300px" }}
+        style={{ width: "750px", height: "300px" }}
       >
         <div className={BORDER_COLOR_M6 + " flex justify-between border-b-2"}>
           <div className="flex h-6 justify-center">
@@ -101,23 +102,12 @@ export default function EditExerciseModal({
                 </div>
               </div>
 
-              <MesocycleDetails
-                mesocycle={1}
-                exercise={selectedExercise}
-                selectedMesocycle={currentMesocycle - 1}
+              <EditSets
+                selectedExercise={selectedExercise}
+                currentMesocycle={currentMesocycle + 1}
               />
 
-              <MesocycleDetails
-                mesocycle={2}
-                exercise={selectedExercise}
-                selectedMesocycle={currentMesocycle - 1}
-              />
-
-              <MesocycleDetails
-                mesocycle={3}
-                exercise={selectedExercise}
-                selectedMesocycle={currentMesocycle - 1}
-              />
+              <div></div>
             </div>
 
             <div className=" flex h-6 justify-end">
@@ -148,95 +138,6 @@ export default function EditExerciseModal({
     root
   );
 }
-
-type MesocycleDetailsProps = {
-  mesocycle: number;
-  exercise: ExerciseType;
-  selectedMesocycle: number;
-};
-
-const MesocycleDetails = ({
-  mesocycle,
-  exercise,
-  selectedMesocycle,
-}: MesocycleDetailsProps) => {
-  const exerciseDetails = exercise.meso_details[mesocycle - 1];
-  const isSelected = mesocycle === selectedMesocycle ? true : false;
-
-  // const defaultClass = " text-white w-1/5";
-  const defaultClass = " flex h-14 w-full";
-  const selectedClass = BG_COLOR_M5 + defaultClass;
-  return (
-    <div className={isSelected ? selectedClass : defaultClass}>
-      <div className={" w-2/12 text-white"}>
-        <div className="indent-1 text-xs">Mesocycle {mesocycle}</div>
-      </div>
-      {exerciseDetails == null ? (
-        <div className="text-xs text-slate-400">
-          Exercise initiated in another Mesocycle
-        </div>
-      ) : (
-        <div className="flex w-10/12">
-          <WeekDetail week={1} exerciseDetails={exerciseDetails} />
-          <WeekDetail week={2} exerciseDetails={exerciseDetails} />
-          <WeekDetail week={3} exerciseDetails={exerciseDetails} />
-          <WeekDetail week={4} exerciseDetails={exerciseDetails} />
-        </div>
-      )}
-    </div>
-  );
-};
-
-type WeekProps = {
-  week: number;
-  exerciseDetails: ExerciseDetails;
-};
-
-const WeekDetail = ({ week, exerciseDetails }: WeekProps) => {
-  const exerciseIncrements = {
-    sets: 1,
-    weight: 5,
-  };
-
-  const sets =
-    week === 1
-      ? exerciseDetails.sets
-      : exerciseDetails.sets + exerciseIncrements.sets;
-  const weight =
-    week === 1
-      ? exerciseDetails.weight
-      : exerciseDetails.weight + exerciseIncrements.weight;
-  return (
-    <div className=" flex flex-col pr-1">
-      <div className="">
-        <p className="text-xs text-white">Week {week}</p>
-      </div>
-      <div className="flex">
-        <ExerciseDetail name="Sets" value={sets} />
-        <ExerciseDetail name="Reps" value={exerciseDetails.reps} />
-        <ExerciseDetail name="Weight" value={weight} />
-      </div>
-    </div>
-  );
-};
-
-type ExerciseDetailProps = {
-  name: string;
-  value: number;
-};
-const ExerciseDetail = ({ name, value }: ExerciseDetailProps) => {
-  return (
-    <div className=" flex flex-col">
-      <div className={BG_COLOR_M6 + " text-xxs mr-1 p-0.5 text-white"}>
-        {name}
-      </div>
-
-      <div className={" text-xxs mr-1 flex justify-center p-0.5 text-white"}>
-        {value}
-      </div>
-    </div>
-  );
-};
 
 type GroupListProps = Omit<
   EditExerciseModalProps,
