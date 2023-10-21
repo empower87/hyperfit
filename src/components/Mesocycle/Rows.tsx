@@ -53,7 +53,6 @@ function DataRow({
           isOpen={isOpen}
           onClose={closeModal}
           split={split}
-          group={exercise.group}
           exercise={exercise}
           currentMesocycle={currentMesocycleIndex}
         />
