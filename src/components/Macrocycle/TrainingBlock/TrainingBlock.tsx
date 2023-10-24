@@ -13,7 +13,7 @@ type TrainingBlockProps = {
 export default function TrainingBlock({ split }: TrainingBlockProps) {
   return (
     <TraingingBlockProvider split={split}>
-      <div className={" flex flex-col"}>
+      <div id="modal-body" className={" flex flex-col"}>
         <div className={BORDER_COLOR_M6 + " mb-4 border-b-2"}>
           <h2 className="ml-1 p-1 text-white">Training Block</h2>
         </div>

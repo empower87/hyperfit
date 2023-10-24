@@ -49,18 +49,35 @@ export const PUSH_MUSCLES = [
   "chest",
   "triceps",
   "delts_front",
-  // "delts_side",
-  // "traps",
+  "delts_side",
+  "traps",
 ];
 export const PUSH_AND_PULL_MUSCLES = ["delts_side", "traps"];
 export const PULL_MUSCLES = [
   "back",
   "biceps",
-  // "delts_side",
+  "delts_side",
   "delts_rear",
-  // "traps",
+  "traps",
 ];
 
 export const ANY_MUSCLES = ["delts_side", "traps", "abs", "forearms"];
 
 export const PERIPHERAL_MUSCLES = ["forearms", "abs", "calves"];
+
+export const getGroupList = (split: string) => {
+  switch (split) {
+    case "upper":
+      return UPPER_MUSCLES;
+    case "lower":
+      return LOWER_MUSCLES;
+    case "push":
+      return PUSH_MUSCLES;
+    case "pull":
+      return PULL_MUSCLES;
+    case "full":
+      return FULL_BODY_MUSCLES;
+    default:
+      return FULL_BODY_MUSCLES;
+  }
+};
