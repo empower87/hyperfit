@@ -64,5 +64,16 @@
     "variations": [],
     "tips": "",
     "movement_type": "compound"
+  },
+  {
+    "id": "0007-deltsside-cableuprightrow",
+    "name": "Cable Upright Row",
+    "rank": 7,
+    "group": "delts_side",
+    "region": "",
+    "requirements": ["cable"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "compound"
   }
 ]

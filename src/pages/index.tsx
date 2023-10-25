@@ -1,5 +1,7 @@
 import { type NextPage } from "next";
+import Section from "~/components/Layout/Section";
 import TrainingBlock from "~/components/Macrocycle/TrainingBlock/TrainingBlock";
+import { MusclePriority } from "~/components/MusclePriority/MusclePriority";
 import PrioritizeFocus from "~/components/PrioritizeFocus";
 import PrioritySectionLayout from "~/components/PrioritySectionLayout";
 import PromptCardLayout, {
@@ -54,13 +56,19 @@ const Home: NextPage = () => {
             className="flex h-full w-full flex-col overflow-y-scroll"
             style={{ height: "97%", width: "98%" }}
           >
-            <TrainingSplit
-              split={split}
-              list={prioritized_muscle_list}
-              total_sessions={total_sessions}
-            />
-
-            <TrainingBlock split={split} />
+            <Section title="Priority List">
+              <MusclePriority list={prioritized_muscle_list} />
+            </Section>
+            <Section title="Training Split">
+              <TrainingSplit
+                split={split}
+                list={prioritized_muscle_list}
+                total_sessions={total_sessions}
+              />
+            </Section>
+            <Section title="Training Block">
+              <TrainingBlock split={split} />
+            </Section>
           </div>
         </div>
       </div>

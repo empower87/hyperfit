@@ -135,6 +135,14 @@ export const getTopExercises = (
       : "MV";
 
   for (let i = 0; i < volume_meso_three.length; i++) {
+    console.log(
+      volume_meso_one,
+      volume_meso_two,
+      mesoProgression,
+      key,
+      group,
+      "WHAT IS GOING ON HERE???"
+    );
     let split_three = volume_meso_three[i].split("-");
 
     let split_two = volume_meso_two[i] ? volume_meso_two[i].split("-") : [];
@@ -142,6 +150,14 @@ export const getTopExercises = (
 
     let meso_details_one = [];
     let meso_details_two = [];
+
+    // NOTE: basically to prevent the fact that if there are less exercises than the amount of
+    // exercises required for a mesocycle.
+    // TODO: Need to fix so as to add different modality for exercise that's already being used
+    // to prevent multiple instances of an exercise through-out.
+    if (!exercises[exercises_index]) {
+      exercises_index = 0;
+    }
 
     if (exercises[exercises_index]) {
       const exercise_one_set_num =

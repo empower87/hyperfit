@@ -136,21 +136,21 @@ function FullItem({
 
   return (
     <div className=" mb-1 flex">
-      <div className={BG_COLOR_M6 + " mr-1 flex w-1/2"}>
+      <div className={BG_COLOR_M6 + " mr-1 flex w-5/12"}>
         <div className=" text-xxs w-1/5 indent-1 text-slate-400">
           {frequency}
         </div>
         <div className=" text-xxs w-2/5 text-slate-400">
           {groupExercise.day}
         </div>
-        <div className=" text-xxs w-2/5 text-slate-400">
+        <div className=" text-xxs w-2/5 indent-1 text-slate-400">
           {groupExercise.split}
         </div>
       </div>
 
-      <div className="w-1/2">
+      <div className="w-7/12">
         {exercises.map((exercise, index) => {
-          let mb = " mb-0.5";
+          let mb = " mb-1";
           if (index === lastIndex) {
             mb = "";
           }
@@ -180,6 +180,7 @@ function ExerciseItem({ exercise, selectedExercise, mb }: ExerciseItemProps) {
   const isSelected = exercise.exercise === selectedExercise ? true : false;
   return (
     <div className={isSelected ? selectedClass : unselectedClass}>
+      <div className=" ml-1">{exercise.sets}x</div>
       <div className=" indent-1">{exercise.exercise}</div>
     </div>
   );

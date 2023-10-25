@@ -80,8 +80,8 @@ export default function PrioritizeFocus({
                       >
                         <MuscleItem
                           muscle={each.muscle}
-                          sets={each.sets[0]}
                           index={index}
+                          mesoFrequency={each.mesoProgression}
                         />
                       </div>
                     )}
@@ -104,12 +104,14 @@ export default function PrioritizeFocus({
 
 const MuscleItem = ({
   muscle,
-  sets,
+
   index,
+  mesoFrequency,
 }: {
   muscle: string;
-  sets: number;
+
   index: number;
+  mesoFrequency: number[];
 }) => {
   const bgColor =
     index < MRV_RANK
@@ -120,13 +122,21 @@ const MuscleItem = ({
   return (
     <li
       className={
-        "mt-1 flex h-5 items-center justify-between rounded border-2 border-slate-700 p-1 text-white " +
+        "mt-1 flex h-5 items-center border-2 border-slate-700 p-1 text-white " +
         bgColor
       }
     >
-      <div className="text-xs">{index + 1}</div>
-      <div className="text-xs font-bold">{muscle}</div>
-      <div className="text-xs font-bold">{sets}</div>
+      <div className=" text-xxs flex w-1/12 justify-center">{index + 1}</div>
+      <div className=" flex indent-1 text-xs font-bold">{muscle}</div>
+      {/* <div className=" flex w-1/12 justify-center text-xs ">
+        {mesoFrequency[0]}
+      </div>
+      <div className=" flex w-1/12 justify-center text-xs ">
+        {mesoFrequency[1]}
+      </div>
+      <div className=" flex w-1/12 justify-center text-xs ">
+        {mesoFrequency[2]}
+      </div> */}
     </li>
   );
 };

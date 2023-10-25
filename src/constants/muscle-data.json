@@ -302,7 +302,7 @@
       ["5", "5", "5", "4", "3"],
       ["5", "5", "5", "4", "3", "2"]
     ],
-    "mev_progression_matrix": [["2"]],
+    "mev_progression_matrix": [["1"], ["1", "1"], ["1", "1", "1"]],
     "mv_progression_matrix": [],
     "restPeriod": 1,
     "systemicallyFatiguing": false,
