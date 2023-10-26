@@ -1,4 +1,4 @@
-import { MRV_RANK } from "~/constants/prioritizeRanks";
+// import { MRV_RANK } from "~/constants/prioritizeRanks";
 import { LOWER_MUSCLES } from "~/constants/workoutSplits";
 import {
   MusclePriorityType,
@@ -9,7 +9,7 @@ const getLowerPosition = (list: MusclePriorityType[]) => {
   let priority = [0, 0];
 
   for (let i = 0; i < list.length; i++) {
-    if (i < MRV_RANK) {
+    if (list[i].volume_landmark === "MRV") {
       let muscle = list[i].muscle;
 
       if (LOWER_MUSCLES.includes(muscle)) {

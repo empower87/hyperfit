@@ -5,8 +5,10 @@ import {
   Droppable,
   DroppableProps,
 } from "react-beautiful-dnd";
-import { MEV_RANK, MRV_RANK } from "~/constants/prioritizeRanks";
-import { MusclePriorityType } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
+import {
+  MusclePriorityType,
+  VOLUME_BG_COLORS,
+} from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
 
 type PrioritizeFocusProps = {
   musclePriority: MusclePriorityType[];
@@ -81,7 +83,7 @@ export default function PrioritizeFocus({
                         <MuscleItem
                           muscle={each.muscle}
                           index={index}
-                          mesoFrequency={each.mesoProgression}
+                          volume_landmark={each.volume_landmark}
                         />
                       </div>
                     )}
@@ -104,26 +106,19 @@ export default function PrioritizeFocus({
 
 const MuscleItem = ({
   muscle,
-
   index,
-  mesoFrequency,
+  volume_landmark,
 }: {
   muscle: string;
-
   index: number;
-  mesoFrequency: number[];
+  volume_landmark: "MRV" | "MEV" | "MV";
 }) => {
-  const bgColor =
-    index < MRV_RANK
-      ? "bg-red-500"
-      : index >= MRV_RANK && index < MEV_RANK
-      ? "bg-orange-400"
-      : "bg-green-400";
+  const bgColor = VOLUME_BG_COLORS[volume_landmark];
   return (
     <li
       className={
-        "mt-1 flex h-5 items-center border-2 border-slate-700 p-1 text-white " +
-        bgColor
+        bgColor +
+        " mt-1 flex h-5 items-center border-2 border-slate-700 p-1 text-white "
       }
     >
       <div className=" text-xxs flex w-1/12 justify-center">{index + 1}</div>

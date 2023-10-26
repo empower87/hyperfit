@@ -1,4 +1,3 @@
-import { MEV_RANK, MRV_RANK } from "~/constants/prioritizeRanks";
 import {
   LOWER_MUSCLES,
   PULL_MUSCLES,
@@ -379,7 +378,12 @@ function updateWeekWithSessionSplits(
   return update_split;
 }
 
-function addMesoProgression(_items: MusclePriorityType[], splits: SplitsType) {
+function addMesoProgression(
+  _items: MusclePriorityType[],
+  splits: SplitsType,
+  mrv_breakpoint: number,
+  mev_breakpoint: number
+) {
   let upper = splits.upper + splits.pull + splits.push + splits.full;
   let lower = splits.lower + splits.full;
 
@@ -387,7 +391,11 @@ function addMesoProgression(_items: MusclePriorityType[], splits: SplitsType) {
 
   for (let i = 0; i < items.length; i++) {
     let key: VolumeLandmarkType =
-      i < MRV_RANK ? "MRV" : i >= MRV_RANK && i < MEV_RANK ? "MEV" : "MV";
+      i < mrv_breakpoint
+        ? "MRV"
+        : i >= mrv_breakpoint && i < mev_breakpoint
+        ? "MEV"
+        : "MV";
 
     let sessions = lower;
 
@@ -445,6 +453,7 @@ function addMesoProgression(_items: MusclePriorityType[], splits: SplitsType) {
     }
 
     items[i].mesoProgression = mesoProgression;
+    items[i].volume_landmark = key;
   }
 
   return items;
@@ -452,7 +461,9 @@ function addMesoProgression(_items: MusclePriorityType[], splits: SplitsType) {
 
 const distributeExercisesAmongSplit = (
   list: MusclePriorityType[],
-  split: SessionDayType[]
+  split: SessionDayType[],
+  mrv_breakpoint: number,
+  mev_breakpoint: number
 ) => {
   let meso: SessionDayType[] = [...split].map((each) => {
     const emptySets: [ExerciseType[][], ExerciseType[][]] = [[], []];
@@ -461,9 +472,9 @@ const distributeExercisesAmongSplit = (
 
   for (let i = 0; i < list.length; i++) {
     let key: VolumeKey =
-      i < MRV_RANK
+      i < mrv_breakpoint
         ? "mrv_progression_matrix"
-        : i >= MRV_RANK && i < MEV_RANK
+        : i >= mrv_breakpoint && i < mev_breakpoint
         ? "mev_progression_matrix"
         : "mv_progression_matrix";
 
@@ -556,7 +567,9 @@ const distributeExercisesAmongSplit = (
 function updateReducerStateHandler(
   total_sessions: [number, number],
   list: MusclePriorityType[],
-  split: SessionDayType[]
+  split: SessionDayType[],
+  mrv_breakpoint: number,
+  mev_breakpoint: number
 ) {
   const sessions_list = determineOptimalSessionSplits(total_sessions, list);
 
@@ -566,11 +579,18 @@ function updateReducerStateHandler(
     sessions_list
   );
 
-  const updated_list = addMesoProgression(list, sessions_list);
+  const updated_list = addMesoProgression(
+    list,
+    sessions_list,
+    mrv_breakpoint,
+    mev_breakpoint
+  );
 
   const new_split_with_exercises = distributeExercisesAmongSplit(
     updated_list,
-    new_split
+    new_split,
+    mrv_breakpoint,
+    mev_breakpoint
   );
 
   return {

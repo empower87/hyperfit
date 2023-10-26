@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { MEV_RANK, MRV_RANK } from "src/constants/prioritizeRanks";
-import { determineWorkoutSplit } from "~/components/Macrocycle/TrainingBlock/TrainingBlock";
+// import { MEV_RANK, MRV_RANK } from "src/constants/prioritizeRanks";
+// import { determineWorkoutSplit } from "~/components/Macrocycle/TrainingBlock/TrainingBlock";
 import { getExercise } from "~/constants/exercises";
 import {
   LOWER_MUSCLES,
@@ -9,7 +9,7 @@ import {
   PUSH_MUSCLES,
   UPPER_MUSCLES,
 } from "~/constants/workoutSplits";
-import { MusclePriorityType, SessionDayType, SessionType } from "~/pages";
+// import { MusclePriorityType, SessionDayType, SessionType } from "~/pages";
 import { getMuscleData } from "../utils/getMuscleData";
 import { ExerciseType } from "./useEverythingLol";
 import { VolumeKey } from "./useTrainingBlock";

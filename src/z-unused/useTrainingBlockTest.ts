@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { getExercise } from "~/constants/exercises";
-import { MEV_RANK, MRV_RANK } from "~/constants/prioritizeRanks";
+// import { MEV_RANK, MRV_RANK } from "~/constants/prioritizeRanks";
 import { UPPER_MUSCLES } from "~/constants/workoutSplits";
-import { MusclePriorityType, SessionDayType, SplitType } from "~/pages";
+// import { MusclePriorityType, SessionDayType, SplitType } from "~/pages";
 import { getMuscleData } from "~/utils/getMuscleData";
 
 type MuscleTypeForTable = {

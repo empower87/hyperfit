@@ -1,5 +1,7 @@
-import { MEV_RANK, MRV_RANK } from "~/constants/prioritizeRanks";
-import { MusclePriorityType } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
+import {
+  MusclePriorityType,
+  VOLUME_BG_COLORS,
+} from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
 import { BG_COLOR_M6 } from "~/utils/themes";
 
 function Item({
@@ -9,23 +11,14 @@ function Item({
   muscleGroup: MusclePriorityType;
   index: number;
 }) {
-  const bgColor =
-    index < MRV_RANK
-      ? "bg-red-500"
-      : index >= MRV_RANK && index < MEV_RANK
-      ? "bg-orange-400"
-      : "bg-green-400";
-  const volume =
-    index < MRV_RANK
-      ? "MRV"
-      : index >= MRV_RANK && index < MEV_RANK
-      ? "MEV"
-      : "MV";
+  const bgColor = VOLUME_BG_COLORS[muscleGroup.volume_landmark];
   return (
     <li className={bgColor + " text-xxs mb-0.5 flex p-0.5"}>
       <div className=" w-1/12 indent-1">{index + 1}</div>
       <div className=" w-6/12 indent-1">{muscleGroup.muscle}</div>
-      <div className=" flex w-2/12 justify-center">{volume}</div>
+      <div className=" flex w-2/12 justify-center">
+        {muscleGroup.volume_landmark}
+      </div>
       <div className=" flex w-1/12 justify-center">
         {muscleGroup.mesoProgression[0]}
       </div>

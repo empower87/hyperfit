@@ -45,7 +45,7 @@ export type MusclePriorityType = {
   id: string;
   rank: number;
   muscle: string;
-  sets: number[];
+  volume_landmark: "MRV" | "MEV" | "MV";
   mesoProgression: number[];
   exercises: ExerciseType[][];
 };
@@ -54,6 +54,8 @@ type State = {
   total_sessions: [number, number];
   list: MusclePriorityType[];
   split: SessionDayType[];
+  mrv_breakpoint: number;
+  mev_breakpoint: number;
 };
 
 type Action = {
@@ -63,6 +65,9 @@ type Action = {
     new_list?: MusclePriorityType[];
   };
 };
+
+const INITIAL_MRV_BREAKPOINT = 4;
+const INITIAL_MEV_BREAKPOINT = 9;
 
 const INITIAL_SPLIT: SessionDayType[] = [
   {
@@ -123,12 +128,18 @@ const INITIAL_SPLIT: SessionDayType[] = [
   },
 ];
 
+export const VOLUME_BG_COLORS = {
+  MRV: "bg-red-500",
+  MEV: "bg-orange-500",
+  MV: "bg-green-500",
+};
+
 const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
   {
     id: "back-002",
     rank: 1,
     muscle: "back",
-    sets: [10, 20, 25, 30, 35, 35, 35],
+    volume_landmark: "MRV",
     mesoProgression: [0, 0, 0],
     exercises: [],
   },
@@ -136,7 +147,7 @@ const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
     id: "delts_side-008",
     rank: 2,
     muscle: "delts_side",
-    sets: [12, 25, 30, 35, 40, 40, 40],
+    volume_landmark: "MRV",
     mesoProgression: [0, 0, 0],
     exercises: [],
   },
@@ -144,7 +155,7 @@ const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
     id: "triceps-014",
     rank: 3,
     muscle: "triceps",
-    sets: [8, 16, 20, 25, 35, 35, 35],
+    volume_landmark: "MRV",
     mesoProgression: [0, 0, 0],
     exercises: [],
   },
@@ -152,7 +163,7 @@ const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
     id: "hamstrings-011",
     rank: 4,
     muscle: "hamstrings",
-    sets: [6, 12, 16, 18, 18, 18, 18],
+    volume_landmark: "MRV",
     mesoProgression: [0, 0, 0],
     exercises: [],
   },
@@ -160,7 +171,7 @@ const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
     id: "quads-012",
     rank: 5,
     muscle: "quads",
-    sets: [8, 8, 8, 8, 8, 8, 8],
+    volume_landmark: "MEV",
     mesoProgression: [0, 0, 0],
     exercises: [],
   },
@@ -168,7 +179,7 @@ const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
     id: "delts_rear-007",
     rank: 6,
     muscle: "delts_rear",
-    sets: [6, 6, 6, 6, 6, 6, 6],
+    volume_landmark: "MEV",
     mesoProgression: [0, 0, 0],
     exercises: [],
   },
@@ -176,7 +187,7 @@ const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
     id: "forearms-009",
     rank: 7,
     muscle: "forearms",
-    sets: [2, 2, 2, 2, 2, 2, 2],
+    volume_landmark: "MEV",
     mesoProgression: [0, 0, 0],
     exercises: [],
   },
@@ -184,7 +195,7 @@ const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
     id: "traps-013",
     rank: 8,
     muscle: "traps",
-    sets: [4, 4, 4, 4, 4, 4, 4],
+    volume_landmark: "MEV",
     mesoProgression: [0, 0, 0],
     exercises: [],
   },
@@ -192,7 +203,7 @@ const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
     id: "biceps-003",
     rank: 9,
     muscle: "biceps",
-    sets: [6, 6, 6, 6, 6, 6, 6],
+    volume_landmark: "MEV",
     mesoProgression: [0, 0, 0],
     exercises: [],
   },
@@ -201,7 +212,7 @@ const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
     id: "chest-005",
     rank: 10,
     muscle: "chest",
-    sets: [4, 4, 4, 4, 4, 4, 4],
+    volume_landmark: "MV",
     mesoProgression: [0, 0, 0],
     exercises: [],
   },
@@ -209,7 +220,7 @@ const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
     id: "calves-004",
     rank: 11,
     muscle: "calves",
-    sets: [6, 6, 6, 6, 6, 6, 6],
+    volume_landmark: "MV",
     mesoProgression: [0, 0, 0],
     exercises: [],
   },
@@ -218,7 +229,7 @@ const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
     id: "delts_front-006",
     rank: 12,
     muscle: "delts_front",
-    sets: [0, 0, 0, 0, 0, 0, 0],
+    volume_landmark: "MV",
     mesoProgression: [0, 0, 0],
     exercises: [],
   },
@@ -226,7 +237,7 @@ const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
     id: "abs-001",
     rank: 13,
     muscle: "abs",
-    sets: [0, 0, 0, 0, 0, 0, 0],
+    volume_landmark: "MV",
     mesoProgression: [0, 0, 0],
     exercises: [],
   },
@@ -234,7 +245,7 @@ const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
     id: "glutes-010",
     rank: 14,
     muscle: "glutes",
-    sets: [0, 0, 0, 0, 0, 0, 0],
+    volume_landmark: "MV",
     mesoProgression: [0, 0, 0],
     exercises: [],
   },
@@ -244,6 +255,8 @@ export const INITIAL_STATE: State = {
   total_sessions: [3, 0],
   list: [...MUSCLE_PRIORITY_LIST],
   split: [...INITIAL_SPLIT],
+  mrv_breakpoint: INITIAL_MRV_BREAKPOINT,
+  mev_breakpoint: INITIAL_MEV_BREAKPOINT,
 };
 
 // TODO: Should add state for total mesocycles 1-4
@@ -264,7 +277,9 @@ export default function weeklySessionSplitReducer(
       const updated_sessions = updateReducerStateHandler(
         new_sessions,
         state.list,
-        state.split
+        state.split,
+        state.mrv_breakpoint,
+        state.mev_breakpoint
       );
 
       return {
@@ -280,7 +295,9 @@ export default function weeklySessionSplitReducer(
       const updated_list = updateReducerStateHandler(
         state.total_sessions,
         new_list,
-        state.split
+        state.split,
+        state.mrv_breakpoint,
+        state.mev_breakpoint
       );
 
       return {

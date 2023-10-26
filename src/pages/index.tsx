@@ -59,6 +59,7 @@ const Home: NextPage = () => {
             <Section title="Priority List">
               <MusclePriority list={prioritized_muscle_list} />
             </Section>
+
             <Section title="Training Split">
               <TrainingSplit
                 split={split}
@@ -66,6 +67,7 @@ const Home: NextPage = () => {
                 total_sessions={total_sessions}
               />
             </Section>
+
             <Section title="Training Block">
               <TrainingBlock split={split} />
             </Section>

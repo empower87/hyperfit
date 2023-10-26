@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useReducer } from "react";
 import { getExercise } from "~/constants/exercises";
-import { MEV_RANK, MRV_RANK } from "~/constants/prioritizeRanks";
+// import { MEV_RANK, MRV_RANK } from "~/constants/prioritizeRanks";
 import {
   LOWER_MUSCLES,
   PULL_MUSCLES,
@@ -8,7 +8,7 @@ import {
   PUSH_MUSCLES,
   UPPER_MUSCLES,
 } from "~/constants/workoutSplits";
-import { MusclePriorityType, SessionDayType, SplitType } from "~/pages";
+// import { MusclePriorityType, SessionDayType, SplitType } from "~/pages";
 import { getMuscleData } from "~/utils/getMuscleData";
 import { getNextSession } from "~/utils/getNextSession";
 import { pushPullLowerFrequencyMax } from "./usePrioritizeMuscles";
