@@ -10,6 +10,7 @@ export type DayType =
   | "Saturday";
 
 export type SplitType = "upper" | "lower" | "push" | "pull" | "full" | "off";
+export type VolumeLandmark = "MRV" | "MEV" | "MV";
 
 export type ExerciseDetails = {
   sets: number;
@@ -45,7 +46,7 @@ export type MusclePriorityType = {
   id: string;
   rank: number;
   muscle: string;
-  volume_landmark: "MRV" | "MEV" | "MV";
+  volume_landmark: VolumeLandmark;
   mesoProgression: number[];
   exercises: ExerciseType[][];
 };
