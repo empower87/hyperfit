@@ -564,6 +564,22 @@ const distributeExercisesAmongSplit = (
   return meso;
 };
 
+function updateMusclePriorityList(
+  list: MusclePriorityType[],
+  total_sessions: [number, number],
+  mrv_breakpoint: number,
+  mev_breakpoint: number
+) {
+  const sessions_list = determineOptimalSessionSplits(total_sessions, list);
+  const updated_list = addMesoProgression(
+    list,
+    sessions_list,
+    mrv_breakpoint,
+    mev_breakpoint
+  );
+  return updated_list;
+}
+
 function updateReducerStateHandler(
   total_sessions: [number, number],
   list: MusclePriorityType[],
@@ -599,4 +615,4 @@ function updateReducerStateHandler(
   };
 }
 
-export { updateReducerStateHandler };
+export { updateMusclePriorityList, updateReducerStateHandler };

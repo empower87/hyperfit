@@ -56,8 +56,16 @@ const Home: NextPage = () => {
             className="flex h-full w-full flex-col overflow-y-scroll"
             style={{ height: "97%", width: "98%" }}
           >
+            {/* -- TODO: Priority List and Training Split should share state.
+                -- This would allow for USER to update list and accordingly see 
+                -- the impact on the training split. Then using that feedback 
+                -- the USER could potentially update the training split
+            */}
             <Section title="Priority List">
-              <MusclePriority list={prioritized_muscle_list} />
+              <MusclePriority
+                list={prioritized_muscle_list}
+                total_sessions={total_sessions}
+              />
             </Section>
 
             <Section title="Training Split">
