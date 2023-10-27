@@ -1,4 +1,7 @@
-import { updateReducerStateHandler } from "./weeklySessionSplitUtils";
+import {
+  VolumeLandmarkType,
+  updateReducerStateHandler,
+} from "./weeklySessionSplitUtils";
 
 export type DayType =
   | "Sunday"
@@ -10,7 +13,6 @@ export type DayType =
   | "Saturday";
 
 export type SplitType = "upper" | "lower" | "push" | "pull" | "full" | "off";
-export type VolumeLandmark = "MRV" | "MEV" | "MV";
 
 export type ExerciseDetails = {
   sets: number;
@@ -46,7 +48,7 @@ export type MusclePriorityType = {
   id: string;
   rank: number;
   muscle: string;
-  volume_landmark: VolumeLandmark;
+  volume_landmark: VolumeLandmarkType;
   mesoProgression: number[];
   exercises: ExerciseType[][];
 };

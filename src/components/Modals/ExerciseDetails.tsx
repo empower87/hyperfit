@@ -39,6 +39,7 @@ const getGroupExercises = (group: string, split: SessionDayType[]) => {
         }
       }
     }
+
     if (session_two !== "off") {
       for (let j = 0; j < sets_two.length; j++) {
         if (sets_two[j][0].group === group) {
