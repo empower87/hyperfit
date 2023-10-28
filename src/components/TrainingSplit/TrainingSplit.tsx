@@ -7,6 +7,7 @@ import {
 } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
 import { getTrainingSplit } from "~/utils/getTrainingSplit";
 import { BG_COLOR_M6, BG_COLOR_M7, BORDER_COLOR_M7 } from "~/utils/themes";
+import TrainingSplitTest from "../CustomizeTrainingSplit/TrainingSplit";
 
 type WeekProps = {
   title: string;
@@ -167,7 +168,8 @@ export default function TrainingSplit({
   return (
     <div className={BG_COLOR_M6 + " flex flex-col"}>
       <Week title="Hard Coded For Testing Purposes" split={hardCodedSessions} />
-      <Week title="Feature Logic" split={algorithmicSessions} />
+      {/* <Week title="Feature Logic" split={algorithmicSessions} /> */}
+      <TrainingSplitTest sessions={algorithmicSessions} />
     </div>
   );
 }

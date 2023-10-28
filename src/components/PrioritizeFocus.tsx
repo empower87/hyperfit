@@ -15,7 +15,7 @@ type PrioritizeFocusProps = {
   updateMusclePriority: (items: MusclePriorityType[]) => void;
 };
 
-function StrictModeDroppable({ children, ...props }: DroppableProps) {
+export function StrictModeDroppable({ children, ...props }: DroppableProps) {
   const [enabled, setEnabled] = useState(false);
 
   useEffect(() => {
