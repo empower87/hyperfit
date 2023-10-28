@@ -1,12 +1,9 @@
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import {
   MusclePriorityType,
   VOLUME_BG_COLORS,
 } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
-import {
-  VolumeLandmarkType,
-  updateMusclePriorityList,
-} from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitUtils";
+import { VolumeLandmarkType } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitUtils";
 import { getEndOfMesocycleThreeVolume } from "~/utils/musclePriorityHandlers";
 import { BG_COLOR_M5, BG_COLOR_M6, BORDER_COLOR_M8 } from "~/utils/themes";
 import Section from "../Layout/Section";
@@ -144,103 +141,26 @@ function VolumeSettingFrame({
 }
 
 type MusclePriorityProps = {
-  list: MusclePriorityType[];
+  musclePriority: MusclePriorityType[];
   total_sessions: [number, number];
+  onBreakpointChange: (value: number, other: string) => void;
+  onVolumeChange: (index: number, newVolume: VolumeLandmarkType) => void;
+  mrvBreakpoint: number;
+  mevBreakpoint: number;
+  entireVolume: number;
+  splitVolume: { session: string; sets: number }[];
 };
 
-export function MusclePriority({ list, total_sessions }: MusclePriorityProps) {
-  const [musclePriority, setMusclePriority] = useState<MusclePriorityType[]>([
-    ...list,
-  ]);
-  const [mrvBreakpoint, setMrvBreakpoint] = useState<number>(4);
-  const [mevBreakpoint, setMevBreakpoint] = useState<number>(9);
-
-  // const [entireVolume, setEntireVolume] = useState<number>(0);
-
-  const [volumeBreakpoints, setVolumeBreakpoints] = useState<[number, number]>([
-    4, 9,
-  ]);
-
-  const onVolumeChange = useCallback(
-    (index: number, newVolume: VolumeLandmarkType) => {
-      const items = [...musclePriority];
-
-      let destinationIndex = 0;
-
-      switch (newVolume) {
-        case "MRV":
-          if (index > volumeBreakpoints[1]) {
-            destinationIndex = volumeBreakpoints[1] - 1;
-          } else {
-            destinationIndex = volumeBreakpoints[0] - 1;
-          }
-          break;
-        case "MEV":
-          if (index < volumeBreakpoints[0]) {
-            destinationIndex = volumeBreakpoints[0];
-          } else if (index >= volumeBreakpoints[1]) {
-            destinationIndex = volumeBreakpoints[1] - 1;
-          }
-          break;
-        default:
-          destinationIndex = volumeBreakpoints[1];
-      }
-      const [removed] = items.splice(index, 1);
-      items.splice(destinationIndex, 0, removed);
-
-      const updateItems = updateMusclePriorityList(
-        items,
-        total_sessions,
-        volumeBreakpoints[0],
-        volumeBreakpoints[1]
-      );
-      setMusclePriority(updateItems);
-    },
-    [musclePriority]
-  );
-
-  const onBreakpointChange = (value: number, other: string) => {
-    const breakpointIndex = other === "MRV -" ? 0 : 1;
-    let newVolumeBreakpoints: [number, number] = [...volumeBreakpoints];
-    newVolumeBreakpoints[breakpointIndex] = value;
-
-    const items = [...musclePriority];
-    const updateItems = updateMusclePriorityList(
-      items,
-      total_sessions,
-      newVolumeBreakpoints[0],
-      newVolumeBreakpoints[1]
-    );
-    setVolumeBreakpoints(newVolumeBreakpoints);
-
-    setMusclePriority(updateItems);
-  };
-
-  const [entireVolume, setEntireVolume] = useState<number>(0);
-  const [splitVolume, setSplitVolume] = useState<
-    { session: string; sets: number }[]
-  >([]);
-  useEffect(() => {
-    let splits = [];
-    let count = 0;
-    for (let i = 0; i < musclePriority.length; i++) {
-      const totalVolume = getEndOfMesocycleThreeVolume(
-        musclePriority[i].mesoProgression[2],
-        musclePriority[i].volume_landmark,
-        musclePriority[i].muscle
-      );
-      count = count + totalVolume;
-    }
-    let total = total_sessions[0] + total_sessions[1];
-    let setsPerDay = Math.round(count / total);
-
-    for (let j = 0; j < total; j++) {
-      splits.push({ session: `Session ${j + 1}`, sets: setsPerDay });
-    }
-    setEntireVolume(count);
-    setSplitVolume(splits);
-  }, [musclePriority]);
-
+export function MusclePriority({
+  musclePriority,
+  total_sessions,
+  onBreakpointChange,
+  onVolumeChange,
+  mrvBreakpoint,
+  mevBreakpoint,
+  entireVolume,
+  splitVolume,
+}: MusclePriorityProps) {
   return (
     <div className=" flex">
       <div className=" w-1/3 pr-3">
@@ -248,12 +168,12 @@ export function MusclePriority({ list, total_sessions }: MusclePriorityProps) {
           <div>
             <VolumeSettingFrame
               title="MRV -"
-              breakpoint={volumeBreakpoints[0]}
+              breakpoint={mrvBreakpoint}
               onChange={onBreakpointChange}
             />
             <VolumeSettingFrame
               title="MEV -"
-              breakpoint={volumeBreakpoints[1]}
+              breakpoint={mevBreakpoint}
               onChange={onBreakpointChange}
             />
             {/* <VolumeSettingFrame title="MV - Maintenance Volume" breakpoint={14} /> */}

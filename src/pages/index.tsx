@@ -1,13 +1,12 @@
 import { type NextPage } from "next";
+import CustomizeTrainingSplit from "~/components/CustomizeTrainingSplit/CustomizeTrainingSplit";
 import Section from "~/components/Layout/Section";
 import TrainingBlock from "~/components/Macrocycle/TrainingBlock/TrainingBlock";
-import { MusclePriority } from "~/components/MusclePriority/MusclePriority";
 import PrioritizeFocus from "~/components/PrioritizeFocus";
 import PrioritySectionLayout from "~/components/PrioritySectionLayout";
 import PromptCardLayout, {
   FrequencySelectPrompts,
 } from "~/components/PromptCardLayout";
-import TrainingSplit from "~/components/TrainingSplit/TrainingSplit";
 import useWeeklySessionSplit from "~/hooks/useWeeklySessionSplit/useWeeklySessionSplit";
 
 import { BG_COLOR_M6, BG_COLOR_M7, BG_COLOR_M8 } from "~/utils/themes";
@@ -35,7 +34,7 @@ const Home: NextPage = () => {
       </div>
 
       <div className="flex h-full w-full pt-8">
-        <div className={BG_COLOR_M6 + " flex h-full w-1/4 flex-col"}>
+        <div className={BG_COLOR_M6 + " flex h-full w-1/5 flex-col"}>
           <PromptCardLayout title="Frequency">
             <FrequencySelectPrompts onClick={handleFrequencyChange} />
           </PromptCardLayout>
@@ -50,29 +49,17 @@ const Home: NextPage = () => {
 
         <div
           id="edit-modal"
-          className="relative flex h-full w-3/4 items-center justify-center"
+          className="relative flex h-full w-4/5 items-center justify-center"
         >
           <div
             className="flex h-full w-full flex-col overflow-y-scroll"
             style={{ height: "97%", width: "98%" }}
           >
-            {/* -- TODO: Priority List and Training Split should share state.
-                -- This would allow for USER to update list and accordingly see 
-                -- the impact on the training split. Then using that feedback 
-                -- the USER could potentially update the training split
-            */}
-            <Section title="Priority List">
-              <MusclePriority
-                list={prioritized_muscle_list}
+            <Section title="Customize Training Split">
+              <CustomizeTrainingSplit
+                prioritized_muscle_list={prioritized_muscle_list}
                 total_sessions={total_sessions}
-              />
-            </Section>
-
-            <Section title="Training Split">
-              <TrainingSplit
                 split={split}
-                list={prioritized_muscle_list}
-                total_sessions={total_sessions}
               />
             </Section>
 

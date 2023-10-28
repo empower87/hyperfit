@@ -53,7 +53,7 @@ export type MusclePriorityType = {
   exercises: ExerciseType[][];
 };
 
-type State = {
+export type State = {
   total_sessions: [number, number];
   list: MusclePriorityType[];
   split: SessionDayType[];
@@ -62,10 +62,16 @@ type State = {
 };
 
 type Action = {
-  type: "UPDATE_SESSIONS" | "UPDATE_LIST";
+  type:
+    | "UPDATE_SESSIONS"
+    | "UPDATE_LIST"
+    | "UPDATE_MRV_BREAKPOINT"
+    | "UPDATE_MEV_BREAKPOINT";
   payload?: {
     new_sessions?: [number, number];
     new_list?: MusclePriorityType[];
+    mrv_breakpoint?: number;
+    mev_breakpoint?: number;
   };
 };
 
@@ -308,6 +314,41 @@ export default function weeklySessionSplitReducer(
         list: updated_list.list,
         split: updated_list.split,
       };
+    case "UPDATE_MRV_BREAKPOINT":
+      if (!action.payload || !action.payload.mrv_breakpoint) return state;
+      let new_mrv_breakpoint = action.payload.mrv_breakpoint;
+
+      const updated_list_mrv = updateReducerStateHandler(
+        state.total_sessions,
+        state.list,
+        state.split,
+        new_mrv_breakpoint,
+        state.mev_breakpoint
+      );
+      return {
+        ...state,
+        list: updated_list_mrv.list,
+        split: updated_list_mrv.split,
+        mrv_breakpoint: new_mrv_breakpoint,
+      };
+    case "UPDATE_MEV_BREAKPOINT":
+      if (!action.payload || !action.payload.mev_breakpoint) return state;
+      let new_mev_breakpoint = action.payload.mev_breakpoint;
+
+      const updated_list_mev = updateReducerStateHandler(
+        state.total_sessions,
+        state.list,
+        state.split,
+        new_mev_breakpoint,
+        state.mev_breakpoint
+      );
+      return {
+        ...state,
+        list: updated_list_mev.list,
+        split: updated_list_mev.split,
+        mev_breakpoint: new_mev_breakpoint,
+      };
+
     default:
       return state;
   }
