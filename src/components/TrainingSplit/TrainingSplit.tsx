@@ -169,7 +169,7 @@ export default function TrainingSplit({
     <div className={BG_COLOR_M6 + " flex flex-col"}>
       <Week title="Hard Coded For Testing Purposes" split={hardCodedSessions} />
       {/* <Week title="Feature Logic" split={algorithmicSessions} /> */}
-      <TrainingSplitTest sessions={algorithmicSessions} />
+      <TrainingSplitTest sessions={algorithmicSessions} split={split} />
     </div>
   );
 }

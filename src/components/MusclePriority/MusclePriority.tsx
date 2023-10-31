@@ -162,7 +162,7 @@ export function MusclePriority({
   splitVolume,
 }: MusclePriorityProps) {
   return (
-    <div className=" flex">
+    <div className=" mb-2 flex">
       <div className=" w-1/3 pr-3">
         <Section title="Volume Settings">
           <div>
