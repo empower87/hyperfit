@@ -6,7 +6,7 @@
     "MAV": 10,
     "frequency_min": 2,
     "frequency_max": 5,
-    "MRV": [10, 20, 25, 30, 35],
+    "MRV": [10, 20, 25, 30, 35, 35, 35],
     "mrv_progression_matrix": [
       ["2"],
       ["2", "2"],
@@ -26,7 +26,7 @@
     "MV": 0,
     "MEV": 6,
     "MAV": 12,
-    "MRV": [12, 25, 25, 25, 25],
+    "MRV": [12, 25, 25, 25, 25, 25, 25],
     "frequency_min": 1,
     "frequency_max": 7,
     "mrv_progression_matrix": [
@@ -48,7 +48,7 @@
     "MV": 6,
     "MEV": 10,
     "MAV": 10,
-    "MRV": [10, 20, 25, 30, 35],
+    "MRV": [10, 20, 25, 30, 35, 35, 35],
     "frequency_min": 2,
     "frequency_max": 4,
     "mrv_progression_matrix": [
@@ -70,7 +70,7 @@
     "MV": 0,
     "MEV": 4,
     "MAV": 10,
-    "MRV": [10, 20, 25, 30, 35],
+    "MRV": [10, 20, 25, 30, 35, 35, 35],
     "frequency_min": 2,
     "frequency_max": 5,
     "mrv_progression_matrix": [
@@ -92,7 +92,7 @@
     "MV": 4,
     "MEV": 6,
     "MAV": 8,
-    "MRV": [8, 16, 20, 25, 35],
+    "MRV": [8, 16, 20, 25, 30, 30, 30],
     "frequency_min": 2,
     "frequency_max": 4,
     "mrv_progression_matrix": [
@@ -116,7 +116,7 @@
     "MAV": 10,
     "frequency_min": 2,
     "frequency_max": 4,
-    "MRV": [10, 20, 25, 30, 35],
+    "MRV": [10, 20, 25, 30, 35, 35, 35],
     "mrv_progression_matrix": [
       ["2-2"],
       ["2-2", "2-2"],
@@ -138,7 +138,7 @@
     "MAV": 9,
     "frequency_min": 2,
     "frequency_max": 4,
-    "MRV": [9, 18, 22, 26, 30],
+    "MRV": [9, 18, 22, 26, 30, 30, 30],
     "mrv_progression_matrix": [
       ["2-2"],
       ["2-2", "2-2"],
@@ -160,7 +160,7 @@
     "MAV": 6,
     "frequency_min": 2,
     "frequency_max": 4,
-    "MRV": [6, 12, 16, 18, 18],
+    "MRV": [6, 12, 16, 18, 20, 20, 20],
     "mrv_progression_matrix": [
       ["2"],
       ["2", "3"],
@@ -182,7 +182,7 @@
     "MAV": 6,
     "frequency_min": 2,
     "frequency_max": 4,
-    "MRV": [6, 12, 18, 25, 30],
+    "MRV": [6, 12, 18, 25, 30, 30, 30],
     "mrv_progression_matrix": [
       ["2"],
       ["2", "3"],
@@ -204,7 +204,7 @@
     "MAV": 6,
     "frequency_min": 2,
     "frequency_max": 4,
-    "MRV": [6, 12, 16, 16, 16],
+    "MRV": [6, 12, 16, 16, 16, 16, 16],
     "mrv_progression_matrix": [
       ["2"],
       ["2", "3"],
@@ -226,7 +226,7 @@
     "MAV": 12,
     "frequency_min": 2,
     "frequency_max": 5,
-    "MRV": [12, 25, 30, 35, 40],
+    "MRV": [12, 25, 30, 35, 40, 40, 40],
     "mrv_progression_matrix": [
       ["2-2"],
       ["2-2", "2-2"],
@@ -247,7 +247,7 @@
     "MV": 0,
     "MEV": 6,
     "MAV": 9,
-    "MRV": [9, 18, 25, 30, 35],
+    "MRV": [9, 18, 25, 30, 35, 35, 35],
     "frequency_min": 2,
     "frequency_max": 5,
     "mrv_progression_matrix": [
@@ -269,7 +269,7 @@
     "MV": 6,
     "MEV": 8,
     "MAV": 8,
-    "MRV": [8, 16, 20, 25, 35],
+    "MRV": [8, 16, 20, 25, 30, 35, 35],
     "frequency_min": 2,
     "frequency_max": 5,
     "mrv_progression_matrix": [
@@ -291,7 +291,7 @@
     "MV": 0,
     "MEV": 2,
     "MAV": 8,
-    "MRV": [8, 15, 20, 25, 25],
+    "MRV": [8, 15, 20, 25, 30, 30, 30],
     "frequency_min": 2,
     "frequency_max": 5,
     "mrv_progression_matrix": [

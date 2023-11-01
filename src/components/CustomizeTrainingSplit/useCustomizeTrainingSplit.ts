@@ -7,7 +7,7 @@ import {
   VolumeLandmarkType,
   updateReducerStateHandler,
 } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitUtils";
-import { getEndOfMesocycleThreeVolume } from "~/utils/musclePriorityHandlers";
+import { getEndOfMesocycleVolume } from "~/utils/musclePriorityHandlers";
 
 export default function useCustomizeTrainingSplit(
   _prioritized_muscle_list: MusclePriorityType[],
@@ -33,10 +33,10 @@ export default function useCustomizeTrainingSplit(
     let splits = [];
     let count = 0;
     for (let i = 0; i < musclePriority.length; i++) {
-      const totalVolume = getEndOfMesocycleThreeVolume(
+      const totalVolume = getEndOfMesocycleVolume(
+        musclePriority[i].muscle,
         musclePriority[i].mesoProgression[2],
-        musclePriority[i].volume_landmark,
-        musclePriority[i].muscle
+        musclePriority[i].volume_landmark
       );
       count = count + totalVolume;
     }
@@ -52,7 +52,7 @@ export default function useCustomizeTrainingSplit(
 
   const onVolumeChange = (index: number, newVolume: VolumeLandmarkType) => {
     const items = [...musclePriority];
-
+    // items[index].volume_landmark = newVolume;
     let destinationIndex = 0;
 
     switch (newVolume) {
@@ -73,6 +73,7 @@ export default function useCustomizeTrainingSplit(
       default:
         destinationIndex = mevBreakpoint;
     }
+
     const [removed] = items.splice(index, 1);
     items.splice(destinationIndex, 0, removed);
 
@@ -83,6 +84,7 @@ export default function useCustomizeTrainingSplit(
       mrvBreakpoint,
       mevBreakpoint
     );
+    console.log(items, "UPDATED ITEMS ON VOLUME CHANGE");
     setMusclePriority(updated.list);
     setSplit(updated.split);
   };
@@ -122,6 +124,5 @@ export default function useCustomizeTrainingSplit(
     onBreakpointChange,
     mrv_breakpoint,
     mev_breakpoint,
-    total_sessions,
   };
 }

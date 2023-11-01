@@ -7,7 +7,7 @@ import {
 } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
 import { getTrainingSplit } from "~/utils/getTrainingSplit";
 import { BG_COLOR_M6, BG_COLOR_M7, BORDER_COLOR_M7 } from "~/utils/themes";
-import TrainingSplitTest from "../CustomizeTrainingSplit/TrainingSplit";
+import TrainingSplitTest from "../CustomizeTrainingSplit/TrainingSplit/TrainingSplit";
 
 type WeekProps = {
   title: string;
@@ -144,9 +144,6 @@ export default function TrainingSplit({
   const [hardCodedSessions, setHardCodedSessions] = useState<
     [SplitType, SplitType][]
   >([]);
-  const [algorithmicSessions, setAlgorithmicSessions] = useState<
-    [SplitType, SplitType][]
-  >([]);
 
   useEffect(() => {
     const hardCodedSessions = getTrainingSplit(
@@ -157,19 +154,11 @@ export default function TrainingSplit({
     setHardCodedSessions(hardCodedSessions);
   }, [list, total_sessions]);
 
-  useEffect(() => {
-    const _list: [SplitType, SplitType][] = [];
-    for (let i = 0; i < split.length; i++) {
-      _list.push(split[i].sessions);
-    }
-    setAlgorithmicSessions(_list);
-  }, [split]);
-
   return (
     <div className={BG_COLOR_M6 + " flex flex-col"}>
       <Week title="Hard Coded For Testing Purposes" split={hardCodedSessions} />
       {/* <Week title="Feature Logic" split={algorithmicSessions} /> */}
-      <TrainingSplitTest sessions={algorithmicSessions} split={split} />
+      <TrainingSplitTest split={split} />
     </div>
   );
 }

@@ -1,19 +1,19 @@
 import { useCallback, useEffect, useState } from "react";
-import { DragDropContext, Draggable } from "react-beautiful-dnd";
+import { DragDropContext, Draggable, DropResult } from "react-beautiful-dnd";
 import {
   DayType,
   SessionDayType,
   SplitType,
 } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
 import { getSessionSplitColor } from "~/utils/getSessionSplitColor";
+import StrictModeDroppable from "~/utils/react-beautiful-dnd/StrictModeDroppable";
 import { BG_COLOR_M6, BG_COLOR_M7, BORDER_COLOR_M7 } from "~/utils/themes";
-import { StrictModeDroppable } from "../PrioritizeFocus";
 
 type SessionListProps = {
   sessions: DraggableSplitObjectType[][];
 };
 
-const DROPPABLE_IDS = [
+const DAYS: DayType[] = [
   "Sunday",
   "Monday",
   "Tuesday",
@@ -39,7 +39,7 @@ function SessionList({ sessions }: SessionListProps) {
   }, [sessions]);
 
   const onDragEnd = useCallback(
-    (result: any) => {
+    (result: DropResult) => {
       console.log(result, "OK WHAT ARE WE WORKING WITH ERE??");
       if (!result.destination) return;
 
@@ -49,7 +49,7 @@ function SessionList({ sessions }: SessionListProps) {
       let innerDestinationId = result.destination.index;
       let innerSourceId = result.source.index;
 
-      const getOutterIndex = (droppableId: DayType) => {
+      const getOutterIndex = (droppableId: string) => {
         switch (droppableId) {
           case "Monday":
             return 1;
@@ -86,14 +86,8 @@ function SessionList({ sessions }: SessionListProps) {
     <div className=" flex justify-evenly">
       <DragDropContext onDragEnd={onDragEnd}>
         {flattenedSessions.map((each, index) => {
-          const droppable_id = DROPPABLE_IDS[index];
-          return (
-            <DroppableDay
-              sessions={each}
-              type={each[0].id.split("-")[0]}
-              droppableId={droppable_id}
-            />
-          );
+          const droppable_id = DAYS[index];
+          return <DroppableDay sessions={each} droppableId={droppable_id} />;
         })}
       </DragDropContext>
     </div>
@@ -102,11 +96,9 @@ function SessionList({ sessions }: SessionListProps) {
 
 const DroppableDay = ({
   sessions,
-  type,
   droppableId,
 }: {
   sessions: DraggableSplitObjectType[];
-  type: string;
   droppableId: string;
 }) => {
   return (
@@ -162,10 +154,7 @@ function SessionItem({ session, index }: SessionItemProps) {
         BORDER_COLOR_M7 + " flex h-8 w-20 items-center border-2 " + bottomMargin
       }
     >
-      {/* <div className=" flex h-full w-1/6 flex-col items-center justify-center text-white">
-        <div className=" text-xxs">#</div>
-      </div> */}
-      <div className=" text-xxs w-1/6 text-white">
+      <div className=" text-xxs flex w-1/6 justify-center text-white">
         {session.session > 0 ? session.session : ""}
       </div>
       <SelectSession session={session.split} splits={SESSIONS_TEST} />
@@ -197,39 +186,30 @@ function SelectSession({ session, splits }: SelectSessionProps) {
   );
 }
 
-function TrainingSplitHeader({ day }: { day: DayType }) {
-  return (
-    <div
-      className={BG_COLOR_M7 + " flex w-20 justify-center text-xs text-white"}
-    >
-      {day}
-    </div>
-  );
-}
-
 function TrainingSplitHeaders() {
   return (
     <div className=" mb-1 flex justify-evenly">
-      <TrainingSplitHeader day="Sunday" />
-      <TrainingSplitHeader day="Monday" />
-      <TrainingSplitHeader day="Tuesday" />
-      <TrainingSplitHeader day="Wednesday" />
-      <TrainingSplitHeader day="Thursday" />
-      <TrainingSplitHeader day="Friday" />
-      <TrainingSplitHeader day="Saturday" />
+      {DAYS.map((day, index) => {
+        return (
+          <div
+            key={`${day}_${index}`}
+            className={
+              BG_COLOR_M7 + " flex w-20 justify-center text-xs text-white"
+            }
+          >
+            {day}
+          </div>
+        );
+      })}
     </div>
   );
 }
 
 type TrainingSplitProps = {
-  sessions: [SplitType, SplitType][];
   split: SessionDayType[];
 };
 
-export default function TrainingSplitTest({
-  sessions,
-  split,
-}: TrainingSplitProps) {
+export default function TrainingSplitTest({ split }: TrainingSplitProps) {
   const [draggableSplit, setDraggableSplit] = useState<
     DraggableSplitObjectType[][]
   >([]);
@@ -238,6 +218,7 @@ export default function TrainingSplitTest({
     const _list: DraggableSplitObjectType[][] = [];
 
     let count = 0;
+
     for (let i = 0; i < split.length; i++) {
       let split_one = split[i].sessions[0];
       let split_two = split[i].sessions[1];
@@ -277,19 +258,6 @@ export default function TrainingSplitTest({
     setDraggableSplit(_list);
   }, [split]);
 
-  // useEffect(() => {
-  //   console.log(sessions, "WHAT??");
-
-  //   let sesh: { id: string; session: number; split: SplitType }[][] = [];
-  //   for (let i = 0; i < sessions.length; i++) {
-  //     sesh.push([
-  //       { id: DROPPABLE_IDS[i] + `-${i + 1}`, split: sessions[i][0] },
-  //       { id: DROPPABLE_IDS[i] + `-${i + 1.5}`, split: sessions[i][0] },
-  //     ]);
-  //   }
-
-  //   setFlattenedSessions(sesh);
-  // }, [sessions]);
   return (
     <div className=" mb-1 flex flex-col">
       <TrainingSplitHeaders />

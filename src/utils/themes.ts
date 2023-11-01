@@ -22,12 +22,12 @@ export const HOVER_COLOR_M7 = "hover:bg-slate-700";
 export const BG_COLOR_SECONDARY = `bg-${SECONDARY_COLOR}`;
 export const BG_COLOR_TERTIARY = `bg-${TERTIARY_COLOR}`;
 
-export const BORDER_COLOR_M8 = "border-" + MAIN_COLOR_800;
-export const BORDER_COLOR_M7 = "border-" + MAIN_COLOR_700;
-export const BORDER_COLOR_M6 = "border-" + MAIN_COLOR_600;
-export const BORDER_COLOR_M5 = "border-" + MAIN_COLOR_500;
-export const BORDER_COLOR_M4 = "border-" + MAIN_COLOR_400;
-export const BORDER_COLOR_M3 = "border-" + MAIN_COLOR_300;
+export const BORDER_COLOR_M8 = "border-slate-800";
+export const BORDER_COLOR_M7 = "border-slate-700";
+export const BORDER_COLOR_M6 = "border-slate-600";
+export const BORDER_COLOR_M5 = "border-slate-500";
+export const BORDER_COLOR_M4 = "border-slate-400";
+export const BORDER_COLOR_M3 = "border-slate-300";
 
 export const BORDER_COLOR_SECONDARY = `border-${SECONDARY_COLOR}`;
 export const BORDER_COLOR_TERTIARY = `border-${TERTIARY_COLOR}`;

@@ -15,6 +15,8 @@ const Home: NextPage = () => {
   const {
     split,
     total_sessions,
+    mrv_breakpoint,
+    mev_breakpoint,
     prioritized_muscle_list,
     handleUpdateMuscleList,
     handleFrequencyChange,
@@ -57,9 +59,11 @@ const Home: NextPage = () => {
           >
             <Section title="Customize Training Split">
               <CustomizeTrainingSplit
-                prioritized_muscle_list={prioritized_muscle_list}
-                total_sessions={total_sessions}
-                split={split}
+                _prioritized_muscle_list={prioritized_muscle_list}
+                _total_sessions={total_sessions}
+                _split={split}
+                _mrv_breakpoint={mrv_breakpoint}
+                _mev_breakpoint={mev_breakpoint}
               />
             </Section>
 

@@ -2,45 +2,68 @@ import {
   MusclePriorityType,
   SessionDayType,
 } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
-import { MusclePriority } from "../MusclePriority/MusclePriority";
 import TrainingSplit from "../TrainingSplit/TrainingSplit";
+import { MusclePriority } from "./MusclePriority/MusclePriority";
+import { ListVolumeSettings, WeekVolumeDetails } from "./Settings/Settings";
 import useCustomizeTrainingSplit from "./useCustomizeTrainingSplit";
 
 type CustomizeTrainingSplitProps = {
-  prioritized_muscle_list: MusclePriorityType[];
-  total_sessions: [number, number];
-  split: SessionDayType[];
+  _prioritized_muscle_list: MusclePriorityType[];
+  _total_sessions: [number, number];
+  _split: SessionDayType[];
+  _mrv_breakpoint: number;
+  _mev_breakpoint: number;
 };
 export default function CustomizeTrainingSplit({
-  prioritized_muscle_list,
-  total_sessions,
-  split,
+  _prioritized_muscle_list,
+  _total_sessions,
+  _split,
+  _mrv_breakpoint,
+  _mev_breakpoint,
 }: CustomizeTrainingSplitProps) {
-  const data = useCustomizeTrainingSplit(
-    prioritized_muscle_list,
-    total_sessions,
+  const {
+    musclePriority,
     split,
-    4,
-    9
+    mrv_breakpoint,
+    mev_breakpoint,
+    entireVolume,
+    splitVolume,
+    onBreakpointChange,
+    onVolumeChange,
+  } = useCustomizeTrainingSplit(
+    _prioritized_muscle_list,
+    _total_sessions,
+    _split,
+    _mrv_breakpoint,
+    _mev_breakpoint
   );
 
   return (
     <div>
-      <MusclePriority
-        musclePriority={data.musclePriority}
-        total_sessions={data.total_sessions}
-        onBreakpointChange={data.onBreakpointChange}
-        onVolumeChange={data.onVolumeChange}
-        mrvBreakpoint={data.mrv_breakpoint}
-        mevBreakpoint={data.mev_breakpoint}
-        entireVolume={data.entireVolume}
-        splitVolume={data.splitVolume}
-      />
+      <div className=" mb-2 flex">
+        <div className=" w-1/4 pr-2">
+          <ListVolumeSettings
+            mrvBreakpoint={mrv_breakpoint}
+            mevBreakpoint={mev_breakpoint}
+            onBreakpointChange={onBreakpointChange}
+          />
+
+          <WeekVolumeDetails
+            entireVolume={entireVolume}
+            splitVolume={splitVolume}
+          />
+        </div>
+
+        <MusclePriority
+          musclePriority={musclePriority}
+          onVolumeChange={onVolumeChange}
+        />
+      </div>
 
       <TrainingSplit
-        split={data.split}
-        list={data.musclePriority}
-        total_sessions={data.total_sessions}
+        split={split}
+        list={musclePriority}
+        total_sessions={_total_sessions}
       />
     </div>
   );

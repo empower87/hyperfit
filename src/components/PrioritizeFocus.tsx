@@ -1,36 +1,15 @@
-import { useCallback, useEffect, useState } from "react";
-import {
-  DragDropContext,
-  Draggable,
-  Droppable,
-  DroppableProps,
-} from "react-beautiful-dnd";
+import { useCallback, useState } from "react";
+import { DragDropContext, Draggable, DropResult } from "react-beautiful-dnd";
 import {
   MusclePriorityType,
   VOLUME_BG_COLORS,
 } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
+import StrictModeDroppable from "~/utils/react-beautiful-dnd/StrictModeDroppable";
 
 type PrioritizeFocusProps = {
   musclePriority: MusclePriorityType[];
   updateMusclePriority: (items: MusclePriorityType[]) => void;
 };
-
-export function StrictModeDroppable({ children, ...props }: DroppableProps) {
-  const [enabled, setEnabled] = useState(false);
-
-  useEffect(() => {
-    const animation = requestAnimationFrame(() => setEnabled(true));
-    return () => {
-      cancelAnimationFrame(animation);
-      setEnabled(false);
-    };
-  }, []);
-
-  if (!enabled) {
-    return null;
-  }
-  return <Droppable {...props}>{children}</Droppable>;
-}
 
 export default function PrioritizeFocus({
   musclePriority,
@@ -39,7 +18,7 @@ export default function PrioritizeFocus({
   const [list, setList] = useState<MusclePriorityType[]>([...musclePriority]);
 
   const onDragEnd = useCallback(
-    (result: any) => {
+    (result: DropResult) => {
       if (!result.destination) return;
       const items = [...list];
       const [removed] = items.splice(result.source.index, 1);

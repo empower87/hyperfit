@@ -20,10 +20,10 @@ export const updateMusclePriorityVolume = (
   return updateList;
 };
 
-export const getEndOfMesocycleThreeVolume = (
+export const getEndOfMesocycleVolume = (
+  group: string,
   frequency: number,
-  volume_landmark: VolumeLandmarkType,
-  group: string
+  volume_landmark: VolumeLandmarkType
 ) => {
   if (frequency === 0) return 0;
   const muscleData = getMuscleData(group);
@@ -39,7 +39,7 @@ export const getEndOfMesocycleThreeVolume = (
   const frequencyList =
     volFrequency[frequency - 1] ?? volFrequency[volFrequency.length - 1];
 
-  console.log(volFrequency, frequencyList, key, frequency, group, "OK WHAT?");
+  // console.log(volFrequency, frequencyList, key, frequency, group, "OK WHAT?");
 
   let count = 0;
   for (let i = 0; i < frequencyList.length; i++) {
@@ -57,4 +57,19 @@ export const getEndOfMesocycleThreeVolume = (
 
   if (key === "mv_progression_matrix") return count;
   return totalVolume;
+};
+
+export const getVolumeSets = (
+  group: string,
+  frequency: number,
+  volume_landmark: VolumeLandmarkType
+) => {
+  const muscleData = getMuscleData(group);
+  const volFrequency = muscleData[volume_landmark];
+
+  if (typeof volFrequency !== "number") {
+    return volFrequency[frequency - 1];
+  } else {
+    return volFrequency;
+  }
 };
