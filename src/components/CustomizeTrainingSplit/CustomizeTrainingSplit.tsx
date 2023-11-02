@@ -3,7 +3,7 @@ import {
   SessionDayType,
 } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
 import TrainingSplit from "../TrainingSplit/TrainingSplit";
-import { MusclePriority } from "./MusclePriority/MusclePriority";
+import { MusclePriorityList } from "./MusclePriorityList/MusclePriorityList";
 import { ListVolumeSettings, WeekVolumeDetails } from "./Settings/Settings";
 import useCustomizeTrainingSplit from "./useCustomizeTrainingSplit";
 
@@ -54,9 +54,10 @@ export default function CustomizeTrainingSplit({
           />
         </div>
 
-        <MusclePriority
+        <MusclePriorityList
           musclePriority={musclePriority}
           onVolumeChange={onVolumeChange}
+          total_sessions={_total_sessions}
         />
       </div>
 

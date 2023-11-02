@@ -97,14 +97,14 @@ function determineOptimalSessionSplits(
   const RANK_WEIGHTS = [14, 12, 10, 8, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0];
 
   for (let i = 0; i < list.length; i++) {
-    if (PUSH_MUSCLES.includes(list[i].muscle)) {
-      push = push + RANK_WEIGHTS[i];
-    } else if (PULL_MUSCLES.includes(list[i].muscle)) {
-      pull = pull + RANK_WEIGHTS[i];
-    } else if (PUSH_AND_PULL_MUSCLES.includes(list[i].muscle)) {
+    if (PUSH_AND_PULL_MUSCLES.includes(list[i].muscle)) {
       let split = Math.round(RANK_WEIGHTS[i] / 2);
       push = push + split;
       pull = pull + split;
+    } else if (PUSH_MUSCLES.includes(list[i].muscle)) {
+      push = push + RANK_WEIGHTS[i];
+    } else if (PULL_MUSCLES.includes(list[i].muscle)) {
+      pull = pull + RANK_WEIGHTS[i];
     } else if (LOWER_MUSCLES.includes(list[i].muscle)) {
       let lowerMod = Math.round(RANK_WEIGHTS[i] * LOWER_MODIFIER);
       if (list[i].muscle === "quads" && i < 3) {

@@ -52,7 +52,7 @@ export default function useCustomizeTrainingSplit(
 
   const onVolumeChange = (index: number, newVolume: VolumeLandmarkType) => {
     const items = [...musclePriority];
-    // items[index].volume_landmark = newVolume;
+
     let destinationIndex = 0;
 
     switch (newVolume) {
@@ -84,7 +84,7 @@ export default function useCustomizeTrainingSplit(
       mrvBreakpoint,
       mevBreakpoint
     );
-    console.log(items, "UPDATED ITEMS ON VOLUME CHANGE");
+
     setMusclePriority(updated.list);
     setSplit(updated.split);
   };

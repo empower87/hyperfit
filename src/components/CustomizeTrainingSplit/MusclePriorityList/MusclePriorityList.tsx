@@ -1,5 +1,7 @@
+import { useEffect, useState } from "react";
 import {
   MusclePriorityType,
+  SessionDayType,
   VOLUME_BG_COLORS,
 } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
 import { VolumeLandmarkType } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitUtils";
@@ -53,12 +55,107 @@ function Cell({ value, width }: CellProps) {
   return <div className=" w-1/12 indent-1">{value}</div>;
 }
 
+type CellWithCounterProps = {
+  mesocycle: number;
+  mesoProgression: number[];
+  total_sessions: [number, number];
+};
+function CellWithCounter({
+  mesocycle,
+  mesoProgression,
+  total_sessions,
+}: CellWithCounterProps) {
+  const [canAdd, setCanAdd] = useState<boolean>(true);
+  const [canSub, setCanSub] = useState<boolean>(true);
+  const frequency =
+    mesocycle === 1
+      ? mesoProgression[0]
+      : mesocycle === 2
+      ? mesoProgression[1]
+      : mesoProgression[2];
+  const [currentValue, setCurrentValue] = useState<number>(frequency);
+
+  const totalSessions = total_sessions[0] + total_sessions[1];
+  const [minMax, setMinMax] = useState<[number, number]>([0, totalSessions]);
+
+  useEffect(() => {
+    setCurrentValue(frequency);
+  }, [frequency]);
+
+  useEffect(() => {
+    const maxFrequency =
+      mesocycle === 3
+        ? totalSessions
+        : mesocycle === 2
+        ? mesoProgression[2]
+        : mesoProgression[1];
+    const minFrequency =
+      mesocycle === 3
+        ? mesoProgression[2]
+        : mesocycle === 2
+        ? mesoProgression[0]
+        : 0;
+    setMinMax([minFrequency, maxFrequency]);
+  }, [totalSessions, mesocycle, mesoProgression]);
+
+  useEffect(() => {
+    if (currentValue > minMax[0]) {
+      setCanSub(true);
+    } else {
+      setCanSub(false);
+    }
+
+    if (currentValue < minMax[1]) {
+      setCanAdd(true);
+    } else {
+      setCanAdd(false);
+    }
+  }, [currentValue, minMax]);
+
+  const onClickHandler = (type: "add" | "sub") => {
+    if (type === "add") {
+      setCurrentValue((prev) => prev + 1);
+    } else {
+      setCurrentValue((prev) => prev - 1);
+    }
+  };
+
+  return (
+    <div className=" flex w-1/3 justify-center">
+      {canSub && (
+        <button
+          className={BG_COLOR_M6 + " p-1 text-xs font-bold"}
+          onClick={() => onClickHandler("sub")}
+        >
+          -
+        </button>
+      )}
+
+      <div className={" text-xxs p-1"}>{currentValue}</div>
+      {canAdd && (
+        <button
+          className={BG_COLOR_M6 + " p-1 text-xs font-bold"}
+          onClick={() => onClickHandler("add")}
+        >
+          +
+        </button>
+      )}
+    </div>
+  );
+}
+
 type ItemProps = {
   muscleGroup: MusclePriorityType;
   index: number;
   onVolumeChange: (index: number, newVolume: VolumeLandmarkType) => void;
+  total_sessions: [number, number];
 };
-function Item({ muscleGroup, index, onVolumeChange }: ItemProps) {
+function Item({
+  muscleGroup,
+  index,
+  onVolumeChange,
+  total_sessions,
+}: ItemProps) {
   const { mesoProgression, volume_landmark, muscle } = muscleGroup;
   const volumeSets = getVolumeSets(muscle, mesoProgression[2], volume_landmark);
   const mesoOneVolume = getEndOfMesocycleVolume(
@@ -88,26 +185,32 @@ function Item({ muscleGroup, index, onVolumeChange }: ItemProps) {
 
       <div className=" w-3/12 indent-1">{muscleGroup.muscle}</div>
 
-      <div className=" flex w-2/12">
-        <div className=" ">{volumeSets}</div>
+      <div className=" flex w-2/12 justify-evenly">
         <Select
           volume_landmark={muscleGroup.volume_landmark}
           options={["MRV", "MEV", "MV"]}
           onSelect={onSelectHandler}
           bgColor={bgColor}
         />
+        <div className=" ">{volumeSets}</div>
       </div>
 
       <div className=" flex w-3/12">
-        <div className=" flex w-1/3 justify-center">
-          {muscleGroup.mesoProgression[0]}
-        </div>
-        <div className=" flex w-1/3 justify-center">
-          {muscleGroup.mesoProgression[1]}
-        </div>
-        <div className=" flex w-1/3 justify-center">
-          {muscleGroup.mesoProgression[2]}
-        </div>
+        <CellWithCounter
+          mesocycle={1}
+          mesoProgression={muscleGroup.mesoProgression}
+          total_sessions={total_sessions}
+        />
+        <CellWithCounter
+          mesocycle={2}
+          mesoProgression={muscleGroup.mesoProgression}
+          total_sessions={total_sessions}
+        />
+        <CellWithCounter
+          mesocycle={3}
+          mesoProgression={muscleGroup.mesoProgression}
+          total_sessions={total_sessions}
+        />
       </div>
 
       <div className=" flex w-3/12">
@@ -120,15 +223,17 @@ function Item({ muscleGroup, index, onVolumeChange }: ItemProps) {
   );
 }
 
-type MusclePriorityProps = {
+type MusclePriorityListProps = {
   musclePriority: MusclePriorityType[];
   onVolumeChange: (index: number, newVolume: VolumeLandmarkType) => void;
+  total_sessions: [number, number];
 };
 
-export function MusclePriority({
+export function MusclePriorityList({
   musclePriority,
   onVolumeChange,
-}: MusclePriorityProps) {
+  total_sessions,
+}: MusclePriorityListProps) {
   return (
     <div className=" w-3/4">
       <div className={BG_COLOR_M6 + " text-xxs mb-1 flex text-white"}>
@@ -172,6 +277,7 @@ export function MusclePriority({
               muscleGroup={each}
               index={index}
               onVolumeChange={onVolumeChange}
+              total_sessions={total_sessions}
             />
           );
         })}
@@ -179,3 +285,26 @@ export function MusclePriority({
     </div>
   );
 }
+
+const editMesocycleFrequencyHandler = (
+  _split: SessionDayType[],
+  _total_sessions: [number, number],
+  _frequency: number,
+  _muscle: MusclePriorityType,
+  _mesocycle: number
+) => {
+  const totalSessions = _total_sessions[0] + _total_sessions[1];
+  const { mesoProgression } = _muscle;
+  const maxFrequency =
+    _mesocycle === 3
+      ? totalSessions
+      : _mesocycle === 2
+      ? mesoProgression[2]
+      : mesoProgression[1];
+  const minFrequency =
+    _mesocycle === 3
+      ? mesoProgression[2]
+      : _mesocycle === 2
+      ? mesoProgression[0]
+      : 0;
+};
