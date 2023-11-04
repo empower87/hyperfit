@@ -44,20 +44,23 @@ function Select({ volume_landmark, options, onSelect, bgColor }: SelectProps) {
   );
 }
 
-const CELL_WIDTHS = [" w-1/12", " w-2/12", " w-2/12", " w-4/12", " w-3/12"];
-const CELL_WIDTHS_ON_EDIT = [
-  " w-1/12",
-  " w-1/12",
-  " w-2/12",
-  " w-6/12",
-  " w-2/12",
-];
+// const CELL_WIDTHS = [" w-1/12", " w-2/12", " w-2/12", " w-4/12", " w-3/12"];
+// const CELL_WIDTHS_ON_EDIT = [
+//   " w-1/12",
+//   " w-1/12",
+//   " w-2/12",
+//   " w-6/12",
+//   " w-2/12",
+// ];
 
+const CELL_WIDTHS = ["5%", "15%", "25%", "30%", "25%"];
+const CELL_WIDTHS_ON_EDIT = ["5%", "15%", "20%", "40%", "20%"];
 type ItemProps = {
   muscleGroup: MusclePriorityType;
   index: number;
   onVolumeChange: (index: number, newVolume: VolumeLandmarkType) => void;
   total_sessions: [number, number];
+  onMesoProgressionUpdate: (id: string, newMesoProgression: number[]) => void;
 };
 
 function Item({
@@ -65,6 +68,7 @@ function Item({
   index,
   onVolumeChange,
   total_sessions,
+  onMesoProgressionUpdate,
 }: ItemProps) {
   const { mesoProgression, volume_landmark, muscle } = muscleGroup;
 
@@ -91,13 +95,21 @@ function Item({
     changeCellWidthsHandler(isEditing);
   };
 
+  const onSaveMesoProgression = (newMesoProgression: number[]) => {
+    onMesoProgressionUpdate(muscleGroup.id, newMesoProgression);
+  };
+
   return (
-    <li className={bgColor + " text-xxs mb-0.5 flex p-0.5 text-white"}>
-      <div className={cellWidths[0] + " indent-1"}>{index + 1}</div>
+    <li className={bgColor + " text-xxs mb-0.5 flex w-full  text-white"}>
+      <div className={" indent-1"} style={{ width: cellWidths[0] }}>
+        {index + 1}
+      </div>
 
-      <div className={cellWidths[1] + " indent-1"}>{muscle}</div>
+      <div className={" indent-1"} style={{ width: cellWidths[1] }}>
+        {muscle}
+      </div>
 
-      <div className={cellWidths[2] + " flex justify-evenly"}>
+      <div className={" flex justify-evenly"} style={{ width: cellWidths[2] }}>
         <Select
           volume_landmark={volume_landmark}
           options={["MRV", "MEV", "MV"]}
@@ -113,6 +125,7 @@ function Item({
         isEditing={isEditing}
         onEditHandler={onEditHandler}
         width={cellWidths[3]}
+        onMesoProgressionUpdate={onSaveMesoProgression}
       />
 
       <MesocycleVolumes muscleGroup={muscleGroup} width={cellWidths[4]} />
@@ -124,12 +137,14 @@ type MusclePriorityListProps = {
   musclePriority: MusclePriorityType[];
   onVolumeChange: (index: number, newVolume: VolumeLandmarkType) => void;
   total_sessions: [number, number];
+  onMesoProgressionUpdate: (id: string, newMesoProgression: number[]) => void;
 };
 
 export function MusclePriorityList({
   musclePriority,
   onVolumeChange,
   total_sessions,
+  onMesoProgressionUpdate,
 }: MusclePriorityListProps) {
   const [cellWidths, setCellWidths] = useState<string[]>([...CELL_WIDTHS]);
 
@@ -137,26 +152,29 @@ export function MusclePriorityList({
     <div className=" w-3/4">
       <div className={BG_COLOR_M6 + " text-xxs mb-1 flex w-full text-white"}>
         <div
-          className={BORDER_COLOR_M8 + cellWidths[0] + " border-r-2 indent-1"}
+          className={BORDER_COLOR_M8 + " border-r-2 indent-1"}
+          style={{ width: cellWidths[0] }}
         >
           Rank
         </div>
+
         <div
-          className={BORDER_COLOR_M8 + cellWidths[1] + " border-r-2 indent-1"}
+          className={BORDER_COLOR_M8 + " border-r-2 indent-1"}
+          style={{ width: cellWidths[1] }}
         >
           Group
         </div>
+
         <div
-          className={
-            BORDER_COLOR_M8 + cellWidths[2] + " flex border-r-2 text-center"
-          }
+          className={BORDER_COLOR_M8 + " flex border-r-2 text-center"}
+          style={{ width: cellWidths[2] }}
         >
           Volume Benchmark
         </div>
+
         <div
-          className={
-            BORDER_COLOR_M8 + cellWidths[3] + " flex flex-col border-r-2"
-          }
+          className={BORDER_COLOR_M8 + " flex flex-col border-r-2"}
+          style={{ width: cellWidths[3] }}
         >
           <div className=" mb-0.5 flex w-full justify-center">
             Mesocycle Frequency
@@ -167,10 +185,10 @@ export function MusclePriorityList({
             <div className=" flex w-1/3 justify-center">3</div>
           </div>
         </div>
+
         <div
-          className={
-            BORDER_COLOR_M8 + cellWidths[4] + " flex flex-col border-r-2"
-          }
+          className={BORDER_COLOR_M8 + " flex flex-col border-r-2"}
+          style={{ width: cellWidths[4] }}
         >
           <div className=" mb-0.5 flex w-full justify-center">
             Mesocycle Total Vol.
@@ -183,7 +201,7 @@ export function MusclePriorityList({
         </div>
       </div>
 
-      <ul className=" flex flex-col">
+      <ul className=" flex w-full flex-col">
         {musclePriority.map((each, index) => {
           return (
             <Item
@@ -192,6 +210,7 @@ export function MusclePriorityList({
               index={index}
               onVolumeChange={onVolumeChange}
               total_sessions={total_sessions}
+              onMesoProgressionUpdate={onMesoProgressionUpdate}
             />
           );
         })}

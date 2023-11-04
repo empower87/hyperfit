@@ -41,12 +41,14 @@ type EditMesocycleFrequencyProps = {
   mesoProgression: number[];
   total_sessions: [number, number];
   onEdit: (isEditing: boolean) => void;
+  onMesoProgressionUpdate: (newMesoProgression: number[]) => void;
 };
 
 function EditMesocycleFrequency({
   mesoProgression,
   total_sessions,
   onEdit,
+  onMesoProgressionUpdate,
 }: EditMesocycleFrequencyProps) {
   const { canAddList, canSubList, onAddSubHandler, currentMesoProgression } =
     useEditMesocycleFrequency(mesoProgression, total_sessions);
@@ -56,8 +58,10 @@ function EditMesocycleFrequency({
   };
 
   const save = () => {
+    onMesoProgressionUpdate(currentMesoProgression);
     onEdit(false);
   };
+
   return (
     <div className=" flex">
       <CellWithCounter
@@ -126,21 +130,25 @@ type MesocycleFrequencyProps = {
   isEditing: boolean;
   onEditHandler: (isEditing: boolean) => void;
   width: string;
+  onMesoProgressionUpdate: (newMesoProgression: number[]) => void;
 };
+
 export default function MesocycleFrequency({
   mesoProgression,
   total_sessions,
   isEditing,
   onEditHandler,
   width,
+  onMesoProgressionUpdate,
 }: MesocycleFrequencyProps) {
   return (
-    <div className={width + " flex justify-center"}>
+    <div className={" flex justify-center"} style={{ width: width }}>
       {isEditing ? (
         <EditMesocycleFrequency
           mesoProgression={mesoProgression}
           total_sessions={total_sessions}
           onEdit={onEditHandler}
+          onMesoProgressionUpdate={onMesoProgressionUpdate}
         />
       ) : (
         <DefaultMesocycleFrequency

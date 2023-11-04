@@ -89,7 +89,7 @@ export function WeekVolumeDetails({
   splitVolume,
 }: WeekVolumeDetailsProps) {
   return (
-    <div>
+    <div className=" mb-2">
       <div className=" text-xxs text-white">Week Volume</div>
       <div className=" text-xxs text-white">{entireVolume}</div>
       {splitVolume.map((each) => {

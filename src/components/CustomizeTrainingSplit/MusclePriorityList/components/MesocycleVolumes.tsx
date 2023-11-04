@@ -27,7 +27,7 @@ export function MesocycleVolumes({
   width,
 }: MesocycleVolumesProps) {
   return (
-    <div className={width + " flex"}>
+    <div className={" flex"} style={{ width: width }}>
       <Cell muscleGroup={muscleGroup} mesocycle={1} />
       <Cell muscleGroup={muscleGroup} mesocycle={2} />
       <Cell muscleGroup={muscleGroup} mesocycle={3} />

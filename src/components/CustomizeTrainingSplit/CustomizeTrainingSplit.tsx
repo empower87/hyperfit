@@ -5,6 +5,7 @@ import {
 import TrainingSplit from "../TrainingSplit/TrainingSplit";
 import { MusclePriorityList } from "./MusclePriorityList/MusclePriorityList";
 import { ListVolumeSettings, WeekVolumeDetails } from "./Settings/Settings";
+import SplitOverview from "./Settings/SplitOverview";
 import useCustomizeTrainingSplit from "./useCustomizeTrainingSplit";
 
 type CustomizeTrainingSplitProps = {
@@ -14,6 +15,7 @@ type CustomizeTrainingSplitProps = {
   _mrv_breakpoint: number;
   _mev_breakpoint: number;
 };
+
 export default function CustomizeTrainingSplit({
   _prioritized_muscle_list,
   _total_sessions,
@@ -30,6 +32,7 @@ export default function CustomizeTrainingSplit({
     splitVolume,
     onBreakpointChange,
     onVolumeChange,
+    updateMesoProgression,
   } = useCustomizeTrainingSplit(
     _prioritized_muscle_list,
     _total_sessions,
@@ -52,12 +55,14 @@ export default function CustomizeTrainingSplit({
             entireVolume={entireVolume}
             splitVolume={splitVolume}
           />
+          <SplitOverview />
         </div>
 
         <MusclePriorityList
           musclePriority={musclePriority}
           onVolumeChange={onVolumeChange}
           total_sessions={_total_sessions}
+          onMesoProgressionUpdate={updateMesoProgression}
         />
       </div>
 

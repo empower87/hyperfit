@@ -115,6 +115,15 @@ export default function useCustomizeTrainingSplit(
     setSplit(updated.split);
   };
 
+  const updateMesoProgression = (id: string, newMesoProgression: number[]) => {
+    const updateList = [...musclePriority].map((each) => {
+      if (each.id === id) {
+        return { ...each, mesoProgression: newMesoProgression };
+      } else return each;
+    });
+    setMusclePriority(updateList);
+  };
+
   return {
     musclePriority,
     entireVolume,
@@ -122,6 +131,7 @@ export default function useCustomizeTrainingSplit(
     split,
     onVolumeChange,
     onBreakpointChange,
+    updateMesoProgression,
     mrv_breakpoint,
     mev_breakpoint,
   };
