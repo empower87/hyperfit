@@ -131,13 +131,13 @@ const Week = ({ title, split }: WeekProps) => {
 };
 
 type TrainingSplitProps = {
-  split: SessionDayType[];
+  training_week: SessionDayType[];
   list: MusclePriorityType[];
   total_sessions: [number, number];
 };
 
 export default function TrainingSplit({
-  split,
+  training_week,
   list,
   total_sessions,
 }: TrainingSplitProps) {
@@ -158,7 +158,7 @@ export default function TrainingSplit({
     <div className={BG_COLOR_M6 + " flex flex-col"}>
       <Week title="Hard Coded For Testing Purposes" split={hardCodedSessions} />
       {/* <Week title="Feature Logic" split={algorithmicSessions} /> */}
-      <TrainingSplitTest split={split} />
+      <TrainingSplitTest split={training_week} />
     </div>
   );
 }

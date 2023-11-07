@@ -6,7 +6,7 @@ import weeklySessionSplitReducer, {
 
 export default function useWeeklySessionSplit() {
   const [
-    { total_sessions, list, split, mrv_breakpoint, mev_breakpoint },
+    { total_sessions, list, training_week, mrv_breakpoint, mev_breakpoint },
     dispatch,
   ] = useReducer(weeklySessionSplitReducer, INITIAL_STATE);
 
@@ -33,7 +33,7 @@ export default function useWeeklySessionSplit() {
   );
 
   return {
-    split,
+    training_week,
     total_sessions,
     prioritized_muscle_list: list,
     handleUpdateMuscleList,

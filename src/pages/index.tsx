@@ -13,7 +13,7 @@ import { BG_COLOR_M6, BG_COLOR_M7, BG_COLOR_M8 } from "~/utils/themes";
 
 const Home: NextPage = () => {
   const {
-    split,
+    training_week,
     total_sessions,
     mrv_breakpoint,
     mev_breakpoint,
@@ -61,14 +61,14 @@ const Home: NextPage = () => {
               <CustomizeTrainingSplit
                 _prioritized_muscle_list={prioritized_muscle_list}
                 _total_sessions={total_sessions}
-                _split={split}
+                _training_week={training_week}
                 _mrv_breakpoint={mrv_breakpoint}
                 _mev_breakpoint={mev_breakpoint}
               />
             </Section>
 
             <Section title="Training Block">
-              <TrainingBlock split={split} />
+              <TrainingBlock training_week={training_week} />
             </Section>
           </div>
         </div>

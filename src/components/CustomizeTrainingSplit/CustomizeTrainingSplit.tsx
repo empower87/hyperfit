@@ -11,7 +11,7 @@ import useCustomizeTrainingSplit from "./useCustomizeTrainingSplit";
 type CustomizeTrainingSplitProps = {
   _prioritized_muscle_list: MusclePriorityType[];
   _total_sessions: [number, number];
-  _split: SessionDayType[];
+  _training_week: SessionDayType[];
   _mrv_breakpoint: number;
   _mev_breakpoint: number;
 };
@@ -19,13 +19,13 @@ type CustomizeTrainingSplitProps = {
 export default function CustomizeTrainingSplit({
   _prioritized_muscle_list,
   _total_sessions,
-  _split,
+  _training_week,
   _mrv_breakpoint,
   _mev_breakpoint,
 }: CustomizeTrainingSplitProps) {
   const {
     musclePriority,
-    split,
+    trainingWeek,
     mrv_breakpoint,
     mev_breakpoint,
     entireVolume,
@@ -36,7 +36,7 @@ export default function CustomizeTrainingSplit({
   } = useCustomizeTrainingSplit(
     _prioritized_muscle_list,
     _total_sessions,
-    _split,
+    _training_week,
     _mrv_breakpoint,
     _mev_breakpoint
   );
@@ -55,7 +55,7 @@ export default function CustomizeTrainingSplit({
             entireVolume={entireVolume}
             splitVolume={splitVolume}
           />
-          <SplitOverview />
+          <SplitOverview total_sessions={_total_sessions} />
         </div>
 
         <MusclePriorityList
@@ -67,7 +67,7 @@ export default function CustomizeTrainingSplit({
       </div>
 
       <TrainingSplit
-        split={split}
+        training_week={trainingWeek}
         list={musclePriority}
         total_sessions={_total_sessions}
       />

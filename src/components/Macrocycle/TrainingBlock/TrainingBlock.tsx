@@ -6,12 +6,12 @@ import {
 } from "./context/TrainingBlockContext";
 
 type TrainingBlockProps = {
-  split: SessionDayType[];
+  training_week: SessionDayType[];
 };
 
-export default function TrainingBlock({ split }: TrainingBlockProps) {
+export default function TrainingBlock({ training_week }: TrainingBlockProps) {
   return (
-    <TraingingBlockProvider split={split}>
+    <TraingingBlockProvider split={training_week}>
       <div className={" flex flex-col"}>
         <Mesocycles />
       </div>

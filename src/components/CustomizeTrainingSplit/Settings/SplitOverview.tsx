@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { MusclePriorityType } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
+import { selectSplitHandler } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitUtils";
 import { BG_COLOR_M7 } from "~/utils/themes";
 
 const PPLUL = ["push", "pull", "lower", "upper", "lower"];
@@ -29,7 +30,11 @@ const SPLITS = {
 
 const getSplitList = () => {};
 
-export default function SplitOverview() {
+export default function SplitOverview({
+  total_sessions,
+}: {
+  total_sessions: [number, number];
+}) {
   const [currentSplit, setCurrentSplit] = useState<string[]>([]);
 
   return (
@@ -37,7 +42,7 @@ export default function SplitOverview() {
       <div className=" text-xs text-white">Training Splits</div>
       <ul className=" ">
         {Object.values(SPLITS).map((each) => {
-          return <SplitItem value={each} />;
+          return <SplitItem value={each} total_sessions={total_sessions} />;
         })}
       </ul>
     </div>
@@ -46,13 +51,42 @@ export default function SplitOverview() {
 
 type SplitItemProps = {
   value: string;
+  total_sessions: [number, number];
 };
 
-function SplitItem({ value }: SplitItemProps) {
+function SplitItem({ value, total_sessions }: SplitItemProps) {
+  const [values, setValues] = useState<string[]>([]);
+  const [isClicked, setIsClicked] = useState<boolean>(false);
+
+  const onClickHandler = () => {
+    const getValues = selectSplitHandler(value, total_sessions);
+    setValues(getValues);
+
+    setIsClicked((prev) => !prev);
+  };
+
   return (
-    <li className={BG_COLOR_M7 + " text-xxs mb-1 indent-1 text-white"}>
+    <li
+      className={BG_COLOR_M7 + " text-xxs mb-1 indent-1 text-white"}
+      onClick={onClickHandler}
+    >
       {value}
+      {isClicked && values.length && <ExpandedSplit values={values} />}
     </li>
+  );
+}
+
+type ExpandedSplitProps = {
+  values: string[];
+};
+
+function ExpandedSplit({ values }: ExpandedSplitProps) {
+  return (
+    <div className=" text-xxs">
+      {values.map((each) => {
+        return <div>{each}</div>;
+      })}
+    </div>
   );
 }
 

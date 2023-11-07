@@ -564,6 +564,53 @@ const distributeExercisesAmongSplit = (
   return meso;
 };
 
+const PPLUL = ["push", "pull", "lower", "upper", "lower"];
+const PPL = ["push", "pull", "lower"];
+const BRO = ["chest", "back", "lower", "arms", "shoulders"];
+const UL = ["upper", "lower", "upper", "lower"];
+const FB = ["full", "full", "full"];
+
+function selectSplitHandler(type: string, total_sessions: [number, number]) {
+  const total = total_sessions[0] + total_sessions[1];
+  let splitList = [...PPL];
+
+  switch (type) {
+    case "push / pull / legs":
+      splitList = [...PPL];
+      break;
+    case "upper / lower":
+      splitList = [...UL];
+      break;
+    case "bro":
+      splitList = [...BRO];
+      break;
+    case "push / pull / legs - upper / lower":
+      splitList = [...PPLUL];
+      break;
+    case "full body":
+      splitList = [...FB];
+      break;
+    default:
+      splitList = [...PPL];
+  }
+
+  if (splitList.length > total) {
+    return splitList.splice(total - 1);
+  }
+
+  let index = 0;
+  let totalCount = total;
+  while (totalCount > splitList.length) {
+    splitList.push(splitList[index]);
+    index++;
+    totalCount--;
+    if (index >= splitList.length) {
+      index = 0;
+    }
+  }
+  return splitList;
+}
+
 function updateMusclePriorityList(
   list: MusclePriorityType[],
   total_sessions: [number, number],
@@ -615,4 +662,8 @@ function updateReducerStateHandler(
   };
 }
 
-export { updateMusclePriorityList, updateReducerStateHandler };
+export {
+  selectSplitHandler,
+  updateMusclePriorityList,
+  updateReducerStateHandler,
+};

@@ -56,7 +56,7 @@ export type MusclePriorityType = {
 export type State = {
   total_sessions: [number, number];
   list: MusclePriorityType[];
-  split: SessionDayType[];
+  training_week: SessionDayType[];
   mrv_breakpoint: number;
   mev_breakpoint: number;
 };
@@ -78,7 +78,7 @@ type Action = {
 const INITIAL_MRV_BREAKPOINT = 4;
 const INITIAL_MEV_BREAKPOINT = 9;
 
-const INITIAL_SPLIT: SessionDayType[] = [
+const INITIAL_WEEK: SessionDayType[] = [
   {
     day: "Sunday",
     sessionNum: 0,
@@ -263,7 +263,7 @@ const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
 export const INITIAL_STATE: State = {
   total_sessions: [3, 0],
   list: [...MUSCLE_PRIORITY_LIST],
-  split: [...INITIAL_SPLIT],
+  training_week: [...INITIAL_WEEK],
   mrv_breakpoint: INITIAL_MRV_BREAKPOINT,
   mev_breakpoint: INITIAL_MEV_BREAKPOINT,
 };
@@ -286,7 +286,7 @@ export default function weeklySessionSplitReducer(
       const updated_sessions = updateReducerStateHandler(
         new_sessions,
         state.list,
-        state.split,
+        state.training_week,
         state.mrv_breakpoint,
         state.mev_breakpoint
       );
@@ -295,7 +295,7 @@ export default function weeklySessionSplitReducer(
         ...state,
         total_sessions: new_sessions,
         list: updated_sessions.list,
-        split: updated_sessions.split,
+        training_week: updated_sessions.split,
       };
     case "UPDATE_LIST":
       if (!action.payload || !action.payload.new_list) return state;
@@ -304,7 +304,7 @@ export default function weeklySessionSplitReducer(
       const updated_list = updateReducerStateHandler(
         state.total_sessions,
         new_list,
-        state.split,
+        state.training_week,
         state.mrv_breakpoint,
         state.mev_breakpoint
       );
@@ -312,7 +312,7 @@ export default function weeklySessionSplitReducer(
       return {
         ...state,
         list: updated_list.list,
-        split: updated_list.split,
+        training_week: updated_list.split,
       };
     case "UPDATE_MRV_BREAKPOINT":
       if (!action.payload || !action.payload.mrv_breakpoint) return state;
@@ -321,14 +321,14 @@ export default function weeklySessionSplitReducer(
       const updated_list_mrv = updateReducerStateHandler(
         state.total_sessions,
         state.list,
-        state.split,
+        state.training_week,
         new_mrv_breakpoint,
         state.mev_breakpoint
       );
       return {
         ...state,
         list: updated_list_mrv.list,
-        split: updated_list_mrv.split,
+        training_week: updated_list_mrv.split,
         mrv_breakpoint: new_mrv_breakpoint,
       };
     case "UPDATE_MEV_BREAKPOINT":
@@ -338,14 +338,14 @@ export default function weeklySessionSplitReducer(
       const updated_list_mev = updateReducerStateHandler(
         state.total_sessions,
         state.list,
-        state.split,
+        state.training_week,
         new_mev_breakpoint,
         state.mev_breakpoint
       );
       return {
         ...state,
         list: updated_list_mev.list,
-        split: updated_list_mev.split,
+        training_week: updated_list_mev.split,
         mev_breakpoint: new_mev_breakpoint,
       };
 

@@ -12,14 +12,16 @@ import { getEndOfMesocycleVolume } from "~/utils/musclePriorityHandlers";
 export default function useCustomizeTrainingSplit(
   _prioritized_muscle_list: MusclePriorityType[],
   total_sessions: [number, number],
-  _split: SessionDayType[],
+  _training_week: SessionDayType[],
   mrv_breakpoint: number,
   mev_breakpoint: number
 ) {
   const [musclePriority, setMusclePriority] = useState<MusclePriorityType[]>([
     ..._prioritized_muscle_list,
   ]);
-  const [split, setSplit] = useState<SessionDayType[]>([..._split]);
+  const [trainingWeek, setTrainingWeek] = useState<SessionDayType[]>([
+    ..._training_week,
+  ]);
 
   const [mrvBreakpoint, setMrvBreakpoint] = useState<number>(mrv_breakpoint);
   const [mevBreakpoint, setMevBreakpoint] = useState<number>(mev_breakpoint);
@@ -80,13 +82,13 @@ export default function useCustomizeTrainingSplit(
     const updated = updateReducerStateHandler(
       total_sessions,
       items,
-      split,
+      trainingWeek,
       mrvBreakpoint,
       mevBreakpoint
     );
 
     setMusclePriority(updated.list);
-    setSplit(updated.split);
+    setTrainingWeek(updated.split);
   };
 
   const onBreakpointChange = (value: number, other: string) => {
@@ -107,12 +109,12 @@ export default function useCustomizeTrainingSplit(
     const updated = updateReducerStateHandler(
       total_sessions,
       musclePriority,
-      split,
+      trainingWeek,
       _mrvBreakpoint,
       _mevBreakpoint
     );
     setMusclePriority(updated.list);
-    setSplit(updated.split);
+    setTrainingWeek(updated.split);
   };
 
   const updateMesoProgression = (id: string, newMesoProgression: number[]) => {
@@ -128,7 +130,7 @@ export default function useCustomizeTrainingSplit(
     musclePriority,
     entireVolume,
     splitVolume,
-    split,
+    trainingWeek,
     onVolumeChange,
     onBreakpointChange,
     updateMesoProgression,
