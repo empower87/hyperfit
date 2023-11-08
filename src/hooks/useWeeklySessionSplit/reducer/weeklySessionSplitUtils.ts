@@ -594,10 +594,6 @@ function selectSplitHandler(type: string, total_sessions: [number, number]) {
       splitList = [...PPL];
   }
 
-  if (splitList.length > total) {
-    return splitList.splice(total - 1);
-  }
-
   let index = 0;
   let totalCount = total;
   while (totalCount > splitList.length) {
@@ -608,7 +604,24 @@ function selectSplitHandler(type: string, total_sessions: [number, number]) {
       index = 0;
     }
   }
-  return splitList;
+  const upper = splitList.filter((each) => each === "upper");
+  const lower = splitList.filter((each) => each === "lower");
+  const push = splitList.filter((each) => each === "push");
+  const pull = splitList.filter((each) => each === "pull");
+  const full = splitList.filter((each) => each === "full");
+  const off =
+    total_sessions[1] === 0 ? 0 : total_sessions[0] - total_sessions[1];
+
+  let counter = {
+    lower: lower.length,
+    upper: upper.length,
+    push: push.length,
+    pull: pull.length,
+    full: full.length,
+    off: off,
+  };
+
+  return counter;
 }
 
 function updateMusclePriorityList(
@@ -662,8 +675,45 @@ function updateReducerStateHandler(
   };
 }
 
+function updateReducerStateHandler2(
+  total_sessions: [number, number],
+  list: MusclePriorityType[],
+  split: SessionDayType[],
+  mrv_breakpoint: number,
+  mev_breakpoint: number,
+  type: string
+) {
+  const sessions_list = selectSplitHandler(type, total_sessions);
+  const new_split = updateWeekWithSessionSplits(
+    total_sessions,
+    split,
+    sessions_list
+  );
+
+  const updated_list = addMesoProgression(
+    list,
+    sessions_list,
+    mrv_breakpoint,
+    mev_breakpoint
+  );
+
+  const new_split_with_exercises = distributeExercisesAmongSplit(
+    updated_list,
+    new_split,
+    mrv_breakpoint,
+    mev_breakpoint
+  );
+
+  return {
+    list: updated_list,
+    split: new_split_with_exercises,
+    actualSplit: sessions_list,
+  };
+}
+
 export {
   selectSplitHandler,
   updateMusclePriorityList,
   updateReducerStateHandler,
+  updateReducerStateHandler2,
 };

@@ -79,23 +79,46 @@ export function ListVolumeSettings({
     </div>
   );
 }
+type ActualSplitType = {
+  lower: number;
+  upper: number;
+  push: number;
+  pull: number;
+  full: number;
+  off: number;
+};
 
 type WeekVolumeDetailsProps = {
   entireVolume: number;
   splitVolume: { session: string; sets: number }[];
+  actualSplit: ActualSplitType | undefined;
 };
 export function WeekVolumeDetails({
   entireVolume,
   splitVolume,
+  actualSplit,
 }: WeekVolumeDetailsProps) {
+  let values: string[] = [];
+  if (actualSplit) {
+    Object.entries(actualSplit).map((each) => {
+      let total = each[1];
+      while (total > 0) {
+        values.push(each[0]);
+        total--;
+      }
+    });
+  }
+  // setValues(values);
   return (
     <div className=" mb-2">
       <div className=" text-xxs text-white">Week Volume</div>
       <div className=" text-xxs text-white">{entireVolume}</div>
-      {splitVolume.map((each) => {
+      {splitVolume.map((each, index) => {
         return (
           <div className=" text-xxs flex text-white">
-            <div className=" mr-2">{each.session}</div>
+            <div className=" mr-2">
+              {values[index] ? values[index] : each.session}
+            </div>
             <div className="">{each.sets}</div>
           </div>
         );

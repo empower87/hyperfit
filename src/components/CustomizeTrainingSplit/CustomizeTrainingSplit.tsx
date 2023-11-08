@@ -32,6 +32,8 @@ export default function CustomizeTrainingSplit({
     splitVolume,
     onBreakpointChange,
     onVolumeChange,
+    onSplitChange,
+    actualSplit,
     updateMesoProgression,
   } = useCustomizeTrainingSplit(
     _prioritized_muscle_list,
@@ -50,12 +52,16 @@ export default function CustomizeTrainingSplit({
             mevBreakpoint={mev_breakpoint}
             onBreakpointChange={onBreakpointChange}
           />
-
           <WeekVolumeDetails
             entireVolume={entireVolume}
             splitVolume={splitVolume}
+            actualSplit={actualSplit}
           />
-          <SplitOverview total_sessions={_total_sessions} />
+          <SplitOverview
+            total_sessions={_total_sessions}
+            onSplitChange={onSplitChange}
+            actualSplit={actualSplit}
+          />
         </div>
 
         <MusclePriorityList

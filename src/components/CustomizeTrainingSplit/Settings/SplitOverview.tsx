@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { MusclePriorityType } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
-import { selectSplitHandler } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitUtils";
 import { BG_COLOR_M7 } from "~/utils/themes";
 
 const PPLUL = ["push", "pull", "lower", "upper", "lower"];
@@ -28,12 +27,23 @@ const SPLITS = {
   FB: "full body",
 };
 
-const getSplitList = () => {};
+type ActualSplitType = {
+  lower: number;
+  upper: number;
+  push: number;
+  pull: number;
+  full: number;
+  off: number;
+};
 
 export default function SplitOverview({
   total_sessions,
+  onSplitChange,
+  actualSplit,
 }: {
   total_sessions: [number, number];
+  onSplitChange: (type: string) => void;
+  actualSplit: ActualSplitType | undefined;
 }) {
   const [currentSplit, setCurrentSplit] = useState<string[]>([]);
 
@@ -42,7 +52,15 @@ export default function SplitOverview({
       <div className=" text-xs text-white">Training Splits</div>
       <ul className=" ">
         {Object.values(SPLITS).map((each) => {
-          return <SplitItem value={each} total_sessions={total_sessions} />;
+          return (
+            <SplitItem
+              key={`${each}_SplitOverview`}
+              value={each}
+              total_sessions={total_sessions}
+              actualSplit={actualSplit}
+              onSplitChange={onSplitChange}
+            />
+          );
         })}
       </ul>
     </div>
@@ -52,15 +70,33 @@ export default function SplitOverview({
 type SplitItemProps = {
   value: string;
   total_sessions: [number, number];
+  actualSplit: ActualSplitType | undefined;
+  onSplitChange: (type: string) => void;
 };
 
-function SplitItem({ value, total_sessions }: SplitItemProps) {
+function SplitItem({
+  value,
+  total_sessions,
+  actualSplit,
+  onSplitChange,
+}: SplitItemProps) {
   const [values, setValues] = useState<string[]>([]);
   const [isClicked, setIsClicked] = useState<boolean>(false);
 
   const onClickHandler = () => {
-    const getValues = selectSplitHandler(value, total_sessions);
-    setValues(getValues);
+    onSplitChange(value);
+
+    // let values: string[] = [];
+    // if (actualSplit) {
+    //   Object.entries(actualSplit).map((each) => {
+    //     let total = each[1];
+    //     while (total > 0) {
+    //       values.push(each[0]);
+    //       total--;
+    //     }
+    //   });
+    // }
+    // setValues(values);
 
     setIsClicked((prev) => !prev);
   };

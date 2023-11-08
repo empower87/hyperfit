@@ -6,6 +6,7 @@ import {
 import {
   VolumeLandmarkType,
   updateReducerStateHandler,
+  updateReducerStateHandler2,
 } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitUtils";
 import { getEndOfMesocycleVolume } from "~/utils/musclePriorityHandlers";
 
@@ -117,6 +118,30 @@ export default function useCustomizeTrainingSplit(
     setTrainingWeek(updated.split);
   };
 
+  type ActualSplitType = {
+    lower: number;
+    upper: number;
+    push: number;
+    pull: number;
+    full: number;
+    off: number;
+  };
+  const [actualSplit, setActualSplit] = useState<ActualSplitType>();
+
+  const onSplitChange = (type: string) => {
+    const updated = updateReducerStateHandler2(
+      total_sessions,
+      musclePriority,
+      trainingWeek,
+      mrvBreakpoint,
+      mevBreakpoint,
+      type
+    );
+    setActualSplit(updated.actualSplit);
+    setMusclePriority(updated.list);
+    setTrainingWeek(updated.split);
+  };
+
   const updateMesoProgression = (id: string, newMesoProgression: number[]) => {
     const updateList = [...musclePriority].map((each) => {
       if (each.id === id) {
@@ -133,6 +158,8 @@ export default function useCustomizeTrainingSplit(
     trainingWeek,
     onVolumeChange,
     onBreakpointChange,
+    onSplitChange,
+    actualSplit,
     updateMesoProgression,
     mrv_breakpoint,
     mev_breakpoint,
