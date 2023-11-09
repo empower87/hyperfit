@@ -1,5 +1,8 @@
 import { useState } from "react";
-import { MusclePriorityType } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
+import {
+  MusclePriorityType,
+  SplitSessionsNameType,
+} from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
 import { BG_COLOR_M7 } from "~/utils/themes";
 
 const PPLUL = ["push", "pull", "lower", "upper", "lower"];
@@ -42,7 +45,7 @@ export default function SplitOverview({
   actualSplit,
 }: {
   total_sessions: [number, number];
-  onSplitChange: (type: string) => void;
+  onSplitChange: (type: SplitSessionsNameType) => void;
   actualSplit: ActualSplitType | undefined;
 }) {
   const [currentSplit, setCurrentSplit] = useState<string[]>([]);
@@ -51,11 +54,13 @@ export default function SplitOverview({
     <div className=" ">
       <div className=" text-xs text-white">Training Splits</div>
       <ul className=" ">
-        {Object.values(SPLITS).map((each) => {
+        {Object.entries(SPLITS).map((each) => {
+          const sessionSplitKey = each[0] as SplitSessionsNameType;
           return (
             <SplitItem
               key={`${each}_SplitOverview`}
-              value={each}
+              sessionSplitKey={sessionSplitKey}
+              sessionSplitValue={each[1]}
               total_sessions={total_sessions}
               actualSplit={actualSplit}
               onSplitChange={onSplitChange}
@@ -68,14 +73,16 @@ export default function SplitOverview({
 }
 
 type SplitItemProps = {
-  value: string;
+  sessionSplitKey: SplitSessionsNameType;
+  sessionSplitValue: string;
   total_sessions: [number, number];
   actualSplit: ActualSplitType | undefined;
-  onSplitChange: (type: string) => void;
+  onSplitChange: (type: SplitSessionsNameType) => void;
 };
 
 function SplitItem({
-  value,
+  sessionSplitKey,
+  sessionSplitValue,
   total_sessions,
   actualSplit,
   onSplitChange,
@@ -84,7 +91,7 @@ function SplitItem({
   const [isClicked, setIsClicked] = useState<boolean>(false);
 
   const onClickHandler = () => {
-    onSplitChange(value);
+    onSplitChange(sessionSplitKey);
 
     // let values: string[] = [];
     // if (actualSplit) {
@@ -106,7 +113,7 @@ function SplitItem({
       className={BG_COLOR_M7 + " text-xxs mb-1 indent-1 text-white"}
       onClick={onClickHandler}
     >
-      {value}
+      {sessionSplitValue}
       {isClicked && values.length && <ExpandedSplit values={values} />}
     </li>
   );

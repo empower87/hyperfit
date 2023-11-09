@@ -1,6 +1,7 @@
 import {
   MusclePriorityType,
   SessionDayType,
+  SplitSessionsType,
 } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
 import TrainingSplit from "../TrainingSplit/TrainingSplit";
 import { MusclePriorityList } from "./MusclePriorityList/MusclePriorityList";
@@ -14,6 +15,7 @@ type CustomizeTrainingSplitProps = {
   _training_week: SessionDayType[];
   _mrv_breakpoint: number;
   _mev_breakpoint: number;
+  _split_sessions: SplitSessionsType;
 };
 
 export default function CustomizeTrainingSplit({
@@ -22,6 +24,7 @@ export default function CustomizeTrainingSplit({
   _training_week,
   _mrv_breakpoint,
   _mev_breakpoint,
+  _split_sessions,
 }: CustomizeTrainingSplitProps) {
   const {
     musclePriority,
@@ -40,7 +43,8 @@ export default function CustomizeTrainingSplit({
     _total_sessions,
     _training_week,
     _mrv_breakpoint,
-    _mev_breakpoint
+    _mev_breakpoint,
+    _split_sessions
   );
 
   return (

@@ -1,4 +1,5 @@
 import { type NextPage } from "next";
+import { useEffect } from "react";
 import CustomizeTrainingSplit from "~/components/CustomizeTrainingSplit/CustomizeTrainingSplit";
 import Section from "~/components/Layout/Section";
 import TrainingBlock from "~/components/Macrocycle/TrainingBlock/TrainingBlock";
@@ -14,13 +15,24 @@ import { BG_COLOR_M6, BG_COLOR_M7, BG_COLOR_M8 } from "~/utils/themes";
 const Home: NextPage = () => {
   const {
     training_week,
+    split_sessions,
     total_sessions,
     mrv_breakpoint,
     mev_breakpoint,
     prioritized_muscle_list,
     handleUpdateMuscleList,
     handleFrequencyChange,
+    handleUpdateSplitSessions,
   } = useWeeklySessionSplit();
+
+  useEffect(() => {
+    console.log(
+      split_sessions,
+      training_week,
+      prioritized_muscle_list,
+      "TEST: LETS SEE WHAT THIS IS DOING"
+    );
+  }, [split_sessions, training_week, prioritized_muscle_list]);
 
   return (
     <div
@@ -64,6 +76,7 @@ const Home: NextPage = () => {
                 _training_week={training_week}
                 _mrv_breakpoint={mrv_breakpoint}
                 _mev_breakpoint={mev_breakpoint}
+                _split_sessions={split_sessions}
               />
             </Section>
 

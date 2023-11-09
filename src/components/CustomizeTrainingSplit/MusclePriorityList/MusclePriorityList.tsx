@@ -55,6 +55,7 @@ function Select({ volume_landmark, options, onSelect, bgColor }: SelectProps) {
 
 const CELL_WIDTHS = ["5%", "15%", "25%", "30%", "25%"];
 const CELL_WIDTHS_ON_EDIT = ["5%", "15%", "20%", "40%", "20%"];
+
 type ItemProps = {
   muscleGroup: MusclePriorityType;
   index: number;

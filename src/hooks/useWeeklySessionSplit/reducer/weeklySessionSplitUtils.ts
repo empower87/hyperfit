@@ -11,6 +11,7 @@ import {
   ExerciseType,
   MusclePriorityType,
   SessionDayType,
+  SplitSessionsNameType,
   SplitType,
 } from "./weeklySessionSplitReducer";
 
@@ -570,24 +571,27 @@ const BRO = ["chest", "back", "lower", "arms", "shoulders"];
 const UL = ["upper", "lower", "upper", "lower"];
 const FB = ["full", "full", "full"];
 
-function selectSplitHandler(type: string, total_sessions: [number, number]) {
+function selectSplitHandler(
+  type: SplitSessionsNameType,
+  total_sessions: [number, number]
+) {
   const total = total_sessions[0] + total_sessions[1];
   let splitList = [...PPL];
 
   switch (type) {
-    case "push / pull / legs":
+    case "PPL":
       splitList = [...PPL];
       break;
-    case "upper / lower":
+    case "UL":
       splitList = [...UL];
       break;
-    case "bro":
+    case "BRO":
       splitList = [...BRO];
       break;
-    case "push / pull / legs - upper / lower":
+    case "PPLUL":
       splitList = [...PPLUL];
       break;
-    case "full body":
+    case "FB":
       splitList = [...FB];
       break;
     default:
@@ -604,11 +608,18 @@ function selectSplitHandler(type: string, total_sessions: [number, number]) {
       index = 0;
     }
   }
+
   const upper = splitList.filter((each) => each === "upper");
   const lower = splitList.filter((each) => each === "lower");
   const push = splitList.filter((each) => each === "push");
   const pull = splitList.filter((each) => each === "pull");
   const full = splitList.filter((each) => each === "full");
+  const chest = splitList.filter((each) => each === "chest");
+  const back = splitList.filter((each) => each === "back");
+  const arms = splitList.filter((each) => each === "arms");
+  const shoulders = splitList.filter((each) => each === "shoulders");
+  const legs = splitList.filter((each) => each === "legs");
+
   const off =
     total_sessions[1] === 0 ? 0 : total_sessions[0] - total_sessions[1];
 
@@ -618,10 +629,52 @@ function selectSplitHandler(type: string, total_sessions: [number, number]) {
     push: push.length,
     pull: pull.length,
     full: full.length,
+    chest: chest.length,
+    back: back.length,
+    arms: arms.length,
+    shoulders: shoulders.length,
+    legs: legs.length,
     off: off,
   };
 
   return counter;
+}
+
+function getSplitSessions(
+  type: SplitSessionsNameType,
+  total_sessions: [number, number],
+  list: MusclePriorityType[]
+) {
+  let splitSession = {
+    name: type,
+    chest: 0,
+    back: 0,
+    arms: 0,
+    shoulders: 0,
+    legs: 0,
+  };
+  if (type === "OPT") {
+    let { upper, lower, push, pull, full, off } = determineOptimalSessionSplits(
+      total_sessions,
+      list
+    );
+    return {
+      ...splitSession,
+      upper: upper,
+      lower: lower,
+      push: push,
+      pull: pull,
+      full: full,
+      off: off,
+    };
+  } else {
+    let splits = selectSplitHandler(type, total_sessions);
+    const newSessionSplit = {
+      name: type,
+      ...splits,
+    };
+    return newSessionSplit;
+  }
 }
 
 function updateMusclePriorityList(
@@ -639,51 +692,39 @@ function updateMusclePriorityList(
   );
   return updated_list;
 }
+type SplitSessionsType = {
+  name: string;
+  upper: number;
+  lower: number;
+  push: number;
+  pull: number;
+  legs: number;
+  full: number;
+  off: number;
+  arms: number;
+  chest: number;
+  back: number;
+  shoulders: number;
+};
 
 function updateReducerStateHandler(
   total_sessions: [number, number],
   list: MusclePriorityType[],
   split: SessionDayType[],
   mrv_breakpoint: number,
-  mev_breakpoint: number
-) {
-  const sessions_list = determineOptimalSessionSplits(total_sessions, list);
-
-  const new_split = updateWeekWithSessionSplits(
-    total_sessions,
-    split,
-    sessions_list
-  );
-
-  const updated_list = addMesoProgression(
-    list,
-    sessions_list,
-    mrv_breakpoint,
-    mev_breakpoint
-  );
-
-  const new_split_with_exercises = distributeExercisesAmongSplit(
-    updated_list,
-    new_split,
-    mrv_breakpoint,
-    mev_breakpoint
-  );
-
-  return {
-    list: updated_list,
-    split: new_split_with_exercises,
-  };
-}
-
-function updateReducerStateHandler2(
-  total_sessions: [number, number],
-  list: MusclePriorityType[],
-  split: SessionDayType[],
-  mrv_breakpoint: number,
   mev_breakpoint: number,
-  type: string
+  split_sessions: SplitSessionsType
 ) {
-  const sessions_list = selectSplitHandler(type, total_sessions);
+  // const sessions_list = determineOptimalSessionSplits(total_sessions, list);
+
+  const sessions_list = {
+    upper: split_sessions.upper,
+    lower: split_sessions.lower,
+    push: split_sessions.push,
+    pull: split_sessions.pull,
+    full: split_sessions.full,
+    off: split_sessions.off,
+  };
   const new_split = updateWeekWithSessionSplits(
     total_sessions,
     split,
@@ -707,13 +748,12 @@ function updateReducerStateHandler2(
   return {
     list: updated_list,
     split: new_split_with_exercises,
-    actualSplit: sessions_list,
   };
 }
 
 export {
+  getSplitSessions,
   selectSplitHandler,
   updateMusclePriorityList,
   updateReducerStateHandler,
-  updateReducerStateHandler2,
 };

@@ -2,11 +2,13 @@ import { useEffect, useState } from "react";
 import {
   MusclePriorityType,
   SessionDayType,
+  SplitSessionsNameType,
+  SplitSessionsType,
 } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
 import {
   VolumeLandmarkType,
+  getSplitSessions,
   updateReducerStateHandler,
-  updateReducerStateHandler2,
 } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitUtils";
 import { getEndOfMesocycleVolume } from "~/utils/musclePriorityHandlers";
 
@@ -15,11 +17,15 @@ export default function useCustomizeTrainingSplit(
   total_sessions: [number, number],
   _training_week: SessionDayType[],
   mrv_breakpoint: number,
-  mev_breakpoint: number
+  mev_breakpoint: number,
+  _split_sessions: SplitSessionsType
 ) {
   const [musclePriority, setMusclePriority] = useState<MusclePriorityType[]>([
     ..._prioritized_muscle_list,
   ]);
+  const [splitSessions, setSplitSessions] = useState<SplitSessionsType>({
+    ..._split_sessions,
+  });
   const [trainingWeek, setTrainingWeek] = useState<SessionDayType[]>([
     ..._training_week,
   ]);
@@ -85,7 +91,8 @@ export default function useCustomizeTrainingSplit(
       items,
       trainingWeek,
       mrvBreakpoint,
-      mevBreakpoint
+      mevBreakpoint,
+      _split_sessions
     );
 
     setMusclePriority(updated.list);
@@ -112,7 +119,8 @@ export default function useCustomizeTrainingSplit(
       musclePriority,
       trainingWeek,
       _mrvBreakpoint,
-      _mevBreakpoint
+      _mevBreakpoint,
+      _split_sessions
     );
     setMusclePriority(updated.list);
     setTrainingWeek(updated.split);
@@ -128,16 +136,17 @@ export default function useCustomizeTrainingSplit(
   };
   const [actualSplit, setActualSplit] = useState<ActualSplitType>();
 
-  const onSplitChange = (type: string) => {
-    const updated = updateReducerStateHandler2(
+  const onSplitChange = (type: SplitSessionsNameType) => {
+    const splits = getSplitSessions(type, total_sessions, musclePriority);
+    const updated = updateReducerStateHandler(
       total_sessions,
       musclePriority,
       trainingWeek,
       mrvBreakpoint,
       mevBreakpoint,
-      type
+      splits
     );
-    setActualSplit(updated.actualSplit);
+    setActualSplit(splits);
     setMusclePriority(updated.list);
     setTrainingWeek(updated.split);
   };

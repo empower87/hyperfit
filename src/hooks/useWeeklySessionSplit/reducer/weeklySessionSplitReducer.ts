@@ -1,5 +1,6 @@
 import {
   VolumeLandmarkType,
+  getSplitSessions,
   updateReducerStateHandler,
 } from "./weeklySessionSplitUtils";
 
@@ -53,25 +54,52 @@ export type MusclePriorityType = {
   exercises: ExerciseType[][];
 };
 
+export type SplitSessionsNameType =
+  | "OPT"
+  | "CUS"
+  | "PPL"
+  | "PPLUL"
+  | "UL"
+  | "FB"
+  | "BRO";
+
+export type SplitSessionsType = {
+  name: SplitSessionsNameType;
+  upper: number;
+  lower: number;
+  push: number;
+  pull: number;
+  legs: number;
+  full: number;
+  off: number;
+  arms: number;
+  chest: number;
+  back: number;
+  shoulders: number;
+};
+
 export type State = {
   total_sessions: [number, number];
   list: MusclePriorityType[];
   training_week: SessionDayType[];
+  split_sessions: SplitSessionsType;
   mrv_breakpoint: number;
   mev_breakpoint: number;
 };
 
 type Action = {
   type:
-    | "UPDATE_SESSIONS"
+    | "UPDATE_TOTAL_SESSIONS"
     | "UPDATE_LIST"
     | "UPDATE_MRV_BREAKPOINT"
-    | "UPDATE_MEV_BREAKPOINT";
+    | "UPDATE_MEV_BREAKPOINT"
+    | "UPDATE_SPLIT_SESSIONS";
   payload?: {
     new_sessions?: [number, number];
     new_list?: MusclePriorityType[];
     mrv_breakpoint?: number;
     mev_breakpoint?: number;
+    split_type?: SplitSessionsNameType;
   };
 };
 
@@ -260,10 +288,26 @@ const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
   },
 ];
 
+const INITIAL_SPLIT_SESSIONS: SplitSessionsType = {
+  name: "PPL",
+  upper: 0,
+  lower: 0,
+  push: 1,
+  pull: 1,
+  legs: 1,
+  full: 0,
+  off: 0,
+  arms: 0,
+  chest: 0,
+  back: 0,
+  shoulders: 0,
+};
+
 export const INITIAL_STATE: State = {
   total_sessions: [3, 0],
   list: [...MUSCLE_PRIORITY_LIST],
   training_week: [...INITIAL_WEEK],
+  split_sessions: { ...INITIAL_SPLIT_SESSIONS },
   mrv_breakpoint: INITIAL_MRV_BREAKPOINT,
   mev_breakpoint: INITIAL_MEV_BREAKPOINT,
 };
@@ -279,7 +323,7 @@ export default function weeklySessionSplitReducer(
   action: Action
 ) {
   switch (action.type) {
-    case "UPDATE_SESSIONS":
+    case "UPDATE_TOTAL_SESSIONS":
       if (!action.payload || !action.payload.new_sessions) return state;
       let new_sessions = action.payload.new_sessions;
 
@@ -288,7 +332,8 @@ export default function weeklySessionSplitReducer(
         state.list,
         state.training_week,
         state.mrv_breakpoint,
-        state.mev_breakpoint
+        state.mev_breakpoint,
+        state.split_sessions
       );
 
       return {
@@ -306,7 +351,8 @@ export default function weeklySessionSplitReducer(
         new_list,
         state.training_week,
         state.mrv_breakpoint,
-        state.mev_breakpoint
+        state.mev_breakpoint,
+        state.split_sessions
       );
 
       return {
@@ -314,6 +360,15 @@ export default function weeklySessionSplitReducer(
         list: updated_list.list,
         training_week: updated_list.split,
       };
+    case "UPDATE_SPLIT_SESSIONS":
+      if (!action.payload || !action.payload.split_type) return state;
+      const type = action.payload.split_type;
+      const splitSessions = getSplitSessions(
+        type,
+        state.total_sessions,
+        state.list
+      );
+      return { ...state, split_sessions: splitSessions };
     case "UPDATE_MRV_BREAKPOINT":
       if (!action.payload || !action.payload.mrv_breakpoint) return state;
       let new_mrv_breakpoint = action.payload.mrv_breakpoint;
@@ -323,7 +378,8 @@ export default function weeklySessionSplitReducer(
         state.list,
         state.training_week,
         new_mrv_breakpoint,
-        state.mev_breakpoint
+        state.mev_breakpoint,
+        state.split_sessions
       );
       return {
         ...state,
@@ -340,7 +396,8 @@ export default function weeklySessionSplitReducer(
         state.list,
         state.training_week,
         new_mev_breakpoint,
-        state.mev_breakpoint
+        state.mev_breakpoint,
+        state.split_sessions
       );
       return {
         ...state,
@@ -353,3 +410,23 @@ export default function weeklySessionSplitReducer(
       return state;
   }
 }
+
+// state
+// -----
+// total_sessions
+// split:
+// { name: "ppl",
+//   upper: 0,
+//   lower: 0,
+//   push: 1,
+//   pull: 1,
+//   legs: 1,
+//   full: 0,
+//   arms: 0,
+//   chest: 0,
+//   back: 0,
+//   legs: 0,
+//   shoulders: 0
+// }
+// muscle_priority_List
+// training_week
