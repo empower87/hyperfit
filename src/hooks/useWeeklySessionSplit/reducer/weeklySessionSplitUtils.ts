@@ -379,6 +379,8 @@ function updateWeekWithSessionSplits(
   return update_split;
 }
 
+// NOTE: going to have to add a split parameter to this 
+//       this would allow for frequency to be updated based on split.
 function addMesoProgression(
   _items: MusclePriorityType[],
   splits: SplitsType,
