@@ -4,6 +4,9 @@ import {
   PUSH_AND_PULL_MUSCLES,
   PUSH_MUSCLES,
   UPPER_MUSCLES,
+  getBroSplit,
+  getOptimizedSplit,
+  getPushPullLegsSplit,
 } from "~/constants/workoutSplits";
 import { getTopExercises } from "~/utils/getExercises";
 import { getNextSession } from "~/utils/getNextSession";
@@ -12,6 +15,7 @@ import {
   MusclePriorityType,
   SessionDayType,
   SplitSessionsNameType,
+  SplitSessionsType,
   SplitType,
 } from "./weeklySessionSplitReducer";
 
@@ -285,10 +289,39 @@ function determineOptimalSessionSplits(
   };
 }
 
+const initializePPLTrainingWeek = (
+  sessions: [number, number],
+  training_week: SessionDayType[],
+  splits: SplitSessionsType
+) => {
+  let _splits = { ...splits };
+  let total_push = _splits.push;
+  let total_pull = _splits.pull;
+  let total_legs = _splits.legs;
+
+  const MAXED_WEEK = [
+    ["off", "off"],
+    ["push", "legs"],
+    ["legs", "pull"],
+    ["pull", "push"],
+    ["push", "legs"],
+    ["legs", "pull"],
+    ["pull", "push"],
+  ];
+
+  for (let j = 0; j < MAXED_WEEK.length; j++) {}
+
+  for (let i = 0; i < training_week.length; i++) {
+    if (sessions[1] === 0) {
+    } else {
+    }
+  }
+};
+
 function updateWeekWithSessionSplits(
   sessions: [number, number],
   split: SessionDayType[],
-  splits: SplitsType
+  splits: SplitSessionsType
 ) {
   const { lower, upper, push, pull, full, off } = splits;
 
@@ -379,16 +412,18 @@ function updateWeekWithSessionSplits(
   return update_split;
 }
 
-// NOTE: going to have to add a split parameter to this 
+function getTotalSessions(split_sessions: SplitSessionsType) {}
+
+// NOTE: going to have to add a split parameter to this
 //       this would allow for frequency to be updated based on split.
 function addMesoProgression(
   _items: MusclePriorityType[],
-  splits: SplitsType,
+  split_sessions: SplitSessionsType,
   mrv_breakpoint: number,
   mev_breakpoint: number
 ) {
-  let upper = splits.upper + splits.pull + splits.push + splits.full;
-  let lower = splits.lower + splits.full;
+  // let upper = split_sessions.upper + split_sessions.pull + split_sessions.push + split_sessions.full;
+  // let lower = split_sessions.lower + split_sessions.full + split_sessions.legs;
 
   let items = [..._items];
 
@@ -399,12 +434,53 @@ function addMesoProgression(
         : i >= mrv_breakpoint && i < mev_breakpoint
         ? "MEV"
         : "MV";
+    let split_key = split_sessions.name;
+    let sessions = 0;
+    let muscle = items[i].muscle;
 
-    let sessions = lower;
-
-    if (UPPER_MUSCLES.includes(items[i].muscle)) {
-      sessions = upper;
+    switch (split_key) {
+      case "OPT":
+        const keys = getOptimizedSplit(muscle);
+        for (let i = 0; i < keys.length; i++) {
+          sessions = sessions + split_sessions[keys[i]];
+        }
+        break;
+      case "PPL":
+        const pplSplit = getPushPullLegsSplit(muscle);
+        if (pplSplit === "legs") {
+          sessions = split_sessions[pplSplit] + split_sessions.lower;
+        } else {
+          sessions = split_sessions[pplSplit];
+        }
+        break;
+      case "BRO":
+        const broSplit = getBroSplit(muscle);
+        sessions = split_sessions[broSplit];
+        break;
+      case "PPLUL":
+        const pplulSplit = getPushPullLegsSplit(muscle);
+        if (pplulSplit === "legs") {
+          sessions = split_sessions[pplulSplit] + split_sessions.lower;
+        } else {
+          sessions = split_sessions[pplulSplit] + split_sessions.upper;
+        }
+        break;
+      case "UL":
+        if (UPPER_MUSCLES.includes(muscle)) {
+          sessions = split_sessions.upper;
+        } else {
+          sessions = split_sessions.lower;
+        }
+        break;
+      case "FB":
+        sessions = split_sessions.full;
+        break;
+      default:
     }
+
+    // if (UPPER_MUSCLES.includes(items[i].muscle)) {
+    //   sessions = upper;
+    // }
 
     let mesoProgression = [1, 1, 1];
 
@@ -679,35 +755,31 @@ function getSplitSessions(
   }
 }
 
-function updateMusclePriorityList(
-  list: MusclePriorityType[],
-  total_sessions: [number, number],
-  mrv_breakpoint: number,
-  mev_breakpoint: number
-) {
-  const sessions_list = determineOptimalSessionSplits(total_sessions, list);
-  const updated_list = addMesoProgression(
-    list,
-    sessions_list,
-    mrv_breakpoint,
-    mev_breakpoint
-  );
-  return updated_list;
-}
-type SplitSessionsType = {
-  name: string;
-  upper: number;
-  lower: number;
-  push: number;
-  pull: number;
-  legs: number;
-  full: number;
-  off: number;
-  arms: number;
-  chest: number;
-  back: number;
-  shoulders: number;
-};
+// function updateMusclePriorityList(
+//   list: MusclePriorityType[],
+//   total_sessions: [number, number],
+//   mrv_breakpoint: number,
+//   mev_breakpoint: number
+// ) {
+//   const sessions_list = determineOptimalSessionSplits(total_sessions, list);
+
+//   let splitSession: SplitSessionsType = {
+//     name: "OPT",
+//     chest: 0,
+//     back: 0,
+//     arms: 0,
+//     shoulders: 0,
+//     legs: 0,
+//     ...sessions_list,
+//   };
+//   const updated_list = addMesoProgression(
+//     list,
+//     splitSession,
+//     mrv_breakpoint,
+//     mev_breakpoint
+//   );
+//   return updated_list;
+// }
 
 function updateReducerStateHandler(
   total_sessions: [number, number],
@@ -719,23 +791,15 @@ function updateReducerStateHandler(
 ) {
   // const sessions_list = determineOptimalSessionSplits(total_sessions, list);
 
-  const sessions_list = {
-    upper: split_sessions.upper,
-    lower: split_sessions.lower,
-    push: split_sessions.push,
-    pull: split_sessions.pull,
-    full: split_sessions.full,
-    off: split_sessions.off,
-  };
   const new_split = updateWeekWithSessionSplits(
     total_sessions,
     split,
-    sessions_list
+    split_sessions
   );
 
   const updated_list = addMesoProgression(
     list,
-    sessions_list,
+    split_sessions,
     mrv_breakpoint,
     mev_breakpoint
   );
@@ -756,6 +820,6 @@ function updateReducerStateHandler(
 export {
   getSplitSessions,
   selectSplitHandler,
-  updateMusclePriorityList,
+  // updateMusclePriorityList,
   updateReducerStateHandler,
 };
