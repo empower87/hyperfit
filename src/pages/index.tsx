@@ -1,38 +1,32 @@
 import { type NextPage } from "next";
-import { useEffect } from "react";
 import CustomizeTrainingSplit from "~/components/CustomizeTrainingSplit/CustomizeTrainingSplit";
 import Section from "~/components/Layout/Section";
-import TrainingBlock from "~/components/Macrocycle/TrainingBlock/TrainingBlock";
-import PrioritizeFocus from "~/components/PrioritizeFocus";
 import PrioritySectionLayout from "~/components/PrioritySectionLayout";
-import PromptCardLayout, {
-  FrequencySelectPrompts,
-} from "~/components/PromptCardLayout";
-import useWeeklySessionSplit from "~/hooks/useWeeklySessionSplit/useWeeklySessionSplit";
+import PromptCardLayout from "~/components/PromptCardLayout";
 
 import { BG_COLOR_M6, BG_COLOR_M7, BG_COLOR_M8 } from "~/utils/themes";
 
 const Home: NextPage = () => {
-  const {
-    training_week,
-    split_sessions,
-    total_sessions,
-    mrv_breakpoint,
-    mev_breakpoint,
-    prioritized_muscle_list,
-    handleUpdateMuscleList,
-    handleFrequencyChange,
-    handleUpdateSplitSessions,
-  } = useWeeklySessionSplit();
+  // const {
+  //   training_week,
+  //   split_sessions,
+  //   total_sessions,
+  //   mrv_breakpoint,
+  //   mev_breakpoint,
+  //   prioritized_muscle_list,
+  //   handleUpdateMuscleList,
+  //   handleFrequencyChange,
+  //   handleUpdateSplitSessions,
+  // } = useWeeklySessionSplit();
 
-  useEffect(() => {
-    console.log(
-      split_sessions,
-      training_week,
-      prioritized_muscle_list,
-      "TEST: LETS SEE WHAT THIS IS DOING"
-    );
-  }, [split_sessions, training_week, prioritized_muscle_list]);
+  // useEffect(() => {
+  //   console.log(
+  //     split_sessions,
+  //     training_week,
+  //     prioritized_muscle_list,
+  //     "TEST: LETS SEE WHAT THIS IS DOING"
+  //   );
+  // }, [split_sessions, training_week, prioritized_muscle_list]);
 
   return (
     <div
@@ -50,14 +44,14 @@ const Home: NextPage = () => {
       <div className="flex h-full w-full pt-8">
         <div className={BG_COLOR_M6 + " flex h-full w-1/5 flex-col"}>
           <PromptCardLayout title="Frequency">
-            <FrequencySelectPrompts onClick={handleFrequencyChange} />
+            {/* <FrequencySelectPrompts onClick={handleFrequencyChange} /> */}
           </PromptCardLayout>
 
           <PrioritySectionLayout>
-            <PrioritizeFocus
+            {/* <PrioritizeFocus
               musclePriority={prioritized_muscle_list}
               updateMusclePriority={handleUpdateMuscleList}
-            />
+            /> */}
           </PrioritySectionLayout>
         </div>
 
@@ -71,17 +65,17 @@ const Home: NextPage = () => {
           >
             <Section title="Customize Training Split">
               <CustomizeTrainingSplit
-                _prioritized_muscle_list={prioritized_muscle_list}
-                _total_sessions={total_sessions}
-                _training_week={training_week}
-                _mrv_breakpoint={mrv_breakpoint}
-                _mev_breakpoint={mev_breakpoint}
-                _split_sessions={split_sessions}
+              // _prioritized_muscle_list={prioritized_muscle_list}
+              // _total_sessions={total_sessions}
+              // _training_week={training_week}
+              // _mrv_breakpoint={mrv_breakpoint}
+              // _mev_breakpoint={mev_breakpoint}
+              // _split_sessions={split_sessions}
               />
             </Section>
 
             <Section title="Training Block">
-              <TrainingBlock training_week={training_week} />
+              {/* <TrainingBlock training_week={training_week} /> */}
             </Section>
           </div>
         </div>

@@ -19,15 +19,6 @@ import {
   SplitType,
 } from "./weeklySessionSplitReducer";
 
-type SplitsType = {
-  upper: number;
-  lower: number;
-  push: number;
-  pull: number;
-  full: number;
-  off: number;
-};
-
 export type VolumeLandmarkType = "MRV" | "MEV" | "MV";
 export type VolumeKey =
   | "mrv_progression_matrix"
@@ -755,32 +746,6 @@ function getSplitSessions(
   }
 }
 
-// function updateMusclePriorityList(
-//   list: MusclePriorityType[],
-//   total_sessions: [number, number],
-//   mrv_breakpoint: number,
-//   mev_breakpoint: number
-// ) {
-//   const sessions_list = determineOptimalSessionSplits(total_sessions, list);
-
-//   let splitSession: SplitSessionsType = {
-//     name: "OPT",
-//     chest: 0,
-//     back: 0,
-//     arms: 0,
-//     shoulders: 0,
-//     legs: 0,
-//     ...sessions_list,
-//   };
-//   const updated_list = addMesoProgression(
-//     list,
-//     splitSession,
-//     mrv_breakpoint,
-//     mev_breakpoint
-//   );
-//   return updated_list;
-// }
-
 function updateReducerStateHandler(
   total_sessions: [number, number],
   list: MusclePriorityType[],
@@ -817,9 +782,4 @@ function updateReducerStateHandler(
   };
 }
 
-export {
-  getSplitSessions,
-  selectSplitHandler,
-  // updateMusclePriorityList,
-  updateReducerStateHandler,
-};
+export { getSplitSessions, selectSplitHandler, updateReducerStateHandler };

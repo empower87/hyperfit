@@ -4,7 +4,8 @@ import { BG_COLOR_M5, BG_COLOR_M6 } from "~/utils/themes";
 type VolumeSettingFrameProps = {
   title: string;
   breakpoint: number;
-  onChange: (value: number, other: string) => void;
+  // onChange: (value: number, other: string) => void;
+  onChange: (type: "mrv_breakpoint" | "mev_breakpoint", value: number) => void;
 };
 
 function VolumeSettingFrame({
@@ -15,13 +16,14 @@ function VolumeSettingFrame({
   const [currentBreakpoint, setCurrentBreakpoint] =
     useState<number>(breakpoint);
 
+  const titleKey = title === "MRV -" ? "mrv_breakpoint" : "mev_breakpoint";
   const onSubtract = () => {
     setCurrentBreakpoint((prev) => prev - 1);
-    onChange(currentBreakpoint - 1, title);
+    onChange(titleKey, currentBreakpoint - 1);
   };
   const onAdd = () => {
     setCurrentBreakpoint((prev) => prev + 1);
-    onChange(currentBreakpoint + 1, title);
+    onChange(titleKey, currentBreakpoint + 1);
   };
 
   return (
@@ -57,7 +59,10 @@ function VolumeSettingFrame({
 type ListVolumeSettingsProps = {
   mrvBreakpoint: number;
   mevBreakpoint: number;
-  onBreakpointChange: (value: number, other: string) => void;
+  onBreakpointChange: (
+    type: "mrv_breakpoint" | "mev_breakpoint",
+    value: number
+  ) => void;
 };
 export function ListVolumeSettings({
   mrvBreakpoint,
@@ -91,23 +96,21 @@ type ActualSplitType = {
 type WeekVolumeDetailsProps = {
   entireVolume: number;
   splitVolume: { session: string; sets: number }[];
-  actualSplit: ActualSplitType | undefined;
 };
 export function WeekVolumeDetails({
   entireVolume,
   splitVolume,
-  actualSplit,
 }: WeekVolumeDetailsProps) {
-  let values: string[] = [];
-  if (actualSplit) {
-    Object.entries(actualSplit).map((each) => {
-      let total = each[1];
-      while (total > 0) {
-        values.push(each[0]);
-        total--;
-      }
-    });
-  }
+  // let values: string[] = [];
+  // if (actualSplit) {
+  //   Object.entries(actualSplit).map((each) => {
+  //     let total = each[1];
+  //     while (total > 0) {
+  //       values.push(each[0]);
+  //       total--;
+  //     }
+  //   });
+  // }
   // setValues(values);
   return (
     <div className=" mb-2">
@@ -116,9 +119,7 @@ export function WeekVolumeDetails({
       {splitVolume.map((each, index) => {
         return (
           <div className=" text-xxs flex text-white">
-            <div className=" mr-2">
-              {values[index] ? values[index] : each.session}
-            </div>
+            <div className=" mr-2">{each.session}</div>
             <div className="">{each.sets}</div>
           </div>
         );

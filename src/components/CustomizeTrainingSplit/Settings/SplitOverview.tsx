@@ -40,13 +40,9 @@ type ActualSplitType = {
 };
 
 export default function SplitOverview({
-  total_sessions,
   onSplitChange,
-  actualSplit,
 }: {
-  total_sessions: [number, number];
   onSplitChange: (type: SplitSessionsNameType) => void;
-  actualSplit: ActualSplitType | undefined;
 }) {
   const [currentSplit, setCurrentSplit] = useState<string[]>([]);
 
@@ -61,8 +57,6 @@ export default function SplitOverview({
               key={`${each}_SplitOverview`}
               sessionSplitKey={sessionSplitKey}
               sessionSplitValue={each[1]}
-              total_sessions={total_sessions}
-              actualSplit={actualSplit}
               onSplitChange={onSplitChange}
             />
           );
@@ -75,16 +69,13 @@ export default function SplitOverview({
 type SplitItemProps = {
   sessionSplitKey: SplitSessionsNameType;
   sessionSplitValue: string;
-  total_sessions: [number, number];
-  actualSplit: ActualSplitType | undefined;
+
   onSplitChange: (type: SplitSessionsNameType) => void;
 };
 
 function SplitItem({
   sessionSplitKey,
   sessionSplitValue,
-  total_sessions,
-  actualSplit,
   onSplitChange,
 }: SplitItemProps) {
   const [values, setValues] = useState<string[]>([]);
