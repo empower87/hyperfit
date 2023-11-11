@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
 import useWeeklySessionSplit from "~/hooks/useWeeklySessionSplit/useWeeklySessionSplit";
 import { getEndOfMesocycleVolume } from "~/utils/musclePriorityHandlers";
-import TrainingSplit from "../TrainingSplit/TrainingSplit";
 import { MusclePriorityList } from "./MusclePriorityList/MusclePriorityList";
 import { CustomizeSelects } from "./Settings/SelectSplit";
 import { ListVolumeSettings, WeekVolumeDetails } from "./Settings/Settings";
-import SplitOverview from "./Settings/SplitOverview";
+import WeekOverview from "./WeekOverview/WeekOverview";
 
 type CustomizeTrainingSplitProps = {
   // _prioritized_muscle_list: MusclePriorityType[];
@@ -98,7 +97,7 @@ CustomizeTrainingSplitProps) {
   const updateMesoProgression = () => {};
   return (
     <div>
-      <div className=" flex">
+      <div className=" flex w-full">
         <CustomizeSelects
           onFrequencyChange={handleFrequencyChange}
           onSplitChange={handleUpdateSplitSessions}
@@ -117,7 +116,7 @@ CustomizeTrainingSplitProps) {
             entireVolume={entireVolume}
             splitVolume={splitVolume}
           />
-          <SplitOverview onSplitChange={handleUpdateSplitSessions} />
+          {/* <SplitOverview onSplitChange={handleUpdateSplitSessions} /> */}
         </div>
 
         <MusclePriorityList
@@ -125,10 +124,12 @@ CustomizeTrainingSplitProps) {
           onVolumeChange={onVolumeChange}
           total_sessions={total_sessions}
           onMesoProgressionUpdate={updateMesoProgression}
+          onPriorityChange={handleUpdateMuscleList}
         />
       </div>
 
-      <TrainingSplit
+      <WeekOverview
+        split_sessions={split_sessions}
         training_week={training_week}
         list={prioritized_muscle_list}
         total_sessions={total_sessions}

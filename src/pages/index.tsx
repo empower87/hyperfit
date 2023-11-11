@@ -1,8 +1,6 @@
 import { type NextPage } from "next";
 import CustomizeTrainingSplit from "~/components/CustomizeTrainingSplit/CustomizeTrainingSplit";
 import Section from "~/components/Layout/Section";
-import PrioritySectionLayout from "~/components/PrioritySectionLayout";
-import PromptCardLayout from "~/components/PromptCardLayout";
 
 import { BG_COLOR_M6, BG_COLOR_M7, BG_COLOR_M8 } from "~/utils/themes";
 
@@ -43,16 +41,16 @@ const Home: NextPage = () => {
 
       <div className="flex h-full w-full pt-8">
         <div className={BG_COLOR_M6 + " flex h-full w-1/5 flex-col"}>
-          <PromptCardLayout title="Frequency">
-            {/* <FrequencySelectPrompts onClick={handleFrequencyChange} /> */}
+          {/* <PromptCardLayout title="Frequency">
+            <FrequencySelectPrompts onClick={handleFrequencyChange} />
           </PromptCardLayout>
 
           <PrioritySectionLayout>
-            {/* <PrioritizeFocus
+            <PrioritizeFocus
               musclePriority={prioritized_muscle_list}
               updateMusclePriority={handleUpdateMuscleList}
-            /> */}
-          </PrioritySectionLayout>
+            />
+          </PrioritySectionLayout> */}
         </div>
 
         <div

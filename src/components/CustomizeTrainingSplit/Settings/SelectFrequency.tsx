@@ -1,5 +1,5 @@
 import { ReactNode, useState } from "react";
-import { BG_COLOR_M8 } from "~/utils/themes";
+import { BG_COLOR_M6, BG_COLOR_M8 } from "~/utils/themes";
 
 type PromptCardProps = {
   title: string;
@@ -37,17 +37,20 @@ export const FrequencySelectPrompts = ({
         options={[...OPTIONS].slice(3)}
         onChange={handleSelectChange}
       />
-      {showPrompt && (
-        <FrequencySelect
-          title="Daily Sessions: "
-          options={[...OPTIONS].slice(0, totalSessionsPerWeek + 1)}
-          onChange={handleSelectChange}
-        />
-      )}
+
+      <FrequencySelect
+        title="Daily Sessions: "
+        options={[...OPTIONS].slice(0, totalSessionsPerWeek + 1)}
+        onChange={handleSelectChange}
+      />
+
       {showPrompt && (
         <div className="flex h-1/3 items-center justify-center">
           <button
-            className="bg-slate-800 p-1 text-xs font-bold text-white hover:bg-slate-700"
+            className={
+              BG_COLOR_M6 +
+              " p-1 text-xs font-bold text-white hover:bg-slate-500"
+            }
             style={{ height: "80%", width: "95%" }}
             onClick={() => onClickHandler()}
           >
@@ -76,7 +79,7 @@ export const FrequencySelect = ({
 
   return (
     <div className="flex h-1/3">
-      <p className="w-4/5 p-1 text-xs leading-3 text-white">{title}</p>
+      <p className="w-4/5 p-1 text-xs leading-3 text-slate-300">{title}</p>
 
       <select
         className={BG_COLOR_M8 + " w-1/5 text-white"}

@@ -23,11 +23,16 @@ function SelectSplit({ selectedSplit, onSelect }: SelectSplitProps) {
   };
 
   return (
-    <select onChange={onSelectHandler}>
+    <select className={BG_COLOR_M7 + " text-white"} onChange={onSelectHandler}>
       {Object.entries(SPLITS).map((each) => {
         const sessionSplitKey = each[0] as SplitSessionsNameType;
         return (
-          <option selected={selectedSplit === sessionSplitKey ? true : false}>
+          <option
+            key={`${each[1]}_option`}
+            className=" text-white"
+            value={sessionSplitKey}
+            selected={selectedSplit === sessionSplitKey ? true : false}
+          >
             {each[1]}
           </option>
         );
@@ -43,10 +48,10 @@ function CustomizeSelectsLayout({
   title: string;
   children: ReactNode;
 }) {
-  const rightMargin = title === "Frequency" ? "mr-1" : "";
+  // const rightMargin = title === "Frequency" ? "mr-1" : "";
   return (
-    <div className={rightMargin + " flex w-1/2 flex-col"}>
-      <div className={BG_COLOR_M7 + " mb-1"}>
+    <div className={" flex w-1/2 flex-col py-2 pr-2"}>
+      <div className={" mb-2 border-b-2 border-slate-500"}>
         <h3 className=" indent-1 text-white">{title}</h3>
       </div>
 
@@ -66,7 +71,7 @@ export function CustomizeSelects({
   currentSplit,
 }: CustomizeSelectsProps) {
   return (
-    <div className=" mb-2 flex">
+    <div className=" mb-2 flex w-full">
       <CustomizeSelectsLayout title="Frequency">
         <FrequencySelectPrompts onClick={onFrequencyChange} />
       </CustomizeSelectsLayout>

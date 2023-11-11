@@ -1,13 +1,22 @@
 import { useCallback, useEffect, useState } from "react";
 import { DragDropContext, Draggable, DropResult } from "react-beautiful-dnd";
+import { WeekTest } from "~/components/WeekOverviewTest";
 import {
   DayType,
+  MusclePriorityType,
   SessionDayType,
+  SplitSessionsType,
   SplitType,
 } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
 import { getSessionSplitColor } from "~/utils/getSessionSplitColor";
 import StrictModeDroppable from "~/utils/react-beautiful-dnd/StrictModeDroppable";
-import { BG_COLOR_M6, BG_COLOR_M7, BORDER_COLOR_M7 } from "~/utils/themes";
+import {
+  BG_COLOR_M6,
+  BG_COLOR_M7,
+  BORDER_COLOR_M6,
+  BORDER_COLOR_M7,
+} from "~/utils/themes";
+import SplitOverview from "../Settings/SplitOverview";
 
 type SessionListProps = {
   sessions: DraggableSplitObjectType[][];
@@ -106,7 +115,7 @@ const DroppableDay = ({
       {(provided, snapshot) => (
         <ul
           id="day"
-          className=" flex flex-col"
+          className=" mr-1 flex w-20 flex-col"
           {...provided.droppableProps}
           ref={provided.innerRef}
         >
@@ -151,7 +160,7 @@ function SessionItem({ session, index }: SessionItemProps) {
   return (
     <li
       className={
-        BORDER_COLOR_M7 + " flex h-8 w-20 items-center border-2 " + bottomMargin
+        BORDER_COLOR_M7 + " flex h-8 items-center border-2 " + bottomMargin
       }
     >
       <div className=" text-xxs flex w-1/6 justify-center text-white">
@@ -209,7 +218,7 @@ type TrainingSplitProps = {
   split: SessionDayType[];
 };
 
-export default function TrainingSplitTest({ split }: TrainingSplitProps) {
+function Week({ split }: TrainingSplitProps) {
   const [draggableSplit, setDraggableSplit] = useState<
     DraggableSplitObjectType[][]
   >([]);
@@ -259,9 +268,44 @@ export default function TrainingSplitTest({ split }: TrainingSplitProps) {
   }, [split]);
 
   return (
-    <div className=" mb-1 flex flex-col">
+    <div className=" mb-1 flex flex-col overflow-x-auto">
       <TrainingSplitHeaders />
       <SessionList sessions={draggableSplit} />
+    </div>
+  );
+}
+
+type WeekOverviewProps = {
+  split_sessions: SplitSessionsType;
+  training_week: SessionDayType[];
+  list: MusclePriorityType[];
+  total_sessions: [number, number];
+};
+
+export default function WeekOverview({
+  split_sessions,
+  training_week,
+  list,
+  total_sessions,
+}: WeekOverviewProps) {
+  return (
+    <div className={" flex"}>
+      <div className=" flex w-1/4 flex-col pr-2">
+        <div className={BORDER_COLOR_M6 + " mb-2 h-6 border-b-2"}>
+          <h3 className=" indent-1 text-sm text-white">Week Overview</h3>
+        </div>
+
+        <SplitOverview split={split_sessions} />
+      </div>
+      <div className={BG_COLOR_M6 + " w-3/4 p-1"}>
+        <WeekTest
+          title="Hard Coded For Testing Purposes"
+          list={list}
+          total_sessions={total_sessions}
+        />
+        {/* <Week title="Feature Logic" split={algorithmicSessions} /> */}
+        <Week split={training_week} />
+      </div>
     </div>
   );
 }

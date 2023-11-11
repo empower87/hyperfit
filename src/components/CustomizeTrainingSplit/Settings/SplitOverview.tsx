@@ -2,7 +2,9 @@ import { useState } from "react";
 import {
   MusclePriorityType,
   SplitSessionsNameType,
+  SplitSessionsType,
 } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
+import { getSplitOverview } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitUtils";
 import { BG_COLOR_M7 } from "~/utils/themes";
 
 const PPLUL = ["push", "pull", "lower", "upper", "lower"];
@@ -30,25 +32,16 @@ const SPLITS = {
   FB: "full body",
 };
 
-type ActualSplitType = {
-  lower: number;
-  upper: number;
-  push: number;
-  pull: number;
-  full: number;
-  off: number;
+type SplitOverviewProps = {
+  split: SplitSessionsType;
 };
-
-export default function SplitOverview({
-  onSplitChange,
-}: {
-  onSplitChange: (type: SplitSessionsNameType) => void;
-}) {
+export default function SplitOverview({ split }: SplitOverviewProps) {
   const [currentSplit, setCurrentSplit] = useState<string[]>([]);
-
+  const data = getSplitOverview(split);
+  console.log(data, "WHAT THIS LOOK LIKE??");
   return (
     <div className=" ">
-      <div className=" text-xs text-white">Training Splits</div>
+      <div className=" text-xs text-white">{SPLITS[split.name]}</div>
       <ul className=" ">
         {Object.entries(SPLITS).map((each) => {
           const sessionSplitKey = each[0] as SplitSessionsNameType;
@@ -57,7 +50,7 @@ export default function SplitOverview({
               key={`${each}_SplitOverview`}
               sessionSplitKey={sessionSplitKey}
               sessionSplitValue={each[1]}
-              onSplitChange={onSplitChange}
+              // onSplitChange={onSplitChange}
             />
           );
         })}
@@ -70,19 +63,19 @@ type SplitItemProps = {
   sessionSplitKey: SplitSessionsNameType;
   sessionSplitValue: string;
 
-  onSplitChange: (type: SplitSessionsNameType) => void;
+  // onSplitChange: (type: SplitSessionsNameType) => void;
 };
 
 function SplitItem({
   sessionSplitKey,
   sessionSplitValue,
-  onSplitChange,
-}: SplitItemProps) {
+}: // onSplitChange,
+SplitItemProps) {
   const [values, setValues] = useState<string[]>([]);
   const [isClicked, setIsClicked] = useState<boolean>(false);
 
   const onClickHandler = () => {
-    onSplitChange(sessionSplitKey);
+    // onSplitChange(sessionSplitKey);
 
     // let values: string[] = [];
     // if (actualSplit) {

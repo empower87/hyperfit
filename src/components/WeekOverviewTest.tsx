@@ -2,17 +2,10 @@ import { useEffect, useState } from "react";
 import {
   DayType,
   MusclePriorityType,
-  SessionDayType,
   SplitType,
 } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
 import { getTrainingSplit } from "~/utils/getTrainingSplit";
-import { BG_COLOR_M6, BG_COLOR_M7, BORDER_COLOR_M7 } from "~/utils/themes";
-import TrainingSplitTest from "../CustomizeTrainingSplit/TrainingSplit/TrainingSplit";
-
-type WeekProps = {
-  title: string;
-  split: [SplitType, SplitType][];
-};
+import { BG_COLOR_M7, BORDER_COLOR_M7 } from "~/utils/themes";
 
 const Cell = ({
   value,
@@ -98,49 +91,13 @@ const Day = ({
   );
 };
 
-const Week = ({ title, split }: WeekProps) => {
-  let numOfOffDaysToAdd = 7 - split.length;
-
-  let updateSplit = [...split];
-
-  if (numOfOffDaysToAdd > 0) {
-    let copySplit = [...split];
-
-    for (let i = 0; i < numOfOffDaysToAdd; i++) {
-      copySplit.push(["off", "off"]);
-    }
-
-    updateSplit = copySplit;
-  }
-
-  return (
-    <div className={" m-1 flex flex-col"}>
-      <p className="m-1 text-xs font-bold text-slate-300">{title}</p>
-
-      <div className="flex">
-        <Day session={updateSplit[0]} day={"Sunday"} />
-        <Day session={updateSplit[1]} day={"Monday"} />
-        <Day session={updateSplit[2]} day={"Tuesday"} />
-        <Day session={updateSplit[3]} day={"Wednesday"} />
-        <Day session={updateSplit[4]} day={"Thursday"} />
-        <Day session={updateSplit[5]} day={"Friday"} />
-        <Day session={updateSplit[6]} day={"Saturday"} />
-      </div>
-    </div>
-  );
-};
-
-type TrainingSplitProps = {
-  training_week: SessionDayType[];
+type WeekProps = {
+  title: string;
   list: MusclePriorityType[];
   total_sessions: [number, number];
 };
 
-export default function TrainingSplit({
-  training_week,
-  list,
-  total_sessions,
-}: TrainingSplitProps) {
+export const WeekTest = ({ title, list, total_sessions }: WeekProps) => {
   const [hardCodedSessions, setHardCodedSessions] = useState<
     [SplitType, SplitType][]
   >([]);
@@ -154,11 +111,25 @@ export default function TrainingSplit({
     setHardCodedSessions(hardCodedSessions);
   }, [list, total_sessions]);
 
+  const DAYS: DayType[] = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
+
   return (
-    <div className={BG_COLOR_M6 + " flex flex-col"}>
-      <Week title="Hard Coded For Testing Purposes" split={hardCodedSessions} />
-      {/* <Week title="Feature Logic" split={algorithmicSessions} /> */}
-      <TrainingSplitTest split={training_week} />
+    <div className={" mb-1 flex flex-col"}>
+      <p className="m-1 text-xs font-bold text-slate-300">{title}</p>
+
+      <div className="flex">
+        {hardCodedSessions.map((splits, index) => {
+          return <Day session={splits} day={DAYS[index]} />;
+        })}
+      </div>
     </div>
   );
-}
+};

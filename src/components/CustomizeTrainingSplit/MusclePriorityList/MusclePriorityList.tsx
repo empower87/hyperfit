@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
+import { DragDropContext, Draggable, DropResult } from "react-beautiful-dnd";
 import {
   MusclePriorityType,
   VOLUME_BG_COLORS,
 } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
 import { VolumeLandmarkType } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitUtils";
 import { getVolumeSets } from "~/utils/musclePriorityHandlers";
+import StrictModeDroppable from "~/utils/react-beautiful-dnd/StrictModeDroppable";
 import { BG_COLOR_M5, BG_COLOR_M6, BORDER_COLOR_M8 } from "~/utils/themes";
 import MesocycleFrequency from "./components/MesocycleFrequency";
 import { MesocycleVolumes } from "./components/MesocycleVolumes";
@@ -139,6 +141,7 @@ type MusclePriorityListProps = {
   onVolumeChange: (index: number, newVolume: VolumeLandmarkType) => void;
   total_sessions: [number, number];
   onMesoProgressionUpdate: (id: string, newMesoProgression: number[]) => void;
+  onPriorityChange: (items: MusclePriorityType[]) => void;
 };
 
 export function MusclePriorityList({
@@ -146,8 +149,24 @@ export function MusclePriorityList({
   onVolumeChange,
   total_sessions,
   onMesoProgressionUpdate,
+  onPriorityChange,
 }: MusclePriorityListProps) {
   const [cellWidths, setCellWidths] = useState<string[]>([...CELL_WIDTHS]);
+  const [draggableList, setDraggableList] = useState<MusclePriorityType[]>([
+    ...musclePriority,
+  ]);
+
+  const onDragEnd = useCallback(
+    (result: DropResult) => {
+      if (!result.destination) return;
+      const items = [...draggableList];
+      const [removed] = items.splice(result.source.index, 1);
+      items.splice(result.destination.index, 0, removed);
+      setDraggableList(items);
+      onPriorityChange(items);
+    },
+    [draggableList]
+  );
 
   return (
     <div className=" w-3/4">
@@ -202,20 +221,46 @@ export function MusclePriorityList({
         </div>
       </div>
 
-      <ul className=" flex w-full flex-col">
-        {musclePriority.map((each, index) => {
-          return (
-            <Item
-              key={`${each.id}_MusclePriority`}
-              muscleGroup={each}
-              index={index}
-              onVolumeChange={onVolumeChange}
-              total_sessions={total_sessions}
-              onMesoProgressionUpdate={onMesoProgressionUpdate}
-            />
-          );
-        })}
-      </ul>
+      <DragDropContext onDragEnd={onDragEnd}>
+        <StrictModeDroppable droppableId="droppable">
+          {(provided, snapshot) => (
+            <ul
+              id="droppable"
+              className=" flex w-full flex-col"
+              {...provided.droppableProps}
+              ref={provided.innerRef}
+            >
+              {draggableList.map((each, index) => {
+                return (
+                  <Draggable
+                    key={`${each.id}`}
+                    draggableId={each.id}
+                    index={index}
+                  >
+                    {(provided, snapshot) => (
+                      <div
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                      >
+                        <Item
+                          key={`${each.id}_MusclePriority`}
+                          muscleGroup={each}
+                          index={index}
+                          onVolumeChange={onVolumeChange}
+                          total_sessions={total_sessions}
+                          onMesoProgressionUpdate={onMesoProgressionUpdate}
+                        />
+                      </div>
+                    )}
+                  </Draggable>
+                );
+              })}
+              {provided.placeholder}
+            </ul>
+          )}
+        </StrictModeDroppable>
+      </DragDropContext>
     </div>
   );
 }

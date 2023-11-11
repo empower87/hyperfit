@@ -39,8 +39,6 @@ export const getEndOfMesocycleVolume = (
   const frequencyList =
     volFrequency[frequency - 1] ?? volFrequency[volFrequency.length - 1];
 
-  // console.log(volFrequency, frequencyList, key, frequency, group, "OK WHAT?");
-
   let count = 0;
   for (let i = 0; i < frequencyList.length; i++) {
     let sets = frequencyList[i].split("-");
