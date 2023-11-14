@@ -95,6 +95,7 @@ CustomizeTrainingSplitProps) {
 
   const onVolumeChange = () => {};
   const updateMesoProgression = () => {};
+
   return (
     <div>
       <div className=" flex w-full">
@@ -134,6 +135,8 @@ CustomizeTrainingSplitProps) {
         list={prioritized_muscle_list}
         total_sessions={total_sessions}
       />
+
+      <div></div>
     </div>
   );
 }
@@ -158,7 +161,7 @@ CustomizeTrainingSplitProps) {
 // 2. Single Arm Lat Pulldowns
 // 3. Pullovers
 // 4. Close-grip Bent Rows
-// 5. Pull ups (AMRAP finisher)
+// 5. Pull ups (AMRAP finisher | assisted)
 // 6. Seated Cable Row (lat-focused)
 // 7. Pulldowns
 // 8. Lat Prayers (higher reps)

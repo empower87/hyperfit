@@ -286,9 +286,9 @@ const initializePPLTrainingWeek = (
   splits: SplitSessionsType
 ) => {
   let _splits = { ...splits };
-  let total_push = _splits.push;
-  let total_pull = _splits.pull;
-  let total_legs = _splits.legs;
+  let total_push = _splits.sessions.push;
+  let total_pull = _splits.sessions.pull;
+  let total_legs = _splits.sessions.legs;
 
   const MAXED_WEEK = [
     ["off", "off"],
@@ -314,8 +314,7 @@ function updateWeekWithSessionSplits(
   split: SessionDayType[],
   splits: SplitSessionsType
 ) {
-  const { lower, upper, push, pull, full, off } = splits;
-
+  const { lower, upper, push, pull, full, off } = splits.sessions;
   const first_sessions = sessions[0];
   const second_sessions = sessions[1];
 
@@ -433,38 +432,41 @@ function addMesoProgression(
       case "OPT":
         const keys = getOptimizedSplit(muscle);
         for (let i = 0; i < keys.length; i++) {
-          sessions = sessions + split_sessions[keys[i]];
+          sessions = sessions + split_sessions.sessions[keys[i]];
         }
         break;
       case "PPL":
         const pplSplit = getPushPullLegsSplit(muscle);
         if (pplSplit === "legs") {
-          sessions = split_sessions[pplSplit] + split_sessions.lower;
+          sessions =
+            split_sessions.sessions[pplSplit] + split_sessions.sessions.lower;
         } else {
-          sessions = split_sessions[pplSplit];
+          sessions = split_sessions.sessions[pplSplit];
         }
         break;
       case "BRO":
         const broSplit = getBroSplit(muscle);
-        sessions = split_sessions[broSplit];
+        sessions = split_sessions.sessions[broSplit];
         break;
       case "PPLUL":
         const pplulSplit = getPushPullLegsSplit(muscle);
         if (pplulSplit === "legs") {
-          sessions = split_sessions[pplulSplit] + split_sessions.lower;
+          sessions =
+            split_sessions.sessions[pplulSplit] + split_sessions.sessions.lower;
         } else {
-          sessions = split_sessions[pplulSplit] + split_sessions.upper;
+          sessions =
+            split_sessions.sessions[pplulSplit] + split_sessions.sessions.upper;
         }
         break;
       case "UL":
         if (UPPER_MUSCLES.includes(muscle)) {
-          sessions = split_sessions.upper;
+          sessions = split_sessions.sessions.upper;
         } else {
-          sessions = split_sessions.lower;
+          sessions = split_sessions.sessions.lower;
         }
         break;
       case "FB":
-        sessions = split_sessions.full;
+        sessions = split_sessions.sessions.full;
         break;
       default:
     }
@@ -641,47 +643,54 @@ const UL = ["upper", "lower", "upper", "lower"];
 const FB = ["full", "full", "full"];
 
 function getSplitOverview(split_sessions: SplitSessionsType) {
-  switch (split_sessions.name) {
-    case "PPL":
-      return {
-        push: split_sessions.push,
-        pull: split_sessions.pull,
-        legs: split_sessions.legs,
-      };
-    case "PPLUL":
-      return {
-        push: split_sessions.push,
-        pull: split_sessions.pull,
-        legs: split_sessions.legs,
-        upper: split_sessions.upper,
-        lower: split_sessions.lower,
-      };
-    case "BRO":
-      return {
-        chest: split_sessions.chest,
-        back: split_sessions.back,
-        shoulders: split_sessions.shoulders,
-        arms: split_sessions.arms,
-        legs: split_sessions.legs,
-      };
-    case "UL":
-      return {
-        upper: split_sessions.upper,
-        lower: split_sessions.lower,
-      };
-    case "FB":
-      return {
-        full: split_sessions.full,
-      };
-    case "OPT":
-      let newObj = Object.entries(split_sessions).filter(
-        (each) => typeof each[1] === "number" && each[1] > 0
-      );
-      return newObj;
-    default:
-      return split_sessions;
-  }
+  let newObj = Object.entries(split_sessions).filter(
+    (each) => typeof each[1] === "number" && each[1] > 0
+  );
+
+  return newObj;
+  // switch (split_sessions.name) {
+  //   case "PPL":
+  //     return {
+  //       push: split_sessions.push,
+  //       pull: split_sessions.pull,
+  //       legs: split_sessions.legs,
+  //     };
+  //   case "PPLUL":
+  //     return {
+  //       push: split_sessions.push,
+  //       pull: split_sessions.pull,
+  //       legs: split_sessions.legs,
+  //       upper: split_sessions.upper,
+  //       lower: split_sessions.lower,
+  //     };
+  //   case "BRO":
+  //     return {
+  //       chest: split_sessions.chest,
+  //       back: split_sessions.back,
+  //       shoulders: split_sessions.shoulders,
+  //       arms: split_sessions.arms,
+  //       legs: split_sessions.legs,
+  //     };
+  //   case "UL":
+  //     return {
+  //       upper: split_sessions.upper,
+  //       lower: split_sessions.lower,
+  //     };
+  //   case "FB":
+  //     return {
+  //       full: split_sessions.full,
+  //     };
+  //   case "OPT":
+  //     let newObj = Object.entries(split_sessions).filter(
+  //       (each) => typeof each[1] === "number" && each[1] > 0
+  //     );
+  //     let newObj2 = {}
+  //     return newObj;
+  //   default:
+  //     return split_sessions;
+  // }
 }
+
 function selectSplitHandler(
   type: SplitSessionsNameType,
   total_sessions: [number, number]
@@ -756,14 +765,23 @@ function getSplitSessions(
   total_sessions: [number, number],
   list: MusclePriorityType[]
 ) {
-  let splitSession = {
+  let splitSession: SplitSessionsType = {
     name: type,
-    chest: 0,
-    back: 0,
-    arms: 0,
-    shoulders: 0,
-    legs: 0,
+    sessions: {
+      chest: 0,
+      back: 0,
+      arms: 0,
+      shoulders: 0,
+      legs: 0,
+      upper: 0,
+      lower: 0,
+      push: 0,
+      pull: 0,
+      full: 0,
+      off: 0,
+    },
   };
+
   if (type === "OPT") {
     let { upper, lower, push, pull, full, off } = determineOptimalSessionSplits(
       total_sessions,
@@ -771,18 +789,21 @@ function getSplitSessions(
     );
     return {
       ...splitSession,
-      upper: upper,
-      lower: lower,
-      push: push,
-      pull: pull,
-      full: full,
-      off: off,
+      sessions: {
+        ...splitSession.sessions,
+        upper: upper,
+        lower: lower,
+        push: push,
+        pull: pull,
+        full: full,
+        off: off,
+      },
     };
   } else {
     let splits = selectSplitHandler(type, total_sessions);
     const newSessionSplit = {
       name: type,
-      ...splits,
+      sessions: { ...splits },
     };
     return newSessionSplit;
   }

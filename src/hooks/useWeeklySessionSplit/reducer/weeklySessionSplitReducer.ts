@@ -65,17 +65,19 @@ export type SplitSessionsNameType =
 
 export type SplitSessionsType = {
   name: SplitSessionsNameType;
-  upper: number;
-  lower: number;
-  push: number;
-  pull: number;
-  legs: number;
-  full: number;
-  off: number;
-  arms: number;
-  chest: number;
-  back: number;
-  shoulders: number;
+  sessions: {
+    upper: number;
+    lower: number;
+    push: number;
+    pull: number;
+    legs: number;
+    full: number;
+    off: number;
+    arms: number;
+    chest: number;
+    back: number;
+    shoulders: number;
+  };
 };
 
 export type State = {
@@ -290,17 +292,19 @@ const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
 
 const INITIAL_SPLIT_SESSIONS: SplitSessionsType = {
   name: "PPL",
-  upper: 0,
-  lower: 0,
-  push: 1,
-  pull: 1,
-  legs: 1,
-  full: 0,
-  off: 0,
-  arms: 0,
-  chest: 0,
-  back: 0,
-  shoulders: 0,
+  sessions: {
+    upper: 0,
+    lower: 0,
+    push: 1,
+    pull: 1,
+    legs: 1,
+    full: 0,
+    off: 0,
+    arms: 0,
+    chest: 0,
+    back: 0,
+    shoulders: 0,
+  },
 };
 
 export const INITIAL_STATE: State = {

@@ -1,10 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   MusclePriorityType,
-  SplitSessionsNameType,
   SplitSessionsType,
 } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
-import { getSplitOverview } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitUtils";
 import { BG_COLOR_M7 } from "~/utils/themes";
 
 const PPLUL = ["push", "pull", "lower", "upper", "lower"];
@@ -37,20 +35,29 @@ type SplitOverviewProps = {
 };
 export default function SplitOverview({ split }: SplitOverviewProps) {
   const [currentSplit, setCurrentSplit] = useState<string[]>([]);
-  const data = getSplitOverview(split);
-  console.log(data, "WHAT THIS LOOK LIKE??");
+
+  useEffect(() => {
+    let splits: string[] = [];
+
+    Object.entries(split.sessions).map((each) => {
+      for (let i = 0; i < each[1]; i++) {
+        splits.push(each[0]);
+      }
+    });
+    console.log(splits, split.sessions, "OK SOMETHING OFF HERE?");
+    setCurrentSplit(splits);
+  }, [split]);
+
   return (
     <div className=" ">
       <div className=" text-xs text-white">{SPLITS[split.name]}</div>
       <ul className=" ">
-        {Object.entries(SPLITS).map((each) => {
-          const sessionSplitKey = each[0] as SplitSessionsNameType;
+        {currentSplit.map((each) => {
           return (
             <SplitItem
               key={`${each}_SplitOverview`}
-              sessionSplitKey={sessionSplitKey}
-              sessionSplitValue={each[1]}
-              // onSplitChange={onSplitChange}
+              // sessionSplitKey={sessionSplitKey}
+              split={each}
             />
           );
         })}
@@ -60,16 +67,16 @@ export default function SplitOverview({ split }: SplitOverviewProps) {
 }
 
 type SplitItemProps = {
-  sessionSplitKey: SplitSessionsNameType;
-  sessionSplitValue: string;
-
+  // sessionSplitKey: SplitSessionsNameType;
+  // sessionSplitValue: string;
+  split: string;
   // onSplitChange: (type: SplitSessionsNameType) => void;
 };
 
 function SplitItem({
-  sessionSplitKey,
-  sessionSplitValue,
-}: // onSplitChange,
+  split,
+}: // sessionSplitValue,
+// onSplitChange,
 SplitItemProps) {
   const [values, setValues] = useState<string[]>([]);
   const [isClicked, setIsClicked] = useState<boolean>(false);
@@ -97,8 +104,9 @@ SplitItemProps) {
       className={BG_COLOR_M7 + " text-xxs mb-1 indent-1 text-white"}
       onClick={onClickHandler}
     >
-      {sessionSplitValue}
-      {isClicked && values.length && <ExpandedSplit values={values} />}
+      {/* {sessionSplitValue}
+      {isClicked && values.length && <ExpandedSplit values={values} />} */}
+      {split}
     </li>
   );
 }
