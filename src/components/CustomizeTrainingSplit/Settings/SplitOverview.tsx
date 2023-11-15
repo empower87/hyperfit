@@ -1,8 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  MusclePriorityType,
-  SplitSessionsType,
-} from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
+import { SplitSessionsType } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
 import { BG_COLOR_M7 } from "~/utils/themes";
 
 const PPLUL = ["push", "pull", "lower", "upper", "lower"];
@@ -40,8 +37,10 @@ export default function SplitOverview({ split }: SplitOverviewProps) {
     let splits: string[] = [];
 
     Object.entries(split.sessions).map((each) => {
-      for (let i = 0; i < each[1]; i++) {
-        splits.push(each[0]);
+      if (each[1] > 0) {
+        for (let i = 0; i < each[1]; i++) {
+          splits.push(each[0]);
+        }
       }
     });
     console.log(splits, split.sessions, "OK SOMETHING OFF HERE?");
@@ -53,13 +52,7 @@ export default function SplitOverview({ split }: SplitOverviewProps) {
       <div className=" text-xs text-white">{SPLITS[split.name]}</div>
       <ul className=" ">
         {currentSplit.map((each) => {
-          return (
-            <SplitItem
-              key={`${each}_SplitOverview`}
-              // sessionSplitKey={sessionSplitKey}
-              split={each}
-            />
-          );
+          return <SplitItem key={`${each}_SplitOverview`} split={each} />;
         })}
       </ul>
     </div>
@@ -67,65 +60,16 @@ export default function SplitOverview({ split }: SplitOverviewProps) {
 }
 
 type SplitItemProps = {
-  // sessionSplitKey: SplitSessionsNameType;
-  // sessionSplitValue: string;
   split: string;
-  // onSplitChange: (type: SplitSessionsNameType) => void;
 };
 
-function SplitItem({
-  split,
-}: // sessionSplitValue,
-// onSplitChange,
-SplitItemProps) {
+function SplitItem({ split }: SplitItemProps) {
   const [values, setValues] = useState<string[]>([]);
   const [isClicked, setIsClicked] = useState<boolean>(false);
 
-  const onClickHandler = () => {
-    // onSplitChange(sessionSplitKey);
-
-    // let values: string[] = [];
-    // if (actualSplit) {
-    //   Object.entries(actualSplit).map((each) => {
-    //     let total = each[1];
-    //     while (total > 0) {
-    //       values.push(each[0]);
-    //       total--;
-    //     }
-    //   });
-    // }
-    // setValues(values);
-
-    setIsClicked((prev) => !prev);
-  };
-
   return (
-    <li
-      className={BG_COLOR_M7 + " text-xxs mb-1 indent-1 text-white"}
-      onClick={onClickHandler}
-    >
-      {/* {sessionSplitValue}
-      {isClicked && values.length && <ExpandedSplit values={values} />} */}
+    <li className={BG_COLOR_M7 + " text-xxs mb-1 indent-1 text-white"}>
       {split}
     </li>
   );
 }
-
-type ExpandedSplitProps = {
-  values: string[];
-};
-
-function ExpandedSplit({ values }: ExpandedSplitProps) {
-  return (
-    <div className=" text-xxs">
-      {values.map((each) => {
-        return <div>{each}</div>;
-      })}
-    </div>
-  );
-}
-
-const useCustomizableSplit = (
-  total_sessions: [number, number],
-  musclePriority: MusclePriorityType[]
-) => {};

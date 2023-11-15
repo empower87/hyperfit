@@ -1,6 +1,9 @@
 import { type NextPage } from "next";
+import { useState } from "react";
 import CustomizeTrainingSplit from "~/components/CustomizeTrainingSplit/CustomizeTrainingSplit";
 import Section from "~/components/Layout/Section";
+import TrainingBlock from "~/components/Macrocycle/TrainingBlock/TrainingBlock";
+import { SessionDayType } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
 
 import { BG_COLOR_M6, BG_COLOR_M7, BG_COLOR_M8 } from "~/utils/themes";
 
@@ -25,7 +28,7 @@ const Home: NextPage = () => {
   //     "TEST: LETS SEE WHAT THIS IS DOING"
   //   );
   // }, [split_sessions, training_week, prioritized_muscle_list]);
-
+  const [trainingWeek, setTrainingWeek] = useState<SessionDayType[]>([]);
   return (
     <div
       id="modal-body"
@@ -63,17 +66,18 @@ const Home: NextPage = () => {
           >
             <Section title="Customize Training Split">
               <CustomizeTrainingSplit
-              // _prioritized_muscle_list={prioritized_muscle_list}
-              // _total_sessions={total_sessions}
-              // _training_week={training_week}
-              // _mrv_breakpoint={mrv_breakpoint}
-              // _mev_breakpoint={mev_breakpoint}
-              // _split_sessions={split_sessions}
+                setTrainingWeek={setTrainingWeek}
+                // _prioritized_muscle_list={prioritized_muscle_list}
+                // _total_sessions={total_sessions}
+                // _training_week={training_week}
+                // _mrv_breakpoint={mrv_breakpoint}
+                // _mev_breakpoint={mev_breakpoint}
+                // _split_sessions={split_sessions}
               />
             </Section>
 
             <Section title="Training Block">
-              {/* <TrainingBlock training_week={training_week} /> */}
+              <TrainingBlock training_week={trainingWeek} />
             </Section>
           </div>
         </div>

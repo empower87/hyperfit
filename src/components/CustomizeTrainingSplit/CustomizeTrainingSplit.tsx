@@ -1,6 +1,8 @@
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { SessionDayType } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
 import useWeeklySessionSplit from "~/hooks/useWeeklySessionSplit/useWeeklySessionSplit";
 import { getEndOfMesocycleVolume } from "~/utils/musclePriorityHandlers";
+import WeekSessions from "./ExerciseSelection/ExerciseSelection";
 import { MusclePriorityList } from "./MusclePriorityList/MusclePriorityList";
 import { CustomizeSelects } from "./Settings/SelectSplit";
 import { ListVolumeSettings, WeekVolumeDetails } from "./Settings/Settings";
@@ -13,9 +15,12 @@ type CustomizeTrainingSplitProps = {
   // _mrv_breakpoint: number;
   // _mev_breakpoint: number;
   // _split_sessions: SplitSessionsType;
+  setTrainingWeek: Dispatch<SetStateAction<SessionDayType[]>>;
 };
 
-export default function CustomizeTrainingSplit({}: // _prioritized_muscle_list,
+export default function CustomizeTrainingSplit({
+  setTrainingWeek,
+}: // _prioritized_muscle_list,
 // _total_sessions,
 // _training_week,
 // _mrv_breakpoint,
@@ -93,6 +98,10 @@ CustomizeTrainingSplitProps) {
     setSplitVolume(splits);
   }, [prioritized_muscle_list]);
 
+  useEffect(() => {
+    setTrainingWeek(training_week);
+  }, [training_week]);
+
   const onVolumeChange = () => {};
   const updateMesoProgression = () => {};
 
@@ -136,7 +145,9 @@ CustomizeTrainingSplitProps) {
         total_sessions={total_sessions}
       />
 
-      <div></div>
+      <div>
+        <WeekSessions training_week={training_week} />
+      </div>
     </div>
   );
 }

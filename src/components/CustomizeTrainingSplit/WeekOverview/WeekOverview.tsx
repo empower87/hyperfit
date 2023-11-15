@@ -289,7 +289,7 @@ export default function WeekOverview({
   total_sessions,
 }: WeekOverviewProps) {
   return (
-    <div className={" flex"}>
+    <div className={" mb-2 flex"}>
       <div className=" flex w-1/4 flex-col pr-2">
         <div className={BORDER_COLOR_M6 + " mb-2 h-6 border-b-2"}>
           <h3 className=" indent-1 text-sm text-white">Week Overview</h3>
