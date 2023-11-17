@@ -29,37 +29,82 @@ function DaySessionItem({ index, exercise }: DaySessionItemProps) {
       <div className={" flex w-1/12 indent-1"}>{index}</div>
 
       <div className={BORDER_COLOR_M7 + " flex w-11/12 border-2 " + bgColor.bg}>
-        <div
-          className={BORDER_COLOR_M7 + " w-3/12 truncate border-r-2 indent-1"}
-        >
-          {exercise.group}
-        </div>
-
         <div className={BORDER_COLOR_M7 + " w-1/12 border-r-2"}>
           {exercise.sets}x
         </div>
 
-        <select className={bgColor.bg + " w-8/12 truncate"}>
-          {exercises.map((each) => {
-            return (
-              <option selected={each.name === exercise.exercise ? true : false}>
-                {each.name}
-              </option>
-            );
-          })}
-        </select>
+        <div className=" flex w-11/12 flex-col">
+          <select className={bgColor.bg + " truncate"}>
+            {exercises.map((each) => {
+              return (
+                <option
+                  selected={each.name === exercise.exercise ? true : false}
+                >
+                  {each.name}
+                </option>
+              );
+            })}
+          </select>
+
+          <div
+            className={
+              BORDER_COLOR_M7 + " truncate border-t indent-1 text-slate-300"
+            }
+          >
+            {exercise.group}
+          </div>
+        </div>
       </div>
     </li>
   );
 }
+// function DaySessionItem({ index, exercise }: DaySessionItemProps) {
+//   const bgColor = getRankColor(exercise.rank);
+//   const exercises = getGroupList(exercise.group);
+//   return (
+//     <li className={" text-xxs mb-0.5 flex w-full text-white"}>
+//       <div className={" flex w-1/12 indent-1"}>{index}</div>
+
+//       <div className={BORDER_COLOR_M7 + " flex w-11/12 border-2 " + bgColor.bg}>
+//         <div
+//           className={BORDER_COLOR_M7 + " w-3/12 truncate border-r-2 indent-1"}
+//         >
+//           {exercise.group}
+//         </div>
+
+//         <div className={BORDER_COLOR_M7 + " w-1/12 border-r-2"}>
+//           {exercise.sets}x
+//         </div>
+
+//         <select className={bgColor.bg + " w-8/12 truncate"}>
+//           {exercises.map((each) => {
+//             return (
+//               <option selected={each.name === exercise.exercise ? true : false}>
+//                 {each.name}
+//               </option>
+//             );
+//           })}
+//         </select>
+//       </div>
+//     </li>
+//   );
+// }
 
 type DroppableDayProps = {
   split: SplitType;
   droppableId: string;
-  exercises: ExerciseType[][];
+  exercises: ExerciseType[];
 };
 function DroppableDay({ split, droppableId, exercises }: DroppableDayProps) {
-  const flattenExercises = exercises.flat();
+  const totalSets = exercises.reduce((acc, prev) => acc + prev.sets, 0);
+  const setDurationInSeconds = totalSets * 20;
+  const setRestDurationInSeconds = totalSets * 120;
+  const setDurationInMinutes = setDurationInSeconds / 60;
+  const setRestDurationInMinutes = setRestDurationInSeconds / 60;
+  const totalDuration = Math.round(
+    setDurationInMinutes + setRestDurationInMinutes
+  );
+
   return (
     <li className=" w-52">
       <div className={" mb-1 p-1"}>
@@ -80,7 +125,7 @@ function DroppableDay({ split, droppableId, exercises }: DroppableDayProps) {
             {...provided.droppableProps}
             ref={provided.innerRef}
           >
-            {flattenExercises.map((each, index) => {
+            {exercises.map((each, index) => {
               return (
                 <Draggable
                   key={`${each.id}`}
@@ -102,6 +147,11 @@ function DroppableDay({ split, droppableId, exercises }: DroppableDayProps) {
           </ul>
         )}
       </StrictModeDroppable>
+
+      <div className=" mt-1 flex w-full flex-col">
+        <div className=" text-xxs text-white">Total Est. Duration</div>
+        <div className=" text-xxs text-white">{totalDuration}min</div>
+      </div>
     </li>
   );
 }
@@ -148,7 +198,7 @@ type DraggableExercisesObjectType = {
   sessions: {
     id: string;
     split: SplitType;
-    exercises: ExerciseType[][];
+    exercises: ExerciseType[];
   }[];
 };
 type WeekSessionsProps = {
@@ -172,14 +222,18 @@ export default function WeekSessions({ training_week }: WeekSessionsProps) {
           day.sessions.push({
             id: `${training_week[i].day}_${j}`,
             split: training_week[i].sessions[j],
-            exercises: training_week[i].sets[j],
+            exercises: training_week[i].sets[j].flat(),
           });
         }
       }
+
       draggableExerciseList.push(day);
     }
     setDraggableExercisesObject(draggableExerciseList);
   }, [training_week]);
+
+  // NOTE: a lot of logic missing here to determine if an exercise CAN move to another split
+  //       as well as if it can should it change the split type?
 
   const onDragEnd = useCallback(
     (result: DropResult) => {
@@ -224,34 +278,46 @@ export default function WeekSessions({ training_week }: WeekSessionsProps) {
       outerSourceSessionId = sourceIndices[1];
 
       const items = [...draggableExercisesObject];
-      const sourceRemoved =
-        items[outerSourceId].sessions[outerSourceSessionId].exercises[
-          innerSourceId
-        ];
-      const destinationRemoved =
-        items[outerDestinationId].sessions[outerDestinationSessionId].exercises[
-          outerDestinationExerciseIndex
-        ];
-      items[outerDestinationId].sessions[outerDestinationSessionId].exercises[
-        outerDestinationExerciseIndex
-      ] = sourceRemoved;
-      items[outerSourceId].sessions[outerSourceSessionId].exercises[
-        innerSourceId
-      ] = destinationRemoved;
+
+      const [removed] = items[outerSourceId].sessions[
+        outerSourceSessionId
+      ].exercises.splice(innerSourceId, 1);
+
+      items[outerDestinationId].sessions[
+        outerDestinationSessionId
+      ].exercises.splice(outerDestinationExerciseIndex, 0, removed);
 
       setDraggableExercisesObject(items);
     },
     [draggableExercisesObject]
   );
 
+  // TODO: add settings UI.
+  // REST TIME INTERVAL BTN,
+  // RESET BTN, UNDO BTN, SAVE BTN
+
   return (
     <div className={" flex flex-col"}>
       <div className={BORDER_COLOR_M6 + " mb-2 border-b-2"}>
         <h3 className=" text-white">Exercises</h3>
       </div>
+
+      <div className=" text-xxs mb-2 flex text-white">
+        <div className=" flex flex-col">
+          <div className="mb-0.5">Calculate Duration</div>
+          <div className=" flex">
+            <div>Rest Period - </div>
+            <div> 2:00</div>
+          </div>
+        </div>
+      </div>
+
       <div className="flex">
         <DragDropContext onDragEnd={onDragEnd}>
           {draggableExercisesObject.map((each) => {
+            // NOTE: to not display days w/o any sessions
+            const hasSessions = each.sessions.find((ea) => ea.exercises.length);
+            if (!hasSessions) return null;
             return <DayLayout session={each} />;
           })}
         </DragDropContext>
@@ -259,3 +325,11 @@ export default function WeekSessions({ training_week }: WeekSessionsProps) {
     </div>
   );
 }
+
+const addExerciseToSplit = () => {
+  // Can muscleGroup be added to Split type??
+  // ---No?: Prompt User if they would like to Update Split
+  // ---YES?: Will extra set break past MAV limit?
+  //          ---NO?: Add
+  //          ---YES?: either adjust sets of all muscle groups or don't add (possible prompt user)
+};
