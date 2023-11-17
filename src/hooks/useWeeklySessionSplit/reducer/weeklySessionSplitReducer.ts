@@ -35,6 +35,7 @@ export type ExerciseType = {
   meso_progression: number[];
   meso_details: (ExerciseDetails | null)[];
 };
+// TODO: this state needs to be dynamic. Adjust tuples for sessions/sets into an object into an array called sessions. 
 
 export type SessionDayType = {
   day: DayType;
