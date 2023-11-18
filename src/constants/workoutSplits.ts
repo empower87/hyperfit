@@ -78,6 +78,19 @@ export const ANY_MUSCLES = ["delts_side", "traps", "abs", "forearms"];
 
 export const PERIPHERAL_MUSCLES = ["forearms", "abs", "calves"];
 
+export const COMBINED_SPLITS = [
+  { name: "back", list: BACK_MUSCLES },
+  { name: "chest", list: CHEST_MUSCLES },
+  { name: "arms", list: ARMS_MUSCLES },
+  { name: "shoulders", list: SHOULDERS_MUSCLES },
+  { name: "legs", list: LEGS_MUSCLES },
+  { name: "lower", list: LOWER_MUSCLES },
+  { name: "push", list: PUSH_MUSCLES },
+  { name: "pull", list: PULL_MUSCLES },
+  { name: "upper", list: UPPER_MUSCLES },
+  { name: "full", list: FULL_BODY_MUSCLES },
+];
+
 export const getGroupList = (split: string) => {
   switch (split) {
     case "upper":
@@ -90,6 +103,16 @@ export const getGroupList = (split: string) => {
       return PULL_MUSCLES;
     case "full":
       return FULL_BODY_MUSCLES;
+    case "legs":
+      return LEGS_MUSCLES;
+    case "chest":
+      return CHEST_MUSCLES;
+    case "back":
+      return BACK_MUSCLES;
+    case "shoulders":
+      return SHOULDERS_MUSCLES;
+    case "arms":
+      return ARMS_MUSCLES;
     default:
       return FULL_BODY_MUSCLES;
   }

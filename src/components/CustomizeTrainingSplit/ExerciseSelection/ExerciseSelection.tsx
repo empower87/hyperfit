@@ -325,11 +325,3 @@ export default function WeekSessions({ training_week }: WeekSessionsProps) {
     </div>
   );
 }
-
-const addExerciseToSplit = () => {
-  // Can muscleGroup be added to Split type??
-  // ---No?: Prompt User if they would like to Update Split
-  // ---YES?: Will extra set break past MAV limit?
-  //          ---NO?: Add
-  //          ---YES?: either adjust sets of all muscle groups or don't add (possible prompt user)
-};
