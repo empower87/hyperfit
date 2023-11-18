@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { DragDropContext, Draggable, DropResult } from "react-beautiful-dnd";
+import ReactDOM from "react-dom";
 import {
   DayType,
   ExerciseType,
@@ -12,10 +13,58 @@ import { getSessionSplitColor } from "~/utils/getSessionSplitColor";
 import StrictModeDroppable from "~/utils/react-beautiful-dnd/StrictModeDroppable";
 import {
   BG_COLOR_M6,
+  BG_COLOR_M7,
   BORDER_COLOR_M6,
   BORDER_COLOR_M7,
   BORDER_COLOR_M8,
 } from "~/utils/themes";
+import { canAddExerciseToSplit, getSplitOptions } from "./exerciseSelectUtils";
+
+type PromptProps = {
+  options: { name: string; list: string[] }[];
+  isOpen: boolean;
+  onClose: (split: string) => void;
+};
+
+function Prompt({ options, isOpen, onClose }: PromptProps) {
+  const root = document.getElementById("modal-body")!;
+
+  if (!isOpen) return null;
+  return ReactDOM.createPortal(
+    <div
+      className="absolute flex h-full w-full items-center justify-center"
+      style={{ background: "#00000082" }}
+    >
+      <div className={BG_COLOR_M7 + " flex w-64 flex-col p-2"}>
+        <div className=" text-xxs flex flex-col text-white">
+          <div className=" mb-0.5 text-slate-300">
+            Adding this Exercise to this day would change the Training Split for
+            that day.
+          </div>
+          <div className=" mb-1">
+            Please select the Split you want to change it to:
+          </div>
+        </div>
+
+        <ul>
+          {options.map((each, index) => {
+            return (
+              <li
+                key={`${each.name}_${index}`}
+                className={BG_COLOR_M6 + " flex text-sm text-white"}
+                onClick={() => onClose(each.name)}
+              >
+                <div className=" mr-1 indent-1">{index + 1}</div>
+                <div className=" ">{each.name}</div>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    </div>,
+    root
+  );
+}
 
 type DaySessionItemProps = {
   index: number;
@@ -208,6 +257,15 @@ export default function WeekSessions({ training_week }: WeekSessionsProps) {
   const [draggableExercisesObject, setDraggableExercisesObject] = useState<
     DraggableExercisesObjectType[]
   >([]);
+  const [isModalPrompted, setIsModalPrompted] = useState<boolean>(false);
+  const [modalOptions, setModalOptions] = useState<
+    { name: string; list: string[] }[]
+  >([]);
+  const [updateSplit, setUpdateSplit] = useState<{
+    id: string;
+    oldSplit: string;
+    newSplit: string;
+  }>();
 
   useEffect(() => {
     let draggableExerciseList: DraggableExercisesObjectType[] = [];
@@ -279,6 +337,31 @@ export default function WeekSessions({ training_week }: WeekSessionsProps) {
 
       const items = [...draggableExercisesObject];
 
+      const sourceExercise =
+        items[outerSourceId].sessions[outerSourceSessionId].exercises[
+          innerSourceId
+        ];
+      const targetSplit =
+        items[outerDestinationId].sessions[outerDestinationSessionId];
+      const canAdd = canAddExerciseToSplit(
+        sourceExercise.group,
+        targetSplit.split
+      );
+
+      if (!canAdd) {
+        const splitOptions = getSplitOptions(
+          sourceExercise.group,
+          targetSplit.split
+        );
+        setModalOptions(splitOptions);
+        setUpdateSplit({
+          id: targetSplit.id,
+          oldSplit: targetSplit.split,
+          newSplit: "",
+        });
+        setIsModalPrompted(true);
+      }
+
       const [removed] = items[outerSourceId].sessions[
         outerSourceSessionId
       ].exercises.splice(innerSourceId, 1);
@@ -296,11 +379,37 @@ export default function WeekSessions({ training_week }: WeekSessionsProps) {
   // REST TIME INTERVAL BTN,
   // RESET BTN, UNDO BTN, SAVE BTN
 
+  const onCloseModal = (split: string) => {
+    if (!updateSplit) return;
+
+    const updateList: DraggableExercisesObjectType[] =
+      draggableExercisesObject.map((each) => {
+        const sessions = each.sessions.map((each) => {
+          if (each.id === updateSplit.id) {
+            return { ...each, split: split as SplitType };
+          } else return each;
+        });
+
+        return { ...each, sessions: sessions };
+      });
+
+    setDraggableExercisesObject(updateList);
+    setIsModalPrompted(false);
+  };
+
   return (
     <div className={" flex flex-col"}>
       <div className={BORDER_COLOR_M6 + " mb-2 border-b-2"}>
         <h3 className=" text-white">Exercises</h3>
       </div>
+
+      {isModalPrompted && (
+        <Prompt
+          options={modalOptions}
+          isOpen={isModalPrompted}
+          onClose={onCloseModal}
+        />
+      )}
 
       <div className=" text-xxs mb-2 flex text-white">
         <div className=" flex flex-col">
