@@ -1,6 +1,6 @@
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 import { SplitSessionsNameType } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
-import { BG_COLOR_M7 } from "~/utils/themes";
+import { BG_COLOR_M6, BG_COLOR_M7 } from "~/utils/themes";
 import { FrequencySelectPrompts } from "./SelectFrequency";
 
 const SPLITS = {
@@ -17,6 +17,7 @@ type SelectSplitProps = {
   selectedSplit: SplitSessionsNameType;
   onSelect: (type: SplitSessionsNameType) => void;
 };
+
 function SelectSplit({ selectedSplit, onSelect }: SelectSplitProps) {
   const onSelectHandler = (event: React.ChangeEvent<HTMLSelectElement>) => {
     onSelect(event.target.value as SplitSessionsNameType);
@@ -48,7 +49,6 @@ function CustomizeSelectsLayout({
   title: string;
   children: ReactNode;
 }) {
-  // const rightMargin = title === "Frequency" ? "mr-1" : "";
   return (
     <div className={" flex w-1/2 flex-col py-2 pr-2"}>
       <div className={" mb-2 border-b-2 border-slate-500"}>
@@ -65,20 +65,61 @@ type CustomizeSelectsProps = {
   onSplitChange: (type: SplitSessionsNameType) => void;
   currentSplit: SplitSessionsNameType;
 };
+
 export function CustomizeSelects({
   onFrequencyChange,
   onSplitChange,
   currentSplit,
 }: CustomizeSelectsProps) {
-  return (
-    <div className=" mb-2 flex w-full">
-      <CustomizeSelectsLayout title="Frequency">
-        <FrequencySelectPrompts onClick={onFrequencyChange} />
-      </CustomizeSelectsLayout>
+  const [totalSessionsPerWeek, setTotalSessionsPerWeek] = useState<number>(3);
+  const [totalDoubleSessionsPerWeek, setTotalDoubleSessionsPerWeek] =
+    useState<number>(0);
+  const [selectedSplitType, setSelectedSplitType] =
+    useState<SplitSessionsNameType>("OPT");
 
-      <CustomizeSelectsLayout title="Split">
-        <SelectSplit selectedSplit={currentSplit} onSelect={onSplitChange} />
-      </CustomizeSelectsLayout>
+  const handleSelectChange = (value: number, type: "week" | "day") => {
+    if (type === "day") {
+      setTotalDoubleSessionsPerWeek(value);
+    } else {
+      setTotalSessionsPerWeek(value);
+    }
+  };
+
+  const onSelectSplit = (type: SplitSessionsNameType) => {
+    setSelectedSplitType(type);
+  };
+
+  const onButtonClick = () => {
+    onFrequencyChange(totalSessionsPerWeek, totalDoubleSessionsPerWeek);
+    onSplitChange(selectedSplitType);
+  };
+
+  return (
+    <div className=" mb-2 flex w-full flex-col">
+      <div className=" flex">
+        <CustomizeSelectsLayout title="Frequency">
+          <FrequencySelectPrompts
+            totalSessionsPerWeek={totalSessionsPerWeek}
+            onClick={handleSelectChange}
+          />
+        </CustomizeSelectsLayout>
+
+        <CustomizeSelectsLayout title="Split">
+          <SelectSplit selectedSplit={currentSplit} onSelect={onSelectSplit} />
+        </CustomizeSelectsLayout>
+      </div>
+
+      <div className="flex h-1/3 items-center justify-center">
+        <button
+          className={
+            BG_COLOR_M6 + " p-1 text-xs font-bold text-white hover:bg-slate-500"
+          }
+          style={{ height: "80%", width: "95%" }}
+          onClick={() => onButtonClick()}
+        >
+          Set
+        </button>
+      </div>
     </div>
   );
 }

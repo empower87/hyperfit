@@ -20,34 +20,7 @@ type CustomizeTrainingSplitProps = {
 
 export default function CustomizeTrainingSplit({
   setTrainingWeek,
-}: // _prioritized_muscle_list,
-// _total_sessions,
-// _training_week,
-// _mrv_breakpoint,
-// _mev_breakpoint,
-// _split_sessions,
-CustomizeTrainingSplitProps) {
-  // const {
-  //   musclePriority,
-  //   trainingWeek,
-  //   mrv_breakpoint,
-  //   mev_breakpoint,
-  //   entireVolume,
-  //   splitVolume,
-  //   onBreakpointChange,
-  //   onVolumeChange,
-  //   onSplitChange,
-  //   actualSplit,
-  //   updateMesoProgression,
-  // } = useCustomizeTrainingSplit(
-  //   _prioritized_muscle_list,
-  //   _total_sessions,
-  //   _training_week,
-  //   _mrv_breakpoint,
-  //   _mev_breakpoint,
-  //   _split_sessions
-  // );
-
+}: CustomizeTrainingSplitProps) {
   const {
     training_week,
     split_sessions,
@@ -61,20 +34,15 @@ CustomizeTrainingSplitProps) {
     handleUpdateBreakpoint,
   } = useWeeklySessionSplit();
 
-  useEffect(() => {
-    console.log(
-      split_sessions,
-      training_week,
-      prioritized_muscle_list,
-      "TEST: LETS SEE WHAT THIS IS DOING"
-    );
-  }, [split_sessions, training_week, prioritized_muscle_list]);
-
   /// added for test
   const [entireVolume, setEntireVolume] = useState<number>(0);
   const [splitVolume, setSplitVolume] = useState<
     { session: string; sets: number }[]
   >([]);
+
+  useEffect(() => {
+    setTrainingWeek(training_week);
+  }, [training_week]);
 
   useEffect(() => {
     let splits = [];
@@ -97,10 +65,6 @@ CustomizeTrainingSplitProps) {
     setEntireVolume(count);
     setSplitVolume(splits);
   }, [prioritized_muscle_list]);
-
-  useEffect(() => {
-    setTrainingWeek(training_week);
-  }, [training_week]);
 
   const onVolumeChange = () => {};
   const updateMesoProgression = () => {};

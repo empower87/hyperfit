@@ -40,15 +40,12 @@ export default function useWeeklySessionSplit() {
     []
   );
 
-  const handleUpdateSplitSessions = useCallback(
-    (type: SplitSessionsNameType) => {
-      dispatch({
-        type: "UPDATE_SPLIT_SESSIONS",
-        payload: { split_type: type },
-      });
-    },
-    []
-  );
+  const handleUpdateSplitSessions = (type: SplitSessionsNameType) => {
+    dispatch({
+      type: "UPDATE_SPLIT_SESSIONS",
+      payload: { split_type: type },
+    });
+  };
 
   useEffect(() => {
     dispatch({ type: "UPDATE_SPLIT_SESSIONS", payload: { split_type: "OPT" } });

@@ -35,7 +35,7 @@ export type ExerciseType = {
   meso_progression: number[];
   meso_details: (ExerciseDetails | null)[];
 };
-// TODO: this state needs to be dynamic. Adjust tuples for sessions/sets into an object into an array called sessions. 
+// TODO: this state needs to be dynamic. Adjust tuples for sessions/sets into an object into an array called sessions.
 
 export type SessionDayType = {
   day: DayType;
@@ -373,7 +373,21 @@ export default function weeklySessionSplitReducer(
         state.total_sessions,
         state.list
       );
-      return { ...state, split_sessions: splitSessions };
+
+      const updated_list_split = updateReducerStateHandler(
+        state.total_sessions,
+        state.list,
+        state.training_week,
+        state.mrv_breakpoint,
+        state.mev_breakpoint,
+        splitSessions
+      );
+      return {
+        ...state,
+        split_sessions: splitSessions,
+        list: updated_list_split.list,
+        training_week: updated_list_split.split,
+      };
     case "UPDATE_MRV_BREAKPOINT":
       if (!action.payload || !action.payload.mrv_breakpoint) return state;
       let new_mrv_breakpoint = action.payload.mrv_breakpoint;

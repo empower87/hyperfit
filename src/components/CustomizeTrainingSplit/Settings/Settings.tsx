@@ -84,14 +84,6 @@ export function ListVolumeSettings({
     </div>
   );
 }
-type ActualSplitType = {
-  lower: number;
-  upper: number;
-  push: number;
-  pull: number;
-  full: number;
-  off: number;
-};
 
 type WeekVolumeDetailsProps = {
   entireVolume: number;
@@ -101,17 +93,6 @@ export function WeekVolumeDetails({
   entireVolume,
   splitVolume,
 }: WeekVolumeDetailsProps) {
-  // let values: string[] = [];
-  // if (actualSplit) {
-  //   Object.entries(actualSplit).map((each) => {
-  //     let total = each[1];
-  //     while (total > 0) {
-  //       values.push(each[0]);
-  //       total--;
-  //     }
-  //   });
-  // }
-  // setValues(values);
   return (
     <div className=" mb-2">
       <div className=" text-xxs text-white">Week Volume</div>

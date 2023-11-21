@@ -26,6 +26,7 @@ type PromptProps = {
   onClose: (split: string) => void;
 };
 
+// probably don't even need to prompt user for this, just automatically change it.
 function Prompt({ options, isOpen, onClose }: PromptProps) {
   const root = document.getElementById("modal-body")!;
 
