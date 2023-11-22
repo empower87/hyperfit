@@ -1,21 +1,22 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { SessionDayType } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
+import { TrainingDayType } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
 import useWeeklySessionSplit from "~/hooks/useWeeklySessionSplit/useWeeklySessionSplit";
 import { getEndOfMesocycleVolume } from "~/utils/musclePriorityHandlers";
 import WeekSessions from "./ExerciseSelection/ExerciseSelection";
 import { MusclePriorityList } from "./MusclePriorityList/MusclePriorityList";
-import { CustomizeSelects } from "./Settings/SelectSplit";
+import SelectFrequencySplit from "./Settings/SelectFrequencySplit";
 import { ListVolumeSettings, WeekVolumeDetails } from "./Settings/Settings";
 import WeekOverview from "./WeekOverview/WeekOverview";
 
 type CustomizeTrainingSplitProps = {
   // _prioritized_muscle_list: MusclePriorityType[];
   // _total_sessions: [number, number];
-  // _training_week: SessionDayType[];
+  // _training_week: TrainingDayType[];
   // _mrv_breakpoint: number;
   // _mev_breakpoint: number;
   // _split_sessions: SplitSessionsType;
-  setTrainingWeek: Dispatch<SetStateAction<SessionDayType[]>>;
+  // trainingWeek: TrainingDayType[]
+  setTrainingWeek: Dispatch<SetStateAction<TrainingDayType[]>>;
 };
 
 export default function CustomizeTrainingSplit({
@@ -72,7 +73,7 @@ export default function CustomizeTrainingSplit({
   return (
     <div>
       <div className=" flex w-full">
-        <CustomizeSelects
+        <SelectFrequencySplit
           onFrequencyChange={handleFrequencyChange}
           onSplitChange={handleUpdateSplitSessions}
           currentSplit={split_sessions.name}

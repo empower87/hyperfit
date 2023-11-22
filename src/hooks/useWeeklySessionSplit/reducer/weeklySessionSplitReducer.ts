@@ -2,6 +2,7 @@ import {
   VolumeLandmarkType,
   getSplitSessions,
   updateReducerStateHandler,
+  updateTrainingWeek,
 } from "./weeklySessionSplitUtils";
 
 export type DayType =
@@ -37,7 +38,7 @@ export type ExerciseType = {
 };
 // TODO: this state needs to be dynamic. Adjust tuples for sessions/sets into an object into an array called sessions.
 
-export type SessionDayType = {
+export type TrainingDayType = {
   day: DayType;
   sessionNum: number;
   sets: [ExerciseType[][], ExerciseType[][]];
@@ -84,7 +85,7 @@ export type SplitSessionsType = {
 export type State = {
   total_sessions: [number, number];
   list: MusclePriorityType[];
-  training_week: SessionDayType[];
+  training_week: TrainingDayType[];
   split_sessions: SplitSessionsType;
   mrv_breakpoint: number;
   mev_breakpoint: number;
@@ -96,7 +97,8 @@ type Action = {
     | "UPDATE_LIST"
     | "UPDATE_MRV_BREAKPOINT"
     | "UPDATE_MEV_BREAKPOINT"
-    | "UPDATE_SPLIT_SESSIONS";
+    | "UPDATE_SPLIT_SESSIONS"
+    | "UPDATE_TRAINING_WEEK";
   payload?: {
     new_sessions?: [number, number];
     new_list?: MusclePriorityType[];
@@ -109,7 +111,7 @@ type Action = {
 const INITIAL_MRV_BREAKPOINT = 4;
 const INITIAL_MEV_BREAKPOINT = 9;
 
-const INITIAL_WEEK: SessionDayType[] = [
+const INITIAL_WEEK: TrainingDayType[] = [
   {
     day: "Sunday",
     sessionNum: 0,
@@ -308,6 +310,21 @@ const INITIAL_SPLIT_SESSIONS: SplitSessionsType = {
   },
 };
 
+// TODO: Possible add state that would take split_sessions | total_sessions and map out training_week
+//       looking like this:
+const split_week_overview = [
+  {
+    day: "Sunday",
+    sessions: [
+      {
+        id: "",
+        split: "upper",
+      },
+    ],
+  },
+];
+
+// ---------------
 export const INITIAL_STATE: State = {
   total_sessions: [3, 0],
   list: [...MUSCLE_PRIORITY_LIST],
@@ -315,7 +332,16 @@ export const INITIAL_STATE: State = {
   split_sessions: { ...INITIAL_SPLIT_SESSIONS },
   mrv_breakpoint: INITIAL_MRV_BREAKPOINT,
   mev_breakpoint: INITIAL_MEV_BREAKPOINT,
+  // muscle_priority: {
+  //   mrv_breakpoint: INITIAL_MRV_BREAKPOINT,
+  //   mev_breakpoint: INITIAL_MEV_BREAKPOINT,
+  //   list: [...MUSCLE_PRIORITY_LIST],
+  // }
 };
+
+// total_sessions --> list
+// total_sessions && list --> split_sessions
+// mrv && mev_breakpoint --> list
 
 // TODO: Should add state for total mesocycles 1-4
 
@@ -425,6 +451,15 @@ export default function weeklySessionSplitReducer(
         mev_breakpoint: new_mev_breakpoint,
       };
 
+    case "UPDATE_TRAINING_WEEK":
+      const updated_training_week = updateTrainingWeek(
+        state.total_sessions,
+        state.training_week,
+        state.split_sessions,
+        state.list,
+        [state.mrv_breakpoint, state.mev_breakpoint]
+      );
+      return { ...state, training_week: updated_training_week };
     default:
       return state;
   }

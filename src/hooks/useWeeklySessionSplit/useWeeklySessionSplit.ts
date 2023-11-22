@@ -51,6 +51,19 @@ export default function useWeeklySessionSplit() {
     dispatch({ type: "UPDATE_SPLIT_SESSIONS", payload: { split_type: "OPT" } });
   }, []);
 
+  useEffect(() => {
+    dispatch({ type: "UPDATE_TRAINING_WEEK" });
+    console.log(
+      total_sessions,
+      split_sessions,
+      list,
+      mrv_breakpoint,
+      mev_breakpoint,
+      training_week,
+      "TEST: ALL STATE DATA"
+    );
+  }, [total_sessions, split_sessions, list]);
+
   return {
     training_week,
     split_sessions,

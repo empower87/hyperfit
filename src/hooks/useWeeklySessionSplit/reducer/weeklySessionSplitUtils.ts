@@ -13,10 +13,10 @@ import { getNextSession } from "~/utils/getNextSession";
 import {
   ExerciseType,
   MusclePriorityType,
-  SessionDayType,
   SplitSessionsNameType,
   SplitSessionsType,
   SplitType,
+  TrainingDayType,
 } from "./weeklySessionSplitReducer";
 
 export type VolumeLandmarkType = "MRV" | "MEV" | "MV";
@@ -25,7 +25,7 @@ export type VolumeKey =
   | "mev_progression_matrix"
   | "mv_progression_matrix";
 
-function initializeOnOffDays(sessions: number, split: SessionDayType[]) {
+function initializeOnOffDays(sessions: number, split: TrainingDayType[]) {
   switch (sessions) {
     case 3:
       let odd = 0;
@@ -282,7 +282,7 @@ function determineOptimalSessionSplits(
 
 const initializePPLTrainingWeek = (
   sessions: [number, number],
-  training_week: SessionDayType[],
+  training_week: TrainingDayType[],
   splits: SplitSessionsType
 ) => {
   let _splits = { ...splits };
@@ -311,14 +311,19 @@ const initializePPLTrainingWeek = (
 
 function updateWeekWithSessionSplits(
   sessions: [number, number],
-  split: SessionDayType[],
-  splits: SplitSessionsType
+  training_week: TrainingDayType[],
+  splitSessions: SplitSessionsType
 ) {
-  const { lower, upper, push, pull, full, off } = splits.sessions;
+  const { lower, upper, push, pull, full, off } = splitSessions.sessions;
   const first_sessions = sessions[0];
   const second_sessions = sessions[1];
 
-  const update_split = initializeOnOffDays(first_sessions, [...split]);
+  const reset_sessionNums = training_week.map((each) => {
+    return { ...each, sessionNum: 0 };
+  });
+  const update_split = initializeOnOffDays(first_sessions, [
+    ...reset_sessionNums,
+  ]);
 
   let counter = {
     lower: lower,
@@ -401,8 +406,6 @@ function updateWeekWithSessionSplits(
   }
   return update_split;
 }
-
-function getTotalSessions(split_sessions: SplitSessionsType) {}
 
 // NOTE: going to have to add a split parameter to this
 //       this would allow for frequency to be updated based on split.
@@ -533,11 +536,11 @@ function addMesoProgression(
 
 const distributeExercisesAmongSplit = (
   list: MusclePriorityType[],
-  split: SessionDayType[],
+  split: TrainingDayType[],
   mrv_breakpoint: number,
   mev_breakpoint: number
 ) => {
-  let meso: SessionDayType[] = [...split].map((each) => {
+  let meso: TrainingDayType[] = [...split].map((each) => {
     const emptySets: [ExerciseType[][], ExerciseType[][]] = [[], []];
     return { ...each, sets: emptySets };
   });
@@ -809,10 +812,31 @@ function getSplitSessions(
   }
 }
 
+function updateTrainingWeek(
+  total_sessions: [number, number],
+  training_week: TrainingDayType[],
+  split_sessions: SplitSessionsType,
+  muscle_priority_List: MusclePriorityType[],
+  breakpoints: [number, number]
+) {
+  const new_split = updateWeekWithSessionSplits(
+    total_sessions,
+    training_week,
+    split_sessions
+  );
+  const new_split_with_exercises = distributeExercisesAmongSplit(
+    muscle_priority_List,
+    new_split,
+    breakpoints[0],
+    breakpoints[1]
+  );
+  return new_split_with_exercises;
+}
+
 function updateReducerStateHandler(
   total_sessions: [number, number],
   list: MusclePriorityType[],
-  split: SessionDayType[],
+  split: TrainingDayType[],
   mrv_breakpoint: number,
   mev_breakpoint: number,
   split_sessions: SplitSessionsType
@@ -850,4 +874,5 @@ export {
   getSplitSessions,
   selectSplitHandler,
   updateReducerStateHandler,
+  updateTrainingWeek,
 };

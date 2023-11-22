@@ -4,9 +4,9 @@ import { WeekTest } from "~/components/WeekOverviewTest";
 import {
   DayType,
   MusclePriorityType,
-  SessionDayType,
   SplitSessionsType,
   SplitType,
+  TrainingDayType,
 } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
 import { getSessionSplitColor } from "~/utils/getSessionSplitColor";
 import StrictModeDroppable from "~/utils/react-beautiful-dnd/StrictModeDroppable";
@@ -215,7 +215,7 @@ function TrainingSplitHeaders() {
 }
 
 type TrainingSplitProps = {
-  split: SessionDayType[];
+  split: TrainingDayType[];
 };
 
 function Week({ split }: TrainingSplitProps) {
@@ -277,7 +277,7 @@ function Week({ split }: TrainingSplitProps) {
 
 type WeekOverviewProps = {
   split_sessions: SplitSessionsType;
-  training_week: SessionDayType[];
+  training_week: TrainingDayType[];
   list: MusclePriorityType[];
   total_sessions: [number, number];
 };
