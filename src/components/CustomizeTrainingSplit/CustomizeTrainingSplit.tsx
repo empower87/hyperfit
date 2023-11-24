@@ -9,13 +9,6 @@ import { ListVolumeSettings, WeekVolumeDetails } from "./Settings/Settings";
 import WeekOverview from "./WeekOverview/WeekOverview";
 
 type CustomizeTrainingSplitProps = {
-  // _prioritized_muscle_list: MusclePriorityType[];
-  // _total_sessions: [number, number];
-  // _training_week: TrainingDayType[];
-  // _mrv_breakpoint: number;
-  // _mev_breakpoint: number;
-  // _split_sessions: SplitSessionsType;
-  // trainingWeek: TrainingDayType[]
   setTrainingWeek: Dispatch<SetStateAction<TrainingDayType[]>>;
 };
 
