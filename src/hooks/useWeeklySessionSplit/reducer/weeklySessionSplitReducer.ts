@@ -1,4 +1,8 @@
 import {
+  INITIAL_WEEK_TEST,
+  distributeSplitAcrossWeek,
+} from "~/utils/getNextSession";
+import {
   VolumeLandmarkType,
   getSplitSessions,
   updateReducerStateHandler,
@@ -98,7 +102,8 @@ type Action = {
     | "UPDATE_MRV_BREAKPOINT"
     | "UPDATE_MEV_BREAKPOINT"
     | "UPDATE_SPLIT_SESSIONS"
-    | "UPDATE_TRAINING_WEEK";
+    | "UPDATE_TRAINING_WEEK"
+    | "TEST";
   payload?: {
     new_sessions?: [number, number];
     new_list?: MusclePriorityType[];
@@ -408,11 +413,24 @@ export default function weeklySessionSplitReducer(
         state.mev_breakpoint,
         splitSessions
       );
+
+      const week_split = distributeSplitAcrossWeek(
+        [...INITIAL_WEEK_TEST],
+        state.total_sessions,
+        splitSessions
+      );
+      console.log(
+        state.total_sessions,
+        splitSessions,
+        week_split,
+        "TEST FUCK U"
+      );
       return {
         ...state,
         split_sessions: splitSessions,
         list: updated_list_split.list,
         training_week: updated_list_split.split,
+        test: week_split,
       };
     case "UPDATE_MRV_BREAKPOINT":
       if (!action.payload || !action.payload.mrv_breakpoint) return state;
@@ -460,6 +478,9 @@ export default function weeklySessionSplitReducer(
         [state.mrv_breakpoint, state.mev_breakpoint]
       );
       return { ...state, training_week: updated_training_week };
+
+    case "TEST":
+      return state;
     default:
       return state;
   }

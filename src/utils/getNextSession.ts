@@ -331,7 +331,7 @@ type SessionType = {
   split: string;
   exercises: [];
 };
-const INITIAL_WEEK: TrainingDay[] = [
+export const INITIAL_WEEK_TEST: TrainingDay[] = [
   {
     day: "Sunday",
     isTrainingDay: true,
@@ -454,7 +454,7 @@ const getOffDayIndices = (number: number) => {
 };
 
 const distributePPLSplit = (sessions: [number, number]) => {
-  const week = [...INITIAL_WEEK];
+  const week = [...INITIAL_WEEK_TEST];
 
   const order = ["push", "legs", "pull"];
   const off_day_breakpoints = ["Sunday", "Thursday"];
@@ -478,8 +478,10 @@ const getSplitValues = (sessions: SplitSessionsSessionsType) => {
   return counter;
 };
 
-const getSplitOrder = (splitType: SplitSessionsNameType) => {
-  switch (splitType) {
+const getSplitOrder = (split_sessions: SplitSessionsType) => {
+  switch (split_sessions.name) {
+    case "OPT":
+      return ["upper", "lower", "upper"];
     case "PPL":
       return ["push", "legs", "pull"];
     case "PPLUL":
@@ -490,16 +492,15 @@ const getSplitOrder = (splitType: SplitSessionsNameType) => {
       return ["chest", "legs", "back", "shoulders", "arms"];
     case "FB":
       return ["full"];
-    case "OPT":
-      return ["upper", "lower", "upper"];
     case "CUS":
-      return [];
+      return ["upper"];
     default:
-      return [];
+      return ["upper"];
   }
 };
 
 export const distributeSplitAcrossWeek = (
+  _week: TrainingDay[],
   sessions: [number, number],
   split_sessions: SplitSessionsType
 ) => {
@@ -507,90 +508,40 @@ export const distributeSplitAcrossWeek = (
   const off_days = 7 - week_sessions;
   const off_day_indices = getOffDayIndices(off_days);
 
-  const week = [...INITIAL_WEEK].map((each, index) => {
+  const week = [..._week].map((each, index) => {
     if (off_day_indices.includes(index)) {
       return { ...each, isTrainingDay: false };
     } else return each;
   });
 
+  let order = getSplitOrder(split_sessions);
   let counter = { ...split_sessions.sessions };
-  let order = getSplitOrder(split_sessions.name);
-
   // const total = Object.values(counter).reduce((acc, prev) => acc + prev)
-  let breakLoop = false;
+
   let order_index = 0;
 
-  while (!breakLoop) {
-    const total = Object.values(counter).reduce((acc, prev) => acc + prev);
+  for (let i = 0; i < week.length; i++) {
+    if (week[i].isTrainingDay) {
+      let split = order[order_index] as keyof typeof counter;
 
-    if (total > 0) {
-      console.log(total, counter, "total + counter");
-      for (let i = 0; i < week.length; i++) {
-        if (week[i].isTrainingDay) {
-          let key = order[order_index] as keyof typeof counter;
+      if (counter[split] > 0) {
+        let session: SessionType = {
+          id: "",
+          split: split,
+          exercises: [],
+        };
+        console.log(week, order, counter, split_sessions, "WTF MANA");
 
-          if (counter[key] !== 0) {
-            let session: SessionType = {
-              id: "",
-              split: order[order_index],
-              exercises: [],
-            };
+        week[i].sessions.push(session);
 
-            week[i].sessions.push(session);
-
-            if (order_index + 1 < order.length - 1) {
-              order_index++;
-            } else {
-              order_index = 0;
-            }
-
-            counter[key]--;
-          } else {
-            order_index++;
-          }
-
-          // let key = order[order_index] as keyof typeof counter;
-        }
+        counter[split] = counter[split] - 1;
+        order_index = order_index + 1 < order.length - 1 ? order_index + 1 : 0;
+      } else {
+        order_index++;
       }
-    } else {
-      breakLoop = true;
+
+      // let key = order[order_index] as keyof typeof counter;
     }
   }
-  console.log(week, split_sessions, "total + counter");
   return week;
 };
-
-function handleDistributeSplit(
-  sessions: [number, number],
-  split_sessions: SplitSessionsType
-) {
-  const week_sessions = sessions[0];
-  const off_days = 7 - week_sessions;
-  const daily_sessions = sessions[1];
-
-  const off_day_indices = getOffDayIndices(off_days);
-
-  const week = [...INITIAL_WEEK].map((each, index) => {
-    if (off_day_indices.includes(index)) {
-      return { ...each, isTrainingDay: false };
-    } else return each;
-  });
-
-  let counter = { ...split_sessions.sessions };
-
-  Object.entries(split_sessions.sessions).forEach((each) => {
-    if (each[1] > 0) {
-      Object.assign(counter, { [each[0]]: each[1] });
-    }
-  });
-
-  // const lol = distributeSplitAcrossWeek(split_sessions.sessions, week, )
-  switch (week_sessions) {
-    case 3:
-    case 4:
-    case 5:
-    case 6:
-    case 7:
-    default:
-  }
-}

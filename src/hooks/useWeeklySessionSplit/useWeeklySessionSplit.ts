@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useReducer } from "react";
-import { distributeSplitAcrossWeek } from "~/utils/getNextSession";
 import weeklySessionSplitReducer, {
   INITIAL_STATE,
   MusclePriorityType,
@@ -64,14 +63,6 @@ export default function useWeeklySessionSplit() {
       "TEST: ALL STATE DATA"
     );
   }, [total_sessions, split_sessions, list]);
-
-  useEffect(() => {
-    const week_split = distributeSplitAcrossWeek(
-      total_sessions,
-      split_sessions
-    );
-    console.log(week_split, split_sessions, "TEST: WEEK WEEK");
-  }, [total_sessions, split_sessions]);
 
   return {
     training_week,
