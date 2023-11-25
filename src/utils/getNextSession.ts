@@ -1,4 +1,8 @@
-import { SplitType } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
+import {
+  DayType,
+  SplitSessionsType,
+  SplitType,
+} from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
 
 export const getNextSession = (
   upper: number,
@@ -154,3 +158,439 @@ export const getNextSession = (
       }
   }
 };
+
+// chest - 2, 1
+// back - 2, 1
+// shoulders - 1, 1
+// arms - 1, 1
+// lower - 2, 1
+// legs - 2, 1
+// push - 1, 1
+// pull - 1, 1
+// full -
+
+// prioritize 1 day off
+// legs - [off, shoulders, arms, pull, push, chest, back, upper, full, lower, legs]
+// lower - [off, shoulders, arms, pull, push, chest, back, upper, full, legs, lower]
+// upper - [off, lower, legs, arms, shoulders, full, push, pull, chest, back, upper]
+// push -
+
+const PREFERED_NEXT_SESSIONS = {
+  lower: [
+    "off",
+    "shoulders",
+    "arms",
+    "pull",
+    "push",
+    "chest",
+    "back",
+    "upper",
+    "full",
+    "legs",
+    "lower",
+  ],
+  legs: [
+    "off",
+    "shoulders",
+    "arms",
+    "pull",
+    "push",
+    "chest",
+    "back",
+    "upper",
+    "full",
+    "lower",
+    "legs",
+  ],
+  upper: [
+    "off",
+    "lower",
+    "legs",
+    "arms",
+    "shoulders",
+    "full",
+    "push",
+    "pull",
+    "chest",
+    "back",
+    "upper",
+  ],
+  full: [
+    "off",
+    "shoulders",
+    "arms",
+    "chest",
+    "back",
+    "push",
+    "pull",
+    "upper",
+    "lower",
+    "legs",
+    "full",
+  ],
+  push: [
+    "pull",
+    "back",
+    "legs",
+    "lower",
+    "shoulders",
+    "arms",
+    "off",
+    "full",
+    "upper",
+    "chest",
+    "push",
+  ],
+  pull: [
+    "push",
+    "chest",
+    "legs",
+    "lower",
+    "shoulders",
+    "arms",
+    "off",
+    "full",
+    "upper",
+    "back",
+    "pull",
+  ],
+  back: [
+    "chest",
+    "shoulders",
+    "arms",
+    "push",
+    "legs",
+    "lower",
+    "off",
+    "full",
+    "upper",
+    "pull",
+    "back",
+  ],
+  chest: [
+    "back",
+    "arms",
+    "shoulders",
+    "pull",
+    "legs",
+    "lower",
+    "off",
+    "full",
+    "upper",
+    "push",
+    "chest",
+  ],
+  arms: [
+    "shoulders",
+    "lower",
+    "legs",
+    "full",
+    "chest",
+    "back",
+    "push",
+    "pull",
+    "upper",
+    "off",
+    "arms",
+  ],
+  shoulders: [
+    "arms",
+    "lower",
+    "legs",
+    "full",
+    "chest",
+    "back",
+    "push",
+    "pull",
+    "upper",
+    "off",
+    "shoulders",
+  ],
+  off: [
+    "lower",
+    "legs",
+    "upper",
+    "full",
+    "pull",
+    "push",
+    "back",
+    "chest",
+    "arms",
+    "shoulders",
+    "off",
+  ],
+};
+
+type TrainingDay = {
+  day: DayType;
+  isTrainingDay: boolean;
+  sessions: SessionType[];
+};
+type SessionType = {
+  id: string;
+  split: string;
+  exercises: [];
+};
+const INITIAL_WEEK: TrainingDay[] = [
+  {
+    day: "Sunday",
+    isTrainingDay: true,
+    sessions: [],
+  },
+  {
+    day: "Monday",
+    isTrainingDay: true,
+    sessions: [],
+  },
+  {
+    day: "Tuesday",
+    isTrainingDay: true,
+    sessions: [],
+  },
+  {
+    day: "Wednesday",
+    isTrainingDay: true,
+    sessions: [],
+  },
+  {
+    day: "Thursday",
+    isTrainingDay: true,
+    sessions: [],
+  },
+  {
+    day: "Friday",
+    isTrainingDay: true,
+    sessions: [],
+  },
+  {
+    day: "Saturday",
+    isTrainingDay: true,
+    sessions: [],
+  },
+];
+const INITIAL_SESSION: SessionType = {
+  id: "1_push_0",
+  split: "push",
+  exercises: [],
+};
+// push legs pull off push legs pull
+// legs pull push off legs pull push
+// pull push legs off pull push legs
+
+export type SplitSessionsNameType =
+  | "OPT"
+  | "CUS"
+  | "PPL"
+  | "PPLUL"
+  | "UL"
+  | "FB"
+  | "BRO";
+
+type SessionKey =
+  | "lower"
+  | "upper"
+  | "push"
+  | "pull"
+  | "legs"
+  | "full"
+  | "chest"
+  | "back"
+  | "shoulders"
+  | "arms"
+  | "off";
+
+type SplitSessionsSessionsType = {
+  lower: number;
+  upper: number;
+  push: number;
+  pull: number;
+  legs: number;
+  full: number;
+  chest: number;
+  back: number;
+  shoulders: number;
+  arms: number;
+  off: number;
+};
+
+const getOffDayIndices = (number: number) => {
+  const specifiedSplitForDaysOff = (
+    split: SplitSessionsNameType,
+    daysOff: 2 | 3
+  ) => {
+    let twoDaysOffIndices = [];
+    let threeDaysOffIndices = [];
+
+    switch (split) {
+      case "OPT":
+      case "PPL":
+        twoDaysOffIndices = [0, 4];
+        threeDaysOffIndices = [0, 4, 6];
+      case "PPLUL":
+        twoDaysOffIndices = [0, 4];
+        threeDaysOffIndices = [0, 4, 6];
+      case "UL":
+      case "FB":
+      case "BRO":
+      case "CUS":
+      default:
+    }
+  };
+
+  switch (number) {
+    case 0:
+      return [];
+    case 1:
+      return [0];
+    case 2:
+      return [0, 4];
+    case 3:
+      return [0, 4, 6];
+    case 4:
+      return [0, 2, 4, 6];
+    default:
+      return [];
+  }
+};
+
+const distributePPLSplit = (sessions: [number, number]) => {
+  const week = [...INITIAL_WEEK];
+
+  const order = ["push", "legs", "pull"];
+  const off_day_breakpoints = ["Sunday", "Thursday"];
+  let number_of_off_days = 7 - sessions[0];
+  const off_day_indices = getOffDayIndices(number_of_off_days);
+
+  for (let i = 0; i < week.length; i++) {
+    if (!off_day_indices.includes(i)) {
+    }
+  }
+};
+
+const getSplitValues = (sessions: SplitSessionsSessionsType) => {
+  let counter = {};
+
+  Object.entries(sessions).forEach((each) => {
+    if (each[1] > 0) {
+      Object.assign(counter, { [each[0]]: each[1] });
+    }
+  });
+  return counter;
+};
+
+const getSplitOrder = (splitType: SplitSessionsNameType) => {
+  switch (splitType) {
+    case "PPL":
+      return ["push", "legs", "pull"];
+    case "PPLUL":
+      return ["push", "legs", "pull", "lower", "upper"];
+    case "UL":
+      return ["upper", "lower"];
+    case "BRO":
+      return ["chest", "legs", "back", "shoulders", "arms"];
+    case "FB":
+      return ["full"];
+    case "OPT":
+      return ["upper", "lower", "upper"];
+    case "CUS":
+      return [];
+    default:
+      return [];
+  }
+};
+
+export const distributeSplitAcrossWeek = (
+  sessions: [number, number],
+  split_sessions: SplitSessionsType
+) => {
+  const week_sessions = sessions[0];
+  const off_days = 7 - week_sessions;
+  const off_day_indices = getOffDayIndices(off_days);
+
+  const week = [...INITIAL_WEEK].map((each, index) => {
+    if (off_day_indices.includes(index)) {
+      return { ...each, isTrainingDay: false };
+    } else return each;
+  });
+
+  let counter = { ...split_sessions.sessions };
+  let order = getSplitOrder(split_sessions.name);
+
+  // const total = Object.values(counter).reduce((acc, prev) => acc + prev)
+  let breakLoop = false;
+  let order_index = 0;
+
+  while (!breakLoop) {
+    const total = Object.values(counter).reduce((acc, prev) => acc + prev);
+
+    if (total > 0) {
+      console.log(total, counter, "total + counter");
+      for (let i = 0; i < week.length; i++) {
+        if (week[i].isTrainingDay) {
+          let key = order[order_index] as keyof typeof counter;
+
+          if (counter[key] !== 0) {
+            let session: SessionType = {
+              id: "",
+              split: order[order_index],
+              exercises: [],
+            };
+
+            week[i].sessions.push(session);
+
+            if (order_index + 1 < order.length - 1) {
+              order_index++;
+            } else {
+              order_index = 0;
+            }
+
+            counter[key]--;
+          } else {
+            order_index++;
+          }
+
+          // let key = order[order_index] as keyof typeof counter;
+        }
+      }
+    } else {
+      breakLoop = true;
+    }
+  }
+  console.log(week, split_sessions, "total + counter");
+  return week;
+};
+
+function handleDistributeSplit(
+  sessions: [number, number],
+  split_sessions: SplitSessionsType
+) {
+  const week_sessions = sessions[0];
+  const off_days = 7 - week_sessions;
+  const daily_sessions = sessions[1];
+
+  const off_day_indices = getOffDayIndices(off_days);
+
+  const week = [...INITIAL_WEEK].map((each, index) => {
+    if (off_day_indices.includes(index)) {
+      return { ...each, isTrainingDay: false };
+    } else return each;
+  });
+
+  let counter = { ...split_sessions.sessions };
+
+  Object.entries(split_sessions.sessions).forEach((each) => {
+    if (each[1] > 0) {
+      Object.assign(counter, { [each[0]]: each[1] });
+    }
+  });
+
+  // const lol = distributeSplitAcrossWeek(split_sessions.sessions, week, )
+  switch (week_sessions) {
+    case 3:
+    case 4:
+    case 5:
+    case 6:
+    case 7:
+    default:
+  }
+}
