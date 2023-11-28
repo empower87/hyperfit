@@ -639,9 +639,9 @@ const distributeExercisesAmongSplit = (
   return meso;
 };
 
-const PPLUL = ["push", "pull", "lower", "upper", "lower"];
-const PPL = ["push", "pull", "lower"];
-const BRO = ["chest", "back", "lower", "arms", "shoulders"];
+const PPLUL = ["push", "pull", "legs", "upper", "lower"];
+const PPL = ["push", "pull", "legs"];
+const BRO = ["chest", "back", "legs", "arms", "shoulders"];
 const UL = ["upper", "lower", "upper", "lower"];
 const FB = ["full", "full", "full"];
 

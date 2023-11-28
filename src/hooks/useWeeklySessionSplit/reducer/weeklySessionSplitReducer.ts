@@ -298,6 +298,85 @@ const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
   },
 ];
 
+type SessionsType = {
+  upper: number;
+  lower: number;
+  push: number;
+  pull: number;
+  legs: number;
+  full: number;
+  off: number;
+  arms: number;
+  chest: number;
+  back: number;
+  shoulders: number;
+};
+
+type PPLSessionsType = Pick<SessionsType, "push" | "pull" | "legs">;
+const PPL_SESSIONS: PPLSessionsType = {
+  push: 1,
+  legs: 1,
+  pull: 1,
+};
+type PPLULSessionsType = Pick<
+  SessionsType,
+  "push" | "pull" | "legs" | "upper" | "lower"
+>;
+const PPLUL_SESSIONS: PPLULSessionsType = {
+  push: 1,
+  legs: 1,
+  pull: 1,
+  lower: 1,
+  upper: 1,
+};
+type FBSessionsType = Pick<SessionsType, "full">;
+const FB_SESSIONS: FBSessionsType = {
+  full: 3,
+};
+type ULSessionsType = Pick<SessionsType, "upper" | "lower">;
+const UL_SESSIONS: ULSessionsType = {
+  upper: 2,
+  lower: 2,
+};
+type BROSessionsType = Pick<
+  SessionsType,
+  "legs" | "back" | "chest" | "arms" | "shoulders"
+>;
+const BRO_SESSIONS: BROSessionsType = {
+  legs: 1,
+  back: 1,
+  chest: 1,
+  arms: 1,
+  shoulders: 1,
+};
+
+const OPT_SESSIONS: SessionsType = {
+  upper: 2,
+  lower: 1,
+  push: 0,
+  pull: 0,
+  legs: 0,
+  full: 0,
+  off: 0,
+  arms: 0,
+  chest: 0,
+  back: 0,
+  shoulders: 0,
+};
+const CUS_SESSIONS: SessionsType = {
+  upper: 2,
+  lower: 1,
+  push: 0,
+  pull: 0,
+  legs: 0,
+  full: 0,
+  off: 0,
+  arms: 0,
+  chest: 0,
+  back: 0,
+  shoulders: 0,
+};
+
 const INITIAL_SPLIT_SESSIONS: SplitSessionsType = {
   name: "PPL",
   sessions: {
@@ -419,12 +498,7 @@ export default function weeklySessionSplitReducer(
         state.total_sessions,
         splitSessions
       );
-      console.log(
-        state.total_sessions,
-        splitSessions,
-        week_split,
-        "TEST FUCK U"
-      );
+
       return {
         ...state,
         split_sessions: splitSessions,
