@@ -69,23 +69,37 @@ export type SplitSessionsNameType =
   | "FB"
   | "BRO";
 
-export type SplitSessionsType = {
-  name: SplitSessionsNameType;
-  sessions: {
-    upper: number;
-    lower: number;
-    push: number;
-    pull: number;
-    legs: number;
-    full: number;
-    off: number;
-    arms: number;
-    chest: number;
-    back: number;
-    shoulders: number;
-  };
+type Sessions = {
+  upper: number;
+  lower: number;
+  push: number;
+  pull: number;
+  legs: number;
+  full: number;
+  chest: number;
+  back: number;
+  arms: number;
+  shoulders: number;
+  off: number;
 };
 
+export type SplitSessionsType = {
+  name: SplitSessionsNameType;
+  sessions: Sessions;
+};
+
+type PPLSessions = Pick<Sessions, "push" | "pull" | "legs">;
+
+type SessionType = {
+  id: string;
+  split: string;
+  exercises: [];
+};
+type TrainingDay = {
+  day: DayType;
+  isTrainingDay: boolean;
+  sessions: SessionType[];
+};
 export type State = {
   total_sessions: [number, number];
   list: MusclePriorityType[];
@@ -93,6 +107,9 @@ export type State = {
   split_sessions: SplitSessionsType;
   mrv_breakpoint: number;
   mev_breakpoint: number;
+  test: TrainingDay[];
+  // split: SplitNameType
+  // sessions: Sessions
 };
 
 type Action = {
@@ -416,6 +433,7 @@ export const INITIAL_STATE: State = {
   split_sessions: { ...INITIAL_SPLIT_SESSIONS },
   mrv_breakpoint: INITIAL_MRV_BREAKPOINT,
   mev_breakpoint: INITIAL_MEV_BREAKPOINT,
+  test: [...INITIAL_WEEK_TEST],
   // muscle_priority: {
   //   mrv_breakpoint: INITIAL_MRV_BREAKPOINT,
   //   mev_breakpoint: INITIAL_MEV_BREAKPOINT,
@@ -498,7 +516,6 @@ export default function weeklySessionSplitReducer(
         state.total_sessions,
         splitSessions
       );
-
       return {
         ...state,
         split_sessions: splitSessions,

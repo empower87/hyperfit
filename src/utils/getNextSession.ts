@@ -507,37 +507,47 @@ export const distributeSplitAcrossWeek = (
   const week_sessions = sessions[0];
   const off_days = 7 - week_sessions;
   const off_day_indices = getOffDayIndices(off_days);
+  let counter = { ...split_sessions.sessions };
+  let order = getSplitOrder(split_sessions);
 
-  const week = [..._week].map((each, index) => {
+  const week = [...INITIAL_WEEK_TEST].map((each, index) => {
     if (off_day_indices.includes(index)) {
       return { ...each, isTrainingDay: false };
     } else return each;
   });
 
-  let order = getSplitOrder(split_sessions);
-  let counter = { ...split_sessions.sessions };
-  // const total = Object.values(counter).reduce((acc, prev) => acc + prev)
-
   let order_index = 0;
 
+  console.log(week, order, counter, split_sessions, "ALL STATE DATA");
+
   for (let i = 0; i < week.length; i++) {
+    let split = order[order_index] as keyof typeof counter;
+    let splitCounter = counter[split];
+
     if (week[i].isTrainingDay) {
-      let split = order[order_index] as keyof typeof counter;
+      let session: SessionType = {
+        id: "",
+        split: split,
+        exercises: [],
+      };
 
-      if (counter[split] > 0) {
-        let session: SessionType = {
-          id: "",
-          split: split,
-          exercises: [],
-        };
-        console.log(week, order, counter, split_sessions, "WTF MANA");
-
+      if (splitCounter > 0) {
         week[i].sessions.push(session);
 
-        counter[split] = counter[split] - 1;
+        let value = counter[split] - 1;
+        counter[split] = value;
         order_index = order_index + 1 < order.length - 1 ? order_index + 1 : 0;
+
+        console.log(
+          counter[split],
+          split,
+          splitCounter,
+          order_index,
+          week,
+          "ALL STATE DATA"
+        );
       } else {
-        order_index++;
+        order_index = order_index + 1 < order.length - 1 ? order_index + 1 : 0;
       }
 
       // let key = order[order_index] as keyof typeof counter;

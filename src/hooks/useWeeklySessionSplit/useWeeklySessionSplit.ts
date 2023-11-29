@@ -14,6 +14,7 @@ export default function useWeeklySessionSplit() {
       training_week,
       mrv_breakpoint,
       mev_breakpoint,
+      test,
     },
     dispatch,
   ] = useReducer(weeklySessionSplitReducer, INITIAL_STATE);
@@ -60,6 +61,7 @@ export default function useWeeklySessionSplit() {
       mrv_breakpoint,
       mev_breakpoint,
       training_week,
+      test,
       "TEST: ALL STATE DATA"
     );
   }, [total_sessions, split_sessions, list]);
