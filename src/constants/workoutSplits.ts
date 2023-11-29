@@ -1,3 +1,5 @@
+import { SplitSessionsNameType } from "~/utils/getNextSession";
+
 export type MusclesType =
   | "traps"
   | "delts_front"
@@ -118,6 +120,21 @@ export const getGroupList = (split: string) => {
   }
 };
 
+const split = (split: SplitSessionsNameType, muscle: string) => {
+  switch (split) {
+    case "OPT":
+    case "PPL":
+      return getPushPullLegsSplit(muscle);
+    case "PPLUL":
+    case "UL":
+    case "FB":
+    case "BRO":
+      return getBroSplit(muscle);
+    case "CUS":
+    default:
+  }
+};
+
 export const getBroSplit = (muscle: string) => {
   if (SHOULDERS_MUSCLES.includes(muscle)) {
     return "shoulders";
@@ -140,6 +157,11 @@ export const getPushPullLegsSplit = (muscle: string) => {
   } else {
     return "legs";
   }
+};
+
+export const getUpperLowerSplit = (muscle: string) => {
+  if (UPPER_MUSCLES.includes(muscle)) return "upper";
+  else return "lower";
 };
 
 export const getOptimizedSplit = (muscle: string) => {
