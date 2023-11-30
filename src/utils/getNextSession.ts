@@ -1,4 +1,13 @@
 import {
+  distributeBROSplitAcrossWeek,
+  distributeFBSplitAcrossWeek,
+  distributeOPTSplitAcrossWeek,
+  distributePPLSplitAcrossWeek,
+  distributePPLULSplitAcrossWeek,
+  distributeULSplitAcrossWeek,
+  getSessionCounter,
+} from "~/hooks/useWeeklySessionSplit/reducer/getSplitSessions";
+import {
   DayType,
   SplitSessionsType,
   SplitType,
@@ -414,29 +423,6 @@ type SplitSessionsSessionsType = {
 };
 
 const getOffDayIndices = (number: number) => {
-  const specifiedSplitForDaysOff = (
-    split: SplitSessionsNameType,
-    daysOff: 2 | 3
-  ) => {
-    let twoDaysOffIndices = [];
-    let threeDaysOffIndices = [];
-
-    switch (split) {
-      case "OPT":
-      case "PPL":
-        twoDaysOffIndices = [0, 4];
-        threeDaysOffIndices = [0, 4, 6];
-      case "PPLUL":
-        twoDaysOffIndices = [0, 4];
-        threeDaysOffIndices = [0, 4, 6];
-      case "UL":
-      case "FB":
-      case "BRO":
-      case "CUS":
-      default:
-    }
-  };
-
   switch (number) {
     case 0:
       return [];
@@ -453,52 +439,6 @@ const getOffDayIndices = (number: number) => {
   }
 };
 
-const distributePPLSplit = (sessions: [number, number]) => {
-  const week = [...INITIAL_WEEK_TEST];
-
-  const order = ["push", "legs", "pull"];
-  const off_day_breakpoints = ["Sunday", "Thursday"];
-  let number_of_off_days = 7 - sessions[0];
-  const off_day_indices = getOffDayIndices(number_of_off_days);
-
-  for (let i = 0; i < week.length; i++) {
-    if (!off_day_indices.includes(i)) {
-    }
-  }
-};
-
-const getSplitValues = (sessions: SplitSessionsSessionsType) => {
-  let counter = {};
-
-  Object.entries(sessions).forEach((each) => {
-    if (each[1] > 0) {
-      Object.assign(counter, { [each[0]]: each[1] });
-    }
-  });
-  return counter;
-};
-
-const getSplitOrder = (split_sessions: SplitSessionsType) => {
-  switch (split_sessions.name) {
-    case "OPT":
-      return ["upper", "lower", "upper"];
-    case "PPL":
-      return ["push", "legs", "pull"];
-    case "PPLUL":
-      return ["push", "legs", "pull", "lower", "upper"];
-    case "UL":
-      return ["upper", "lower"];
-    case "BRO":
-      return ["chest", "legs", "back", "shoulders", "arms"];
-    case "FB":
-      return ["full"];
-    case "CUS":
-      return ["upper"];
-    default:
-      return ["upper"];
-  }
-};
-
 export const distributeSplitAcrossWeek = (
   _week: TrainingDay[],
   sessions: [number, number],
@@ -507,51 +447,36 @@ export const distributeSplitAcrossWeek = (
   const week_sessions = sessions[0];
   const off_days = 7 - week_sessions;
   const off_day_indices = getOffDayIndices(off_days);
-  let counter = { ...split_sessions.sessions };
-  let order = getSplitOrder(split_sessions);
 
-  const week = [...INITIAL_WEEK_TEST].map((each, index) => {
+  let counter = getSessionCounter(split_sessions.name, split_sessions.sessions);
+
+  let week = [...INITIAL_WEEK_TEST].map((each, index) => {
     if (off_day_indices.includes(index)) {
       return { ...each, isTrainingDay: false };
     } else return each;
   });
 
-  let order_index = 0;
-
-  console.log(week, order, counter, split_sessions, "ALL STATE DATA");
-
-  for (let i = 0; i < week.length; i++) {
-    let split = order[order_index] as keyof typeof counter;
-    let splitCounter = counter[split];
-
-    if (week[i].isTrainingDay) {
-      let session: SessionType = {
-        id: "",
-        split: split,
-        exercises: [],
-      };
-
-      if (splitCounter > 0) {
-        week[i].sessions.push(session);
-
-        let value = counter[split] - 1;
-        counter[split] = value;
-        order_index = order_index + 1 < order.length - 1 ? order_index + 1 : 0;
-
-        console.log(
-          counter[split],
-          split,
-          splitCounter,
-          order_index,
-          week,
-          "ALL STATE DATA"
-        );
-      } else {
-        order_index = order_index + 1 < order.length - 1 ? order_index + 1 : 0;
-      }
-
-      // let key = order[order_index] as keyof typeof counter;
-    }
+  switch (counter.name) {
+    case "PPL":
+      week = distributePPLSplitAcrossWeek(week, counter.sessions);
+      break;
+    case "PPLUL":
+      week = distributePPLULSplitAcrossWeek(week, counter.sessions);
+      break;
+    case "BRO":
+      week = distributeBROSplitAcrossWeek(week, counter.sessions);
+      break;
+    case "UL":
+      week = distributeULSplitAcrossWeek(week, counter.sessions);
+      break;
+    case "FB":
+      week = distributeFBSplitAcrossWeek(week, counter.sessions);
+      break;
+    case "OPT":
+      week = distributeOPTSplitAcrossWeek(week, counter.sessions);
+      break;
+    default:
+    // return week;
   }
   return week;
 };
