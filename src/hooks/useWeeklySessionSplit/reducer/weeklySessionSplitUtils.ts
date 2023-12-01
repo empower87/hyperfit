@@ -280,35 +280,6 @@ function determineOptimalSessionSplits(
   };
 }
 
-const initializePPLTrainingWeek = (
-  sessions: [number, number],
-  training_week: TrainingDayType[],
-  splits: SplitSessionsType
-) => {
-  let _splits = { ...splits };
-  let total_push = _splits.sessions.push;
-  let total_pull = _splits.sessions.pull;
-  let total_legs = _splits.sessions.legs;
-
-  const MAXED_WEEK = [
-    ["off", "off"],
-    ["push", "legs"],
-    ["legs", "pull"],
-    ["pull", "push"],
-    ["push", "legs"],
-    ["legs", "pull"],
-    ["pull", "push"],
-  ];
-
-  for (let j = 0; j < MAXED_WEEK.length; j++) {}
-
-  for (let i = 0; i < training_week.length; i++) {
-    if (sessions[1] === 0) {
-    } else {
-    }
-  }
-};
-
 function updateWeekWithSessionSplits(
   sessions: [number, number],
   training_week: TrainingDayType[],
@@ -651,47 +622,6 @@ function getSplitOverview(split_sessions: SplitSessionsType) {
   );
 
   return newObj;
-  // switch (split_sessions.name) {
-  //   case "PPL":
-  //     return {
-  //       push: split_sessions.push,
-  //       pull: split_sessions.pull,
-  //       legs: split_sessions.legs,
-  //     };
-  //   case "PPLUL":
-  //     return {
-  //       push: split_sessions.push,
-  //       pull: split_sessions.pull,
-  //       legs: split_sessions.legs,
-  //       upper: split_sessions.upper,
-  //       lower: split_sessions.lower,
-  //     };
-  //   case "BRO":
-  //     return {
-  //       chest: split_sessions.chest,
-  //       back: split_sessions.back,
-  //       shoulders: split_sessions.shoulders,
-  //       arms: split_sessions.arms,
-  //       legs: split_sessions.legs,
-  //     };
-  //   case "UL":
-  //     return {
-  //       upper: split_sessions.upper,
-  //       lower: split_sessions.lower,
-  //     };
-  //   case "FB":
-  //     return {
-  //       full: split_sessions.full,
-  //     };
-  //   case "OPT":
-  //     let newObj = Object.entries(split_sessions).filter(
-  //       (each) => typeof each[1] === "number" && each[1] > 0
-  //     );
-  //     let newObj2 = {}
-  //     return newObj;
-  //   default:
-  //     return split_sessions;
-  // }
 }
 
 function selectSplitHandler(
@@ -723,7 +653,7 @@ function selectSplitHandler(
 
   let index = 0;
   let totalCount = total;
-  while (totalCount > splitList.length) {
+  while (totalCount > 0) {
     splitList.push(splitList[index]);
     index++;
     totalCount--;
