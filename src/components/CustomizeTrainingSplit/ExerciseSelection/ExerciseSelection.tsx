@@ -4,8 +4,8 @@ import ReactDOM from "react-dom";
 import {
   DayType,
   ExerciseType,
-  SessionDayType,
   SplitType,
+  TrainingDayType,
 } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
 import { getGroupList } from "~/utils/getExercises";
 import { getRankColor } from "~/utils/getRankColor";
@@ -252,7 +252,7 @@ type DraggableExercisesObjectType = {
   }[];
 };
 type WeekSessionsProps = {
-  training_week: SessionDayType[];
+  training_week: TrainingDayType[];
 };
 export default function WeekSessions({ training_week }: WeekSessionsProps) {
   const [draggableExercisesObject, setDraggableExercisesObject] = useState<

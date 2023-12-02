@@ -54,6 +54,7 @@ export default function useWeeklySessionSplit() {
 
   useEffect(() => {
     dispatch({ type: "UPDATE_TRAINING_WEEK" });
+
     console.log(
       total_sessions,
       split_sessions,
@@ -64,6 +65,10 @@ export default function useWeeklySessionSplit() {
       test,
       "TEST: ALL STATE DATA"
     );
+  }, [total_sessions, split_sessions, list]);
+
+  useEffect(() => {
+    dispatch({ type: "TEST" });
   }, [total_sessions, split_sessions, list]);
 
   return {

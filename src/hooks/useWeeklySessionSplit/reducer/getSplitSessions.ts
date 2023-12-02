@@ -10,10 +10,10 @@ import {
 } from "./weeklySessionSplitReducer";
 
 const getPPLULSplitSessions = (
-  total: [number, number],
+  total_sessions: [number, number],
   list: MusclePriorityType[]
 ) => {
-  const totalSessions = total[0] + total[1];
+  const totalSessions = total_sessions[0] + total_sessions[1];
   let initEvenDistribution = Math.floor(totalSessions / 5);
   let count = totalSessions % 5;
 
@@ -46,10 +46,10 @@ const getPPLULSplitSessions = (
 };
 
 const getPPLSplitSessions = (
-  total: [number, number],
+  total_sessions: [number, number],
   list: MusclePriorityType[]
 ) => {
-  const totalSessions = total[0] + total[1];
+  const totalSessions = total_sessions[0] + total_sessions[1];
   let initEvenDistribution = Math.floor(totalSessions / 3);
   let count = totalSessions % 3;
 
@@ -72,10 +72,10 @@ const getPPLSplitSessions = (
 };
 
 export const getBroSplitSessions = (
-  total: [number, number],
+  total_sessions: [number, number],
   priority: MusclePriorityType[]
 ) => {
-  const totalSessions = total[0] + total[1];
+  const totalSessions = total_sessions[0] + total_sessions[1];
 
   let initEvenDistribution = Math.floor(totalSessions / 5);
   let count = totalSessions % 5;

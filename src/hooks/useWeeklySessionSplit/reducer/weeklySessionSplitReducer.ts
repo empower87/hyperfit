@@ -2,6 +2,7 @@ import {
   INITIAL_WEEK_TEST,
   distributeSplitAcrossWeek,
 } from "~/utils/getNextSession";
+import { getSplitFromWeights } from "./getSplitFromPriorityWeighting";
 import {
   VolumeLandmarkType,
   getSplitSessions,
@@ -571,6 +572,12 @@ export default function weeklySessionSplitReducer(
       return { ...state, training_week: updated_training_week };
 
     case "TEST":
+      const test = getSplitFromWeights(
+        state.total_sessions,
+        state.list,
+        state.split_sessions.name
+      );
+      console.log(test, "TEST TEST TEST YO");
       return state;
     default:
       return state;

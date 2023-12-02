@@ -3,7 +3,8 @@ import { useState } from "react";
 import CustomizeTrainingSplit from "~/components/CustomizeTrainingSplit/CustomizeTrainingSplit";
 import Section from "~/components/Layout/Section";
 import TrainingBlock from "~/components/Macrocycle/TrainingBlock/TrainingBlock";
-import { SessionDayType } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
+import { TrainingDayType } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
+// import { SessionDayType } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
 
 import { BG_COLOR_M6, BG_COLOR_M7, BG_COLOR_M8 } from "~/utils/themes";
 
@@ -28,7 +29,7 @@ const Home: NextPage = () => {
   //     "TEST: LETS SEE WHAT THIS IS DOING"
   //   );
   // }, [split_sessions, training_week, prioritized_muscle_list]);
-  const [trainingWeek, setTrainingWeek] = useState<SessionDayType[]>([]);
+  const [trainingWeek, setTrainingWeek] = useState<TrainingDayType[]>([]);
   return (
     <div
       id="modal-body"
