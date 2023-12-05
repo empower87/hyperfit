@@ -139,7 +139,7 @@ export function getSplitFromWeights(
   let offSessions =
     second_sessions === 0 ? 0 : first_sessions - second_sessions;
 
-  let totalTenths = Math.round(pushTenths + pullTenths + lowerTenths);
+  // let totalTenths = Math.round(pushTenths + pullTenths + lowerTenths);
 
   switch (split_name) {
     case "BRO":
@@ -156,6 +156,13 @@ export function getSplitFromWeights(
       pushSessions = pushSessions + ppl_sessions.push;
       lowerSessions = lowerSessions + ppl_sessions.legs;
 
+      console.log(
+        pullSessions,
+        pushSessions,
+        lowerSessions,
+        ppl_sessions,
+        "PPL TEST"
+      );
       return {
         push: pushSessions,
         legs: lowerSessions,
@@ -214,6 +221,7 @@ export function getSplitFromWeights(
           break;
         }
       }
+
       return {
         push: pushSessions,
         pull: pullSessions,
@@ -228,6 +236,7 @@ export function getSplitFromWeights(
         off: offSessions,
       };
     case "UL":
+      console.log(pushSessions, pullSessions, lowerSessions, "UL TEST");
       return {
         upper: pushSessions + pullSessions,
         lower: lowerSessions,
@@ -249,7 +258,7 @@ function distributeIntoSessionsBro(
   total_sessions: [number, number],
   priority: MusclePriorityType[]
 ) {
-  let BRO = {
+  let BRO_WEIGHTS = {
     back: 0,
     chest: 0,
     legs: 0,
@@ -267,26 +276,38 @@ function distributeIntoSessionsBro(
       if (priority[i].muscle === "quads" && i < 3) {
         lowerMod = lowerMod * SYSTEMIC_FATIGUE_MODIFIER;
       }
-      BRO.legs = BRO.legs + lowerMod;
+      BRO_WEIGHTS.legs = BRO_WEIGHTS.legs + lowerMod;
     } else if (CHEST_MUSCLES.includes(priority[i].muscle)) {
-      BRO.chest = BRO.chest + RANK_WEIGHTS[i] * SYSTEMIC_FATIGUE_MODIFIER;
+      BRO_WEIGHTS.chest =
+        BRO_WEIGHTS.chest + RANK_WEIGHTS[i] * SYSTEMIC_FATIGUE_MODIFIER;
     } else if (BACK_MUSCLES.includes(priority[i].muscle)) {
-      BRO.back = BRO.back + RANK_WEIGHTS[i] * SYSTEMIC_FATIGUE_MODIFIER;
+      BRO_WEIGHTS.back =
+        BRO_WEIGHTS.back + RANK_WEIGHTS[i] * SYSTEMIC_FATIGUE_MODIFIER;
     } else if (SHOULDERS_MUSCLES.includes(priority[i].muscle)) {
       let split = Math.round(RANK_WEIGHTS[i] / 3);
-      BRO.shoulders = BRO.shoulders + split;
+      BRO_WEIGHTS.shoulders = BRO_WEIGHTS.shoulders + split;
     } else if (ARMS_MUSCLES.includes(priority[i].muscle)) {
       let split = Math.round(RANK_WEIGHTS[i] / 2);
-      BRO.arms = BRO.arms + split;
+      BRO_WEIGHTS.arms = BRO_WEIGHTS.arms + split;
     }
   }
 
-  let splitRanking = Object.keys(BRO).sort(
-    (a, b) => BRO[b as keyof typeof BRO] - BRO[a as keyof typeof BRO]
+  let splitRanking = Object.keys(BRO_WEIGHTS).sort(
+    (a, b) =>
+      BRO_WEIGHTS[b as keyof typeof BRO_WEIGHTS] -
+      BRO_WEIGHTS[a as keyof typeof BRO_WEIGHTS]
   );
 
   let total = total_sessions[0] + total_sessions[1];
   let index = 0;
+
+  let BRO = {
+    legs: 0,
+    back: 0,
+    chest: 0,
+    arms: 0,
+    shoulders: 0,
+  };
 
   for (let j = 0; j < total; j++) {
     let session = splitRanking[index] as keyof typeof BRO;
