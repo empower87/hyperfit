@@ -89,6 +89,8 @@ export type SplitSessionsType = {
   sessions: Sessions;
 };
 
+type PPLSessions = Pick<Sessions, "push" | "pull" | "legs">;
+
 type SessionType = {
   id: string;
   split: string;
@@ -107,6 +109,8 @@ export type State = {
   mrv_breakpoint: number;
   mev_breakpoint: number;
   test: TrainingDay[];
+  // split: SplitNameType
+  // sessions: Sessions
 };
 
 type Action = {
@@ -312,6 +316,85 @@ const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
   },
 ];
 
+type SessionsType = {
+  upper: number;
+  lower: number;
+  push: number;
+  pull: number;
+  legs: number;
+  full: number;
+  off: number;
+  arms: number;
+  chest: number;
+  back: number;
+  shoulders: number;
+};
+
+type PPLSessionsType = Pick<SessionsType, "push" | "pull" | "legs">;
+const PPL_SESSIONS: PPLSessionsType = {
+  push: 1,
+  legs: 1,
+  pull: 1,
+};
+type PPLULSessionsType = Pick<
+  SessionsType,
+  "push" | "pull" | "legs" | "upper" | "lower"
+>;
+const PPLUL_SESSIONS: PPLULSessionsType = {
+  push: 1,
+  legs: 1,
+  pull: 1,
+  lower: 1,
+  upper: 1,
+};
+type FBSessionsType = Pick<SessionsType, "full">;
+const FB_SESSIONS: FBSessionsType = {
+  full: 3,
+};
+type ULSessionsType = Pick<SessionsType, "upper" | "lower">;
+const UL_SESSIONS: ULSessionsType = {
+  upper: 2,
+  lower: 2,
+};
+type BROSessionsType = Pick<
+  SessionsType,
+  "legs" | "back" | "chest" | "arms" | "shoulders"
+>;
+const BRO_SESSIONS: BROSessionsType = {
+  legs: 1,
+  back: 1,
+  chest: 1,
+  arms: 1,
+  shoulders: 1,
+};
+
+const OPT_SESSIONS: SessionsType = {
+  upper: 2,
+  lower: 1,
+  push: 0,
+  pull: 0,
+  legs: 0,
+  full: 0,
+  off: 0,
+  arms: 0,
+  chest: 0,
+  back: 0,
+  shoulders: 0,
+};
+const CUS_SESSIONS: SessionsType = {
+  upper: 2,
+  lower: 1,
+  push: 0,
+  pull: 0,
+  legs: 0,
+  full: 0,
+  off: 0,
+  arms: 0,
+  chest: 0,
+  back: 0,
+  shoulders: 0,
+};
+
 const INITIAL_SPLIT_SESSIONS: SplitSessionsType = {
   name: "PPL",
   sessions: {
@@ -329,86 +412,19 @@ const INITIAL_SPLIT_SESSIONS: SplitSessionsType = {
   },
 };
 
-type PPLSessionsType = {
-  split: "PPL";
-  sessions: {
-    push: number;
-    legs: number;
-    pull: number;
-  };
-};
-type PPLULSessionsType = {
-  split: "PPLUL";
-  sessions: {
-    push: number;
-    legs: number;
-    pull: number;
-    lower: number;
-    upper: number;
-  };
-};
-
-type BROSessionsType = {
-  split: "BRO";
-  sessions: {
-    legs: number;
-    back: number;
-    chest: number;
-    arms: number;
-    shoulders: number;
-  };
-};
-
-type ULSessionsType = {
-  split: "UL";
-  sessions: {
-    upper: number;
-    lower: number;
-  };
-};
-
-type FBSessionsType = {
-  split: "FB";
-  sessions: {
-    full: number;
-  };
-};
-
-type OPTSessionsType = {
-  split: "OPT";
-  sessions: {
-    upper: number;
-    lower: number;
-    push: number;
-    pull: number;
-    full: number;
-  };
-};
-
-type CUSSessionsType = {
-  split: "CUS";
-  sessions: {
-    upper?: number;
-    lower?: number;
-    push?: number;
-    legs?: number;
-    pull?: number;
-    full?: number;
-    back?: number;
-    chest?: number;
-    arms?: number;
-    shoulders?: number;
-  };
-};
-
-export type SplitSessions =
-  | PPLSessionsType
-  | PPLULSessionsType
-  | BROSessionsType
-  | ULSessionsType
-  | FBSessionsType
-  | OPTSessionsType
-  | CUSSessionsType;
+// TODO: Possible add state that would take split_sessions | total_sessions and map out training_week
+//       looking like this:
+const split_week_overview = [
+  {
+    day: "Sunday",
+    sessions: [
+      {
+        id: "",
+        split: "upper",
+      },
+    ],
+  },
+];
 
 // ---------------
 export const INITIAL_STATE: State = {
@@ -419,6 +435,11 @@ export const INITIAL_STATE: State = {
   mrv_breakpoint: INITIAL_MRV_BREAKPOINT,
   mev_breakpoint: INITIAL_MEV_BREAKPOINT,
   test: [...INITIAL_WEEK_TEST],
+  // muscle_priority: {
+  //   mrv_breakpoint: INITIAL_MRV_BREAKPOINT,
+  //   mev_breakpoint: INITIAL_MEV_BREAKPOINT,
+  //   list: [...MUSCLE_PRIORITY_LIST],
+  // }
 };
 
 // total_sessions --> list

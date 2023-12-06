@@ -165,33 +165,24 @@ export const getUpperLowerSplit = (muscle: string) => {
 };
 
 export const getOptimizedSplit = (muscle: string) => {
-  let all: (
-    | "upper"
-    | "lower"
-    | "push"
-    | "pull"
-    | "full"
-    | "chest"
-    | "back"
-    | "shoulders"
-    | "arms"
-    | "legs"
-  )[] = [];
+  let all: ("upper" | "lower" | "push" | "pull" | "full")[] = [];
 
-  if (UPPER_MUSCLES) {
+  if (PUSH_AND_PULL_MUSCLES.includes(muscle)) {
+    all.push("push", "pull");
+  } else if (PUSH_MUSCLES.includes(muscle)) {
+    all.push("push");
+  } else if (PULL_MUSCLES.includes(muscle)) {
+    all.push("pull");
+  } else {
+    all.push("lower");
+  }
+
+  if (UPPER_MUSCLES.includes(muscle)) {
     all.push("upper");
   } else {
     all.push("lower");
   }
-  const bro = getBroSplit(muscle);
-  const ppl = getPushPullLegsSplit(muscle);
 
-  if (bro === ppl) {
-    all.push(bro);
-  } else {
-    all.push(bro);
-    all.push(ppl);
-  }
   all.push("full");
   return all;
 };
