@@ -8,35 +8,36 @@ import weeklySessionSplitReducer, {
 export default function useWeeklySessionSplit() {
   const [
     {
-      total_sessions,
+      frequency,
       split_sessions,
-      list,
+      muscle_priority_list,
       training_week,
       mrv_breakpoint,
       mev_breakpoint,
-      test,
     },
     dispatch,
   ] = useReducer(weeklySessionSplitReducer, INITIAL_STATE);
 
   const handleFrequencyChange = (first: number, second: number) => {
     dispatch({
-      type: "UPDATE_TOTAL_SESSIONS",
-      payload: { new_sessions: [first, second] },
+      type: "UPDATE_FREQUENCY",
+      payload: { frequency: [first, second] },
     });
   };
 
   const handleUpdateMuscleList = useCallback((items: MusclePriorityType[]) => {
-    dispatch({ type: "UPDATE_LIST", payload: { new_list: items } });
+    dispatch({
+      type: "UPDATE_MUSCLE_PRIORITY_LIST",
+      payload: { priority_list: items },
+    });
   }, []);
 
   const handleUpdateBreakpoint = useCallback(
     (type: "mev_breakpoint" | "mrv_breakpoint", value: number) => {
-      if (type === "mev_breakpoint") {
-        dispatch({ type: "UPDATE_MEV_BREAKPOINT", payload: { [type]: value } });
-      } else {
-        dispatch({ type: "UPDATE_MRV_BREAKPOINT", payload: { [type]: value } });
-      }
+      dispatch({
+        type: "UPDATE_VOLUME_BREAKPOINT",
+        payload: { indicator: type, value: value },
+      });
     },
     []
   );
@@ -44,38 +45,33 @@ export default function useWeeklySessionSplit() {
   const handleUpdateSplitSessions = (type: SplitSessionsNameType) => {
     dispatch({
       type: "UPDATE_SPLIT_SESSIONS",
-      payload: { split_type: type },
+      payload: { split: type },
     });
   };
 
   useEffect(() => {
-    dispatch({ type: "UPDATE_SPLIT_SESSIONS", payload: { split_type: "OPT" } });
+    dispatch({ type: "UPDATE_SPLIT_SESSIONS", payload: { split: "OPT" } });
   }, []);
 
   useEffect(() => {
     dispatch({ type: "UPDATE_TRAINING_WEEK" });
 
     console.log(
-      total_sessions,
+      frequency,
       split_sessions,
-      list,
+      muscle_priority_list,
       mrv_breakpoint,
       mev_breakpoint,
       training_week,
-      test,
       "TEST: ALL STATE DATA"
     );
-  }, [total_sessions, split_sessions, list]);
-
-  useEffect(() => {
-    dispatch({ type: "TEST" });
-  }, [total_sessions, split_sessions, list]);
+  }, [frequency, split_sessions, muscle_priority_list]);
 
   return {
     training_week,
     split_sessions,
-    total_sessions,
-    prioritized_muscle_list: list,
+    frequency,
+    prioritized_muscle_list: muscle_priority_list,
     handleUpdateMuscleList,
     handleUpdateBreakpoint,
     handleUpdateSplitSessions,

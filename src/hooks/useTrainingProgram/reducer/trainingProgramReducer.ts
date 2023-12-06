@@ -1,14 +1,6 @@
-import {
-  INITIAL_WEEK_TEST,
-  distributeSplitAcrossWeek,
-} from "~/utils/getNextSession";
 import { getSplitFromWeights } from "./getSplitFromPriorityWeighting";
-import {
-  VolumeLandmarkType,
-  getSplitSessions,
-  updateReducerStateHandler,
-  updateTrainingWeek,
-} from "./weeklySessionSplitUtils";
+import { distributeSplitAcrossWeek } from "./splitSessionsHandler";
+import { VolumeLandmarkType, addMesoProgression } from "./trainingProgramUtils";
 
 export type DayType =
   | "Sunday"
@@ -20,6 +12,89 @@ export type DayType =
   | "Saturday";
 
 export type SplitType = "upper" | "lower" | "push" | "pull" | "full" | "off";
+
+export type PPLSessionsType = {
+  split: "PPL";
+  sessions: {
+    push: number;
+    legs: number;
+    pull: number;
+  };
+};
+export type PPLULSessionsType = {
+  split: "PPLUL";
+  sessions: {
+    push: number;
+    legs: number;
+    pull: number;
+    lower: number;
+    upper: number;
+  };
+};
+export type BROSessionsType = {
+  split: "BRO";
+  sessions: {
+    legs: number;
+    back: number;
+    chest: number;
+    arms: number;
+    shoulders: number;
+  };
+};
+export type ULSessionsType = {
+  split: "UL";
+  sessions: {
+    upper: number;
+    lower: number;
+  };
+};
+export type FBSessionsType = {
+  split: "FB";
+  sessions: {
+    full: number;
+  };
+};
+export type OPTSessionsType = {
+  split: "OPT";
+  sessions: {
+    upper: number;
+    lower: number;
+    push: number;
+    pull: number;
+    full: number;
+  };
+};
+export type CUSSessionsType = {
+  split: "CUS";
+  sessions: {
+    upper?: number;
+    lower?: number;
+    push?: number;
+    legs?: number;
+    pull?: number;
+    full?: number;
+    back?: number;
+    chest?: number;
+    arms?: number;
+    shoulders?: number;
+  };
+};
+export type SplitSessionsType =
+  | PPLSessionsType
+  | PPLULSessionsType
+  | BROSessionsType
+  | ULSessionsType
+  | FBSessionsType
+  | OPTSessionsType
+  | CUSSessionsType;
+export type SplitSessionsNameType =
+  | "OPT"
+  | "CUS"
+  | "PPL"
+  | "PPLUL"
+  | "UL"
+  | "FB"
+  | "BRO";
 
 export type ExerciseDetails = {
   sets: number;
@@ -43,15 +118,6 @@ export type ExerciseType = {
 };
 // TODO: this state needs to be dynamic. Adjust tuples for sessions/sets into an object into an array called sessions.
 
-export type TrainingDayType = {
-  day: DayType;
-  sessionNum: number;
-  sets: [ExerciseType[][], ExerciseType[][]];
-  totalSets: [number, number];
-  maxSets: [number, number];
-  sessions: [SplitType, SplitType];
-};
-
 export type MusclePriorityType = {
   id: string;
   rank: number;
@@ -61,135 +127,91 @@ export type MusclePriorityType = {
   exercises: ExerciseType[][];
 };
 
-export type SplitSessionsNameType =
-  | "OPT"
-  | "CUS"
-  | "PPL"
-  | "PPLUL"
-  | "UL"
-  | "FB"
-  | "BRO";
-
-type Sessions = {
-  upper: number;
-  lower: number;
-  push: number;
-  pull: number;
-  legs: number;
-  full: number;
-  chest: number;
-  back: number;
-  arms: number;
-  shoulders: number;
-  off: number;
-};
-
-export type SplitSessionsType = {
-  name: SplitSessionsNameType;
-  sessions: Sessions;
-};
-
-type PPLSessions = Pick<Sessions, "push" | "pull" | "legs">;
-
-type SessionType = {
+export type SessionType = {
   id: string;
   split: string;
-  exercises: [];
+  exercises: ExerciseType[][];
 };
-type TrainingDay = {
+
+export type TrainingDayType = {
   day: DayType;
   isTrainingDay: boolean;
   sessions: SessionType[];
 };
+
 export type State = {
-  total_sessions: [number, number];
-  list: MusclePriorityType[];
+  frequency: [number, number];
+  muscle_priority_list: MusclePriorityType[];
   training_week: TrainingDayType[];
   split_sessions: SplitSessionsType;
   mrv_breakpoint: number;
   mev_breakpoint: number;
-  test: TrainingDay[];
-  // split: SplitNameType
-  // sessions: Sessions
 };
 
-type Action = {
-  type:
-    | "UPDATE_TOTAL_SESSIONS"
-    | "UPDATE_LIST"
-    | "UPDATE_MRV_BREAKPOINT"
-    | "UPDATE_MEV_BREAKPOINT"
-    | "UPDATE_SPLIT_SESSIONS"
-    | "UPDATE_TRAINING_WEEK"
-    | "TEST";
-  payload?: {
-    new_sessions?: [number, number];
-    new_list?: MusclePriorityType[];
-    mrv_breakpoint?: number;
-    mev_breakpoint?: number;
-    split_type?: SplitSessionsNameType;
-  };
+type UpdateFrequencyAction = {
+  type: "UPDATE_FREQUENCY";
+  payload: { frequency: [number, number] };
 };
+type UpdateMusclePriorityListAction = {
+  type: "UPDATE_MUSCLE_PRIORITY_LIST";
+  payload: { priority_list: MusclePriorityType[] };
+};
+type UpdateSplitSessionsAction = {
+  type: "UPDATE_SPLIT_SESSIONS";
+  payload: { split: SplitSessionsNameType };
+};
+type UpdateTrainingWeekAction = {
+  type: "UPDATE_TRAINING_WEEK";
+};
+type UpdateBreakpointAction = {
+  type: "UPDATE_VOLUME_BREAKPOINT";
+  payload: { indicator: "mev_breakpoint" | "mrv_breakpoint"; value: number };
+};
+type Action =
+  | UpdateFrequencyAction
+  | UpdateMusclePriorityListAction
+  | UpdateSplitSessionsAction
+  | UpdateTrainingWeekAction
+  | UpdateBreakpointAction;
 
 const INITIAL_MRV_BREAKPOINT = 4;
 const INITIAL_MEV_BREAKPOINT = 9;
 
-const INITIAL_WEEK: TrainingDayType[] = [
+export const INITIAL_WEEK: TrainingDayType[] = [
   {
     day: "Sunday",
-    sessionNum: 0,
-    sets: [[], []],
-    totalSets: [0, 0],
-    maxSets: [0, 0],
-    sessions: ["off", "off"],
+    isTrainingDay: true,
+    sessions: [],
   },
   {
     day: "Monday",
-    sessionNum: 0,
-    sets: [[], []],
-    totalSets: [0, 0],
-    maxSets: [0, 0],
-    sessions: ["off", "off"],
+    isTrainingDay: true,
+    sessions: [],
   },
   {
     day: "Tuesday",
-    sessionNum: 0,
-    sets: [[], []],
-    totalSets: [0, 0],
-    maxSets: [0, 0],
-    sessions: ["off", "off"],
+    isTrainingDay: true,
+    sessions: [],
   },
   {
     day: "Wednesday",
-    sessionNum: 0,
-    sets: [[], []],
-    totalSets: [0, 0],
-    maxSets: [0, 0],
-    sessions: ["off", "off"],
+    isTrainingDay: true,
+    sessions: [],
   },
   {
     day: "Thursday",
-    sessionNum: 0,
-    sets: [[], []],
-    totalSets: [0, 0],
-    maxSets: [0, 0],
-    sessions: ["off", "off"],
+    isTrainingDay: true,
+    sessions: [],
   },
   {
     day: "Friday",
-    sessionNum: 0,
-    sets: [[], []],
-    totalSets: [0, 0],
-    maxSets: [0, 0],
-    sessions: ["off", "off"],
+    isTrainingDay: true,
+    sessions: [],
   },
   {
     day: "Saturday",
-    sessionNum: 0,
-    sets: [[], []],
-    totalSets: [0, 0],
-    maxSets: [0, 0],
-    sessions: ["off", "off"],
+    isTrainingDay: true,
+    sessions: [],
   },
 ];
 
@@ -316,130 +338,23 @@ const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
   },
 ];
 
-type SessionsType = {
-  upper: number;
-  lower: number;
-  push: number;
-  pull: number;
-  legs: number;
-  full: number;
-  off: number;
-  arms: number;
-  chest: number;
-  back: number;
-  shoulders: number;
-};
-
-type PPLSessionsType = Pick<SessionsType, "push" | "pull" | "legs">;
-const PPL_SESSIONS: PPLSessionsType = {
-  push: 1,
-  legs: 1,
-  pull: 1,
-};
-type PPLULSessionsType = Pick<
-  SessionsType,
-  "push" | "pull" | "legs" | "upper" | "lower"
->;
-const PPLUL_SESSIONS: PPLULSessionsType = {
-  push: 1,
-  legs: 1,
-  pull: 1,
-  lower: 1,
-  upper: 1,
-};
-type FBSessionsType = Pick<SessionsType, "full">;
-const FB_SESSIONS: FBSessionsType = {
-  full: 3,
-};
-type ULSessionsType = Pick<SessionsType, "upper" | "lower">;
-const UL_SESSIONS: ULSessionsType = {
-  upper: 2,
-  lower: 2,
-};
-type BROSessionsType = Pick<
-  SessionsType,
-  "legs" | "back" | "chest" | "arms" | "shoulders"
->;
-const BRO_SESSIONS: BROSessionsType = {
-  legs: 1,
-  back: 1,
-  chest: 1,
-  arms: 1,
-  shoulders: 1,
-};
-
-const OPT_SESSIONS: SessionsType = {
-  upper: 2,
-  lower: 1,
-  push: 0,
-  pull: 0,
-  legs: 0,
-  full: 0,
-  off: 0,
-  arms: 0,
-  chest: 0,
-  back: 0,
-  shoulders: 0,
-};
-const CUS_SESSIONS: SessionsType = {
-  upper: 2,
-  lower: 1,
-  push: 0,
-  pull: 0,
-  legs: 0,
-  full: 0,
-  off: 0,
-  arms: 0,
-  chest: 0,
-  back: 0,
-  shoulders: 0,
-};
-
 const INITIAL_SPLIT_SESSIONS: SplitSessionsType = {
-  name: "PPL",
+  split: "PPL",
   sessions: {
-    upper: 0,
-    lower: 0,
     push: 1,
     pull: 1,
     legs: 1,
-    full: 0,
-    off: 0,
-    arms: 0,
-    chest: 0,
-    back: 0,
-    shoulders: 0,
   },
 };
 
-// TODO: Possible add state that would take split_sessions | total_sessions and map out training_week
-//       looking like this:
-const split_week_overview = [
-  {
-    day: "Sunday",
-    sessions: [
-      {
-        id: "",
-        split: "upper",
-      },
-    ],
-  },
-];
-
 // ---------------
 export const INITIAL_STATE: State = {
-  total_sessions: [3, 0],
-  list: [...MUSCLE_PRIORITY_LIST],
+  frequency: [3, 0],
+  muscle_priority_list: [...MUSCLE_PRIORITY_LIST],
   training_week: [...INITIAL_WEEK],
   split_sessions: { ...INITIAL_SPLIT_SESSIONS },
   mrv_breakpoint: INITIAL_MRV_BREAKPOINT,
   mev_breakpoint: INITIAL_MEV_BREAKPOINT,
-  test: [...INITIAL_WEEK_TEST],
-  // muscle_priority: {
-  //   mrv_breakpoint: INITIAL_MRV_BREAKPOINT,
-  //   mev_breakpoint: INITIAL_MEV_BREAKPOINT,
-  //   list: [...MUSCLE_PRIORITY_LIST],
-  // }
 };
 
 // total_sessions --> list
@@ -457,128 +372,101 @@ export default function weeklySessionSplitReducer(
   action: Action
 ) {
   switch (action.type) {
-    case "UPDATE_TOTAL_SESSIONS":
-      if (!action.payload || !action.payload.new_sessions) return state;
-      let new_sessions = action.payload.new_sessions;
+    case "UPDATE_FREQUENCY":
+      const new_freq = action.payload.frequency;
+      const current_priority = state.muscle_priority_list;
+      const current_split = state.split_sessions.split;
 
-      const updated_sessions = updateReducerStateHandler(
-        new_sessions,
-        state.list,
-        state.training_week,
+      const split_sessions = getSplitFromWeights(
+        new_freq,
+        current_priority,
+        current_split
+      );
+      const priority_list = addMesoProgression(
+        current_priority,
+        split_sessions,
         state.mrv_breakpoint,
-        state.mev_breakpoint,
-        state.split_sessions
+        state.mev_breakpoint
       );
 
       return {
         ...state,
-        total_sessions: new_sessions,
-        list: updated_sessions.list,
-        training_week: updated_sessions.split,
+        total_sessions: new_freq,
+        muscle_priority_list: priority_list,
+        split_sessions: split_sessions,
       };
-    case "UPDATE_LIST":
-      if (!action.payload || !action.payload.new_list) return state;
-      let new_list = action.payload.new_list;
+    case "UPDATE_MUSCLE_PRIORITY_LIST":
+      const new_list = action.payload.priority_list;
+      const current_split_sessions = state.split_sessions;
 
-      const updated_list = updateReducerStateHandler(
-        state.total_sessions,
+      const update_priority_list = addMesoProgression(
         new_list,
-        state.training_week,
+        current_split_sessions,
         state.mrv_breakpoint,
-        state.mev_breakpoint,
-        state.split_sessions
+        state.mev_breakpoint
       );
-
+      const update_split_sessions = getSplitFromWeights(
+        state.frequency,
+        update_priority_list,
+        current_split_sessions.split
+      );
       return {
         ...state,
-        list: updated_list.list,
-        training_week: updated_list.split,
+        muscle_priority_list: update_priority_list,
+        split_sessions: update_split_sessions,
       };
     case "UPDATE_SPLIT_SESSIONS":
-      if (!action.payload || !action.payload.split_type) return state;
-      const type = action.payload.split_type;
-      const splitSessions = getSplitSessions(
-        type,
-        state.total_sessions,
-        state.list
-      );
-
-      const updated_list_split = updateReducerStateHandler(
-        state.total_sessions,
-        state.list,
-        state.training_week,
+      const type = action.payload.split;
+      const total_sessions = state.frequency;
+      const priority = state.muscle_priority_list;
+      const splitSessions = getSplitFromWeights(total_sessions, priority, type);
+      const updatePriorityList = addMesoProgression(
+        priority,
+        splitSessions,
         state.mrv_breakpoint,
-        state.mev_breakpoint,
-        splitSessions
+        state.mev_breakpoint
       );
 
-      const week_split = distributeSplitAcrossWeek(
-        [...INITIAL_WEEK_TEST],
-        state.total_sessions,
-        splitSessions
-      );
       return {
         ...state,
         split_sessions: splitSessions,
-        list: updated_list_split.list,
-        training_week: updated_list_split.split,
-        test: week_split,
+        muscle_priority_list: updatePriorityList,
       };
-    case "UPDATE_MRV_BREAKPOINT":
-      if (!action.payload || !action.payload.mrv_breakpoint) return state;
-      let new_mrv_breakpoint = action.payload.mrv_breakpoint;
-
-      const updated_list_mrv = updateReducerStateHandler(
-        state.total_sessions,
-        state.list,
-        state.training_week,
-        new_mrv_breakpoint,
-        state.mev_breakpoint,
-        state.split_sessions
-      );
-      return {
-        ...state,
-        list: updated_list_mrv.list,
-        training_week: updated_list_mrv.split,
-        mrv_breakpoint: new_mrv_breakpoint,
-      };
-    case "UPDATE_MEV_BREAKPOINT":
-      if (!action.payload || !action.payload.mev_breakpoint) return state;
-      let new_mev_breakpoint = action.payload.mev_breakpoint;
-
-      const updated_list_mev = updateReducerStateHandler(
-        state.total_sessions,
-        state.list,
-        state.training_week,
-        new_mev_breakpoint,
-        state.mev_breakpoint,
-        state.split_sessions
-      );
-      return {
-        ...state,
-        list: updated_list_mev.list,
-        training_week: updated_list_mev.split,
-        mev_breakpoint: new_mev_breakpoint,
-      };
-
     case "UPDATE_TRAINING_WEEK":
-      const updated_training_week = updateTrainingWeek(
-        state.total_sessions,
-        state.training_week,
-        state.split_sessions,
-        state.list,
-        [state.mrv_breakpoint, state.mev_breakpoint]
+      // updates on a change in split_sessions
+      const new_training_week = distributeSplitAcrossWeek(
+        [...INITIAL_WEEK],
+        state.frequency,
+        state.split_sessions
       );
-      return { ...state, training_week: updated_training_week };
+      // update exercises function here
+      return {
+        ...state,
+        training_week: [],
+      };
+    case "UPDATE_VOLUME_BREAKPOINT":
+      let mrv_breakpoint = state.mrv_breakpoint;
+      let mev_breakpoint = state.mev_breakpoint;
 
-    case "TEST":
-      const test = getSplitFromWeights(
-        state.total_sessions,
-        state.list,
-        state.split_sessions.name
+      if (action.payload.indicator === "mrv_breakpoint") {
+        mrv_breakpoint = action.payload.value;
+      } else {
+        mev_breakpoint = action.payload.value;
+      }
+
+      const update_priority_breakpoint = addMesoProgression(
+        state.muscle_priority_list,
+        state.split_sessions,
+        mrv_breakpoint,
+        mev_breakpoint
       );
-      console.log(test, "TEST TEST TEST YO");
-      return state;
+
+      return {
+        ...state,
+        muscle_priority_list: update_priority_breakpoint,
+        mrv_breakpoint: mrv_breakpoint,
+        mev_breakpoint: mev_breakpoint,
+      };
     default:
       return state;
   }

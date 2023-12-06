@@ -12,7 +12,8 @@ import {
 import {
   MusclePriorityType,
   SplitSessionsNameType,
-} from "./weeklySessionSplitReducer";
+  SplitSessionsType,
+} from "./trainingProgramReducer";
 
 const getKeyWithHighestValue = <TObj extends Record<string, number>>(
   obj: TObj
@@ -34,7 +35,7 @@ export function getSplitFromWeights(
   sessions: [number, number],
   priority: MusclePriorityType[],
   split_name: SplitSessionsNameType
-) {
+): SplitSessionsType {
   let push = 0;
   let pull = 0;
   let lower = 0;
@@ -144,7 +145,7 @@ export function getSplitFromWeights(
   switch (split_name) {
     case "BRO":
       const bro_sessions = distributeIntoSessionsBro(sessions, priority);
-      return { ...bro_sessions, off: offSessions };
+      return { split: "BRO", sessions: bro_sessions };
     case "PPL":
       const ppl_sessions = distributeRatioIntoSessionsPPL(
         pushTenths,
@@ -164,10 +165,12 @@ export function getSplitFromWeights(
         "PPL TEST"
       );
       return {
-        push: pushSessions,
-        legs: lowerSessions,
-        pull: pullSessions,
-        off: offSessions,
+        split: "PPL",
+        sessions: {
+          push: pushSessions,
+          legs: lowerSessions,
+          pull: pullSessions,
+        },
       };
     case "PPLUL":
       const pplul_sessions = divideRatioIntoSessionsOPT(
@@ -183,14 +186,20 @@ export function getSplitFromWeights(
       fullSessions = fullSessions + pplul_sessions.full;
 
       return {
-        push: pushSessions,
-        legs: lowerSessions,
-        pull: pullSessions,
-        upper: upperSessions,
-        lower: fullSessions,
-        off: offSessions,
+        split: "PPLUL",
+        sessions: {
+          push: pushSessions,
+          legs: lowerSessions,
+          pull: pullSessions,
+          upper: upperSessions,
+          lower: fullSessions,
+        },
       };
     case "CUS":
+      return {
+        split: "CUS",
+        sessions: {},
+      };
     case "OPT":
       const opt_sessions = divideRatioIntoSessionsOPT(
         pushTenths,
@@ -223,32 +232,40 @@ export function getSplitFromWeights(
       }
 
       return {
-        push: pushSessions,
-        pull: pullSessions,
-        lower: lowerSessions,
-        upper: upperSessions,
-        full: fullSessions,
-        off: offSessions,
+        split: "OPT",
+        sessions: {
+          push: pushSessions,
+          pull: pullSessions,
+          lower: lowerSessions,
+          upper: upperSessions,
+          full: fullSessions,
+        },
       };
     case "FB":
       return {
-        full: total_sessions,
-        off: offSessions,
+        split: "FB",
+        sessions: {
+          full: total_sessions,
+        },
       };
     case "UL":
       return {
-        upper: pushSessions + pullSessions,
-        lower: lowerSessions,
-        off: offSessions,
+        split: "UL",
+        sessions: {
+          upper: pushSessions + pullSessions,
+          lower: lowerSessions,
+        },
       };
     default:
       return {
-        push: pushSessions,
-        pull: pullSessions,
-        lower: lowerSessions,
-        upper: upperSessions,
-        full: fullSessions,
-        off: offSessions,
+        split: "OPT",
+        sessions: {
+          push: pushSessions,
+          pull: pullSessions,
+          lower: lowerSessions,
+          upper: upperSessions,
+          full: fullSessions,
+        },
       };
   }
 }

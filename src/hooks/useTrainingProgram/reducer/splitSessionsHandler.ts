@@ -5,11 +5,13 @@ import {
 } from "~/constants/workoutSplits";
 import {
   BROSessionsType,
-  DayType,
   FBSessionsType,
   MusclePriorityType,
   PPLULSessionsType,
-  ULSessionsType,
+  SessionType,
+  SplitSessionsType,
+  TrainingDayType,
+  ULSessionsType
 } from "./trainingProgramReducer";
 
 const getPPLULSplitSessions = (
@@ -329,24 +331,13 @@ const getNextSplitBRO = (
   }
 };
 
-type TrainingDay = {
-  day: DayType;
-  isTrainingDay: boolean;
-  sessions: SessionType[];
-};
-type SessionType = {
-  id: string;
-  split: string;
-  exercises: [];
-};
-
 export const distributePPLSplitAcrossWeek = (
-  week: TrainingDay[],
+  week: TrainingDayType[],
   sessions: { push: number; legs: number; pull: number }
 ) => {
   let counter = { ...sessions };
 
-  let _week = week.map((each) => {
+  let _week = week.map((each, index) => {
     return { ...each, sessions: [] as SessionType[] };
   });
 
@@ -376,7 +367,7 @@ export const distributePPLSplitAcrossWeek = (
 };
 
 export const distributePPLULSplitAcrossWeek = (
-  week: TrainingDay[],
+  week: TrainingDayType[],
   split_sessions: PPLULSessionsType
 ) => {
   let counter = { ...split_sessions.sessions };
@@ -411,7 +402,7 @@ export const distributePPLULSplitAcrossWeek = (
 };
 
 export const distributeBROSplitAcrossWeek = (
-  week: TrainingDay[],
+  week: TrainingDayType[],
   split_sessions: BROSessionsType
 ) => {
   let counter = { ...split_sessions.sessions };
@@ -473,7 +464,7 @@ const getNextSplitUL = (
 };
 
 export const distributeULSplitAcrossWeek = (
-  week: TrainingDay[],
+  week: TrainingDayType[],
   split_sessions: ULSessionsType
 ) => {
   let preferred: "upper" | "lower" =
@@ -512,7 +503,7 @@ export const distributeULSplitAcrossWeek = (
 };
 
 export const distributeFBSplitAcrossWeek = (
-  week: TrainingDay[],
+  week: TrainingDayType[],
   split_sessions: FBSessionsType
 ) => {
   let counter = { ...split_sessions.sessions };
@@ -595,7 +586,7 @@ const getNextSplitOPT = (
 };
 
 export const distributeOPTSplitAcrossWeek = (
-  week: TrainingDay[],
+  week: TrainingDayType[],
   sessions: {
     upper: number;
     lower: number;
@@ -633,4 +624,64 @@ export const distributeOPTSplitAcrossWeek = (
     }
   }
   return _week;
+};
+
+const getOffDayIndices = (number: number) => {
+  switch (number) {
+    case 0:
+      return [];
+    case 1:
+      return [0];
+    case 2:
+      return [0, 4];
+    case 3:
+      return [0, 4, 6];
+    case 4:
+      return [0, 2, 4, 6];
+    default:
+      return [];
+  }
+};
+
+export const distributeSplitAcrossWeek = (
+  _week: TrainingDayType[],
+  sessions: [number, number],
+  split_sessions: SplitSessionsType
+) => {
+  const week_sessions = sessions[0];
+  const off_days = 7 - week_sessions;
+  const off_day_indices = getOffDayIndices(off_days);
+
+  // let counter = getSessionCounter(split_sessions.name, split_sessions.sessions);
+  let counter = { ...split_sessions };
+
+  let week = _week.map((each, index) => {
+    if (off_day_indices.includes(index)) {
+      return { ...each, isTrainingDay: false };
+    } else return each;
+  });
+
+  switch (counter.split) {
+    case "PPL":
+      week = distributePPLSplitAcrossWeek(week, counter.sessions);
+      break;
+    case "PPLUL":
+      week = distributePPLULSplitAcrossWeek(week, counter);
+      break;
+    case "BRO":
+      week = distributeBROSplitAcrossWeek(week, counter);
+      break;
+    case "UL":
+      week = distributeULSplitAcrossWeek(week, counter);
+      break;
+    case "FB":
+      week = distributeFBSplitAcrossWeek(week, counter);
+      break;
+    case "OPT":
+      week = distributeOPTSplitAcrossWeek(week, counter.sessions);
+      break;
+    default:
+    // return week;
+  }
+  return week;
 };
