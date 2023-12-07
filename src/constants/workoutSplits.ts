@@ -119,19 +119,60 @@ export const getGroupList = (split: string) => {
       return FULL_BODY_MUSCLES;
   }
 };
+const getPPLULSplit = (muscle: string) => {
+  let allSplits: ("pull" | "push" | "lower" | "legs" | "upper")[] = [];
+  if (PULL_MUSCLES.includes(muscle)) {
+    allSplits.push("pull", "upper");
+  } else if (PUSH_MUSCLES.includes(muscle)) {
+    allSplits.push("push", "upper");
+  } else {
+    allSplits.push("lower", "legs");
+  }
+  return allSplits;
+};
+const getOPTSplit = (muscle: string) => {
+  let allSplits: ("pull" | "push" | "lower" | "upper" | "full")[] = ["full"];
+  if (PULL_MUSCLES.includes(muscle)) {
+    allSplits.push("pull", "upper");
+  } else if (PUSH_MUSCLES.includes(muscle)) {
+    allSplits.push("push", "upper");
+  } else {
+    allSplits.push("lower");
+  }
+  return allSplits;
+};
 
-const split = (split: SplitSessionsNameType, muscle: string) => {
+export const getMusclesSplit = (
+  split: SplitSessionsNameType,
+  muscle: string
+) => {
   switch (split) {
     case "OPT":
+      return getOPTSplit(muscle);
     case "PPL":
-      return getPushPullLegsSplit(muscle);
+      return [getPushPullLegsSplit(muscle)];
     case "PPLUL":
+      return getPPLULSplit(muscle);
     case "UL":
+      return [getUpperLowerSplit(muscle)];
     case "FB":
+      return ["full"];
     case "BRO":
-      return getBroSplit(muscle);
+      if (SHOULDERS_MUSCLES.includes(muscle)) {
+        return ["shoulders"];
+      } else if (ARMS_MUSCLES.includes(muscle)) {
+        return ["arms"];
+      } else if (CHEST_MUSCLES.includes(muscle)) {
+        return ["chest"];
+      } else if (BACK_MUSCLES.includes(muscle)) {
+        return ["back"];
+      } else {
+        return ["legs"];
+      }
     case "CUS":
+      return [];
     default:
+      return [];
   }
 };
 

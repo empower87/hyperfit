@@ -7,11 +7,12 @@ import {
   BROSessionsType,
   FBSessionsType,
   MusclePriorityType,
+  OPTSessionsType,
   PPLULSessionsType,
   SessionType,
   SplitSessionsType,
   TrainingDayType,
-  ULSessionsType
+  ULSessionsType,
 } from "./trainingProgramReducer";
 
 const getPPLULSplitSessions = (
@@ -587,15 +588,9 @@ const getNextSplitOPT = (
 
 export const distributeOPTSplitAcrossWeek = (
   week: TrainingDayType[],
-  sessions: {
-    upper: number;
-    lower: number;
-    full: number;
-    push: number;
-    pull: number;
-  }
+  sessions: OPTSessionsType
 ) => {
-  let counter = { ...sessions };
+  let counter = { ...sessions.sessions };
 
   let _week = week.map((each) => {
     return { ...each, sessions: [] as SessionType[] };
@@ -617,8 +612,6 @@ export const distributeOPTSplitAcrossWeek = (
       _week[i].sessions.push(session);
       stack.push(nextSession);
       counter[nextSession]--;
-
-      console.log(nextSession, lastIn, stack, counter, _week, "AFTER ALL");
     } else {
       stack.push("off");
     }
@@ -678,7 +671,7 @@ export const distributeSplitAcrossWeek = (
       week = distributeFBSplitAcrossWeek(week, counter);
       break;
     case "OPT":
-      week = distributeOPTSplitAcrossWeek(week, counter.sessions);
+      week = distributeOPTSplitAcrossWeek(week, counter);
       break;
     default:
     // return week;

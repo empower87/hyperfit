@@ -5,7 +5,7 @@ import weeklySessionSplitReducer, {
   SplitSessionsNameType,
 } from "./reducer/trainingProgramReducer";
 
-export default function useWeeklySessionSplit() {
+export default function useTrainingProgram() {
   const [
     {
       frequency,

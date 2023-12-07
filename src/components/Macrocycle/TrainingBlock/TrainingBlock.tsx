@@ -1,12 +1,12 @@
 import Mesocycle from "~/components/Mesocycle";
-import { SessionDayType } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
+import { TrainingDayType } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
 import {
   TraingingBlockProvider,
   useTrainingBlockContext,
 } from "./context/TrainingBlockContext";
 
 type TrainingBlockProps = {
-  training_week: SessionDayType[];
+  training_week: TrainingDayType[];
 };
 
 export default function TrainingBlock({ training_week }: TrainingBlockProps) {

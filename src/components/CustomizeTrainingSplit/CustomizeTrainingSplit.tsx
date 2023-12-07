@@ -1,4 +1,5 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import useTrainingProgram from "~/hooks/useTrainingProgram/useTrainingProgram";
 import { TrainingDayType } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
 import useWeeklySessionSplit from "~/hooks/useWeeklySessionSplit/useWeeklySessionSplit";
 import { getEndOfMesocycleVolume } from "~/utils/musclePriorityHandlers";
@@ -28,6 +29,7 @@ export default function CustomizeTrainingSplit({
     handleUpdateBreakpoint,
   } = useWeeklySessionSplit();
 
+  const data = useTrainingProgram();
   /// added for test
   const [entireVolume, setEntireVolume] = useState<number>(0);
   const [splitVolume, setSplitVolume] = useState<

@@ -1,13 +1,13 @@
 import { ReactNode } from "react";
 import {
   ExerciseType,
-  SessionDayType,
   SplitType,
+  TrainingDayType,
 } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
 import Microcycle from "./Microcycle";
 
 type MesocycleTableProps = {
-  split: SessionDayType[];
+  split: TrainingDayType[];
   onEdit: (id: string, value: string) => void;
 };
 

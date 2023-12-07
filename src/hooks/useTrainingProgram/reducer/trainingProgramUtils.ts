@@ -1,17 +1,16 @@
 import {
   UPPER_MUSCLES,
   getBroSplit,
+  getMusclesSplit,
   getOptimizedSplit,
   getPushPullLegsSplit,
 } from "~/constants/workoutSplits";
 import { getTopExercises } from "~/utils/getExercises";
-import { distributeSplitAcrossWeek } from "./splitSessionsHandler";
 import {
   ExerciseType,
   MusclePriorityType,
   SplitSessionsNameType,
   SplitSessionsType,
-  SplitType,
   TrainingDayType,
 } from "./trainingProgramReducer";
 
@@ -172,7 +171,7 @@ function initializeOnOffDays(sessions: number, split: TrainingDayType[]) {
 //   return update_split;
 // }
 
-export function addMesoProgression(
+function addMesoProgression(
   _items: MusclePriorityType[],
   split_sessions: SplitSessionsType,
   mrv_breakpoint: number,
@@ -289,18 +288,21 @@ export function addMesoProgression(
 }
 
 const distributeExercisesAmongSplit = (
-  list: MusclePriorityType[],
-  split: TrainingDayType[],
+  muscle_priority: MusclePriorityType[],
+  split_sessions: SplitSessionsType,
+  _training_week: TrainingDayType[],
   mrv_breakpoint: number,
   mev_breakpoint: number
 ) => {
-  let meso: TrainingDayType[] = [...split].map((each) => {
-    const emptySets: [ExerciseType[][], ExerciseType[][]] = [[], []];
-    return { ...each, sets: emptySets };
+  let training_week: TrainingDayType[] = [..._training_week].map((each) => {
+    const emptySessionSets = each.sessions.map((ea) => {
+      return { ...ea, exercises: [] as ExerciseType[][] };
+    });
+    return { ...each, sessions: emptySessionSets };
   });
 
-  for (let i = 0; i < list.length; i++) {
-    let key: VolumeKey =
+  for (let i = 0; i < muscle_priority.length; i++) {
+    const key: VolumeKey =
       i < mrv_breakpoint
         ? "mrv_progression_matrix"
         : i >= mrv_breakpoint && i < mev_breakpoint
@@ -308,89 +310,43 @@ const distributeExercisesAmongSplit = (
         : "mv_progression_matrix";
 
     let exercises = getTopExercises(
-      list[i].muscle,
+      muscle_priority[i].muscle,
       key,
-      list[i].mesoProgression
+      muscle_priority[i].mesoProgression
+    );
+    const splits = getMusclesSplit(
+      split_sessions.split,
+      muscle_priority[i].muscle
     );
 
     let session: "upper" | "lower" = "lower";
 
-    if (UPPER_MUSCLES.includes(list[i].muscle)) {
+    if (UPPER_MUSCLES.includes(muscle_priority[i].muscle)) {
       session = "upper";
     }
 
-    const handleSession = (session: SplitType, group: "lower" | "upper") => {
-      switch (session) {
-        case "push":
-          if (group === "upper") {
-            return true;
-          } else {
-            return false;
-          }
-        case "pull":
-          if (group === "upper") {
-            return true;
-          } else {
-            return false;
-          }
-        case "upper":
-          if (group === "upper") {
-            return true;
-          } else {
-            return false;
-          }
-        case "lower":
-          if (group === "lower") {
-            return true;
-          } else {
-            return false;
-          }
-        case "full":
-          return true;
-        default:
-          return false;
-      }
-    };
-
-    for (let j = 0; j < meso.length; j++) {
+    for (let j = 0; j < training_week.length; j++) {
       if (exercises.length) {
-        let sessionOne = meso[j].sessions[0];
-        let sessionTwo = meso[j].sessions[1];
-        const canAddExercise = handleSession(sessionOne, session);
+        const sessions = training_week[j].sessions;
 
-        if (canAddExercise && exercises.length) {
-          let add_exercises = exercises[0];
+        for (let k = 0; k < sessions.length; k++) {
+          if (splits.includes(sessions[k].split)) {
+            let add_exercises = exercises[0];
 
-          for (let k = 0; k < add_exercises.length; k++) {
-            add_exercises[k] = {
-              ...add_exercises[k],
-              session: meso[j].sessionNum,
-            };
+            for (let l = 0; l < add_exercises.length; l++) {
+              add_exercises[l] = {
+                ...add_exercises[l],
+                session: j,
+              };
+            }
+            training_week[j].sessions[k].exercises.push(add_exercises);
+            exercises.shift();
           }
-
-          meso[j].sets[0].push(add_exercises);
-          exercises.shift();
-        }
-
-        const canAddSecondExercise = handleSession(sessionTwo, session);
-
-        if (canAddSecondExercise && exercises.length) {
-          let add_exercises = exercises[0];
-
-          for (let k = 0; k < add_exercises.length; k++) {
-            add_exercises[k] = {
-              ...add_exercises[k],
-              session: meso[j].sessionNum,
-            };
-          }
-
-          meso[j].sets[1].push(add_exercises);
-          exercises.shift();
         }
       }
     }
   }
-  return meso;
+  return training_week;
 };
 
 const PPLUL = ["push", "pull", "legs", "upper", "lower"];
@@ -524,72 +480,71 @@ function selectSplitHandler(
 //   }
 // }
 
-function updateTrainingWeek(
-  total_sessions: [number, number],
-  training_week: TrainingDayType[],
-  split_sessions: SplitSessionsType,
-  muscle_priority_List: MusclePriorityType[],
-  breakpoints: [number, number]
-) {
-  const new_split = updateWeekWithSessionSplits(
-    total_sessions,
-    training_week,
-    split_sessions
-  );
-  const new_split_with_exercises = distributeExercisesAmongSplit(
-    muscle_priority_List,
-    new_split,
-    breakpoints[0],
-    breakpoints[1]
-  );
-  return new_split_with_exercises;
-}
+// function updateTrainingWeek(
+//   total_sessions: [number, number],
+//   training_week: TrainingDayType[],
+//   split_sessions: SplitSessionsType,
+//   muscle_priority_List: MusclePriorityType[],
+//   breakpoints: [number, number]
+// ) {
+//   const new_split = updateWeekWithSessionSplits(
+//     total_sessions,
+//     training_week,
+//     split_sessions
+//   );
+//   const new_split_with_exercises = distributeExercisesAmongSplit(
+//     muscle_priority_List,
+//     new_split,
+//     breakpoints[0],
+//     breakpoints[1]
+//   );
+//   return new_split_with_exercises;
+// }
 
-function updateReducerStateHandler(
-  total_sessions: [number, number],
-  list: MusclePriorityType[],
-  week: TrainingDayType[],
-  mrv_breakpoint: number,
-  mev_breakpoint: number,
-  split_sessions: SplitSessionsType
-) {
-  // const sessions_list = determineOptimalSessionSplits(total_sessions, list);
+// function updateReducerStateHandler(
+//   total_sessions: [number, number],
+//   list: MusclePriorityType[],
+//   week: TrainingDayType[],
+//   mrv_breakpoint: number,
+//   mev_breakpoint: number,
+//   split_sessions: SplitSessionsType
+// ) {
+//   // const sessions_list = determineOptimalSessionSplits(total_sessions, list);
 
-  // const new_split = updateWeekWithSessionSplits(
-  //   total_sessions,
-  //   split,
-  //   split_sessions
-  // );
-  const new_split = distributeSplitAcrossWeek(
-    week,
-    total_sessions,
-    split_sessions
-  );
+//   // const new_split = updateWeekWithSessionSplits(
+//   //   total_sessions,
+//   //   split,
+//   //   split_sessions
+//   // );
+//   const new_split = distributeSplitAcrossWeek(
+//     week,
+//     total_sessions,
+//     split_sessions
+//   );
 
-  const updated_list = addMesoProgression(
-    list,
-    split_sessions,
-    mrv_breakpoint,
-    mev_breakpoint
-  );
+//   const updated_list = addMesoProgression(
+//     list,
+//     split_sessions,
+//     mrv_breakpoint,
+//     mev_breakpoint
+//   );
 
-  const new_split_with_exercises = distributeExercisesAmongSplit(
-    updated_list,
-    new_split,
-    mrv_breakpoint,
-    mev_breakpoint
-  );
+//   const new_split_with_exercises = distributeExercisesAmongSplit(
+//     updated_list,
+//     new_split,
+//     mrv_breakpoint,
+//     mev_breakpoint
+//   );
 
-  return {
-    list: updated_list,
-    split: new_split_with_exercises,
-  };
-}
+//   return {
+//     list: updated_list,
+//     split: new_split_with_exercises,
+//   };
+// }
 
 export {
+  addMesoProgression,
+  distributeExercisesAmongSplit,
   getSplitOverview,
-  // getSplitSessions,
   selectSplitHandler,
-  updateReducerStateHandler,
-  updateTrainingWeek,
 };
