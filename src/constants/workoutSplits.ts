@@ -1,4 +1,6 @@
-import { SplitSessionsNameType } from "~/utils/getNextSession";
+// import { SplitSessionsNameType } from "~/utils/getNextSession";
+
+import { SplitSessionsNameType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 
 export type MusclesType =
   | "traps"
@@ -158,17 +160,7 @@ export const getMusclesSplit = (
     case "FB":
       return ["full"];
     case "BRO":
-      if (SHOULDERS_MUSCLES.includes(muscle)) {
-        return ["shoulders"];
-      } else if (ARMS_MUSCLES.includes(muscle)) {
-        return ["arms"];
-      } else if (CHEST_MUSCLES.includes(muscle)) {
-        return ["chest"];
-      } else if (BACK_MUSCLES.includes(muscle)) {
-        return ["back"];
-      } else {
-        return ["legs"];
-      }
+      return [getBroSplit(muscle)];
     case "CUS":
       return [];
     default:
@@ -209,18 +201,12 @@ export const getOptimizedSplit = (muscle: string) => {
   let all: ("upper" | "lower" | "push" | "pull" | "full")[] = [];
 
   if (PUSH_AND_PULL_MUSCLES.includes(muscle)) {
-    all.push("push", "pull");
+    all.push("push", "pull", "upper");
   } else if (PUSH_MUSCLES.includes(muscle)) {
-    all.push("push");
+    all.push("push", "upper");
   } else if (PULL_MUSCLES.includes(muscle)) {
-    all.push("pull");
-  } else {
-    all.push("lower");
-  }
-
-  if (UPPER_MUSCLES.includes(muscle)) {
-    all.push("upper");
-  } else {
+    all.push("pull", "upper");
+  } else if (LOWER_MUSCLES.includes(muscle)) {
     all.push("lower");
   }
 

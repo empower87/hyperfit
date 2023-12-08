@@ -2,11 +2,13 @@ import { useCallback, useEffect, useState } from "react";
 import { DragDropContext, Draggable, DropResult } from "react-beautiful-dnd";
 import { WeekTest } from "~/components/WeekOverviewTest";
 import {
-  DayType,
-  MusclePriorityType,
   SplitSessionsType,
   SplitType,
   TrainingDayType,
+} from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
+import {
+  DayType,
+  MusclePriorityType,
 } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
 import { getSessionSplitColor } from "~/utils/getSessionSplitColor";
 import StrictModeDroppable from "~/utils/react-beautiful-dnd/StrictModeDroppable";
@@ -152,7 +154,11 @@ const SESSIONS_TEST: SplitType[] = [
   "full",
   "push",
   "pull",
-  "off",
+  "legs",
+  "back",
+  "chest",
+  "arms",
+  "shoulders",
 ];
 
 function SessionItem({ session, index }: SessionItemProps) {
@@ -215,10 +221,10 @@ function TrainingSplitHeaders() {
 }
 
 type TrainingSplitProps = {
-  split: TrainingDayType[];
+  training_week: TrainingDayType[];
 };
 
-function Week({ split }: TrainingSplitProps) {
+function Week({ training_week }: TrainingSplitProps) {
   const [draggableSplit, setDraggableSplit] = useState<
     DraggableSplitObjectType[][]
   >([]);
@@ -228,44 +234,55 @@ function Week({ split }: TrainingSplitProps) {
 
     let count = 0;
 
-    for (let i = 0; i < split.length; i++) {
-      let split_one = split[i].sessions[0];
-      let split_two = split[i].sessions[1];
+    for (let i = 0; i < training_week.length; i++) {
+      let split_one = training_week[i].sessions[0];
+      let split_two = training_week[i].sessions[1];
 
       let noCount = false;
 
-      if (split_one !== "off") {
-        count++;
-      } else {
-        noCount = true;
+      const splits: DraggableSplitObjectType[] = [];
+
+      for (let j = 0; j < training_week[i].sessions.length; j++) {
+        let draggable_obj = {
+          id: `${training_week[i].day}_${split_one}_${1}`,
+          session: j,
+          split: training_week[i].sessions[j].split,
+        };
+        splits.push(draggable_obj);
       }
 
-      let draggable_one = {
-        id: `${split[i].sessionNum}_${split_one}_${1}`,
-        session: noCount ? 0 : count,
-        split: split_one,
-      };
+      // if (split_one !== "off") {
+      //   count++;
+      // } else {
+      //   noCount = true;
+      // }
 
-      noCount = false;
+      // let draggable_one = {
+      //   id: `${training_week[i].sessionNum}_${split_one}_${1}`,
+      //   session: noCount ? 0 : count,
+      //   split: split_one,
+      // };
 
-      if (split_two !== "off") {
-        count++;
-      } else {
-        noCount = true;
-      }
+      // noCount = false;
 
-      let draggable_two = {
-        id: `${split[i].sessionNum}_${split_two}_${2}`,
-        session: noCount ? 0 : count,
-        split: split_two,
-      };
+      // if (split_two !== "off") {
+      //   count++;
+      // } else {
+      //   noCount = true;
+      // }
 
-      const splits = [draggable_one, draggable_two];
+      // let draggable_two = {
+      //   id: `${training_week[i].sessionNum}_${split_two}_${2}`,
+      //   session: noCount ? 0 : count,
+      //   split: split_two,
+      // };
+
+      // const splits = [draggable_one, draggable_two];
       _list.push(splits);
     }
 
     setDraggableSplit(_list);
-  }, [split]);
+  }, [training_week]);
 
   return (
     <div className=" mb-1 flex flex-col overflow-x-auto">
@@ -295,7 +312,7 @@ export default function WeekOverview({
           <h3 className=" indent-1 text-sm text-white">Week Overview</h3>
         </div>
 
-        <SplitOverview split={split_sessions} />
+        <SplitOverview split_sessions={split_sessions} />
       </div>
       <div className={BG_COLOR_M6 + " w-3/4 p-1"}>
         <WeekTest
@@ -304,7 +321,7 @@ export default function WeekOverview({
           total_sessions={total_sessions}
         />
         {/* <Week title="Feature Logic" split={algorithmicSessions} /> */}
-        <Week split={training_week} />
+        <Week training_week={training_week} />
       </div>
     </div>
   );

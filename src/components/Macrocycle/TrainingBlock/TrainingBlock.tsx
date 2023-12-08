@@ -1,5 +1,6 @@
 import Mesocycle from "~/components/Mesocycle";
-import { TrainingDayType } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
+// import { TrainingDayType } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
+import { TrainingDayType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import {
   TraingingBlockProvider,
   useTrainingBlockContext,
@@ -11,7 +12,7 @@ type TrainingBlockProps = {
 
 export default function TrainingBlock({ training_week }: TrainingBlockProps) {
   return (
-    <TraingingBlockProvider split={training_week}>
+    <TraingingBlockProvider training_week={training_week}>
       <div className={" flex flex-col"}>
         <Mesocycles />
       </div>

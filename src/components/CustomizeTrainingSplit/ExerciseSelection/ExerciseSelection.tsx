@@ -2,10 +2,12 @@ import { useCallback, useEffect, useState } from "react";
 import { DragDropContext, Draggable, DropResult } from "react-beautiful-dnd";
 import ReactDOM from "react-dom";
 import {
-  DayType,
-  ExerciseType,
   SplitType,
   TrainingDayType,
+} from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
+import {
+  DayType,
+  ExerciseType,
 } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
 import { getGroupList } from "~/utils/getExercises";
 import { getRankColor } from "~/utils/getRankColor";
@@ -277,11 +279,11 @@ export default function WeekSessions({ training_week }: WeekSessionsProps) {
       };
 
       for (let j = 0; j < training_week[i].sessions.length; j++) {
-        if (training_week[i].sessions[j] !== "off") {
+        if (training_week[i].isTrainingDay) {
           day.sessions.push({
             id: `${training_week[i].day}_${j}`,
-            split: training_week[i].sessions[j],
-            exercises: training_week[i].sets[j].flat(),
+            split: training_week[i].sessions[j].split,
+            exercises: training_week[i].sessions[j].exercises.flat(),
           });
         }
       }

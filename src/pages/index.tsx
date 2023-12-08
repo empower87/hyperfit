@@ -2,8 +2,8 @@ import { type NextPage } from "next";
 import { useState } from "react";
 import CustomizeTrainingSplit from "~/components/CustomizeTrainingSplit/CustomizeTrainingSplit";
 import Section from "~/components/Layout/Section";
-import TrainingBlock from "~/components/Macrocycle/TrainingBlock/TrainingBlock";
-import { TrainingDayType } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
+import { TrainingDayType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
+// import { TrainingDayType } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
 // import { SessionDayType } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
 
 import { BG_COLOR_M6, BG_COLOR_M7, BG_COLOR_M8 } from "~/utils/themes";
@@ -77,9 +77,9 @@ const Home: NextPage = () => {
               />
             </Section>
 
-            <Section title="Training Block">
+            {/* <Section title="Training Block">
               <TrainingBlock training_week={trainingWeek} />
-            </Section>
+            </Section> */}
           </div>
         </div>
       </div>

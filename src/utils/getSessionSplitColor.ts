@@ -1,12 +1,12 @@
-export const getSessionSplitColor = (
-  split: "off" | "push" | "pull" | "upper" | "lower" | "full" | ""
-) => {
+import { SplitType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
+
+export const getSessionSplitColor = (split: SplitType) => {
   switch (split) {
-    case "off":
-      return {
-        text: "text-slate-400",
-        bg: "bg-slate-400",
-      };
+    // case "off":
+    //   return {
+    //     text: "text-slate-400",
+    //     bg: "bg-slate-400",
+    //   };
     case "upper":
       return {
         text: "text-blue-500",

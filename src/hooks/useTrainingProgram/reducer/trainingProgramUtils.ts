@@ -9,7 +9,6 @@ import { getTopExercises } from "~/utils/getExercises";
 import {
   ExerciseType,
   MusclePriorityType,
-  SplitSessionsNameType,
   SplitSessionsType,
   TrainingDayType,
 } from "./trainingProgramReducer";
@@ -171,15 +170,49 @@ function initializeOnOffDays(sessions: number, split: TrainingDayType[]) {
 //   return update_split;
 // }
 
+function addRankWeightsToMusclePriority(muscle_priority: MusclePriorityType[]) {
+  const SYSTEMIC_FATIGUE_MODIFIER = 2;
+  const LOWER_MODIFIER = 1.15;
+  const RANK_WEIGHTS = [14, 12, 10, 8, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0];
+
+  for (let i = 0; i < muscle_priority.length; i++) {
+    let muscle = muscle_priority[i].muscle;
+
+    switch (muscle) {
+      case "hamstrings":
+      case "glutes":
+      case "calves":
+      case "quads":
+        let lowerMod = Math.round(RANK_WEIGHTS[i] * LOWER_MODIFIER);
+        if (i < 3 && muscle === "quads") {
+          lowerMod = lowerMod * SYSTEMIC_FATIGUE_MODIFIER;
+        }
+        console.log(muscle, i, RANK_WEIGHTS[i], lowerMod, "CHECK THIS OUT ");
+        muscle_priority[i].rank = lowerMod;
+        break;
+      case "back":
+      case "chest":
+      case "biceps":
+      case "triceps":
+      case "traps":
+      case "forearms":
+      case "delts_rear":
+      case "delts_side":
+      case "delts_front":
+      case "abs":
+      default:
+        muscle_priority[i].rank = RANK_WEIGHTS[i];
+    }
+  }
+  return muscle_priority;
+}
+
 function addMesoProgression(
   _items: MusclePriorityType[],
   split_sessions: SplitSessionsType,
   mrv_breakpoint: number,
   mev_breakpoint: number
 ) {
-  // let upper = split_sessions.upper + split_sessions.pull + split_sessions.push + split_sessions.full;
-  // let lower = split_sessions.lower + split_sessions.full + split_sessions.legs;
-
   let items = [..._items];
 
   for (let i = 0; i < items.length; i++) {
@@ -196,9 +229,11 @@ function addMesoProgression(
     switch (split_sessions.split) {
       case "OPT":
         const keys = getOptimizedSplit(muscle);
+
         for (let i = 0; i < keys.length; i++) {
           sessions = sessions + split_sessions.sessions[keys[i]];
         }
+
         break;
       case "PPL":
         const pplSplit = getPushPullLegsSplit(muscle);
@@ -259,7 +294,11 @@ function addMesoProgression(
         mesoProgression = prog;
         break;
       case "MEV":
-        if (sessions <= 2) {
+        if (sessions === 0) {
+          mesoProgression = [0, 0, 0];
+        } else if (sessions <= 1) {
+          mesoProgression = [1, 1, 1];
+        } else if (sessions <= 2) {
           mesoProgression = [1, 2, 2];
         } else if (
           items[i].muscle === "back" ||
@@ -270,7 +309,11 @@ function addMesoProgression(
         }
         break;
       default:
-        if (
+        if (sessions === 0) {
+          mesoProgression = [0, 0, 0];
+        } else if (sessions <= 1) {
+          mesoProgression = [1, 1, 1];
+        } else if (
           items[i].muscle === "back" ||
           items[i].muscle === "quads" ||
           items[i].muscle === "calves"
@@ -314,16 +357,11 @@ const distributeExercisesAmongSplit = (
       key,
       muscle_priority[i].mesoProgression
     );
+
     const splits = getMusclesSplit(
       split_sessions.split,
       muscle_priority[i].muscle
     );
-
-    let session: "upper" | "lower" = "lower";
-
-    if (UPPER_MUSCLES.includes(muscle_priority[i].muscle)) {
-      session = "upper";
-    }
 
     for (let j = 0; j < training_week.length; j++) {
       if (exercises.length) {
@@ -349,11 +387,11 @@ const distributeExercisesAmongSplit = (
   return training_week;
 };
 
-const PPLUL = ["push", "pull", "legs", "upper", "lower"];
-const PPL = ["push", "pull", "legs"];
-const BRO = ["chest", "back", "legs", "arms", "shoulders"];
-const UL = ["upper", "lower", "upper", "lower"];
-const FB = ["full", "full", "full"];
+// const PPLUL = ["push", "pull", "legs", "upper", "lower"];
+// const PPL = ["push", "pull", "legs"];
+// const BRO = ["chest", "back", "legs", "arms", "shoulders"];
+// const UL = ["upper", "lower", "upper", "lower"];
+// const FB = ["full", "full", "full"];
 
 function getSplitOverview(split_sessions: SplitSessionsType) {
   let newObj = Object.entries(split_sessions).filter(
@@ -363,74 +401,74 @@ function getSplitOverview(split_sessions: SplitSessionsType) {
   return newObj;
 }
 
-function selectSplitHandler(
-  type: SplitSessionsNameType,
-  total_sessions: [number, number]
-) {
-  const total = total_sessions[0] + total_sessions[1];
-  let splitList = [...PPL];
+// function selectSplitHandler(
+//   type: SplitSessionsNameType,
+//   total_sessions: [number, number]
+// ) {
+//   const total = total_sessions[0] + total_sessions[1];
+//   let splitList = [...PPL];
 
-  switch (type) {
-    case "PPL":
-      splitList = [...PPL];
-      break;
-    case "UL":
-      splitList = [...UL];
-      break;
-    case "BRO":
-      splitList = [...BRO];
-      break;
-    case "PPLUL":
-      splitList = [...PPLUL];
-      break;
-    case "FB":
-      splitList = [...FB];
-      break;
-    default:
-      splitList = [...PPL];
-  }
+//   switch (type) {
+//     case "PPL":
+//       splitList = [...PPL];
+//       break;
+//     case "UL":
+//       splitList = [...UL];
+//       break;
+//     case "BRO":
+//       splitList = [...BRO];
+//       break;
+//     case "PPLUL":
+//       splitList = [...PPLUL];
+//       break;
+//     case "FB":
+//       splitList = [...FB];
+//       break;
+//     default:
+//       splitList = [...PPL];
+//   }
 
-  let index = 0;
-  let totalCount = total;
-  while (totalCount > 0) {
-    splitList.push(splitList[index]);
-    index++;
-    totalCount--;
-    if (index >= splitList.length) {
-      index = 0;
-    }
-  }
+//   let index = 0;
+//   let totalCount = total;
+//   while (totalCount > 0) {
+//     splitList.push(splitList[index]);
+//     index++;
+//     totalCount--;
+//     if (index >= splitList.length) {
+//       index = 0;
+//     }
+//   }
 
-  const upper = splitList.filter((each) => each === "upper");
-  const lower = splitList.filter((each) => each === "lower");
-  const push = splitList.filter((each) => each === "push");
-  const pull = splitList.filter((each) => each === "pull");
-  const full = splitList.filter((each) => each === "full");
-  const chest = splitList.filter((each) => each === "chest");
-  const back = splitList.filter((each) => each === "back");
-  const arms = splitList.filter((each) => each === "arms");
-  const shoulders = splitList.filter((each) => each === "shoulders");
-  const legs = splitList.filter((each) => each === "legs");
+//   const upper = splitList.filter((each) => each === "upper");
+//   const lower = splitList.filter((each) => each === "lower");
+//   const push = splitList.filter((each) => each === "push");
+//   const pull = splitList.filter((each) => each === "pull");
+//   const full = splitList.filter((each) => each === "full");
+//   const chest = splitList.filter((each) => each === "chest");
+//   const back = splitList.filter((each) => each === "back");
+//   const arms = splitList.filter((each) => each === "arms");
+//   const shoulders = splitList.filter((each) => each === "shoulders");
+//   const legs = splitList.filter((each) => each === "legs");
 
-  const off =
-    total_sessions[1] === 0 ? 0 : total_sessions[0] - total_sessions[1];
+//   const off =
+//     total_sessions[1] === 0 ? 0 : total_sessions[0] - total_sessions[1];
 
-  let counter = {
-    lower: lower.length,
-    upper: upper.length,
-    push: push.length,
-    pull: pull.length,
-    full: full.length,
-    chest: chest.length,
-    back: back.length,
-    arms: arms.length,
-    shoulders: shoulders.length,
-    legs: legs.length,
-    off: off,
-  };
+//   let counter = {
+//     lower: lower.length,
+//     upper: upper.length,
+//     push: push.length,
+//     pull: pull.length,
+//     full: full.length,
+//     chest: chest.length,
+//     back: back.length,
+//     arms: arms.length,
+//     shoulders: shoulders.length,
+//     legs: legs.length,
+//     off: off,
+//   };
 
-  return counter;
-}
+//   return counter;
+// }
 
 // function getSplitSessions(
 //   type: SplitSessionsNameType,
@@ -544,7 +582,7 @@ function selectSplitHandler(
 
 export {
   addMesoProgression,
+  addRankWeightsToMusclePriority,
   distributeExercisesAmongSplit,
   getSplitOverview,
-  selectSplitHandler,
 };

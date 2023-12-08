@@ -1,7 +1,8 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import useTrainingProgram from "~/hooks/useTrainingProgram/useTrainingProgram";
-import { TrainingDayType } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
-import useWeeklySessionSplit from "~/hooks/useWeeklySessionSplit/useWeeklySessionSplit";
+// import { TrainingDayType } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
+// import useWeeklySessionSplit from "~/hooks/useWeeklySessionSplit/useWeeklySessionSplit";
+import { TrainingDayType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { getEndOfMesocycleVolume } from "~/utils/musclePriorityHandlers";
 import WeekSessions from "./ExerciseSelection/ExerciseSelection";
 import { MusclePriorityList } from "./MusclePriorityList/MusclePriorityList";
@@ -16,10 +17,23 @@ type CustomizeTrainingSplitProps = {
 export default function CustomizeTrainingSplit({
   setTrainingWeek,
 }: CustomizeTrainingSplitProps) {
+  // const {
+  //   training_week,
+  //   split_sessions,
+  //   total_sessions,
+  //   mrv_breakpoint,
+  //   mev_breakpoint,
+  //   prioritized_muscle_list,
+  //   handleUpdateMuscleList,
+  //   handleFrequencyChange,
+  //   handleUpdateSplitSessions,
+  //   handleUpdateBreakpoint,
+  // } = useWeeklySessionSplit();
+
   const {
     training_week,
     split_sessions,
-    total_sessions,
+    frequency,
     mrv_breakpoint,
     mev_breakpoint,
     prioritized_muscle_list,
@@ -27,9 +41,7 @@ export default function CustomizeTrainingSplit({
     handleFrequencyChange,
     handleUpdateSplitSessions,
     handleUpdateBreakpoint,
-  } = useWeeklySessionSplit();
-
-  const data = useTrainingProgram();
+  } = useTrainingProgram();
   /// added for test
   const [entireVolume, setEntireVolume] = useState<number>(0);
   const [splitVolume, setSplitVolume] = useState<
@@ -51,7 +63,7 @@ export default function CustomizeTrainingSplit({
       );
       count = count + totalVolume;
     }
-    let total = total_sessions[0] + total_sessions[1];
+    let total = frequency[0] + frequency[1];
     let setsPerDay = Math.round(count / total);
 
     for (let j = 0; j < total; j++) {
@@ -71,7 +83,7 @@ export default function CustomizeTrainingSplit({
         <SelectFrequencySplit
           onFrequencyChange={handleFrequencyChange}
           onSplitChange={handleUpdateSplitSessions}
-          currentSplit={split_sessions.name}
+          currentSplit={split_sessions.split}
         />
       </div>
 
@@ -92,7 +104,7 @@ export default function CustomizeTrainingSplit({
         <MusclePriorityList
           musclePriority={prioritized_muscle_list}
           onVolumeChange={onVolumeChange}
-          total_sessions={total_sessions}
+          total_sessions={frequency}
           onMesoProgressionUpdate={updateMesoProgression}
           onPriorityChange={handleUpdateMuscleList}
         />
@@ -102,7 +114,7 @@ export default function CustomizeTrainingSplit({
         split_sessions={split_sessions}
         training_week={training_week}
         list={prioritized_muscle_list}
-        total_sessions={total_sessions}
+        total_sessions={frequency}
       />
 
       <div>

@@ -117,8 +117,8 @@ export const getTopExercises = (
 
   if (!getVolume.length) return [];
 
-  const volume_meso_one = getVolume[mesoProgression[0] - 1];
-  const volume_meso_two = getVolume[mesoProgression[1] - 1];
+  const volume_meso_one = getVolume[mesoProgression[0] - 1] ?? 0;
+  const volume_meso_two = getVolume[mesoProgression[1] - 1] ?? 0;
   const volume_meso_three =
     getVolume[mesoProgression[2] - 1] ?? getVolume[getVolume.length - 1];
 

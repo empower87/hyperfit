@@ -377,50 +377,6 @@ export const INITIAL_WEEK_TEST: TrainingDay[] = [
     sessions: [],
   },
 ];
-const INITIAL_SESSION: SessionType = {
-  id: "1_push_0",
-  split: "push",
-  exercises: [],
-};
-// push legs pull off push legs pull
-// legs pull push off legs pull push
-// pull push legs off pull push legs
-
-export type SplitSessionsNameType =
-  | "OPT"
-  | "CUS"
-  | "PPL"
-  | "PPLUL"
-  | "UL"
-  | "FB"
-  | "BRO";
-
-type SessionKey =
-  | "lower"
-  | "upper"
-  | "push"
-  | "pull"
-  | "legs"
-  | "full"
-  | "chest"
-  | "back"
-  | "shoulders"
-  | "arms"
-  | "off";
-
-type SplitSessionsSessionsType = {
-  lower: number;
-  upper: number;
-  push: number;
-  pull: number;
-  legs: number;
-  full: number;
-  chest: number;
-  back: number;
-  shoulders: number;
-  arms: number;
-  off: number;
-};
 
 const getOffDayIndices = (number: number) => {
   switch (number) {

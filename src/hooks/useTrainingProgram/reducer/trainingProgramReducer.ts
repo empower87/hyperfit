@@ -3,6 +3,7 @@ import { distributeSplitAcrossWeek } from "./splitSessionsHandler";
 import {
   VolumeLandmarkType,
   addMesoProgression,
+  addRankWeightsToMusclePriority,
   distributeExercisesAmongSplit,
 } from "./trainingProgramUtils";
 
@@ -385,6 +386,8 @@ export default function weeklySessionSplitReducer(
         current_priority,
         current_split
       );
+      const lista = addRankWeightsToMusclePriority(current_priority);
+      console.log(lista, "CHECK THIS OUT IS IT ACCURATE??");
       const priority_list = addMesoProgression(
         current_priority,
         split_sessions,
@@ -407,7 +410,8 @@ export default function weeklySessionSplitReducer(
         new_list,
         current_split_sessions.split
       );
-
+      const list = addRankWeightsToMusclePriority(new_list);
+      console.log(list, "CHECK THIS OUT IS IT ACCURATE??");
       const update_priority_list = addMesoProgression(
         new_list,
         update_split_sessions,

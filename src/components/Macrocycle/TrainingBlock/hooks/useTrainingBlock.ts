@@ -1,32 +1,30 @@
 import { useEffect, useState } from "react";
-import {
-  ExerciseType,
-  SessionDayType,
-} from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
+import { TrainingDayType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
+import { ExerciseType } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
 
-export default function useTrainingBlock(split: SessionDayType[]) {
-  const [splitState, setSplitState] = useState<SessionDayType[]>([]);
-  const [trainingBlock, setTrainingBlock] = useState<SessionDayType[][]>([]);
+export default function useTrainingBlock(training_week: TrainingDayType[]) {
+  const [splitState, setSplitState] = useState<TrainingDayType[]>([]);
+  const [trainingBlock, setTrainingBlock] = useState<TrainingDayType[][]>([]);
 
   useEffect(() => {
-    setSplitState([...split]);
-  }, [split]);
+    setSplitState([...training_week]);
+  }, [training_week]);
 
   useEffect(() => {
     const block = getTrainingBlock(splitState);
     setTrainingBlock(block);
   }, [splitState]);
 
-  const getTrainingBlock = (_split: SessionDayType[]) => {
+  const getTrainingBlock = (_split: TrainingDayType[]) => {
     const getSplitForMesocycle = (
-      split: SessionDayType[],
+      split: TrainingDayType[],
       mesocycle: number
     ) => {
       const newSplit = split.map((session) => {
-        const sets_one = session.sets[0];
-        const sets_two = session.sets[1];
+        const sets_one = session.sessions[0];
+        const sets_two = session.sessions[1];
 
-        let setsOne = sets_one.map((exercises) => {
+        let setsOne = sets_one?.exercises?.map((exercises) => {
           return exercises.filter((exercise) => {
             let details = exercise.meso_details[mesocycle - 1];
 
@@ -42,7 +40,7 @@ export default function useTrainingBlock(split: SessionDayType[]) {
           });
         });
 
-        let setsTwo = sets_two.map((exercises) => {
+        let setsTwo = sets_two?.exercises?.map((exercises) => {
           return exercises.filter((exercise) => {
             let details = exercise.meso_details[mesocycle - 1];
 
@@ -57,8 +55,8 @@ export default function useTrainingBlock(split: SessionDayType[]) {
           });
         });
 
-        const filterEmptySetsOne = setsOne.filter((each) => each.length);
-        const filterEmptySetsTwo = setsTwo.filter((each) => each.length);
+        const filterEmptySetsOne = setsOne?.filter((each) => each.length);
+        const filterEmptySetsTwo = setsTwo?.filter((each) => each.length);
         const newSets: [ExerciseType[][], ExerciseType[][]] = [
           filterEmptySetsOne,
           filterEmptySetsTwo,
@@ -78,10 +76,10 @@ export default function useTrainingBlock(split: SessionDayType[]) {
 
   const editExerciseHandler = (id: string, value: string) => {
     const test = splitState.map((session) => {
-      let seshone = session.sets[0];
-      let seshtwo = session.sets[1];
+      let seshone = session.sessions[0];
+      let seshtwo = session.sessions[1];
 
-      let sessionOne = seshone.map((exercises) => {
+      let sessionOne = seshone.exercises?.map((exercises) => {
         return exercises.map((ex) => {
           if (ex.id === id) {
             return { ...ex, exercise: value };
@@ -89,7 +87,7 @@ export default function useTrainingBlock(split: SessionDayType[]) {
         });
       });
 
-      let sessionTwo = seshtwo.map((exercises) => {
+      let sessionTwo = seshtwo.exercises?.map((exercises) => {
         return exercises.map((ex) => {
           if (ex.id === id) {
             return { ...ex, exercise: value };
