@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import {
   DayType,
   ExerciseType,
-  SessionDayType,
   SplitType,
-} from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
+  TrainingDayType,
+} from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { BG_COLOR_M5, BG_COLOR_M6 } from "~/utils/themes";
 import { useTrainingBlockContext } from "../Macrocycle/TrainingBlock/context/TrainingBlockContext";
 
@@ -19,7 +19,7 @@ type GroupExercisesType = {
   exercises: ExerciseType[];
 };
 
-const getGroupExercises = (group: string, split: SessionDayType[]) => {
+const getGroupExercises = (group: string, split: TrainingDayType[]) => {
   let newSplit: GroupExercisesType[] = [];
 
   for (let i = 0; i < split.length; i++) {

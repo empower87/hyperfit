@@ -4,12 +4,12 @@ import {
   SplitSessionsNameType,
   SplitSessionsType,
   TrainingDayType,
-} from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
+} from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import {
   VolumeLandmarkType,
   getSplitSessions,
   updateReducerStateHandler,
-} from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitUtils";
+} from "~/hooks/useTrainingProgram/reducer/trainingProgramUtils";
 import { getEndOfMesocycleVolume } from "~/utils/musclePriorityHandlers";
 
 export default function useCustomizeTrainingSplit(

@@ -3,7 +3,7 @@ import { LOWER_MUSCLES } from "~/constants/workoutSplits";
 import {
   MusclePriorityType,
   SplitType,
-} from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
+} from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 
 const getLowerPosition = (list: MusclePriorityType[]) => {
   let priority = [0, 0];

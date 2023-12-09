@@ -1,7 +1,7 @@
 import {
   ExerciseDetails,
   ExerciseType,
-} from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
+} from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { BG_COLOR_M5, BG_COLOR_M6 } from "~/utils/themes";
 
 type ExerciseDetailProps = {

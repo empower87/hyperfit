@@ -10,7 +10,7 @@ import {
 } from "~/constants/workoutSplits";
 // import { MusclePriorityType, SessionDayType, SplitType } from "~/pages";
 import { getMuscleData } from "~/utils/getMuscleData";
-import { getNextSession } from "~/utils/getNextSession";
+import { getNextSession } from "~/z-unused/oldMainLogicHook9122023/getNextSession";
 import { pushPullLowerFrequencyMax } from "./usePrioritizeMuscles";
 
 export type ExerciseType = {

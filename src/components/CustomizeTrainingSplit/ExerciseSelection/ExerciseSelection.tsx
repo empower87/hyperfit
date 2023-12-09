@@ -2,13 +2,11 @@ import { useCallback, useEffect, useState } from "react";
 import { DragDropContext, Draggable, DropResult } from "react-beautiful-dnd";
 import ReactDOM from "react-dom";
 import {
+  DayType,
+  ExerciseType,
   SplitType,
   TrainingDayType,
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
-import {
-  DayType,
-  ExerciseType,
-} from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
 import { getGroupList } from "~/utils/getExercises";
 import { getRankColor } from "~/utils/getRankColor";
 import { getSessionSplitColor } from "~/utils/getSessionSplitColor";

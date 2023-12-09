@@ -1,5 +1,3 @@
-// import { SplitSessionsNameType } from "~/utils/getNextSession";
-
 import { SplitSessionsNameType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 
 export type MusclesType =
@@ -81,19 +79,6 @@ export const PUSH_AND_PULL_MUSCLES = ["delts_side", "traps"];
 export const ANY_MUSCLES = ["delts_side", "traps", "abs", "forearms"];
 
 export const PERIPHERAL_MUSCLES = ["forearms", "abs", "calves"];
-
-export const COMBINED_SPLITS = [
-  { name: "back", list: BACK_MUSCLES },
-  { name: "chest", list: CHEST_MUSCLES },
-  { name: "arms", list: ARMS_MUSCLES },
-  { name: "shoulders", list: SHOULDERS_MUSCLES },
-  { name: "legs", list: LEGS_MUSCLES },
-  { name: "lower", list: LOWER_MUSCLES },
-  { name: "push", list: PUSH_MUSCLES },
-  { name: "pull", list: PULL_MUSCLES },
-  { name: "upper", list: UPPER_MUSCLES },
-  { name: "full", list: FULL_BODY_MUSCLES },
-];
 
 export const getGroupList = (split: string) => {
   switch (split) {

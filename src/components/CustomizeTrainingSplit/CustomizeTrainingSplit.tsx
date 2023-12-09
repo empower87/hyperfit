@@ -1,8 +1,6 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import useTrainingProgram from "~/hooks/useTrainingProgram/useTrainingProgram";
-// import { TrainingDayType } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
-// import useWeeklySessionSplit from "~/hooks/useWeeklySessionSplit/useWeeklySessionSplit";
 import { TrainingDayType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
+import useTrainingProgram from "~/hooks/useTrainingProgram/useTrainingProgram";
 import { getEndOfMesocycleVolume } from "~/utils/musclePriorityHandlers";
 import WeekSessions from "./ExerciseSelection/ExerciseSelection";
 import { MusclePriorityList } from "./MusclePriorityList/MusclePriorityList";
@@ -17,19 +15,6 @@ type CustomizeTrainingSplitProps = {
 export default function CustomizeTrainingSplit({
   setTrainingWeek,
 }: CustomizeTrainingSplitProps) {
-  // const {
-  //   training_week,
-  //   split_sessions,
-  //   total_sessions,
-  //   mrv_breakpoint,
-  //   mev_breakpoint,
-  //   prioritized_muscle_list,
-  //   handleUpdateMuscleList,
-  //   handleFrequencyChange,
-  //   handleUpdateSplitSessions,
-  //   handleUpdateBreakpoint,
-  // } = useWeeklySessionSplit();
-
   const {
     training_week,
     split_sessions,

@@ -3,7 +3,7 @@ import { DragDropContext, Draggable, DropResult } from "react-beautiful-dnd";
 import {
   MusclePriorityType,
   VOLUME_BG_COLORS,
-} from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
+} from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import StrictModeDroppable from "~/utils/react-beautiful-dnd/StrictModeDroppable";
 
 type PrioritizeFocusProps = {

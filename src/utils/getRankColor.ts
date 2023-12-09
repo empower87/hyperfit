@@ -1,4 +1,4 @@
-import { VolumeLandmarkType } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitUtils";
+import { VolumeLandmarkType } from "~/hooks/useTrainingProgram/reducer/trainingProgramUtils";
 
 export const getRankColor = (volume_indicator: VolumeLandmarkType) => {
   switch (volume_indicator) {

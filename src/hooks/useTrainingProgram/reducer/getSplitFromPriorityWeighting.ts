@@ -9,27 +9,12 @@ import {
   PUSH_MUSCLES,
   SHOULDERS_MUSCLES,
 } from "~/constants/workoutSplits";
+import { getKeyWithHighestValue } from "~/utils/getKeyWithHighestValue";
 import {
   MusclePriorityType,
   SplitSessionsNameType,
   SplitSessionsType,
 } from "./trainingProgramReducer";
-
-const getKeyWithHighestValue = <TObj extends Record<string, number>>(
-  obj: TObj
-): { key: keyof TObj; value: number } => {
-  const keys = Object.keys(obj) as Array<keyof TObj>;
-  let highestKey = keys[0] as keyof TObj;
-  let highestValue = obj[highestKey];
-
-  for (const key of keys) {
-    if (obj[key] > highestValue) {
-      highestKey = key;
-      highestValue = obj[key];
-    }
-  }
-  return { key: highestKey, value: highestValue };
-};
 
 export function getSplitFromWeights(
   sessions: [number, number],
@@ -130,10 +115,6 @@ export function getSplitFromWeights(
   let lowerSessions = lowerInteger;
   let upperSessions = 0;
   let fullSessions = 0;
-  let offSessions =
-    second_sessions === 0 ? 0 : first_sessions - second_sessions;
-
-  // let totalTenths = Math.round(pushTenths + pullTenths + lowerTenths);
 
   switch (split_name) {
     case "BRO":

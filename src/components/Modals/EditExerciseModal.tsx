@@ -3,7 +3,7 @@ import ReactDOM from "react-dom";
 import {
   ExerciseType,
   SplitType,
-} from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
+} from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { Exercise, getGroupList } from "~/utils/getExercises";
 import {
   BG_COLOR_M5,

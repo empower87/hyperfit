@@ -3,20 +3,18 @@ import {
   DayType,
   MusclePriorityType,
   SplitType,
-} from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
-import { getTrainingSplit } from "~/utils/getTrainingSplit";
+} from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { BG_COLOR_M7, BORDER_COLOR_M7 } from "~/utils/themes";
+import { getTrainingSplit } from "~/z-unused/getTrainingSplit";
 
 const Cell = ({
   value,
   time,
 }: {
-  value: SplitType | "";
+  value: SplitType | "off" | "";
   time: "am: " | "pm: " | "";
 }) => {
-  const getColor = (
-    split: "off" | "push" | "pull" | "upper" | "lower" | "full" | ""
-  ) => {
+  const getColor = (split: SplitType | "off" | "") => {
     switch (split) {
       case "off":
         return "text-slate-400";

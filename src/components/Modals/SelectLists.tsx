@@ -1,5 +1,5 @@
 import { getGroupList } from "~/constants/workoutSplits";
-import { SplitType } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
+import { SplitType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import {
   BG_COLOR_M5,
   BG_COLOR_M6,

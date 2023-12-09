@@ -1,7 +1,7 @@
 import {
   INITIAL_WEEK_TEST,
   distributeSplitAcrossWeek,
-} from "~/utils/getNextSession";
+} from "~/z-unused/oldMainLogicHook9122023/getNextSession";
 import { getSplitFromWeights } from "./getSplitFromPriorityWeighting";
 import {
   VolumeLandmarkType,

@@ -1,15 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
 import { DragDropContext, Draggable, DropResult } from "react-beautiful-dnd";
-import { WeekTest } from "~/components/WeekOverviewTest";
 import {
+  DayType,
+  MusclePriorityType,
   SplitSessionsType,
   SplitType,
   TrainingDayType,
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
-import {
-  DayType,
-  MusclePriorityType,
-} from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
 import { getSessionSplitColor } from "~/utils/getSessionSplitColor";
 import StrictModeDroppable from "~/utils/react-beautiful-dnd/StrictModeDroppable";
 import {
@@ -37,7 +34,7 @@ const DAYS: DayType[] = [
 type DraggableSplitObjectType = {
   id: string;
   session: number;
-  split: SplitType;
+  split: SplitType | "off";
 };
 
 function SessionList({ sessions }: SessionListProps) {
@@ -51,7 +48,6 @@ function SessionList({ sessions }: SessionListProps) {
 
   const onDragEnd = useCallback(
     (result: DropResult) => {
-      console.log(result, "OK WHAT ARE WE WORKING WITH ERE??");
       if (!result.destination) return;
 
       let outerDestinationId = 0;
@@ -148,7 +144,7 @@ type SessionItemProps = {
   index: number;
 };
 
-const SESSIONS_TEST: SplitType[] = [
+const SESSIONS_TEST: (SplitType | "off")[] = [
   "upper",
   "lower",
   "full",
@@ -159,6 +155,7 @@ const SESSIONS_TEST: SplitType[] = [
   "chest",
   "arms",
   "shoulders",
+  "off",
 ];
 
 function SessionItem({ session, index }: SessionItemProps) {
@@ -178,8 +175,8 @@ function SessionItem({ session, index }: SessionItemProps) {
 }
 
 type SelectSessionProps = {
-  session: SplitType;
-  splits: SplitType[];
+  session: SplitType | "off";
+  splits: (SplitType | "off")[];
 };
 function SelectSession({ session, splits }: SelectSessionProps) {
   return (
@@ -232,52 +229,28 @@ function Week({ training_week }: TrainingSplitProps) {
   useEffect(() => {
     const _list: DraggableSplitObjectType[][] = [];
 
-    let count = 0;
-
     for (let i = 0; i < training_week.length; i++) {
-      let split_one = training_week[i].sessions[0];
-      let split_two = training_week[i].sessions[1];
-
-      let noCount = false;
-
       const splits: DraggableSplitObjectType[] = [];
 
+      let draggable_obj: DraggableSplitObjectType = {
+        id: `${training_week[i].day}_off_1`,
+        session: 0,
+        split: "off",
+      };
+
       for (let j = 0; j < training_week[i].sessions.length; j++) {
-        let draggable_obj = {
-          id: `${training_week[i].day}_${split_one}_${1}`,
+        let split = training_week[i].sessions[j];
+        draggable_obj = {
+          id: `${training_week[i].day}_${split}_${1}`,
           session: j,
-          split: training_week[i].sessions[j].split,
+          split: split.split,
         };
         splits.push(draggable_obj);
       }
 
-      // if (split_one !== "off") {
-      //   count++;
-      // } else {
-      //   noCount = true;
-      // }
-
-      // let draggable_one = {
-      //   id: `${training_week[i].sessionNum}_${split_one}_${1}`,
-      //   session: noCount ? 0 : count,
-      //   split: split_one,
-      // };
-
-      // noCount = false;
-
-      // if (split_two !== "off") {
-      //   count++;
-      // } else {
-      //   noCount = true;
-      // }
-
-      // let draggable_two = {
-      //   id: `${training_week[i].sessionNum}_${split_two}_${2}`,
-      //   session: noCount ? 0 : count,
-      //   split: split_two,
-      // };
-
-      // const splits = [draggable_one, draggable_two];
+      if (!splits.length) {
+        splits.push(draggable_obj);
+      }
       _list.push(splits);
     }
 
@@ -311,16 +284,15 @@ export default function WeekOverview({
         <div className={BORDER_COLOR_M6 + " mb-2 h-6 border-b-2"}>
           <h3 className=" indent-1 text-sm text-white">Week Overview</h3>
         </div>
-
         <SplitOverview split_sessions={split_sessions} />
       </div>
+
       <div className={BG_COLOR_M6 + " w-3/4 p-1"}>
-        <WeekTest
+        {/* <WeekTest
           title="Hard Coded For Testing Purposes"
           list={list}
           total_sessions={total_sessions}
-        />
-        {/* <Week title="Feature Logic" split={algorithmicSessions} /> */}
+        /> */}
         <Week training_week={training_week} />
       </div>
     </div>

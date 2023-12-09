@@ -9,7 +9,7 @@ import {
   getPushPullLegsSplit,
 } from "~/constants/workoutSplits";
 import { getTopExercises } from "~/utils/getExercises";
-import { getNextSession } from "~/utils/getNextSession";
+import { getNextSession } from "~/z-unused/oldMainLogicHook9122023/getNextSession";
 import {
   ExerciseType,
   MusclePriorityType,
