@@ -103,6 +103,7 @@ export type SplitSessionsType =
   | FBSessionsType
   | OPTSessionsType
   | CUSSessionsType;
+//TODO: try this type SplitName = SplitSessionsType['split']
 export type SplitSessionsNameType =
   | "OPT"
   | "CUS"
