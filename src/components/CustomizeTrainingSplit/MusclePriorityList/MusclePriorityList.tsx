@@ -3,8 +3,8 @@ import { DragDropContext, Draggable, DropResult } from "react-beautiful-dnd";
 import {
   MusclePriorityType,
   VOLUME_BG_COLORS,
-} from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
-import { VolumeLandmarkType } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitUtils";
+} from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
+import { VolumeLandmarkType } from "~/hooks/useTrainingProgram/reducer/trainingProgramUtils";
 import { getVolumeSets } from "~/utils/musclePriorityHandlers";
 import StrictModeDroppable from "~/utils/react-beautiful-dnd/StrictModeDroppable";
 import { BG_COLOR_M5, BG_COLOR_M6, BORDER_COLOR_M8 } from "~/utils/themes";

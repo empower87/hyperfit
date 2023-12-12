@@ -106,6 +106,7 @@ export const getGroupList = (split: string) => {
       return FULL_BODY_MUSCLES;
   }
 };
+
 const getPPLULSplit = (muscle: string) => {
   let allSplits: ("pull" | "push" | "lower" | "legs" | "upper")[] = [];
   if (PULL_MUSCLES.includes(muscle)) {
@@ -117,6 +118,7 @@ const getPPLULSplit = (muscle: string) => {
   }
   return allSplits;
 };
+
 const getOPTSplit = (muscle: string) => {
   let allSplits: ("pull" | "push" | "lower" | "upper" | "full")[] = ["full"];
   if (PULL_MUSCLES.includes(muscle)) {

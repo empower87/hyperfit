@@ -16,7 +16,6 @@ export type DayType =
   | "Friday"
   | "Saturday";
 
-// export type SplitType = "upper" | "lower" | "push" | "pull" | "full" | "off";
 export type SplitType =
   | "push"
   | "legs"
@@ -103,15 +102,8 @@ export type SplitSessionsType =
   | FBSessionsType
   | OPTSessionsType
   | CUSSessionsType;
-//TODO: try this type SplitName = SplitSessionsType['split']
-export type SplitSessionsNameType =
-  | "OPT"
-  | "CUS"
-  | "PPL"
-  | "PPLUL"
-  | "UL"
-  | "FB"
-  | "BRO";
+
+export type SplitSessionsNameType = SplitSessionsType["split"];
 
 export type ExerciseDetails = {
   sets: number;
@@ -125,7 +117,7 @@ export type ExerciseType = {
   exercise: string;
   group: string;
   session: number;
-  rank: "MRV" | "MEV" | "MV";
+  rank: VolumeLandmarkType;
   sets: number;
   reps: number;
   weight: number;
