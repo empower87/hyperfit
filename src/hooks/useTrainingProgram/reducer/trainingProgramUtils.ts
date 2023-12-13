@@ -63,7 +63,6 @@ function addMesoProgression(
   mev_breakpoint: number
 ) {
   let items = [..._items];
-
   for (let i = 0; i < items.length; i++) {
     let key: VolumeLandmarkType =
       i < mrv_breakpoint
@@ -179,6 +178,122 @@ function addMesoProgression(
   return items;
 }
 
+function attachMesocycleFrequencyProgression(
+  _items: MusclePriorityType[],
+  split_sessions: SplitSessionsType,
+  mesocycles: number
+) {
+  let items = [..._items];
+
+  for (let i = 0; i < items.length; i++) {
+    let key = items[i].volume_landmark;
+    let sessions = 0;
+    let muscle = items[i].muscle;
+
+    switch (split_sessions.split) {
+      case "OPT":
+        const keys = getOptimizedSplit(muscle);
+
+        for (let i = 0; i < keys.length; i++) {
+          sessions = sessions + split_sessions.sessions[keys[i]];
+        }
+
+        break;
+      case "PPL":
+        const pplSplit = getPushPullLegsSplit(muscle);
+        sessions = sessions + split_sessions.sessions[pplSplit];
+        break;
+      case "BRO":
+        const broSplit = getBroSplit(muscle);
+        sessions = split_sessions.sessions[broSplit];
+        break;
+      case "PPLUL":
+        const pplulSplit = getPushPullLegsSplit(muscle);
+        if (pplulSplit === "legs") {
+          sessions =
+            split_sessions.sessions[pplulSplit] + split_sessions.sessions.lower;
+        } else {
+          sessions =
+            split_sessions.sessions[pplulSplit] + split_sessions.sessions.upper;
+        }
+        break;
+      case "UL":
+        if (UPPER_MUSCLES.includes(muscle)) {
+          sessions = split_sessions.sessions.upper;
+        } else {
+          sessions = split_sessions.sessions.lower;
+        }
+        break;
+      case "FB":
+        sessions = split_sessions.sessions.full;
+        break;
+      default:
+    }
+
+    let mesoProgression: number[] = [];
+
+    const getFrequencyProgression = (sessions: number, mesocycles: number) => {
+      let frequencyProgression: number[] = [];
+
+      for (let i = 0; i < mesocycles; i++) {
+        let frequency = sessions - i;
+        if (frequency < 0) {
+          frequency = 0;
+        }
+        frequencyProgression.unshift(frequency);
+      }
+      console.log(
+        muscle,
+        frequencyProgression,
+        sessions,
+        mesocycles,
+        "LOOK AT DEEZ"
+      );
+      return frequencyProgression;
+    };
+
+    switch (key) {
+      case "MRV":
+        let prog = getFrequencyProgression(sessions, mesocycles);
+
+        mesoProgression = prog;
+        break;
+      case "MEV":
+        let sessions_capped = 2;
+        if (sessions === 0) {
+          sessions_capped = 0;
+        } else if (sessions <= 1) {
+          sessions_capped = 1;
+        } else if (sessions >= 3) {
+          if (["back", "quads", "calves"].includes(muscle)) {
+            sessions_capped = 3;
+          }
+        }
+        mesoProgression = getFrequencyProgression(sessions_capped, mesocycles);
+        break;
+      default:
+        let sessions_capped_mv = 1;
+        if (sessions === 0) {
+          sessions_capped_mv = 0;
+        } else if (sessions >= 2) {
+          if (["back", "quads", "calves"].includes(muscle)) {
+            sessions_capped_mv = 2;
+          }
+        }
+        mesoProgression = getFrequencyProgression(
+          sessions_capped_mv,
+          mesocycles
+        );
+        break;
+    }
+
+    items[i].volume.frequencyProgression = mesoProgression;
+    items[i].volume_landmark = key;
+  }
+
+  return items;
+}
+
 const distributeExercisesAmongSplit = (
   muscle_priority: MusclePriorityType[],
   split_sessions: SplitSessionsType,
@@ -247,6 +362,7 @@ function getSplitOverview(split_sessions: SplitSessionsType) {
 export {
   addMesoProgression,
   addRankWeightsToMusclePriority,
+  attachMesocycleFrequencyProgression,
   distributeExercisesAmongSplit,
   getSplitOverview,
 };
