@@ -5,7 +5,10 @@ import {
   getOptimizedSplit,
   getPushPullLegsSplit,
 } from "~/constants/workoutSplits";
-import { getTopExercises } from "~/utils/getExercises";
+import {
+  getTopExercises,
+  getTotalExercisesForMuscleGroup,
+} from "~/utils/getExercises";
 import {
   ExerciseType,
   MusclePriorityType,
@@ -36,7 +39,6 @@ function addRankWeightsToMusclePriority(muscle_priority: MusclePriorityType[]) {
         if (i < 3 && muscle === "quads") {
           lowerMod = lowerMod * SYSTEMIC_FATIGUE_MODIFIER;
         }
-        console.log(muscle, i, RANK_WEIGHTS[i], lowerMod, "CHECK THIS OUT ");
         muscle_priority[i].rank = lowerMod;
         break;
       case "back":
@@ -178,6 +180,30 @@ function addMesoProgression(
   return items;
 }
 
+function getExercisesForPrioritizedMuscles(
+  muscle_priority: MusclePriorityType[]
+) {
+  let muscle_priority_with_exercises = [...muscle_priority];
+
+  for (let i = 0; i < muscle_priority_with_exercises.length; i++) {
+    const muscle = muscle_priority_with_exercises[i].muscle;
+    const volumeLandmark = muscle_priority_with_exercises[i].volume_landmark;
+    const exercisesPerSessionSchema =
+      muscle_priority_with_exercises[i].volume.exercisesPerSessionSchema;
+    const frequencyProgression =
+      muscle_priority_with_exercises[i].volume.frequencyProgression;
+
+    let exercises = getTotalExercisesForMuscleGroup(
+      muscle,
+      volumeLandmark,
+      frequencyProgression,
+      exercisesPerSessionSchema
+    );
+    muscle_priority_with_exercises[i].allExercises = exercises;
+  }
+  return muscle_priority_with_exercises;
+}
+
 function attachMesocycleFrequencyProgression(
   _items: MusclePriorityType[],
   split_sessions: SplitSessionsType,
@@ -195,13 +221,13 @@ function attachMesocycleFrequencyProgression(
         const keys = getOptimizedSplit(muscle);
 
         for (let i = 0; i < keys.length; i++) {
-          sessions = sessions + split_sessions.sessions[keys[i]];
+          sessions = split_sessions.sessions[keys[i]];
         }
 
         break;
       case "PPL":
         const pplSplit = getPushPullLegsSplit(muscle);
-        sessions = sessions + split_sessions.sessions[pplSplit];
+        sessions = split_sessions.sessions[pplSplit];
         break;
       case "BRO":
         const broSplit = getBroSplit(muscle);
@@ -228,10 +254,11 @@ function attachMesocycleFrequencyProgression(
         sessions = split_sessions.sessions.full;
         break;
       default:
+        break;
     }
 
     let mesoProgression: number[] = [];
-
+    console.log(muscle, sessions, mesocycles, "LOOK AT DEEZ");
     const getFrequencyProgression = (sessions: number, mesocycles: number) => {
       let frequencyProgression: number[] = [];
 
@@ -242,21 +269,13 @@ function attachMesocycleFrequencyProgression(
         }
         frequencyProgression.unshift(frequency);
       }
-      console.log(
-        muscle,
-        frequencyProgression,
-        sessions,
-        mesocycles,
-        "LOOK AT DEEZ"
-      );
+
       return frequencyProgression;
     };
 
     switch (key) {
       case "MRV":
-        let prog = getFrequencyProgression(sessions, mesocycles);
-
-        mesoProgression = prog;
+        mesoProgression = getFrequencyProgression(sessions, mesocycles);
         break;
       case "MEV":
         let sessions_capped = 2;
@@ -271,7 +290,7 @@ function attachMesocycleFrequencyProgression(
         }
         mesoProgression = getFrequencyProgression(sessions_capped, mesocycles);
         break;
-      default:
+      case "MV":
         let sessions_capped_mv = 1;
         if (sessions === 0) {
           sessions_capped_mv = 0;
@@ -285,6 +304,9 @@ function attachMesocycleFrequencyProgression(
           mesocycles
         );
         break;
+      default:
+        // mesoProgression = getFrequencyProgression(sessions, mesocycles);
+        break;
     }
 
     items[i].volume.frequencyProgression = mesoProgression;
@@ -297,9 +319,7 @@ function attachMesocycleFrequencyProgression(
 const distributeExercisesAmongSplit = (
   muscle_priority: MusclePriorityType[],
   split_sessions: SplitSessionsType,
-  _training_week: TrainingDayType[],
-  mrv_breakpoint: number,
-  mev_breakpoint: number
+  _training_week: TrainingDayType[]
 ) => {
   let training_week: TrainingDayType[] = [..._training_week].map((each) => {
     const emptySessionSets = each.sessions.map((ea) => {
@@ -309,10 +329,11 @@ const distributeExercisesAmongSplit = (
   });
 
   for (let i = 0; i < muscle_priority.length; i++) {
+    const volumeLandmark = muscle_priority[i].volume_landmark;
     const key: VolumeKey =
-      i < mrv_breakpoint
+      volumeLandmark === "MRV"
         ? "mrv_progression_matrix"
-        : i >= mrv_breakpoint && i < mev_breakpoint
+        : volumeLandmark === "MEV"
         ? "mev_progression_matrix"
         : "mv_progression_matrix";
 
@@ -364,5 +385,6 @@ export {
   addRankWeightsToMusclePriority,
   attachMesocycleFrequencyProgression,
   distributeExercisesAmongSplit,
+  getExercisesForPrioritizedMuscles,
   getSplitOverview,
 };

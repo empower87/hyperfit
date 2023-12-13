@@ -6,6 +6,7 @@ import {
   addRankWeightsToMusclePriority,
   attachMesocycleFrequencyProgression,
   distributeExercisesAmongSplit,
+  getExercisesForPrioritizedMuscles,
 } from "./trainingProgramUtils";
 
 export type DayType =
@@ -149,6 +150,7 @@ export type MusclePriorityType = {
   mesoProgression: number[];
   exercises: ExerciseType[][];
   volume: MusclePriorityVolumeType;
+  allExercises: ExerciseType[];
 };
 
 export type SessionType = {
@@ -260,6 +262,7 @@ const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
       frequencyProgression: [],
       exercisesPerSessionSchema: 2,
     },
+    allExercises: [],
   },
   {
     id: "delts_side-008",
@@ -273,6 +276,7 @@ const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
       frequencyProgression: [],
       exercisesPerSessionSchema: 2,
     },
+    allExercises: [],
   },
   {
     id: "triceps-014",
@@ -286,6 +290,7 @@ const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
       frequencyProgression: [],
       exercisesPerSessionSchema: 1,
     },
+    allExercises: [],
   },
   {
     id: "hamstrings-011",
@@ -299,6 +304,7 @@ const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
       frequencyProgression: [],
       exercisesPerSessionSchema: 1,
     },
+    allExercises: [],
   },
   {
     id: "quads-012",
@@ -312,6 +318,7 @@ const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
       frequencyProgression: [],
       exercisesPerSessionSchema: 2,
     },
+    allExercises: [],
   },
   {
     id: "delts_rear-007",
@@ -325,6 +332,7 @@ const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
       frequencyProgression: [],
       exercisesPerSessionSchema: 1,
     },
+    allExercises: [],
   },
   {
     id: "forearms-009",
@@ -338,6 +346,7 @@ const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
       frequencyProgression: [],
       exercisesPerSessionSchema: 1,
     },
+    allExercises: [],
   },
   {
     id: "traps-013",
@@ -351,6 +360,7 @@ const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
       frequencyProgression: [],
       exercisesPerSessionSchema: 1,
     },
+    allExercises: [],
   },
   {
     id: "biceps-003",
@@ -364,6 +374,7 @@ const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
       frequencyProgression: [],
       exercisesPerSessionSchema: 1,
     },
+    allExercises: [],
   },
 
   {
@@ -378,6 +389,7 @@ const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
       frequencyProgression: [],
       exercisesPerSessionSchema: 1,
     },
+    allExercises: [],
   },
   {
     id: "calves-004",
@@ -391,6 +403,7 @@ const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
       frequencyProgression: [],
       exercisesPerSessionSchema: 1,
     },
+    allExercises: [],
   },
 
   {
@@ -405,6 +418,7 @@ const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
       frequencyProgression: [],
       exercisesPerSessionSchema: 1,
     },
+    allExercises: [],
   },
   {
     id: "abs-001",
@@ -418,6 +432,7 @@ const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
       frequencyProgression: [],
       exercisesPerSessionSchema: 1,
     },
+    allExercises: [],
   },
   {
     id: "glutes-010",
@@ -431,6 +446,7 @@ const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
       frequencyProgression: [],
       exercisesPerSessionSchema: 1,
     },
+    allExercises: [],
   },
 ];
 
@@ -444,7 +460,7 @@ const INITIAL_TRAINING_PROGRAM_PARAMS: TrainingProgramParamsType = {
   sessions: 1,
   days: 3,
   microcycles: 4,
-  mesocycles: 4,
+  mesocycles: 3,
   blocks: 4,
   macrocycles: 4,
 };
@@ -523,7 +539,8 @@ export default function weeklySessionSplitReducer(
         update_split_sessions,
         state.training_program_params.mesocycles
       );
-      console.log(list, "CHECK THIS OUT IS IT ACCURATE??");
+      const testtest = getExercisesForPrioritizedMuscles(test);
+      console.log(list, test, testtest, "CHECK THIS OUT IS IT ACCURATE??");
       return {
         ...state,
         muscle_priority_list: update_priority_list,
@@ -555,9 +572,7 @@ export default function weeklySessionSplitReducer(
       const updated_training_week = distributeExercisesAmongSplit(
         state.muscle_priority_list,
         state.split_sessions,
-        new_training_week,
-        state.mrv_breakpoint,
-        state.mev_breakpoint
+        new_training_week
       );
 
       return {

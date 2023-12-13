@@ -1,11 +1,12 @@
+import { getVolumeProgressionMatrix } from "~/constants/volumeProgressionMatrices";
 import {
   ExerciseDetails,
   ExerciseType,
-} from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
+} from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import {
   VolumeKey,
   VolumeLandmarkType,
-} from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitUtils";
+} from "~/hooks/useTrainingProgram/reducer/trainingProgramUtils";
 import {
   ABS_EXERCISES,
   BACK_EXERCISES,
@@ -225,6 +226,50 @@ export const getTopExercises = (
           sets: parseInt(split_three[0]),
         };
         exercise_list.push([getSetsOne]);
+        exercises_index++;
+      }
+    }
+  }
+
+  return exercise_list;
+};
+
+export const getTotalExercisesForMuscleGroup = (
+  group: string,
+  rank: VolumeLandmarkType,
+  frequencyProgression: number[],
+  exercisesPerSessionSchema: number
+) => {
+  let total_frequency = frequencyProgression[frequencyProgression.length - 1];
+
+  const exercises = getGroupList(group);
+
+  let exercise_list: ExerciseType[] = [];
+  let exercises_index = 0;
+
+  const matrix = getVolumeProgressionMatrix(rank, exercisesPerSessionSchema);
+
+  const final_meso_frequency = matrix[total_frequency - 1] ?? matrix[0];
+
+  console.log(total_frequency, final_meso_frequency, "CHECK THIS OUT");
+  for (let i = 0; i < final_meso_frequency.length; i++) {
+    const session = final_meso_frequency[i];
+
+    for (let j = 0; j < session.length; j++) {
+      if (!exercises[exercises_index]) {
+        exercises_index = 0;
+      }
+
+      if (exercises[exercises_index]) {
+        let exercise = {
+          ...INITIAL_EXERCISE,
+          id: exercises[exercises_index].id,
+          exercise: exercises[exercises_index].name,
+          group: group,
+          rank: rank,
+          meso_progression: frequencyProgression,
+        };
+        exercise_list.push(exercise);
         exercises_index++;
       }
     }
