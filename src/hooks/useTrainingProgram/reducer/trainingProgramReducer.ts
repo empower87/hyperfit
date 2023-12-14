@@ -194,12 +194,16 @@ type UpdateBreakpointAction = {
   type: "UPDATE_VOLUME_BREAKPOINT";
   payload: { indicator: "mev_breakpoint" | "mrv_breakpoint"; value: number };
 };
+type TESTProps = {
+  type: "TEST";
+};
 type Action =
   | UpdateFrequencyAction
   | UpdateMusclePriorityListAction
   | UpdateSplitSessionsAction
   | UpdateTrainingWeekAction
-  | UpdateBreakpointAction;
+  | UpdateBreakpointAction
+  | TESTProps;
 
 const INITIAL_MRV_BREAKPOINT = 4;
 const INITIAL_MEV_BREAKPOINT = 9;
@@ -258,7 +262,6 @@ const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
     exercises: [],
     volume: {
       landmark: "MRV",
-
       frequencyProgression: [],
       exercisesPerSessionSchema: 2,
     },
@@ -525,7 +528,6 @@ export default function weeklySessionSplitReducer(
         new_list,
         current_split_sessions.split
       );
-      const list = addRankWeightsToMusclePriority(new_list);
 
       const update_priority_list = addMesoProgression(
         new_list,
@@ -534,18 +536,24 @@ export default function weeklySessionSplitReducer(
         state.mev_breakpoint
       );
 
-      const test = attachMesocycleFrequencyProgression(
-        new_list,
-        update_split_sessions,
-        state.training_program_params.mesocycles
-      );
-      const testtest = getExercisesForPrioritizedMuscles(test);
-      console.log(list, test, testtest, "CHECK THIS OUT IS IT ACCURATE??");
       return {
         ...state,
         muscle_priority_list: update_priority_list,
         split_sessions: update_split_sessions,
       };
+    case "TEST":
+      const li = state.muscle_priority_list;
+      const sp = state.split_sessions;
+      const list = addRankWeightsToMusclePriority(li);
+
+      const test = attachMesocycleFrequencyProgression(
+        list,
+        sp,
+        state.training_program_params.mesocycles
+      );
+      const testtest = getExercisesForPrioritizedMuscles(test);
+      console.log(list, test, testtest, "CHECK THIS OUT IS IT ACCURATE??");
+      return state;
     case "UPDATE_SPLIT_SESSIONS":
       const type = action.payload.split;
       const total_sessions = state.frequency;

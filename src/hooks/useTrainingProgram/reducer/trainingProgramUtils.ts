@@ -221,7 +221,7 @@ function attachMesocycleFrequencyProgression(
         const keys = getOptimizedSplit(muscle);
 
         for (let i = 0; i < keys.length; i++) {
-          sessions = split_sessions.sessions[keys[i]];
+          sessions = sessions + split_sessions.sessions[keys[i]];
         }
 
         break;
@@ -275,7 +275,8 @@ function attachMesocycleFrequencyProgression(
 
     switch (key) {
       case "MRV":
-        mesoProgression = getFrequencyProgression(sessions, mesocycles);
+        const mrv = getFrequencyProgression(sessions, mesocycles);
+        mesoProgression = mrv;
         break;
       case "MEV":
         let sessions_capped = 2;
@@ -288,7 +289,8 @@ function attachMesocycleFrequencyProgression(
             sessions_capped = 3;
           }
         }
-        mesoProgression = getFrequencyProgression(sessions_capped, mesocycles);
+        const mev = getFrequencyProgression(sessions_capped, mesocycles);
+        mesoProgression = mev;
         break;
       case "MV":
         let sessions_capped_mv = 1;
@@ -299,10 +301,8 @@ function attachMesocycleFrequencyProgression(
             sessions_capped_mv = 2;
           }
         }
-        mesoProgression = getFrequencyProgression(
-          sessions_capped_mv,
-          mesocycles
-        );
+        const mv = getFrequencyProgression(sessions_capped_mv, mesocycles);
+        mesoProgression = mv;
         break;
       default:
         // mesoProgression = getFrequencyProgression(sessions, mesocycles);

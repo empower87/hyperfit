@@ -67,6 +67,10 @@ export default function useTrainingProgram() {
     );
   }, [frequency, split_sessions, muscle_priority_list]);
 
+  useEffect(() => {
+    dispatch({ type: "TEST" });
+  }, [frequency, split_sessions, muscle_priority_list]);
+
   return {
     training_week,
     split_sessions,

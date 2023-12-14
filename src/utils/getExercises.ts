@@ -251,11 +251,11 @@ export const getTotalExercisesForMuscleGroup = (
 
   const final_meso_frequency = matrix[total_frequency - 1] ?? matrix[0];
 
-  console.log(total_frequency, final_meso_frequency, "CHECK THIS OUT");
   for (let i = 0; i < final_meso_frequency.length; i++) {
     const session = final_meso_frequency[i];
 
     for (let j = 0; j < session.length; j++) {
+      if (session[j] === 0) continue;
       if (!exercises[exercises_index]) {
         exercises_index = 0;
       }
@@ -274,6 +274,5 @@ export const getTotalExercisesForMuscleGroup = (
       }
     }
   }
-
   return exercise_list;
 };

@@ -1,10 +1,25 @@
 import { getMuscleData } from "~/utils/getMuscleData";
+import {
+  MusclePriorityType,
+  TrainingDayType,
+} from "../useTrainingProgram/reducer/trainingProgramReducer";
 
 const INITIAL_STATE_MESOCYCLE = {
   total_microcycles: 4,
   total_mesocycles: 3,
   resensitization: true,
   mesocycles: [],
+};
+
+const hmmm = (
+  frequencyProgression: number[],
+  exercisesPerSessionSchema: number,
+  total_microcycles: number,
+  total_mesocycles: number,
+  muscle_priority_list: MusclePriorityType[],
+  training_week: TrainingDayType[]
+) => {
+  let mesocyles = [];
 };
 
 const initExerciseProgression = (
