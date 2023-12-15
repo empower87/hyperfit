@@ -1,3 +1,4 @@
+import { createBlockProgressionForExercises } from "~/hooks/useMesocycleProgression/useMesocycleProgression";
 import { getSplitFromWeights } from "./getSplitFromPriorityWeighting";
 import { distributeSplitAcrossWeek } from "./splitSessionsHandler";
 import {
@@ -126,6 +127,7 @@ export type ExerciseType = {
   rir: number;
   meso_progression: number[];
   meso_details: (ExerciseDetails | null)[];
+  block_progression_matrix: number[][][];
 };
 
 export type TrainingProgramParamsType = {
@@ -137,7 +139,7 @@ export type TrainingProgramParamsType = {
   macrocycles: number;
 };
 
-type MusclePriorityVolumeType = {
+export type MusclePriorityVolumeType = {
   landmark: VolumeLandmarkType;
   frequencyProgression: number[];
   exercisesPerSessionSchema: number;
@@ -552,7 +554,17 @@ export default function weeklySessionSplitReducer(
         state.training_program_params.mesocycles
       );
       const testtest = getExercisesForPrioritizedMuscles(test);
-      console.log(list, test, testtest, "CHECK THIS OUT IS IT ACCURATE??");
+      const testtesttest = createBlockProgressionForExercises(
+        testtest,
+        state.training_program_params.microcycles
+      );
+      console.log(
+        list,
+        test,
+        testtest,
+        testtesttest,
+        "CHECK THIS OUT IS IT ACCURATE??"
+      );
       return state;
     case "UPDATE_SPLIT_SESSIONS":
       const type = action.payload.split;
