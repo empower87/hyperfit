@@ -94,7 +94,13 @@ function SessionList({ sessions }: SessionListProps) {
       <DragDropContext onDragEnd={onDragEnd}>
         {flattenedSessions.map((each, index) => {
           const droppable_id = DAYS[index];
-          return <DroppableDay sessions={each} droppableId={droppable_id} />;
+          return (
+            <DroppableDay
+              key={`${each}${index}`}
+              sessions={each}
+              droppableId={droppable_id}
+            />
+          );
         })}
       </DragDropContext>
     </div>
@@ -119,7 +125,11 @@ const DroppableDay = ({
         >
           {sessions.map((each, index) => {
             return (
-              <Draggable key={`${each.id}`} draggableId={each.id} index={index}>
+              <Draggable
+                key={`${each.id}_${index}_DroppableDay`}
+                draggableId={each.id}
+                index={index}
+              >
                 {(provided, snapshot) => (
                   <div
                     ref={provided.innerRef}
@@ -187,9 +197,12 @@ function SelectSession({ session, splits }: SelectSessionProps) {
         BG_COLOR_M6
       }
     >
-      {splits.map((split) => {
+      {splits.map((split, index) => {
         return (
-          <option key={split} selected={split === session ? true : false}>
+          <option
+            key={`${split}_${index}`}
+            selected={split === session ? true : false}
+          >
             {split}
           </option>
         );

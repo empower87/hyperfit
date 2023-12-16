@@ -85,9 +85,10 @@ function DaySessionItem({ index, exercise }: DaySessionItemProps) {
 
         <div className=" flex w-11/12 flex-col">
           <select className={bgColor.bg + " truncate"}>
-            {exercises.map((each) => {
+            {exercises.map((each, index) => {
               return (
                 <option
+                  key={`${each}_option_${index}`}
                   selected={each.name === exercise.exercise ? true : false}
                 >
                   {each.name}
@@ -108,37 +109,6 @@ function DaySessionItem({ index, exercise }: DaySessionItemProps) {
     </li>
   );
 }
-// function DaySessionItem({ index, exercise }: DaySessionItemProps) {
-//   const bgColor = getRankColor(exercise.rank);
-//   const exercises = getGroupList(exercise.group);
-//   return (
-//     <li className={" text-xxs mb-0.5 flex w-full text-white"}>
-//       <div className={" flex w-1/12 indent-1"}>{index}</div>
-
-//       <div className={BORDER_COLOR_M7 + " flex w-11/12 border-2 " + bgColor.bg}>
-//         <div
-//           className={BORDER_COLOR_M7 + " w-3/12 truncate border-r-2 indent-1"}
-//         >
-//           {exercise.group}
-//         </div>
-
-//         <div className={BORDER_COLOR_M7 + " w-1/12 border-r-2"}>
-//           {exercise.sets}x
-//         </div>
-
-//         <select className={bgColor.bg + " w-8/12 truncate"}>
-//           {exercises.map((each) => {
-//             return (
-//               <option selected={each.name === exercise.exercise ? true : false}>
-//                 {each.name}
-//               </option>
-//             );
-//           })}
-//         </select>
-//       </div>
-//     </li>
-//   );
-// }
 
 type DroppableDayProps = {
   split: SplitType;
@@ -230,6 +200,7 @@ function DayLayout({ session }: DayLayoutProps) {
             {sessions.map((each, index) => {
               return (
                 <DroppableDay
+                  key={`${each.id}_${index}`}
                   split={each.split}
                   droppableId={each.id}
                   exercises={each.exercises}
@@ -424,11 +395,16 @@ export default function WeekSessions({ training_week }: WeekSessionsProps) {
 
       <div className="flex">
         <DragDropContext onDragEnd={onDragEnd}>
-          {draggableExercisesObject.map((each) => {
+          {draggableExercisesObject.map((each, index) => {
             // NOTE: to not display days w/o any sessions
             const hasSessions = each.sessions.find((ea) => ea.exercises.length);
             if (!hasSessions) return null;
-            return <DayLayout session={each} />;
+            return (
+              <DayLayout
+                key={`${each.day}_${index}_draggableExercisesObject`}
+                session={each}
+              />
+            );
           })}
         </DragDropContext>
       </div>

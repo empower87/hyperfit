@@ -465,7 +465,7 @@ const INITIAL_TRAINING_PROGRAM_PARAMS: TrainingProgramParamsType = {
   sessions: 1,
   days: 3,
   microcycles: 4,
-  mesocycles: 3,
+  mesocycles: 4,
   blocks: 4,
   macrocycles: 4,
 };

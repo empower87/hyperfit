@@ -1,12 +1,4 @@
-import { getMuscleData } from "~/utils/getMuscleData";
 import { MusclePriorityType } from "../useTrainingProgram/reducer/trainingProgramReducer";
-
-const INITIAL_STATE_MESOCYCLE = {
-  total_microcycles: 4,
-  total_mesocycles: 3,
-  resensitization: true,
-  mesocycles: [],
-};
 
 export const createBlockProgressionForExercises = (
   muscle_priority_list: MusclePriorityType[],
@@ -19,10 +11,9 @@ export const createBlockProgressionForExercises = (
     let { frequencyProgression, exercisesPerSessionSchema } =
       list_w_exercises[i].volume;
 
-    let sub = 0;
-    let first = 0;
+    let first = -1;
     let second = 0;
-    let indices: [number, number] = [-1, 0];
+    let indices: [number, number] = [0, 0];
     for (let j = 0; j < exercises.length; j++) {
       if (exercisesPerSessionSchema === 2) {
         second = 0;
@@ -43,6 +34,7 @@ export const createBlockProgressionForExercises = (
         frequencyProgression,
         exercisesPerSessionSchema
       );
+
       exercises[j].block_progression_matrix = data;
     }
   }
@@ -56,8 +48,6 @@ const progressSetsAcrossMesocycle = (
   frequencyProgression: number[],
   exercisesPerSessionSchema: number
 ) => {
-  // sets - reps - weight - rir
-  // const { landmark, frequencyProgression, exercisesPerSessionSchema } = volume
   const matrix =
     exercisesPerSessionSchema === 2
       ? MRV_PROGRESSION_MATRIX_TWO
@@ -67,21 +57,31 @@ const progressSetsAcrossMesocycle = (
 
   // map over each mesocycle in frequency progression
   for (let i = 0; i < frequencyProgression.length; i++) {
-    const matrix_mesocycle = matrix[frequencyProgression[i] - 1 ?? 0];
+    const matrix_mesocycle = matrix[frequencyProgression[i] - 1] ?? matrix[0];
     const one = exercise_indices[0];
     const two = exercise_indices[1];
 
-    const initial_sets = matrix_mesocycle[one][two];
+    let initial_sets = 0;
+    let mesocycle_details: number[][] = [];
+
+    if (!matrix_mesocycle[one]) {
+      block_details.push(mesocycle_details);
+      continue;
+    }
+    if (exercisesPerSessionSchema === 2) {
+      initial_sets = matrix_mesocycle[one][two];
+    } else {
+      initial_sets = matrix_mesocycle[one][0];
+    }
     const initial_reps = 10;
     let initial_weight = 95;
     let initial_rir = 4;
 
     let weight_increment = 5;
 
-    let mesocycle_details: number[][] = [];
     for (let j = 0; j < microcycles; j++) {
       initial_weight = initial_weight + weight_increment;
-      initial_rir = initial_rir--;
+      initial_rir = initial_rir - 1;
       let microcycle = [
         initial_sets + j,
         initial_reps,
@@ -93,22 +93,8 @@ const progressSetsAcrossMesocycle = (
 
     block_details.push(mesocycle_details);
   }
-  // exercise.block_progression_matrix = block_details
+
   return block_details;
-};
-
-const initExerciseProgression = (
-  muscle: string,
-  total_frequency: number,
-  exerciseSession: number,
-  total_microcycles: number,
-  total_mesocycles: number,
-  deload: boolean
-) => {
-  const muscleData = getMuscleData(muscle);
-  let progressionKey = total_frequency - 1;
-
-  const lastMesocycle = muscleData.MRV[progressionKey];
 };
 
 // NOTES: These progression matrices will be generic progression templates.

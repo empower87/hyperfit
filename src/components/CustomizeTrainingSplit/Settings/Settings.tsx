@@ -99,7 +99,10 @@ export function WeekVolumeDetails({
       <div className=" text-xxs text-white">{entireVolume}</div>
       {splitVolume.map((each, index) => {
         return (
-          <div className=" text-xxs flex text-white">
+          <div
+            key={`${each.session}_${each.sets}_${index}`}
+            className=" text-xxs flex text-white"
+          >
             <div className=" mr-2">{each.session}</div>
             <div className="">{each.sets}</div>
           </div>

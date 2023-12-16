@@ -37,8 +37,10 @@ export default function SplitOverview({ split_sessions }: SplitOverviewProps) {
     <div className=" ">
       <div className=" text-xs text-white">{SPLITS[split_sessions.split]}</div>
       <ul className=" ">
-        {currentSplit.map((each) => {
-          return <SplitItem key={`${each}_SplitOverview`} split={each} />;
+        {currentSplit.map((each, index) => {
+          return (
+            <SplitItem key={`${each}_SplitOverview_${index}`} split={each} />
+          );
         })}
       </ul>
     </div>
