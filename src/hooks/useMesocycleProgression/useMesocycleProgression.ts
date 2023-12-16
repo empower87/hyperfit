@@ -1,4 +1,7 @@
-import { MusclePriorityType } from "../useTrainingProgram/reducer/trainingProgramReducer";
+import {
+  ExerciseType,
+  MusclePriorityType,
+} from "../useTrainingProgram/reducer/trainingProgramReducer";
 
 export const createBlockProgressionForExercises = (
   muscle_priority_list: MusclePriorityType[],
@@ -15,6 +18,7 @@ export const createBlockProgressionForExercises = (
     let second = 0;
     let indices: [number, number] = [0, 0];
     for (let j = 0; j < exercises.length; j++) {
+      let exercise = exercises[j];
       if (exercisesPerSessionSchema === 2) {
         second = 0;
         let mod = j % 2;
@@ -29,6 +33,7 @@ export const createBlockProgressionForExercises = (
       }
 
       const data = progressSetsAcrossMesocycle(
+        exercise,
         indices,
         microcycles,
         frequencyProgression,
@@ -43,6 +48,7 @@ export const createBlockProgressionForExercises = (
 };
 
 const progressSetsAcrossMesocycle = (
+  exercise: ExerciseType,
   exercise_indices: [number, number],
   microcycles: number,
   frequencyProgression: number[],
@@ -73,9 +79,11 @@ const progressSetsAcrossMesocycle = (
     } else {
       initial_sets = matrix_mesocycle[one][0];
     }
-    const initial_reps = 10;
-    let initial_weight = 95;
-    let initial_rir = 4;
+
+    // TODO: this will have to be handled with an algorithm to optimize and counter edge cases
+    let initial_reps = exercise.reps;
+    let initial_weight = exercise.weight;
+    let initial_rir = exercise.rir;
 
     let weight_increment = 5;
 
@@ -96,6 +104,13 @@ const progressSetsAcrossMesocycle = (
 
   return block_details;
 };
+
+// NOTE: Looks like the best way of handling this is to put into array of arrays since their interdependent
+
+const setProgressionOverMesocycle = (
+  microcycles: number,
+  initialSets: number
+) => {};
 
 // NOTES: These progression matrices will be generic progression templates.
 //        Exercises for a muscle group will be determined and ordered by final mesocycle.
@@ -148,3 +163,35 @@ const MRV_PROGRESSION_MATRIX_TWO = [
     [1, 0],
   ],
 ];
+
+const MRV_PROGRESSION_MATRIX_THREE = [
+  [[2, 2, 1]],
+  [
+    [2, 2, 1],
+    [2, 2, 1],
+  ],
+  [
+    [2, 2, 2],
+    [2, 2, 2],
+    [2, 2, 1],
+  ],
+  [
+    [3, 2, 2],
+    [3, 2, 2],
+    [3, 2, 1],
+    [2, 2, 1],
+  ],
+  [[5], [5], [5], [4], [3]],
+  [
+    [3, 3, 3],
+    [3, 3, 3],
+    [3, 3, 3],
+    [3, 2, 0],
+    [2, 2, 0],
+    [2, 0, 0],
+  ],
+];
+
+// ---- week 1 ---- week 2 ---- week 3 ---- week 4
+// ---- 2/2/1  ---- 2/2/2  ---- 3/2/2  ---- 3/3/2
+// ---- 2/2/1

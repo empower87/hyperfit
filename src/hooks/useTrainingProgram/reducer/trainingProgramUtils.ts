@@ -8,6 +8,7 @@ import {
 import {
   getTopExercises,
   getTotalExercisesForMuscleGroup,
+  getTotalExercisesForMuscleGroupTEST,
 } from "~/utils/getExercises";
 import {
   ExerciseType,
@@ -200,6 +201,14 @@ function getExercisesForPrioritizedMuscles(
       exercisesPerSessionSchema
     );
     muscle_priority_with_exercises[i].allExercises = exercises;
+
+    let exercises_test = getTotalExercisesForMuscleGroupTEST(
+      muscle,
+      volumeLandmark,
+      frequencyProgression,
+      exercisesPerSessionSchema
+    );
+    muscle_priority_with_exercises[i].exercises = exercises_test;
   }
   return muscle_priority_with_exercises;
 }
