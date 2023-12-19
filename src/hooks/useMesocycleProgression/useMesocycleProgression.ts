@@ -90,12 +90,14 @@ const progressSetsAcrossMesocycle = (
     for (let j = 0; j < microcycles; j++) {
       initial_weight = initial_weight + weight_increment;
       initial_rir = initial_rir - 1;
+
       let microcycle = [
         initial_sets + j,
         initial_reps,
         initial_weight,
         initial_rir,
       ];
+      
       mesocycle_details.push(microcycle);
     }
 
@@ -107,10 +109,98 @@ const progressSetsAcrossMesocycle = (
 
 // NOTE: Looks like the best way of handling this is to put into array of arrays since their interdependent
 
+function findIndexWithLowestSets(sets: number[]): number {
+  if (sets.length === 0) {
+    // Handle empty array case
+    return -1;
+  }
+
+  let lowestSets = sets[0];
+  let lowestIndex = 0;
+
+  for (let i = 1; i < sets.length; i++) {
+    if (sets[i] < lowestSets) {
+      lowestSets = sets[i];
+      lowestIndex = i;
+    }
+  }
+
+  return lowestIndex;
+}
+
+
+// function findIndexWithLowestSets(exercises: ExerciseType[]): number {
+//   if (exercises.length === 0) {
+//     // Handle empty array case
+//     return -1;
+//   }
+
+//   let lowestSets = exercises[0].sets;
+//   let lowestIndex = 0;
+
+//   for (let i = 1; i < exercises.length; i++) {
+//     if (exercises[i].sets < lowestSets) {
+//       lowestSets = exercises[i].sets;
+//       lowestIndex = i;
+//     }
+//   }
+
+//   return lowestIndex;
+// }
+
+
+
 const setProgressionOverMesocycle = (
+  exercises: ExerciseType[],
+  index: number,
   microcycles: number,
-  initialSets: number
-) => {};
+  initialSets: number,
+  frequencyProgression: number[],
+  exercisesPerSessionSchema: number
+) => {
+
+  let new_exercises = [...exercises]
+  let block: number[][][] = []
+
+  const matrix = exercisesPerSessionSchema === 2 ? MRV_PROGRESSION_MATRIX_TWO : MRV_PROGRESSION_MATRIX_ONE
+
+  for (let i = 0; i < frequencyProgression.length; i++) {
+    let matrix_index = frequencyProgression[i] - 1 ?? 0
+    let initial_sets = [matrix[matrix_index][index]]
+    
+    if (!initial_sets.length) continue
+
+    for (let j = 0; j < microcycles; j++) {
+      const index = findIndexWithLowestSets(initial_sets[j])
+
+      let add_sets = initial_sets[j]
+      add_sets[index] = add_sets[index] + 1
+      initial_sets.push(add_sets)
+    }
+    
+    block.push(initial_sets)
+  }
+
+
+  for (let k = 0; k < new_exercises.length; k++) {
+    let current = new_exercises[k]
+    let current_block_matrix: number[][][] = []
+
+    for (let l = 0; l < block.length; l++) {
+      let mesocycle: number[][] = []
+      for (let m = 0; m < block[l].length; m++) {
+        let details = [block[l][m][k], 10, 100, 3]
+        mesocycle.push(details)
+
+      }
+      current_block_matrix.push(mesocycle)
+    }
+    new_exercises[k].block_progression_matrix = current_block_matrix
+
+  }
+  console.log(new_exercises, "oh boy this is gonna be crazy")
+  return new_exercises
+};
 
 // NOTES: These progression matrices will be generic progression templates.
 //        Exercises for a muscle group will be determined and ordered by final mesocycle.
