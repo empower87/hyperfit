@@ -91,7 +91,7 @@ const INITIAL_EXERCISE: ExerciseType = {
   rir: 3,
   meso_progression: [0, 0, 0],
   meso_details: [null, null, null],
-  block_progression_matrix: [],
+  block_progression_matrix: [[], [], []],
 };
 
 const getMesoFrequency = (

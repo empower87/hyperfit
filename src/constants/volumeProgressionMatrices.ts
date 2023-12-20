@@ -7,7 +7,7 @@ export const MRV_PROGRESSION_MATRIX_ONE = [
   [[4], [4], [4], [3]],
   [[5], [5], [5], [4], [3]],
   [[5], [5], [5], [4], [3], [2]],
-];
+] as const;
 
 export const MRV_PROGRESSION_MATRIX_TWO = [
   [[2, 2]],
@@ -41,7 +41,7 @@ export const MRV_PROGRESSION_MATRIX_TWO = [
     [2, 0],
     [1, 0],
   ],
-];
+] as const;
 
 export const getVolumeProgressionMatrix = (
   landmark: VolumeLandmarkType,
