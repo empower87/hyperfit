@@ -7,7 +7,7 @@ import {
 } from "~/constants/workoutSplits";
 import {
   getTopExercises,
-  getTotalExercisesForMuscleGroupTEST,
+  getTotalExercisesForMuscleGroup,
 } from "~/utils/getExercises";
 import {
   ExerciseType,
@@ -193,7 +193,7 @@ function getExercisesForPrioritizedMuscles(
     const frequencyProgression =
       muscle_priority_with_exercises[i].volume.frequencyProgression;
 
-    let exercises_test = getTotalExercisesForMuscleGroupTEST(
+    let exercises_test = getTotalExercisesForMuscleGroup(
       muscle,
       volumeLandmark,
       frequencyProgression,

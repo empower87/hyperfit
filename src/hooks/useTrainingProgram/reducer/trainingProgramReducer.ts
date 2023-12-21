@@ -540,7 +540,7 @@ export default function weeklySessionSplitReducer(
       );
       const testtest = getExercisesForPrioritizedMuscles(test);
       const testtesttest = createBlockProgressionForExercisesInPriority(
-        [...testtest],
+        testtest,
         state.training_program_params.microcycles
       );
 

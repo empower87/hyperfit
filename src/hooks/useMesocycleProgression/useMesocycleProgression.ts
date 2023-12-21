@@ -34,8 +34,11 @@ const setProgressionOverMesocycle = (
   exercisesPerSessionSchema: number
 ) => {
   let new_exercises = [...exercises];
-  let block: number[][][] = [];
+  let block: number[][][] = [[], [], []];
 
+  const blockMap = new Map(
+    [...new_exercises].map((each, index) => [index, [...block]])
+  );
   const matrix =
     exercisesPerSessionSchema === 2
       ? MRV_PROGRESSION_MATRIX_TWO
@@ -45,39 +48,57 @@ const setProgressionOverMesocycle = (
     let matrix_index = frequencyProgression[i] - 1;
 
     if (matrix_index < 0) {
-      block.push([]);
       continue;
     }
     const coords = matrix[matrix_index][index];
     if (!coords) {
-      block.push([]);
       continue;
     }
 
     let initial_sets: number[][] = [[...coords]];
-    for (let j = 0; j < microcycles - 1; j++) {
+
+    // let microcycleMap = new Map<number, number[]>(new_exercises.map((each, index) => [index, []]))
+
+    for (let j = 0; j < microcycles; j++) {
       let add_sets: number[] = [...initial_sets[j]];
       const index = findIndexWithLowestSets(add_sets);
       add_sets[index] = add_sets[index] + 1;
       initial_sets.push(add_sets);
-    }
 
-    block.push(initial_sets);
-  }
-
-  for (let k = 0; k < new_exercises.length; k++) {
-    let current_block_matrix: number[][][] = [];
-
-    for (let l = 0; l < block.length; l++) {
-      let mesocycle: number[][] = [];
-      for (let m = 0; m < block[l].length; m++) {
-        let details = [block[l][m][k], 10, 100, 3];
-        mesocycle.push(details);
+      for (let k = 0; k < add_sets.length; k++) {
+        let values = blockMap.get(k);
+        if (values && add_sets[k]) {
+          console.log(values, add_sets, k, "WTF IS ACTUALLY GOING ON???");
+          values[i].push([add_sets[k], 10, 100, 3]);
+          blockMap.set(k, values);
+        }
       }
-      current_block_matrix.push(mesocycle);
     }
-    new_exercises[k].block_progression_matrix = current_block_matrix;
+
+    // block.push(initial_sets);
   }
+
+  for (let m = 0; m < new_exercises.length; m++) {
+    const block = blockMap.get(m);
+    if (block) {
+      new_exercises[m].block_progression_matrix = block;
+    }
+  }
+
+  console.log(blockMap, new_exercises, "THIS SHOULDN'T BE RIDIC");
+  // for (let k = 0; k < new_exercises.length; k++) {
+  //   let current_block_matrix: number[][][] = [];
+
+  //   for (let l = 0; l < block.length; l++) {
+  //     let mesocycle: number[][] = [];
+  //     for (let m = 0; m < block[l].length; m++) {
+  //       let details = [block[l][m][k], 10, 100, 3];
+  //       mesocycle.push(details);
+  //     }
+  //     current_block_matrix.push(mesocycle);
+  //   }
+  //   new_exercises[k].block_progression_matrix = current_block_matrix;
+  // }
 
   return new_exercises;
 };
@@ -103,8 +124,10 @@ export const createBlockProgressionForExercisesInPriority = (
         frequencyProgression,
         exercisesPerSessionSchema
       );
-      list_w_exercises[i].exercises[j] = data;
+      exercises[j] = data;
     }
+
+    list_w_exercises[i].exercises = exercises;
   }
 
   return list_w_exercises;
