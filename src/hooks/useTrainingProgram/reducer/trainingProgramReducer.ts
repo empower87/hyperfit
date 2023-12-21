@@ -1,4 +1,7 @@
-import { createBlockProgressionForExercisesInPriority } from "~/hooks/useMesocycleProgression/useMesocycleProgression";
+import {
+  buildMesocycles,
+  createBlockProgressionForExercisesInPriority,
+} from "~/hooks/useMesocycleProgression/useMesocycleProgression";
 import { getSplitFromWeights } from "./getSplitFromPriorityWeighting";
 import { distributeSplitAcrossWeek } from "./splitSessionsHandler";
 import {
@@ -541,9 +544,16 @@ export default function weeklySessionSplitReducer(
       const testtest = getExercisesForPrioritizedMuscles(test);
       const testtesttest = createBlockProgressionForExercisesInPriority(
         testtest,
-        state.training_program_params.microcycles
+        state.training_program_params.microcycles,
+        state.training_program_params.mesocycles
       );
 
+      const testtesttesttest = buildMesocycles(
+        testtesttest,
+        sp,
+        state.training_week,
+        state.training_program_params.mesocycles
+      );
       console.log(
         list,
         test,

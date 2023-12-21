@@ -2,9 +2,12 @@ import {
   MRV_PROGRESSION_MATRIX_ONE,
   MRV_PROGRESSION_MATRIX_TWO,
 } from "~/constants/volumeProgressionMatrices";
+import { getMusclesSplit } from "~/constants/workoutSplits";
 import {
   ExerciseType,
   MusclePriorityType,
+  SplitSessionsType,
+  TrainingDayType,
 } from "../useTrainingProgram/reducer/trainingProgramReducer";
 
 function findIndexWithLowestSets(sets: number[]) {
@@ -30,11 +33,16 @@ const setProgressionOverMesocycle = (
   exercises: ExerciseType[],
   index: number,
   microcycles: number,
+  mesocycles: number,
   frequencyProgression: number[],
   exercisesPerSessionSchema: number
 ) => {
   let new_exercises = [...exercises];
-  let block: number[][][] = [[], [], []];
+  let block: number[][][] = [];
+
+  for (let h = 0; h < mesocycles; h++) {
+    block.push([]);
+  }
 
   const blockMap = new Map(
     [...new_exercises].map((each, index) => [index, [...block]])
@@ -57,7 +65,8 @@ const setProgressionOverMesocycle = (
 
     let initial_sets: number[][] = [[...coords]];
 
-    // let microcycleMap = new Map<number, number[]>(new_exercises.map((each, index) => [index, []]))
+    let weight = 100;
+    let weight_increment = 5;
 
     for (let j = 0; j < microcycles; j++) {
       let add_sets: number[] = [...initial_sets[j]];
@@ -67,45 +76,30 @@ const setProgressionOverMesocycle = (
 
       for (let k = 0; k < add_sets.length; k++) {
         let values = blockMap.get(k);
-        if (values && add_sets[k]) {
-          console.log(values, add_sets, k, "WTF IS ACTUALLY GOING ON???");
+        if (values) {
           values[i].push([add_sets[k], 10, 100, 3]);
           blockMap.set(k, values);
         }
       }
     }
-
-    // block.push(initial_sets);
   }
 
   for (let m = 0; m < new_exercises.length; m++) {
     const block = blockMap.get(m);
     if (block) {
-      new_exercises[m].block_progression_matrix = block;
+      new_exercises[m].block_progression_matrix = [...block];
     }
   }
 
   console.log(blockMap, new_exercises, "THIS SHOULDN'T BE RIDIC");
-  // for (let k = 0; k < new_exercises.length; k++) {
-  //   let current_block_matrix: number[][][] = [];
-
-  //   for (let l = 0; l < block.length; l++) {
-  //     let mesocycle: number[][] = [];
-  //     for (let m = 0; m < block[l].length; m++) {
-  //       let details = [block[l][m][k], 10, 100, 3];
-  //       mesocycle.push(details);
-  //     }
-  //     current_block_matrix.push(mesocycle);
-  //   }
-  //   new_exercises[k].block_progression_matrix = current_block_matrix;
-  // }
 
   return new_exercises;
 };
 
 export const createBlockProgressionForExercisesInPriority = (
   muscle_priority_list: MusclePriorityType[],
-  microcycles: number
+  microcycles: number,
+  mesocycles: number
 ) => {
   let list_w_exercises = [...muscle_priority_list];
   for (let i = 0; i < list_w_exercises.length; i++) {
@@ -115,12 +109,14 @@ export const createBlockProgressionForExercisesInPriority = (
       list_w_exercises[i].volume;
 
     for (let j = 0; j < exercises.length; j++) {
-      let exercise = exercises[j];
+      let session_exercises = exercises[j];
 
+      if (!session_exercises.length) break;
       const data = setProgressionOverMesocycle(
-        exercise,
+        session_exercises,
         j,
         microcycles,
+        mesocycles,
         frequencyProgression,
         exercisesPerSessionSchema
       );
@@ -174,3 +170,70 @@ const MRV_PROGRESSION_MATRIX_THREE = [
 // ---- week 1 ---- week 2 ---- week 3 ---- week 4
 // ---- 2/2/1  ---- 2/2/2  ---- 3/2/2  ---- 3/3/2
 // ---- 2/2/1
+
+const distributeExercisesAmongSplit = (
+  muscle_priority: MusclePriorityType[],
+  split_sessions: SplitSessionsType,
+  _training_week: TrainingDayType[],
+  mesocycle: number
+) => {
+  let training_week: TrainingDayType[] = [..._training_week].map((each) => {
+    const emptySessionSets = each.sessions.map((ea) => {
+      return { ...ea, exercises: [] as ExerciseType[][] };
+    });
+    return { ...each, sessions: emptySessionSets };
+  });
+
+  for (let i = 0; i < muscle_priority.length; i++) {
+    let exercises = muscle_priority[i].exercises.filter((each) =>
+      each.filter((ea) => ea.block_progression_matrix[mesocycle].length)
+    );
+
+    const splits = getMusclesSplit(
+      split_sessions.split,
+      muscle_priority[i].muscle
+    );
+
+    exercises.forEach((each) => console.log(each, "oh boy if this is right!?"));
+    for (let j = 0; j < training_week.length; j++) {
+      if (exercises.length) {
+        const sessions = training_week[j].sessions;
+
+        for (let k = 0; k < sessions.length; k++) {
+          if (splits.includes(sessions[k].split)) {
+            let add_exercises = exercises[0].map((each) => ({
+              ...each,
+              session: j,
+            }));
+
+            training_week[j].sessions[k].exercises.push(add_exercises);
+            exercises.shift();
+          }
+        }
+      }
+    }
+  }
+  return training_week;
+};
+
+export const buildMesocycles = (
+  muscle_priority_list: MusclePriorityType[],
+  split_sessions: SplitSessionsType,
+  training_week: TrainingDayType[],
+  mesocycles: number
+) => {
+  let mapKeys: [number, TrainingDayType[]][] = [];
+  const mapp = new Map<number, TrainingDayType[]>();
+
+  for (let i = 0; i < mesocycles; i++) {
+    // mapKeys.push([i, [...training_week]])
+    const distributed_mesocycle = distributeExercisesAmongSplit(
+      muscle_priority_list,
+      split_sessions,
+      training_week,
+      i
+    );
+    mapp.set(i, distributed_mesocycle);
+  }
+  console.log(mapp, "UHHHHHHHHHH OK");
+};
