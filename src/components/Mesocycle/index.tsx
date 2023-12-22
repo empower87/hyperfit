@@ -80,7 +80,7 @@ export default function Mesocycle({
           {split.map((each) => {
             return (
               <SessionRow
-                split={each}
+                training_day={each}
                 currentMesocycleIndex={currentMesocycleIndex}
               />
             );

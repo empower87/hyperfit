@@ -2,34 +2,12 @@ import { type NextPage } from "next";
 import { useState } from "react";
 import CustomizeTrainingSplit from "~/components/CustomizeTrainingSplit/CustomizeTrainingSplit";
 import Section from "~/components/Layout/Section";
+import TrainingBlock from "~/components/Macrocycle/TrainingBlock/TrainingBlock";
 import { TrainingDayType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
-// import { TrainingDayType } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
-// import { SessionDayType } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
-
 import { BG_COLOR_M6, BG_COLOR_M7, BG_COLOR_M8 } from "~/utils/themes";
 
 const Home: NextPage = () => {
-  // const {
-  //   training_week,
-  //   split_sessions,
-  //   total_sessions,
-  //   mrv_breakpoint,
-  //   mev_breakpoint,
-  //   prioritized_muscle_list,
-  //   handleUpdateMuscleList,
-  //   handleFrequencyChange,
-  //   handleUpdateSplitSessions,
-  // } = useWeeklySessionSplit();
-
-  // useEffect(() => {
-  //   console.log(
-  //     split_sessions,
-  //     training_week,
-  //     prioritized_muscle_list,
-  //     "TEST: LETS SEE WHAT THIS IS DOING"
-  //   );
-  // }, [split_sessions, training_week, prioritized_muscle_list]);
-  const [trainingWeek, setTrainingWeek] = useState<TrainingDayType[]>([]);
+  const [trainingBlock, setTrainingBlock] = useState<TrainingDayType[][]>([]);
   return (
     <div
       id="modal-body"
@@ -66,20 +44,12 @@ const Home: NextPage = () => {
             style={{ height: "97%", width: "98%" }}
           >
             <Section title="Customize Training Split">
-              <CustomizeTrainingSplit
-                setTrainingWeek={setTrainingWeek}
-                // _prioritized_muscle_list={prioritized_muscle_list}
-                // _total_sessions={total_sessions}
-                // _training_week={training_week}
-                // _mrv_breakpoint={mrv_breakpoint}
-                // _mev_breakpoint={mev_breakpoint}
-                // _split_sessions={split_sessions}
-              />
+              <CustomizeTrainingSplit setTrainingBlock={setTrainingBlock} />
             </Section>
 
-            {/* <Section title="Training Block">
-              <TrainingBlock training_week={trainingWeek} />
-            </Section> */}
+            <Section title="Training Block">
+              <TrainingBlock training_block={trainingBlock} />
+            </Section>
           </div>
         </div>
       </div>

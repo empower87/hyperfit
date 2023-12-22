@@ -2,7 +2,7 @@ import {
   ExerciseDetails,
   ExerciseType,
   SplitType,
-} from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
+} from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { BG_COLOR_M7 } from "~/utils/themes";
 
 type ExerciseCellProps = {
@@ -21,7 +21,7 @@ type HeaderCellProps = {
 type Week = "week 1" | "week 2" | "week 3" | "week 4" | "deload";
 type MicrocycleCellsProps = {
   week: Week;
-  details: ExerciseDetails;
+  details: number[];
   width: string;
   cellWidths: string[];
   position: "last" | "first" | "mid";
@@ -37,7 +37,7 @@ function Cell({
   width,
   alignment,
 }: {
-  value: string;
+  value: string | number;
   width: string;
   alignment: string;
 }) {
@@ -168,8 +168,8 @@ function MicrocycleCell({
   const bottomBorder = position !== "last" ? " border-b" : " border-b-2";
   const topBorder = position === "first" ? " border-t-2" : " ";
 
-  const cells = getCellData(week, details);
-
+  // const cells = getCellData(week, details);
+  const cells = details;
   return (
     <div
       className={

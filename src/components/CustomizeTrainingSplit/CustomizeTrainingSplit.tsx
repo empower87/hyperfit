@@ -9,14 +9,15 @@ import { ListVolumeSettings, WeekVolumeDetails } from "./Settings/Settings";
 import WeekOverview from "./WeekOverview/WeekOverview";
 
 type CustomizeTrainingSplitProps = {
-  setTrainingWeek: Dispatch<SetStateAction<TrainingDayType[]>>;
+  setTrainingBlock: Dispatch<SetStateAction<TrainingDayType[][]>>;
 };
 
 export default function CustomizeTrainingSplit({
-  setTrainingWeek,
+  setTrainingBlock,
 }: CustomizeTrainingSplitProps) {
   const {
     training_week,
+    training_block,
     split_sessions,
     frequency,
     mrv_breakpoint,
@@ -34,8 +35,8 @@ export default function CustomizeTrainingSplit({
   >([]);
 
   useEffect(() => {
-    setTrainingWeek(training_week);
-  }, [training_week]);
+    setTrainingBlock(training_block);
+  }, [training_block]);
 
   useEffect(() => {
     let splits = [];

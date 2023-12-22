@@ -12,6 +12,7 @@ export default function useTrainingProgram() {
       split_sessions,
       muscle_priority_list,
       training_week,
+      training_block,
       mrv_breakpoint,
       mev_breakpoint,
     },
@@ -71,8 +72,13 @@ export default function useTrainingProgram() {
     dispatch({ type: "TEST" });
   }, [frequency, split_sessions, muscle_priority_list]);
 
+  useEffect(() => {
+    dispatch({ type: "GET_TRAINING_BLOCK" });
+  }, [frequency, split_sessions, muscle_priority_list]);
+
   return {
     training_week,
+    training_block,
     split_sessions,
     frequency,
     prioritized_muscle_list: muscle_priority_list,

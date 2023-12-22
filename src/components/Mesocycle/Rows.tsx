@@ -2,9 +2,9 @@ import { useState } from "react";
 import {
   DayType,
   ExerciseType,
-  SessionDayType,
   SplitType,
-} from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
+  TrainingDayType,
+} from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { BG_COLOR_M6 } from "~/utils/themes";
 import EditExerciseModal from "../Modals/EditExerciseModal";
 import { ExerciseCell, HeaderCell, MicrocycleCell, SessionCell } from "./Cells";
@@ -34,9 +34,10 @@ function DataRow({
   currentMesocycleIndex,
   position,
 }: DataRowProps) {
-  const details = exercise.meso_details[currentMesocycleIndex];
-  if (!details) return null;
+  // const details = exercise.meso_details[currentMesocycleIndex];
+  // if (!details) return null;
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const details = exercise.block_progression_matrix[currentMesocycleIndex];
 
   const closeModal = () => {
     setIsOpen(false);
@@ -69,35 +70,35 @@ function DataRow({
       />
       <MicrocycleCell
         week="week 1"
-        details={details}
+        details={details[0]}
         width={ROW_SECTION_WIDTHS[2]}
         cellWidths={ROW_CELL_WIDTHS["week 1"]}
         position={position}
       />
       <MicrocycleCell
         week="week 2"
-        details={details}
+        details={details[1]}
         width={ROW_SECTION_WIDTHS[3]}
         cellWidths={ROW_CELL_WIDTHS["week 2"]}
         position={position}
       />
       <MicrocycleCell
         week="week 3"
-        details={details}
+        details={details[2]}
         width={ROW_SECTION_WIDTHS[4]}
         cellWidths={ROW_CELL_WIDTHS["week 3"]}
         position={position}
       />
       <MicrocycleCell
         week="week 4"
-        details={details}
+        details={details[3]}
         width={ROW_SECTION_WIDTHS[5]}
         cellWidths={ROW_CELL_WIDTHS["week 4"]}
         position={position}
       />
       <MicrocycleCell
         week="deload"
-        details={details}
+        details={details[0]}
         width={ROW_SECTION_WIDTHS[6]}
         cellWidths={ROW_CELL_WIDTHS["deload"]}
         position={position}
@@ -199,16 +200,20 @@ function SessionSplitRow({
   );
 }
 
-type SessionRowProps = { split: SessionDayType; currentMesocycleIndex: number };
+type SessionRowProps = {
+  training_day: TrainingDayType;
+  currentMesocycleIndex: number;
+};
 
-function SessionRow({ split, currentMesocycleIndex }: SessionRowProps) {
-  const sets_one = split.sets[0];
-  const sets_two = split.sets[1];
-
-  if (!sets_one.length && !sets_two.length) return null;
+function SessionRow({ training_day, currentMesocycleIndex }: SessionRowProps) {
+  // const sets_one = split.sets[0];
+  // const sets_two = split.sets[1];
+  const sessions = training_day.sessions;
+  const day = training_day.day;
+  // if (!sets_one.length && !sets_two.length) return null;
   return (
     <div className={BG_COLOR_M6 + " m-1 flex flex-col shadow-xl"}>
-      {sets_one.length ? (
+      {/* {sets_one.length ? (
         <SessionSplitRow
           day={split.day}
           split={split.sessions[0]}
@@ -225,7 +230,18 @@ function SessionRow({ split, currentMesocycleIndex }: SessionRowProps) {
           currentMesocycleIndex={currentMesocycleIndex}
           sessionSplitIndex={1}
         />
-      ) : null}
+      ) : null} */}
+      {sessions.map((each) => {
+        return (
+          <SessionSplitRow
+            day={day}
+            split={each.split}
+            exercises={each.exercises}
+            currentMesocycleIndex={currentMesocycleIndex}
+            sessionSplitIndex={1}
+          />
+        );
+      })}
     </div>
   );
 }

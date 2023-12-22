@@ -222,18 +222,17 @@ export const buildMesocycles = (
   training_week: TrainingDayType[],
   mesocycles: number
 ) => {
-  let mapKeys: [number, TrainingDayType[]][] = [];
-  const mapp = new Map<number, TrainingDayType[]>();
+  let mesocycle_weeks: TrainingDayType[][] = [];
 
   for (let i = 0; i < mesocycles; i++) {
-    // mapKeys.push([i, [...training_week]])
     const distributed_mesocycle = distributeExercisesAmongSplit(
       muscle_priority_list,
       split_sessions,
       training_week,
       i
     );
-    mapp.set(i, distributed_mesocycle);
+    mesocycle_weeks.push(distributed_mesocycle);
   }
-  console.log(mapp, "UHHHHHHHHHH OK");
+
+  return mesocycle_weeks;
 };

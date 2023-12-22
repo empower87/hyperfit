@@ -174,6 +174,7 @@ export type State = {
   training_program_params: TrainingProgramParamsType;
   muscle_priority_list: MusclePriorityType[];
   training_week: TrainingDayType[];
+  training_block: TrainingDayType[][];
   split_sessions: SplitSessionsType;
   mrv_breakpoint: number;
   mev_breakpoint: number;
@@ -198,6 +199,9 @@ type UpdateBreakpointAction = {
   type: "UPDATE_VOLUME_BREAKPOINT";
   payload: { indicator: "mev_breakpoint" | "mrv_breakpoint"; value: number };
 };
+type GetTrainingBlockAction = {
+  type: "GET_TRAINING_BLOCK";
+};
 type TESTProps = {
   type: "TEST";
 };
@@ -207,7 +211,8 @@ type Action =
   | UpdateSplitSessionsAction
   | UpdateTrainingWeekAction
   | UpdateBreakpointAction
-  | TESTProps;
+  | TESTProps
+  | GetTrainingBlockAction;
 
 const INITIAL_MRV_BREAKPOINT = 4;
 const INITIAL_MEV_BREAKPOINT = 9;
@@ -472,6 +477,7 @@ export const INITIAL_STATE: State = {
   training_program_params: { ...INITIAL_TRAINING_PROGRAM_PARAMS },
   muscle_priority_list: [...MUSCLE_PRIORITY_LIST],
   training_week: [...INITIAL_WEEK],
+  training_block: [],
   split_sessions: { ...INITIAL_SPLIT_SESSIONS },
   mrv_breakpoint: INITIAL_MRV_BREAKPOINT,
   mev_breakpoint: INITIAL_MEV_BREAKPOINT,
@@ -594,6 +600,18 @@ export default function weeklySessionSplitReducer(
       return {
         ...state,
         training_week: updated_training_week,
+      };
+    case "GET_TRAINING_BLOCK":
+      const l = state.muscle_priority_list;
+      const s = state.split_sessions;
+      const w = state.training_week;
+      const m = state.training_program_params.mesocycles;
+
+      const training_block = buildMesocycles(l, s, w, m);
+      console.log(training_block, "HERE WE GO???????");
+      return {
+        ...state,
+        training_block: training_block,
       };
     case "UPDATE_VOLUME_BREAKPOINT":
       let mrv_breakpoint = state.mrv_breakpoint;
