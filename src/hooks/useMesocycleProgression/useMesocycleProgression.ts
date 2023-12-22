@@ -185,9 +185,9 @@ const distributeExercisesAmongSplit = (
   });
 
   for (let i = 0; i < muscle_priority.length; i++) {
-    let exercises = muscle_priority[i].exercises.filter((each) =>
-      each.filter((ea) => ea.block_progression_matrix[mesocycle].length)
-    );
+    let exercises = muscle_priority[i].exercises.filter((each) => {
+      return each[0].block_progression_matrix[mesocycle].length;
+    });
 
     const splits = getMusclesSplit(
       split_sessions.split,
