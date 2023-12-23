@@ -194,7 +194,6 @@ const distributeExercisesAmongSplit = (
       muscle_priority[i].muscle
     );
 
-    exercises.forEach((each) => console.log(each, "oh boy if this is right!?"));
     for (let j = 0; j < training_week.length; j++) {
       if (exercises.length) {
         const sessions = training_week[j].sessions;
@@ -236,3 +235,4 @@ export const buildMesocycles = (
 
   return mesocycle_weeks;
 };
+
