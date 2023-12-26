@@ -43,6 +43,63 @@ export const MRV_PROGRESSION_MATRIX_TWO = [
   ],
 ] as const;
 
+const MRV_PROGRESSION_MATRIX_THREE = [
+  [[2, 2, 1]],
+  [
+    [2, 2, 1],
+    [2, 2, 1],
+  ],
+  [
+    [2, 2, 2],
+    [2, 2, 2],
+    [2, 2, 1],
+  ],
+  [
+    [3, 2, 2],
+    [3, 2, 2],
+    [3, 2, 1],
+    [2, 2, 1],
+  ],
+  [[5], [5], [5], [4], [3]],
+  [
+    [3, 3, 3],
+    [3, 3, 3],
+    [3, 3, 3],
+    [3, 2, 0],
+    [2, 2, 0],
+    [2, 0, 0],
+  ],
+] as const;
+
+// microcycles = week 1 --- week 2 --- week 3 --- week 4 --- week 5 --- week 6 --- week 7 --- week 8 ---
+//   one-one   =   2          2          3          3          4          4          5          5
+//   one-two   =   2          3          3          4          4          5          5          6
+// --------------------------------------------------------- -------------------------------------------
+//   two-one   =   2          2          3          3          4          4          5          5
+//   two-two   =   2          3          3          4          4          5          5          6
+//   ---------------------------------------------------------------------------------------------------
+//   three     =   3          4          4          5          5          6          6          7
+//   three     =   4          5          5          6          6          7          7          8
+
+// ADDING PER WEEK BASED ON INDEX
+// 0, 1
+// 1, 0
+
+// 1, 0
+const one = [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1];
+const two = [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0];
+const threeone = [0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1];
+const threetwo = [0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0];
+const threethree = [1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0];
+
+export const setProgressionHandler = (
+  schema: number[][],
+  microcycles: number,
+  mrv_range: [number, number]
+) => {
+  // continually add sets
+};
+
 export const getVolumeProgressionMatrix = (
   landmark: VolumeLandmarkType,
   exercisesPerSession: number

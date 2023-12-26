@@ -500,7 +500,6 @@ export default function weeklySessionSplitReducer(
       );
 
       const lista = addRankWeightsToMusclePriority(current_priority);
-      console.log(lista, "CHECK THIS OUT IS IT ACCURATE??");
 
       const priority_list = addMesoProgression(
         current_priority,
