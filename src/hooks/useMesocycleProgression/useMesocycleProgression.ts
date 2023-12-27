@@ -243,6 +243,7 @@ export const buildProgressionOverMesocycle = (
     const current_microcycle = getMicrocycle(prev_microcycle, prog);
     mesocycle_sets.push(current_microcycle);
     prev_microcycle = current_microcycle;
+
     if (prog.length === 2) {
       if (prog[0] === 1) {
         prog = [0, 1];
@@ -261,7 +262,7 @@ export const buildProgressionOverMesocycle = (
   return mesocycle_sets;
 };
 
-export const buildMesocycles2 = (
+export const addMesocycleSetProgressionToMusclePriority = (
   muscle_priority_list: MusclePriorityType[],
   microcycles: number
 ) => {

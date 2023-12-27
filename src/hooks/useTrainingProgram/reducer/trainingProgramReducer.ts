@@ -1,6 +1,6 @@
 import {
+  addMesocycleSetProgressionToMusclePriority,
   buildMesocycles,
-  buildMesocycles2,
   createBlockProgressionForExercisesInPriority,
 } from "~/hooks/useMesocycleProgression/useMesocycleProgression";
 import { getSplitFromWeights } from "./getSplitFromPriorityWeighting";
@@ -524,7 +524,7 @@ export default function weeklySessionSplitReducer(
         state.mev_breakpoint
       );
 
-      const testies = buildMesocycles2(
+      const testies = addMesocycleSetProgressionToMusclePriority(
         priority_list,
         state.training_program_params.microcycles
       );
