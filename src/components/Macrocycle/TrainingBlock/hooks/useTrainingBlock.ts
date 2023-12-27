@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
-import { TrainingDayType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
-import { ExerciseType } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
+import {
+  ExerciseType,
+  TrainingDayType,
+} from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 
 export default function useTrainingBlock(training_week: TrainingDayType[]) {
   const [splitState, setSplitState] = useState<TrainingDayType[]>([]);

@@ -129,44 +129,6 @@ export const createBlockProgressionForExercisesInPriority = (
   return list_w_exercises;
 };
 
-// NOTES: These progression matrices will be generic progression templates.
-//        Exercises for a muscle group will be determined and ordered by final mesocycle.
-//        i.e: 7 total back sessions:
-//        [rows, pulldowns, lat prayers, single-arm pulldowns, pullups, seated rows, pullovers]
-//        based on this order will determine its progression.
-//        i.e: lat prayers are exercise 1 in session 2 of MRV_PROGRESSION_MATRIX_TWO schema.
-//        so to initialize it. Pass in mesocycle index (example 3): 1, [2, 1]
-
-// initial set start for each mesocycle
-
-const MRV_PROGRESSION_MATRIX_THREE = [
-  [[2, 2, 1]],
-  [
-    [2, 2, 1],
-    [2, 2, 1],
-  ],
-  [
-    [2, 2, 2],
-    [2, 2, 2],
-    [2, 2, 1],
-  ],
-  [
-    [3, 2, 2],
-    [3, 2, 2],
-    [3, 2, 1],
-    [2, 2, 1],
-  ],
-  [[5], [5], [5], [4], [3]],
-  [
-    [3, 3, 3],
-    [3, 3, 3],
-    [3, 3, 3],
-    [3, 2, 0],
-    [2, 2, 0],
-    [2, 0, 0],
-  ],
-];
-
 // ---- week 1 ---- week 2 ---- week 3 ---- week 4
 // ---- 2/2/1  ---- 2/2/2  ---- 3/2/2  ---- 3/3/2
 // ---- 2/2/1
@@ -236,3 +198,102 @@ export const buildMesocycles = (
   return mesocycle_weeks;
 };
 
+const getMicrocycle = (
+  prev_microcycle: number[][],
+  set_add_indices: number[]
+) => {
+  let microcycle: number[][] = [];
+
+  for (let j = 0; j < prev_microcycle.length; j++) {
+    let session_sets: number[] = [...prev_microcycle[j]];
+
+    for (let k = 0; k < session_sets.length; k++) {
+      let sets_to_add = set_add_indices[k];
+      session_sets[k] = session_sets[k] + sets_to_add;
+    }
+
+    microcycle.push(session_sets);
+  }
+  return microcycle;
+};
+
+export const buildProgressionOverMesocycle = (
+  currentMesocycleIndex: number,
+  exercisesPerSessionSchema: number,
+  microcycles: number
+): number[][][] => {
+  const matrix =
+    exercisesPerSessionSchema === 2
+      ? MRV_PROGRESSION_MATRIX_TWO
+      : MRV_PROGRESSION_MATRIX_ONE;
+  let prog: number[] = exercisesPerSessionSchema === 2 ? [1, 0] : [1];
+
+  const initialMesocycleLayout = matrix[currentMesocycleIndex];
+
+  let mesocycle_sets: number[][][] = [];
+
+  let prev_microcycle: number[][] = initialMesocycleLayout.map((each) => [
+    ...each,
+  ]);
+  for (let i = 0; i < microcycles; i++) {
+    if (i === 0) {
+      mesocycle_sets.push(prev_microcycle);
+      continue;
+    }
+    const current_microcycle = getMicrocycle(prev_microcycle, prog);
+    mesocycle_sets.push(current_microcycle);
+    prev_microcycle = current_microcycle;
+    if (prog.length === 2) {
+      if (prog[0] === 1) {
+        prog = [0, 1];
+      } else {
+        prog = [1, 0];
+      }
+    } else {
+      if (prog[0] === 1) {
+        prog = [0];
+      } else {
+        prog = [1];
+      }
+    }
+  }
+
+  return mesocycle_sets;
+};
+
+export const buildMesocycles2 = (
+  muscle_priority_list: MusclePriorityType[],
+  microcycles: number
+) => {
+  let muscle_priority_list_w_set_progression = [...muscle_priority_list];
+
+  for (let i = 0; i < muscle_priority_list.length; i++) {
+    const { frequencyProgression, exercisesPerSessionSchema } =
+      muscle_priority_list[i].volume;
+
+    let set_progression_matrix: number[][][][] = [];
+    for (let j = 0; j < frequencyProgression.length; j++) {
+      const mesocycle_index =
+        frequencyProgression[j] - 1 >= 0 ? frequencyProgression[j] - 1 : 0;
+      let set_progression = buildProgressionOverMesocycle(
+        mesocycle_index,
+        exercisesPerSessionSchema,
+        microcycles
+      );
+      set_progression_matrix.push(set_progression);
+    }
+
+    console.log(
+      set_progression_matrix,
+      frequencyProgression,
+      muscle_priority_list[i],
+      "oh boy, lets check this data"
+    );
+
+    muscle_priority_list_w_set_progression[i].volume.setProgressionMatrix =
+      set_progression_matrix;
+  }
+  return muscle_priority_list_w_set_progression;
+};
+
+export const useMesocycleProgression = () => {};
