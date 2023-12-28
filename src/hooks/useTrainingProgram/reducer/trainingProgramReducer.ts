@@ -1,4 +1,4 @@
-import { buildMesocycles } from "~/hooks/useMesocycleProgression/useMesocycleProgression";
+import { buildMesocyclesTEST } from "../utils/buildTrainingBlockHandlers";
 import {
   MUSCLE_PRIORITY_LIST,
   onReorderUpdateMusclePriorityList,
@@ -127,9 +127,6 @@ export type ExerciseType = {
   reps: number;
   weight: number;
   rir: number;
-  meso_progression: number[];
-  meso_details: (ExerciseDetails | null)[];
-  block_progression_matrix: number[][][];
 };
 
 export type TrainingProgramParamsType = {
@@ -490,7 +487,7 @@ export default function weeklySessionSplitReducer(
       const w = state.training_week;
       const m = state.training_program_params.mesocycles;
 
-      const training_block = buildMesocycles(l, s, w, m);
+      const training_block = buildMesocyclesTEST(l, s, w, m);
       console.log(training_block, "HERE WE GO???????");
       return {
         ...state,
