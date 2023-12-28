@@ -37,7 +37,14 @@ function DataRow({
   // const details = exercise.meso_details[currentMesocycleIndex];
   // if (!details) return null;
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const details = exercise.block_progression_matrix[currentMesocycleIndex];
+  // const details = exercise.block_progression_matrix[currentMesocycleIndex];
+  const details = [
+    [2, 100, 3, 3],
+    [2, 100, 3, 3],
+    [2, 100, 3, 3],
+    [2, 100, 3, 3],
+    [2, 100, 3, 3],
+  ];
 
   const closeModal = () => {
     setIsOpen(false);

@@ -1,4 +1,4 @@
-import { MusclePriorityType } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
+import { MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { getEndOfMesocycleVolume } from "~/utils/musclePriorityHandlers";
 
 type CellProps = {

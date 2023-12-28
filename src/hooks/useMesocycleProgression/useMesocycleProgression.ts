@@ -29,105 +29,105 @@ function findIndexWithLowestSets(sets: number[]) {
   return lowestIndex;
 }
 
-const setProgressionOverMesocycle = (
-  exercises: ExerciseType[],
-  index: number,
-  microcycles: number,
-  mesocycles: number,
-  frequencyProgression: number[],
-  exercisesPerSessionSchema: number
-) => {
-  let new_exercises = [...exercises];
-  let block: number[][][] = [];
+// const setProgressionOverMesocycle = (
+//   exercises: ExerciseType[],
+//   index: number,
+//   microcycles: number,
+//   mesocycles: number,
+//   frequencyProgression: number[],
+//   exercisesPerSessionSchema: number
+// ) => {
+//   let new_exercises = [...exercises];
+//   let block: number[][][] = [];
 
-  for (let h = 0; h < mesocycles; h++) {
-    block.push([]);
-  }
+//   for (let h = 0; h < mesocycles; h++) {
+//     block.push([]);
+//   }
 
-  const blockMap = new Map(
-    [...new_exercises].map((each, index) => [index, [...block]])
-  );
-  const matrix =
-    exercisesPerSessionSchema === 2
-      ? MRV_PROGRESSION_MATRIX_TWO
-      : MRV_PROGRESSION_MATRIX_ONE;
+//   const blockMap = new Map(
+//     [...new_exercises].map((each, index) => [index, [...block]])
+//   );
+//   const matrix =
+//     exercisesPerSessionSchema === 2
+//       ? MRV_PROGRESSION_MATRIX_TWO
+//       : MRV_PROGRESSION_MATRIX_ONE;
 
-  for (let i = 0; i < frequencyProgression.length; i++) {
-    let matrix_index = frequencyProgression[i] - 1;
+//   for (let i = 0; i < frequencyProgression.length; i++) {
+//     let matrix_index = frequencyProgression[i] - 1;
 
-    if (matrix_index < 0) {
-      continue;
-    }
-    const coords = matrix[matrix_index][index];
-    if (!coords) {
-      continue;
-    }
+//     if (matrix_index < 0) {
+//       continue;
+//     }
+//     const coords = matrix[matrix_index][index];
+//     if (!coords) {
+//       continue;
+//     }
 
-    let initial_sets: number[][] = [[...coords]];
+//     let initial_sets: number[][] = [[...coords]];
 
-    let weight = 100;
-    let weight_increment = 5;
+//     let weight = 100;
+//     let weight_increment = 5;
 
-    for (let j = 0; j < microcycles; j++) {
-      let add_sets: number[] = [...initial_sets[j]];
-      const index = findIndexWithLowestSets(add_sets);
-      add_sets[index] = add_sets[index] + 1;
-      initial_sets.push(add_sets);
+//     for (let j = 0; j < microcycles; j++) {
+//       let add_sets: number[] = [...initial_sets[j]];
+//       const index = findIndexWithLowestSets(add_sets);
+//       add_sets[index] = add_sets[index] + 1;
+//       initial_sets.push(add_sets);
 
-      for (let k = 0; k < add_sets.length; k++) {
-        let values = blockMap.get(k);
-        if (values) {
-          values[i].push([add_sets[k], 10, 100, 3]);
-          blockMap.set(k, values);
-        }
-      }
-    }
-  }
+//       for (let k = 0; k < add_sets.length; k++) {
+//         let values = blockMap.get(k);
+//         if (values) {
+//           values[i].push([add_sets[k], 10, 100, 3]);
+//           blockMap.set(k, values);
+//         }
+//       }
+//     }
+//   }
 
-  for (let m = 0; m < new_exercises.length; m++) {
-    const block = blockMap.get(m);
-    if (block) {
-      new_exercises[m].block_progression_matrix = [...block];
-    }
-  }
+//   for (let m = 0; m < new_exercises.length; m++) {
+//     const block = blockMap.get(m);
+//     if (block) {
+//       new_exercises[m].block_progression_matrix = [...block];
+//     }
+//   }
 
-  console.log(blockMap, new_exercises, "THIS SHOULDN'T BE RIDIC");
+//   console.log(blockMap, new_exercises, "THIS SHOULDN'T BE RIDIC");
 
-  return new_exercises;
-};
+//   return new_exercises;
+// };
 
-export const createBlockProgressionForExercisesInPriority = (
-  muscle_priority_list: MusclePriorityType[],
-  microcycles: number,
-  mesocycles: number
-) => {
-  let list_w_exercises = [...muscle_priority_list];
-  for (let i = 0; i < list_w_exercises.length; i++) {
-    let exercises = list_w_exercises[i].exercises;
+// export const createBlockProgressionForExercisesInPriority = (
+//   muscle_priority_list: MusclePriorityType[],
+//   microcycles: number,
+//   mesocycles: number
+// ) => {
+//   let list_w_exercises = [...muscle_priority_list];
+//   for (let i = 0; i < list_w_exercises.length; i++) {
+//     let exercises = list_w_exercises[i].exercises;
 
-    let { frequencyProgression, exercisesPerSessionSchema } =
-      list_w_exercises[i].volume;
+//     let { frequencyProgression, exercisesPerSessionSchema } =
+//       list_w_exercises[i].volume;
 
-    for (let j = 0; j < exercises.length; j++) {
-      let session_exercises = exercises[j];
+//     for (let j = 0; j < exercises.length; j++) {
+//       let session_exercises = exercises[j];
 
-      if (!session_exercises.length) break;
-      const data = setProgressionOverMesocycle(
-        session_exercises,
-        j,
-        microcycles,
-        mesocycles,
-        frequencyProgression,
-        exercisesPerSessionSchema
-      );
-      exercises[j] = data;
-    }
+//       if (!session_exercises.length) break;
+//       const data = setProgressionOverMesocycle(
+//         session_exercises,
+//         j,
+//         microcycles,
+//         mesocycles,
+//         frequencyProgression,
+//         exercisesPerSessionSchema
+//       );
+//       exercises[j] = data;
+//     }
 
-    list_w_exercises[i].exercises = exercises;
-  }
+//     list_w_exercises[i].exercises = exercises;
+//   }
 
-  return list_w_exercises;
-};
+//   return list_w_exercises;
+// };
 
 // ---- week 1 ---- week 2 ---- week 3 ---- week 4
 // ---- 2/2/1  ---- 2/2/2  ---- 3/2/2  ---- 3/3/2
@@ -147,10 +147,14 @@ const distributeExercisesAmongSplit = (
   });
 
   for (let i = 0; i < muscle_priority.length; i++) {
-    let exercises = muscle_priority[i].exercises.filter((each) => {
-      return each[0].block_progression_matrix[mesocycle].length;
-    });
-
+    // let exercises = muscle_priority[i].exercises.filter((each) => {
+    //   return each[0].block_progression_matrix[mesocycle].length;
+    // });
+    const frequencyProgression = muscle_priority[i].volume.frequencyProgression;
+    let exercises = muscle_priority[i].exercises.splice(
+      0,
+      frequencyProgression[mesocycle]
+    );
     const splits = getMusclesSplit(
       split_sessions.split,
       muscle_priority[i].muscle

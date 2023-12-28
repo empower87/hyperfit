@@ -1,17 +1,15 @@
+import { buildMesocycles } from "~/hooks/useMesocycleProgression/useMesocycleProgression";
 import {
-  addMesocycleSetProgressionToMusclePriority,
-  buildMesocycles,
-  createBlockProgressionForExercisesInPriority,
-} from "~/hooks/useMesocycleProgression/useMesocycleProgression";
+  MUSCLE_PRIORITY_LIST,
+  onReorderUpdateMusclePriorityList,
+  onSplitChangeUpdateMusclePriorityList,
+} from "../utils/musclePriorityListHandlers";
 import { getSplitFromWeights } from "./getSplitFromPriorityWeighting";
 import { distributeSplitAcrossWeek } from "./splitSessionsHandler";
 import {
   VolumeLandmarkType,
   addMesoProgression,
-  addRankWeightsToMusclePriority,
-  attachMesocycleFrequencyProgression,
   distributeExercisesAmongSplit,
-  getExercisesForPrioritizedMuscles,
 } from "./trainingProgramUtils";
 
 export type DayType =
@@ -204,16 +202,13 @@ type UpdateBreakpointAction = {
 type GetTrainingBlockAction = {
   type: "GET_TRAINING_BLOCK";
 };
-type TESTProps = {
-  type: "TEST";
-};
+
 type Action =
   | UpdateFrequencyAction
   | UpdateMusclePriorityListAction
   | UpdateSplitSessionsAction
   | UpdateTrainingWeekAction
   | UpdateBreakpointAction
-  | TESTProps
   | GetTrainingBlockAction;
 
 const INITIAL_MRV_BREAKPOINT = 4;
@@ -263,207 +258,6 @@ export const VOLUME_BG_COLORS = {
   MV: "bg-green-500",
 };
 
-const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
-  {
-    id: "back-002",
-    rank: 1,
-    muscle: "back",
-    volume_landmark: "MRV",
-    mesoProgression: [0, 0, 0],
-    exercises: [],
-    volume: {
-      landmark: "MRV",
-      frequencyProgression: [],
-      exercisesPerSessionSchema: 2,
-      setProgressionMatrix: [],
-    },
-  },
-  {
-    id: "delts_side-008",
-    rank: 2,
-    muscle: "delts_side",
-    volume_landmark: "MRV",
-    mesoProgression: [0, 0, 0],
-    exercises: [],
-    volume: {
-      landmark: "MRV",
-      frequencyProgression: [],
-      exercisesPerSessionSchema: 2,
-      setProgressionMatrix: [],
-    },
-  },
-  {
-    id: "triceps-014",
-    rank: 3,
-    muscle: "triceps",
-    volume_landmark: "MRV",
-    mesoProgression: [0, 0, 0],
-    exercises: [],
-    volume: {
-      landmark: "MRV",
-      frequencyProgression: [],
-      exercisesPerSessionSchema: 1,
-      setProgressionMatrix: [],
-    },
-  },
-  {
-    id: "hamstrings-011",
-    rank: 4,
-    muscle: "hamstrings",
-    volume_landmark: "MRV",
-    mesoProgression: [0, 0, 0],
-    exercises: [],
-    volume: {
-      landmark: "MRV",
-      frequencyProgression: [],
-      exercisesPerSessionSchema: 1,
-      setProgressionMatrix: [],
-    },
-  },
-  {
-    id: "quads-012",
-    rank: 5,
-    muscle: "quads",
-    volume_landmark: "MEV",
-    mesoProgression: [0, 0, 0],
-    exercises: [],
-    volume: {
-      landmark: "MEV",
-      frequencyProgression: [],
-      exercisesPerSessionSchema: 2,
-      setProgressionMatrix: [],
-    },
-  },
-  {
-    id: "delts_rear-007",
-    rank: 6,
-    muscle: "delts_rear",
-    volume_landmark: "MEV",
-    mesoProgression: [0, 0, 0],
-    exercises: [],
-    volume: {
-      landmark: "MEV",
-      frequencyProgression: [],
-      exercisesPerSessionSchema: 1,
-      setProgressionMatrix: [],
-    },
-  },
-  {
-    id: "forearms-009",
-    rank: 7,
-    muscle: "forearms",
-    volume_landmark: "MEV",
-    mesoProgression: [0, 0, 0],
-    exercises: [],
-    volume: {
-      landmark: "MEV",
-      frequencyProgression: [],
-      exercisesPerSessionSchema: 1,
-      setProgressionMatrix: [],
-    },
-  },
-  {
-    id: "traps-013",
-    rank: 8,
-    muscle: "traps",
-    volume_landmark: "MEV",
-    mesoProgression: [0, 0, 0],
-    exercises: [],
-    volume: {
-      landmark: "MEV",
-      frequencyProgression: [],
-      exercisesPerSessionSchema: 1,
-      setProgressionMatrix: [],
-    },
-  },
-  {
-    id: "biceps-003",
-    rank: 9,
-    muscle: "biceps",
-    volume_landmark: "MEV",
-    mesoProgression: [0, 0, 0],
-    exercises: [],
-    volume: {
-      landmark: "MEV",
-      frequencyProgression: [],
-      exercisesPerSessionSchema: 1,
-      setProgressionMatrix: [],
-    },
-  },
-
-  {
-    id: "chest-005",
-    rank: 10,
-    muscle: "chest",
-    volume_landmark: "MV",
-    mesoProgression: [0, 0, 0],
-    exercises: [],
-    volume: {
-      landmark: "MEV",
-      frequencyProgression: [],
-      exercisesPerSessionSchema: 1,
-      setProgressionMatrix: [],
-    },
-  },
-  {
-    id: "calves-004",
-    rank: 11,
-    muscle: "calves",
-    volume_landmark: "MV",
-    mesoProgression: [0, 0, 0],
-    exercises: [],
-    volume: {
-      landmark: "MV",
-      frequencyProgression: [],
-      exercisesPerSessionSchema: 1,
-      setProgressionMatrix: [],
-    },
-  },
-
-  {
-    id: "delts_front-006",
-    rank: 12,
-    muscle: "delts_front",
-    volume_landmark: "MV",
-    mesoProgression: [0, 0, 0],
-    exercises: [],
-    volume: {
-      landmark: "MV",
-      frequencyProgression: [],
-      exercisesPerSessionSchema: 1,
-      setProgressionMatrix: [],
-    },
-  },
-  {
-    id: "abs-001",
-    rank: 13,
-    muscle: "abs",
-    volume_landmark: "MV",
-    mesoProgression: [0, 0, 0],
-    exercises: [],
-    volume: {
-      landmark: "MV",
-      frequencyProgression: [],
-      exercisesPerSessionSchema: 1,
-      setProgressionMatrix: [],
-    },
-  },
-  {
-    id: "glutes-010",
-    rank: 14,
-    muscle: "glutes",
-    volume_landmark: "MV",
-    mesoProgression: [0, 0, 0],
-    exercises: [],
-    volume: {
-      landmark: "MV",
-      frequencyProgression: [],
-      exercisesPerSessionSchema: 1,
-      setProgressionMatrix: [],
-    },
-  },
-];
-
 const SESSION = "2-6 exercises";
 const DAY = "0-2 sessions";
 const MICROCYCLE = "1 week";
@@ -503,106 +297,176 @@ export default function weeklySessionSplitReducer(
   state: State,
   action: Action
 ) {
+  const frequency = state.frequency;
+  const muscle_priority_list = state.muscle_priority_list;
+  const split_sessions = state.split_sessions;
+  const mesocycles = state.training_program_params.mesocycles;
+  const microcycles = state.training_program_params.microcycles;
+
   switch (action.type) {
     case "UPDATE_FREQUENCY":
       const new_freq = action.payload.frequency;
-      const current_priority = state.muscle_priority_list;
-      const current_split = state.split_sessions.split;
+      // const current_priority = state.muscle_priority_list;
+      // const current_split = state.split_sessions.split;
 
-      const split_sessions = getSplitFromWeights(
+      // const split_sessions = getSplitFromWeights(
+      //   new_freq,
+      //   current_priority,
+      //   current_split
+      // );
+
+      // const lista = addRankWeightsToMusclePriority(current_priority);
+
+      // const priority_list = addMesoProgression(
+      //   current_priority,
+      //   split_sessions,
+      //   state.mrv_breakpoint,
+      //   state.mev_breakpoint
+      // );
+
+      // const testies = addMesocycleSetProgressionToMusclePriority(
+      //   priority_list,
+      //   state.training_program_params.microcycles
+      // );
+      // return {
+      //   ...state,
+      //   frequency: new_freq,
+      //   muscle_priority_list: priority_list,
+      //   split_sessions: split_sessions,
+      // };
+
+      const reordered_list_freq =
+        onReorderUpdateMusclePriorityList(muscle_priority_list);
+
+      const update_split_sessions_freq = getSplitFromWeights(
         new_freq,
-        current_priority,
-        current_split
+        reordered_list_freq,
+        split_sessions.split
       );
 
-      const lista = addRankWeightsToMusclePriority(current_priority);
-
-      const priority_list = addMesoProgression(
-        current_priority,
-        split_sessions,
-        state.mrv_breakpoint,
-        state.mev_breakpoint
+      const updated_list_freq = onSplitChangeUpdateMusclePriorityList(
+        reordered_list_freq,
+        update_split_sessions_freq,
+        mesocycles,
+        microcycles
       );
 
-      const testies = addMesocycleSetProgressionToMusclePriority(
-        priority_list,
-        state.training_program_params.microcycles
-      );
       return {
         ...state,
         frequency: new_freq,
-        muscle_priority_list: priority_list,
-        split_sessions: split_sessions,
+        muscle_priority_list: updated_list_freq,
+        split_sessions: update_split_sessions_freq,
       };
     case "UPDATE_MUSCLE_PRIORITY_LIST":
       const new_list = action.payload.priority_list;
-      const current_split_sessions = state.split_sessions;
+      // const current_split_sessions = state.split_sessions;
+      // const update_split_sessions = getSplitFromWeights(
+      //   state.frequency,
+      //   new_list,
+      //   current_split_sessions.split
+      // );
+
+      // const update_priority_list = addMesoProgression(
+      //   new_list,
+      //   update_split_sessions,
+      //   state.mrv_breakpoint,
+      //   state.mev_breakpoint
+      // );
+
+      // return {
+      //   ...state,
+      //   muscle_priority_list: update_priority_list,
+      //   split_sessions: update_split_sessions,
+      // };
+
+      // TEST: testing new logic format - 12/27/23
+      // const mesocycles = state.training_program_params.mesocycles
+      // const microcycles = state.training_program_params.microcycles
+      const reordered_list = onReorderUpdateMusclePriorityList(new_list);
 
       const update_split_sessions = getSplitFromWeights(
         state.frequency,
         new_list,
-        current_split_sessions.split
+        split_sessions.split
       );
-
-      const update_priority_list = addMesoProgression(
-        new_list,
+      const updated_list = onSplitChangeUpdateMusclePriorityList(
+        reordered_list,
         update_split_sessions,
-        state.mrv_breakpoint,
-        state.mev_breakpoint
+        mesocycles,
+        microcycles
       );
 
       return {
         ...state,
-        muscle_priority_list: update_priority_list,
+        muscle_priority_list: updated_list,
         split_sessions: update_split_sessions,
       };
-    case "TEST":
-      const li = state.muscle_priority_list;
-      const sp = state.split_sessions;
-      const list = addRankWeightsToMusclePriority(li);
+    // case "TEST":
+    //   const li = state.muscle_priority_list;
+    //   const sp = state.split_sessions;
+    //   const list = addRankWeightsToMusclePriority(li);
 
-      const test = attachMesocycleFrequencyProgression(
-        list,
-        sp,
-        state.training_program_params.mesocycles
-      );
-      const testtest = getExercisesForPrioritizedMuscles(test);
-      const testtesttest = createBlockProgressionForExercisesInPriority(
-        testtest,
-        state.training_program_params.microcycles,
-        state.training_program_params.mesocycles
-      );
+    //   const test = attachMesocycleFrequencyProgression(
+    //     list,
+    //     sp,
+    //     state.training_program_params.mesocycles
+    //   );
+    //   const testtest = getExercisesForPrioritizedMuscles(test);
+    //   const testtesttest = createBlockProgressionForExercisesInPriority(
+    //     testtest,
+    //     state.training_program_params.microcycles,
+    //     state.training_program_params.mesocycles
+    //   );
 
-      const testtesttesttest = buildMesocycles(
-        testtesttest,
-        sp,
-        state.training_week,
-        state.training_program_params.mesocycles
-      );
-      console.log(
-        list,
-        test,
-        testtest,
-        testtesttest,
-        "CHECK THIS OUT IS IT ACCURATE??"
-      );
-      return state;
+    //   const testtesttesttest = buildMesocycles(
+    //     testtesttest,
+    //     sp,
+    //     state.training_week,
+    //     state.training_program_params.mesocycles
+    //   );
+    //   console.log(
+    //     list,
+    //     test,
+    //     testtest,
+    //     testtesttest,
+    //     "CHECK THIS OUT IS IT ACCURATE??"
+    //   );
+    //   return state;
     case "UPDATE_SPLIT_SESSIONS":
       const type = action.payload.split;
-      const total_sessions = state.frequency;
-      const priority = state.muscle_priority_list;
-      const splitSessions = getSplitFromWeights(total_sessions, priority, type);
-      const updatePriorityList = addMesoProgression(
-        priority,
-        splitSessions,
-        state.mrv_breakpoint,
-        state.mev_breakpoint
-      );
+      // const total_sessions = state.frequency;
+      // const priority = state.muscle_priority_list;
 
+      // const splitSessions = getSplitFromWeights(total_sessions, priority, type);
+      // const updatePriorityList = addMesoProgression(
+      //   priority,
+      //   splitSessions,
+      //   state.mrv_breakpoint,
+      //   state.mev_breakpoint
+      // );
+
+      // return {
+      //   ...state,
+      //   split_sessions: splitSessions,
+      //   muscle_priority_list: updatePriorityList,
+      // };
+
+      // TEST: testing new logic format - 12/27/23
+      const splitSessions = getSplitFromWeights(
+        frequency,
+        muscle_priority_list,
+        type
+      );
+      const updated_list_sessions = onSplitChangeUpdateMusclePriorityList(
+        muscle_priority_list,
+        splitSessions,
+        mesocycles,
+        microcycles
+      );
       return {
         ...state,
         split_sessions: splitSessions,
-        muscle_priority_list: updatePriorityList,
+        muscle_priority_list: updated_list_sessions,
       };
     case "UPDATE_TRAINING_WEEK":
       const new_training_week = distributeSplitAcrossWeek(
