@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
+import { BG_COLOR_M7, BORDER_COLOR_M7 } from "~/constants/themes";
 import {
   DayType,
   MusclePriorityType,
   SplitType,
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
-import { BG_COLOR_M7, BORDER_COLOR_M7 } from "~/utils/themes";
 import { getTrainingSplit } from "~/z-unused/getTrainingSplit";
 
 const Cell = ({

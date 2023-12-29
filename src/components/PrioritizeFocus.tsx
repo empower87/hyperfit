@@ -4,7 +4,7 @@ import {
   MusclePriorityType,
   VOLUME_BG_COLORS,
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
-import StrictModeDroppable from "~/utils/react-beautiful-dnd/StrictModeDroppable";
+import StrictModeDroppable from "~/lib/react-beautiful-dnd/StrictModeDroppable";
 
 type PrioritizeFocusProps = {
   musclePriority: MusclePriorityType[];

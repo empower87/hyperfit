@@ -9,6 +9,7 @@ import {
   getTopExercises,
   getTotalExercisesForMuscleGroup,
 } from "~/utils/getExercises";
+import { includes } from "~/utils/readOnlyArrayIncludes";
 import {
   ExerciseType,
   MusclePriorityType,
@@ -104,7 +105,7 @@ function addMesoProgression(
         }
         break;
       case "UL":
-        if (UPPER_MUSCLES.includes(muscle)) {
+        if (includes(UPPER_MUSCLES, muscle)) {
           sessions = split_sessions.sessions.upper;
         } else {
           sessions = split_sessions.sessions.lower;
@@ -244,7 +245,7 @@ function attachMesocycleFrequencyProgression(
         }
         break;
       case "UL":
-        if (UPPER_MUSCLES.includes(muscle)) {
+        if (includes(UPPER_MUSCLES, muscle)) {
           sessions = split_sessions.sessions.upper;
         } else {
           sessions = split_sessions.sessions.lower;

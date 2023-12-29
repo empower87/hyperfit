@@ -1,20 +1,20 @@
 import { useCallback, useEffect, useState } from "react";
 import { DragDropContext, Draggable, DropResult } from "react-beautiful-dnd";
 import {
+  BG_COLOR_M6,
+  BG_COLOR_M7,
+  BORDER_COLOR_M6,
+  BORDER_COLOR_M7,
+} from "~/constants/themes";
+import {
   DayType,
   MusclePriorityType,
   SplitSessionsType,
   SplitType,
   TrainingDayType,
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
+import StrictModeDroppable from "~/lib/react-beautiful-dnd/StrictModeDroppable";
 import { getSessionSplitColor } from "~/utils/getSessionSplitColor";
-import StrictModeDroppable from "~/utils/react-beautiful-dnd/StrictModeDroppable";
-import {
-  BG_COLOR_M6,
-  BG_COLOR_M7,
-  BORDER_COLOR_M6,
-  BORDER_COLOR_M7,
-} from "~/utils/themes";
 import SplitOverview from "../Settings/SplitOverview";
 
 type SessionListProps = {

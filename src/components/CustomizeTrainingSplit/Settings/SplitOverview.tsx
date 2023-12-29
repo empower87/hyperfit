@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { SplitSessionsType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 // import { SplitSessionsType } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
-import { BG_COLOR_M7 } from "~/utils/themes";
+import { BG_COLOR_M7 } from "~/constants/themes";
 
 const SPLITS = {
   OPT: "optimized",

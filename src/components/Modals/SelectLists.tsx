@@ -1,11 +1,11 @@
-import { getGroupList } from "~/constants/workoutSplits";
-import { SplitType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import {
   BG_COLOR_M5,
   BG_COLOR_M6,
   BORDER_COLOR_M6,
   HOVER_COLOR_M5,
-} from "~/utils/themes";
+} from "~/constants/themes";
+import { getGroupList } from "~/constants/workoutSplits";
+import { SplitType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 
 type ItemProps = {
   value: string;

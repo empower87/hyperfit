@@ -1,11 +1,6 @@
 import { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import {
-  ExerciseType,
-  SplitType,
-} from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
-import { Exercise, getGroupList } from "~/utils/getExercises";
-import {
   BG_COLOR_M5,
   BG_COLOR_M6,
   BG_COLOR_M7,
@@ -13,7 +8,12 @@ import {
   BORDER_COLOR_M6,
   HOVER_COLOR_M5,
   HOVER_COLOR_M6,
-} from "~/utils/themes";
+} from "~/constants/themes";
+import {
+  ExerciseType,
+  SplitType,
+} from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
+import { Exercise, getGroupList } from "~/utils/getExercises";
 import EditSets from "./EditSet";
 import ExerciseDetails from "./ExerciseDetails";
 import { GroupList } from "./SelectLists";

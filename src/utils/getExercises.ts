@@ -82,7 +82,7 @@ const INITIAL_DETAILS: ExerciseDetails = {
 const INITIAL_EXERCISE: ExerciseType = {
   exercise: "Triceps Extension (cable, single-arm)",
   id: "001_Triceps Extension (cable, single-arm)",
-  group: "back",
+  muscle: "back",
   rank: "MRV",
   session: 0,
   sets: 2,

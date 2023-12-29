@@ -1,3 +1,4 @@
+import { MuscleType } from "~/constants/workoutSplits";
 import { buildMesocyclesTEST } from "../utils/buildTrainingBlockHandlers";
 import {
   MUSCLE_PRIORITY_LIST,
@@ -120,7 +121,7 @@ export type ExerciseDetails = {
 export type ExerciseType = {
   id: string;
   exercise: string;
-  group: string;
+  muscle: MuscleType;
   session: number;
   rank: VolumeLandmarkType;
   sets: number;
@@ -147,7 +148,7 @@ export type MusclePriorityVolumeType = {
 export type MusclePriorityType = {
   id: string;
   rank: number;
-  muscle: string;
+  muscle: MuscleType;
   volume_landmark: VolumeLandmarkType;
   mesoProgression: number[];
   exercises: ExerciseType[][];

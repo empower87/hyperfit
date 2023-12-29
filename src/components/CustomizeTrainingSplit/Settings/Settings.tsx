@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { BG_COLOR_M5, BG_COLOR_M6 } from "~/utils/themes";
+import { BG_COLOR_M5, BG_COLOR_M6 } from "~/constants/themes";
 
 type VolumeSettingFrameProps = {
   title: string;

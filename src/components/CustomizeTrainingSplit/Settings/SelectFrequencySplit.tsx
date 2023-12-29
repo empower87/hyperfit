@@ -1,6 +1,6 @@
 import { ReactNode, useState } from "react";
+import { BG_COLOR_M6, BG_COLOR_M8 } from "~/constants/themes";
 import { SplitSessionsNameType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
-import { BG_COLOR_M6, BG_COLOR_M8 } from "~/utils/themes";
 
 const OPTIONS = [0, 1, 2, 3, 4, 5, 6, 7];
 const SPLITS = {

@@ -3,12 +3,14 @@ import {
   MRV_PROGRESSION_MATRIX_TWO,
 } from "~/constants/volumeProgressionMatrices";
 import {
+  MuscleType,
   UPPER_MUSCLES,
   getBroSplit,
   getOptimizedSplit,
   getPushPullLegsSplit,
 } from "~/constants/workoutSplits";
 import { getTotalExercisesForMuscleGroup } from "~/utils/getExercises";
+import { includes } from "~/utils/readOnlyArrayIncludes";
 import {
   MusclePriorityType,
   SplitSessionsType,
@@ -419,7 +421,7 @@ const getFrequencyProgression = (sessions: number, mesocycles: number) => {
   return frequencyProgression;
 };
 const attachMesocycleFrequencyProgression = (
-  muscle: string,
+  muscle: MuscleType,
   volume_landmark: VolumeLandmarkType,
   split_sessions: SplitSessionsType,
   mesocycles: number
@@ -455,7 +457,7 @@ const attachMesocycleFrequencyProgression = (
       }
       break;
     case "UL":
-      if (UPPER_MUSCLES.includes(muscle)) {
+      if (includes(UPPER_MUSCLES, muscle)) {
         sessions = split_sessions.sessions.upper;
       } else {
         sessions = split_sessions.sessions.lower;

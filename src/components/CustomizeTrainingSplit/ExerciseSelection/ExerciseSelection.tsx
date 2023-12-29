@@ -2,22 +2,23 @@ import { useCallback, useEffect, useState } from "react";
 import { DragDropContext, Draggable, DropResult } from "react-beautiful-dnd";
 import ReactDOM from "react-dom";
 import {
-  DayType,
-  ExerciseType,
-  SplitType,
-  TrainingDayType,
-} from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
-import { getGroupList } from "~/utils/getExercises";
-import { getRankColor } from "~/utils/getRankColor";
-import { getSessionSplitColor } from "~/utils/getSessionSplitColor";
-import StrictModeDroppable from "~/utils/react-beautiful-dnd/StrictModeDroppable";
-import {
   BG_COLOR_M6,
   BG_COLOR_M7,
   BORDER_COLOR_M6,
   BORDER_COLOR_M7,
   BORDER_COLOR_M8,
-} from "~/utils/themes";
+} from "~/constants/themes";
+import {
+  DayType,
+  ExerciseType,
+  SplitType,
+  TrainingDayType,
+} from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
+import { cn } from "~/lib/clsx";
+import StrictModeDroppable from "~/lib/react-beautiful-dnd/StrictModeDroppable";
+import { getGroupList } from "~/utils/getExercises";
+import { getRankColor } from "~/utils/getRankColor";
+import { getSessionSplitColor } from "~/utils/getSessionSplitColor";
 import { canAddExerciseToSplit, getSplitOptions } from "./exerciseSelectUtils";
 
 type PromptProps = {
@@ -73,7 +74,7 @@ type DaySessionItemProps = {
 };
 function DaySessionItem({ index, exercise }: DaySessionItemProps) {
   const bgColor = getRankColor(exercise.rank);
-  const exercises = getGroupList(exercise.group);
+  const exercises = getGroupList(exercise.muscle);
   return (
     <li className={" text-xxs mb-0.5 flex w-full text-white"}>
       <div className={" flex w-1/12 indent-1"}>{index}</div>
@@ -102,7 +103,7 @@ function DaySessionItem({ index, exercise }: DaySessionItemProps) {
               BORDER_COLOR_M7 + " truncate border-t indent-1 text-slate-300"
             }
           >
-            {exercise.group}
+            {exercise.muscle}
           </div>
         </div>
       </div>
@@ -223,10 +224,40 @@ type DraggableExercisesObjectType = {
   }[];
 };
 
-type WeekSessionsProps = {
-  training_block: TrainingDayType[];
+type TitleProps = {
+  title: string;
+  selected: string;
+  onClick: (title: string) => void;
 };
-export default function WeekSessions({ training_block }: WeekSessionsProps) {
+function Title({ title, selected, onClick }: TitleProps) {
+  const isSelected = title === selected;
+  return (
+    <div
+      className={cn(
+        `mb-1 w-full cursor-pointer p-0.5 ${BG_COLOR_M7} hover:${BG_COLOR_M6}`,
+        { [BG_COLOR_M6]: isSelected }
+      )}
+      onClick={() => onClick(title)}
+    >
+      <p className="text-sm text-white">{title}</p>
+    </div>
+  );
+}
+
+type WeekSessionsProps = {
+  week_index: number;
+  selectedMesocycle: string;
+  training_week: TrainingDayType[];
+  onTitleClick: (title: string) => void;
+};
+export default function WeekSessions({
+  week_index,
+  selectedMesocycle,
+  training_week,
+  onTitleClick,
+}: WeekSessionsProps) {
+  const title = `Mesocycle ${week_index}`;
+
   const [draggableExercisesObject, setDraggableExercisesObject] = useState<
     DraggableExercisesObjectType[]
   >([]);
@@ -242,17 +273,17 @@ export default function WeekSessions({ training_block }: WeekSessionsProps) {
 
   useEffect(() => {
     let draggableExerciseList: DraggableExercisesObjectType[] = [];
-    for (let i = 0; i < training_block.length; i++) {
-      const sessions = training_block[i].sessions;
+    for (let i = 0; i < training_week.length; i++) {
+      const sessions = training_week[i].sessions;
       let day: DraggableExercisesObjectType = {
-        day: training_block[i].day,
+        day: training_week[i].day,
         sessions: [],
       };
 
       for (let j = 0; j < sessions.length; j++) {
-        if (training_block[i].isTrainingDay) {
+        if (training_week[i].isTrainingDay) {
           day.sessions.push({
-            id: `${training_block[i].day}_${j}`,
+            id: `${training_week[i].day}_${j}`,
             split: sessions[j].split,
             exercises: sessions[j].exercises.flat(),
           });
@@ -262,7 +293,7 @@ export default function WeekSessions({ training_block }: WeekSessionsProps) {
       draggableExerciseList.push(day);
     }
     setDraggableExercisesObject(draggableExerciseList);
-  }, [training_block]);
+  }, [training_week]);
 
   // NOTE: a lot of logic missing here to determine if an exercise CAN move to another split
   //       as well as if it can should it change the split type?
@@ -316,13 +347,13 @@ export default function WeekSessions({ training_block }: WeekSessionsProps) {
       const targetSplit =
         items[outerDestinationId].sessions[outerDestinationSessionId];
       const canAdd = canAddExerciseToSplit(
-        sourceExercise.group,
+        sourceExercise.muscle,
         targetSplit.split
       );
 
       if (!canAdd) {
         const splitOptions = getSplitOptions(
-          sourceExercise.group,
+          sourceExercise.muscle,
           targetSplit.split
         );
         setModalOptions(splitOptions);
@@ -368,12 +399,22 @@ export default function WeekSessions({ training_block }: WeekSessionsProps) {
     setDraggableExercisesObject(updateList);
     setIsModalPrompted(false);
   };
-
+  if (title !== selectedMesocycle) {
+    return (
+      <Title
+        title={title}
+        selected={selectedMesocycle}
+        onClick={onTitleClick}
+      />
+    );
+  }
   return (
-    <div className={" flex flex-col"}>
-      <div className={BORDER_COLOR_M6 + " mb-2 border-b-2"}>
-        <h3 className=" text-white">Exercises</h3>
-      </div>
+    <div className={" mb-1 flex flex-col"}>
+      <Title
+        title={title}
+        selected={selectedMesocycle}
+        onClick={onTitleClick}
+      />
 
       {isModalPrompted && (
         <Prompt
@@ -382,17 +423,6 @@ export default function WeekSessions({ training_block }: WeekSessionsProps) {
           onClose={onCloseModal}
         />
       )}
-
-      <div className=" text-xxs mb-2 flex text-white">
-        <div className=" flex flex-col">
-          <div className="mb-0.5">Calculate Duration</div>
-          <div className=" flex">
-            <div>Rest Period - </div>
-            <div> 2:00</div>
-          </div>
-        </div>
-      </div>
-
       <div className="flex">
         <DragDropContext onDragEnd={onDragEnd}>
           {draggableExercisesObject.map((each, index) => {
@@ -411,3 +441,44 @@ export default function WeekSessions({ training_block }: WeekSessionsProps) {
     </div>
   );
 }
+
+type MesocycleExerciseLayoutProps = {
+  training_block: TrainingDayType[][];
+};
+export const MesocycleExerciseLayout = ({
+  training_block,
+}: MesocycleExerciseLayoutProps) => {
+  const [selectedMesocycle, setSelectedMesocycle] = useState("Mesocycle 1");
+
+  const onTitleClick = (title: string) => {
+    setSelectedMesocycle(title);
+  };
+  return (
+    <div className={" flex flex-col"}>
+      <div className={BORDER_COLOR_M6 + " mb-2 border-b-2"}>
+        <h3 className=" text-white">Exercises</h3>
+      </div>
+
+      <div className=" text-xxs mb-2 flex text-white">
+        <div className=" flex flex-col">
+          <div className="mb-0.5">Calculate Duration</div>
+          <div className=" flex">
+            <div>Rest Period - </div>
+            <div> 2:00</div>
+          </div>
+        </div>
+      </div>
+
+      {training_block.map((each, index) => {
+        return (
+          <WeekSessions
+            week_index={index + 1}
+            training_week={each}
+            selectedMesocycle={selectedMesocycle}
+            onTitleClick={onTitleClick}
+          />
+        );
+      })}
+    </div>
+  );
+};

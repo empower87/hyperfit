@@ -1,10 +1,14 @@
-import { COMBINED_SPLITS, getGroupList } from "~/constants/workoutSplits";
-import { ExerciseType } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
+import { MuscleType, getGroupList } from "~/constants/workoutSplits";
+import {
+  ExerciseType,
+  SplitType,
+} from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { getMuscleData } from "~/utils/getMuscleData";
+import { includes } from "~/utils/readOnlyArrayIncludes";
 
 export const canAddExerciseToSplit = (
-  muscleGroup: string,
-  targetSplit: string
+  muscleGroup: MuscleType,
+  targetSplit: SplitType
 ) => {
   // Can muscleGroup be added to Split type??
   // ---No?: Prompt User if they would like to Update Split
@@ -14,7 +18,7 @@ export const canAddExerciseToSplit = (
 
   let groupList = getGroupList(targetSplit);
 
-  if (groupList.includes(muscleGroup)) {
+  if (includes(groupList, muscleGroup)) {
     return true;
   } else return false;
 };
@@ -23,9 +27,9 @@ export const canAddExerciseSets = (
   exercise: ExerciseType,
   exercises: ExerciseType[]
 ) => {
-  const muscleData = getMuscleData(exercise.group);
+  const muscleData = getMuscleData(exercise.muscle);
   const getMuscleGroupExercises = exercises.filter(
-    (each) => each.group === exercise.group
+    (each) => each.muscle === exercise.muscle
   );
   const currentExerciseSets = exercise.sets;
   const targetExerciseSets = getMuscleGroupExercises.reduce(
@@ -48,7 +52,32 @@ export const canAddExerciseSets = (
   }
 };
 
-export const getSplitOptions = (muscleGroup: string, targetSplit: string) => {
+const COMBINED_SPLITS = [
+  {
+    name: "FB",
+    list: [
+      "abs",
+      "back",
+      "biceps",
+      "calves",
+      "chest",
+      "delts_front",
+      "delts_rear",
+      "delts_side",
+      "forearms",
+      "glutes",
+      "hamstrings",
+      "quads",
+      "traps",
+      "triceps",
+    ],
+  },
+];
+
+export const getSplitOptions = (
+  muscleGroup: MuscleType,
+  targetSplit: SplitType
+) => {
   let groupList = getGroupList(targetSplit);
   let combinedGroup = [...groupList, muscleGroup];
 

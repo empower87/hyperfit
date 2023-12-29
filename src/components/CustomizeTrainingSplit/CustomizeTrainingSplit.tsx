@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { TrainingDayType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import useTrainingProgram from "~/hooks/useTrainingProgram/useTrainingProgram";
 import { getEndOfMesocycleVolume } from "~/utils/musclePriorityHandlers";
-import WeekSessions from "./ExerciseSelection/ExerciseSelection";
+import { MesocycleExerciseLayout } from "./ExerciseSelection/ExerciseSelection";
 import { MusclePriorityList } from "./MusclePriorityList/MusclePriorityList";
 import SelectFrequencySplit from "./Settings/SelectFrequencySplit";
 import { ListVolumeSettings, WeekVolumeDetails } from "./Settings/Settings";
@@ -103,12 +103,15 @@ export default function CustomizeTrainingSplit({
         total_sessions={frequency}
       />
 
-      {training_block.length ? (
+      {/* {training_block.length ? (
         <div>
-          {training_block.map((meso) => {
-            return <WeekSessions training_week={meso} />;
-          })}
+          <WeekSessions
+            training_week={training_block[training_block.length - 1]}
+          />
         </div>
+      ) : null} */}
+      {training_block.length ? (
+        <MesocycleExerciseLayout training_block={training_block} />
       ) : null}
     </div>
   );

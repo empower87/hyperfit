@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { BORDER_COLOR_M6 } from "~/utils/themes";
+import { BORDER_COLOR_M6 } from "~/constants/themes";
 
 type SectionProps = {
   title: string;

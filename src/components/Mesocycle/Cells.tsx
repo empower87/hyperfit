@@ -1,9 +1,9 @@
+import { BG_COLOR_M7 } from "~/constants/themes";
 import {
   ExerciseDetails,
   ExerciseType,
   SplitType,
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
-import { BG_COLOR_M7 } from "~/utils/themes";
 
 type ExerciseCellProps = {
   exercise: ExerciseType;

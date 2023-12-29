@@ -1,4 +1,4 @@
-import { getMusclesSplit } from "~/constants/workoutSplits";
+import { MuscleType, getMusclesSplit } from "~/constants/workoutSplits";
 import {
   ExerciseType,
   MusclePriorityType,
@@ -25,13 +25,13 @@ const getMuscleGroupsExercisesForMesocycle = (
 };
 
 const hasSessionReachedMaxExercises = (
-  group: string,
+  group: MuscleType,
   exercises: ExerciseType[][]
 ) => {
   let hasReachedMax = false;
   for (let i = 0; i < exercises.length; i++) {
     const exercise = exercises[i][0];
-    if (exercise.group === group) {
+    if (exercise.muscle === group) {
       hasReachedMax = true;
       break;
     }
@@ -42,7 +42,7 @@ const hasSessionReachedMaxExercises = (
 
 const findSessionWithLowestVolume = (
   training_week: TrainingDayType[],
-  group: string,
+  muscle: MuscleType,
   split: string[]
 ) => {
   let minVolume = 1000;
@@ -53,7 +53,7 @@ const findSessionWithLowestVolume = (
 
     for (let j = 0; j < sessions.length; j++) {
       const session = sessions[j];
-      const hasMaxed = hasSessionReachedMaxExercises(group, session.exercises);
+      const hasMaxed = hasSessionReachedMaxExercises(muscle, session.exercises);
 
       if (!split.includes(session.split) || hasMaxed) continue;
 
@@ -96,7 +96,7 @@ const distributeExercisesAmongSplit = (
     for (let k = 0; k < exercises.length; k++) {
       const indices = findSessionWithLowestVolume(
         training_week,
-        exercises[k][0].group,
+        exercises[k][0].muscle,
         splits
       );
       training_week[indices[0]]?.sessions[indices[1]]?.exercises.push(

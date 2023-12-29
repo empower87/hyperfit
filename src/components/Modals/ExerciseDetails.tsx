@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
+import { BG_COLOR_M5, BG_COLOR_M6 } from "~/constants/themes";
 import {
   DayType,
   ExerciseType,
   SplitType,
   TrainingDayType,
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
-import { BG_COLOR_M5, BG_COLOR_M6 } from "~/utils/themes";
 import { useTrainingBlockContext } from "../Macrocycle/TrainingBlock/context/TrainingBlockContext";
 
 type ExerciseDetailsProps = {

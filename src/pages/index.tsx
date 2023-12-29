@@ -3,8 +3,8 @@ import { useState } from "react";
 import CustomizeTrainingSplit from "~/components/CustomizeTrainingSplit/CustomizeTrainingSplit";
 import Section from "~/components/Layout/Section";
 import TrainingBlock from "~/components/Macrocycle/TrainingBlock/TrainingBlock";
+import { BG_COLOR_M6, BG_COLOR_M7, BG_COLOR_M8 } from "~/constants/themes";
 import { TrainingDayType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
-import { BG_COLOR_M6, BG_COLOR_M7, BG_COLOR_M8 } from "~/utils/themes";
 
 const Home: NextPage = () => {
   const [trainingBlock, setTrainingBlock] = useState<TrainingDayType[][]>([]);

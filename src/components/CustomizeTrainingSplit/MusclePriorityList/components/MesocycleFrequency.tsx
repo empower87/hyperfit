@@ -1,4 +1,4 @@
-import { BG_COLOR_M5, BG_COLOR_M6 } from "~/utils/themes";
+import { BG_COLOR_M5, BG_COLOR_M6 } from "~/constants/themes";
 import useEditMesocycleFrequency from "../hooks/useEditMesocycleFrequency";
 
 type CellWithCounterProps = {

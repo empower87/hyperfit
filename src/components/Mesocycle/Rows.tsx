@@ -1,11 +1,11 @@
 import { useState } from "react";
+import { BG_COLOR_M6 } from "~/constants/themes";
 import {
   DayType,
   ExerciseType,
   SplitType,
   TrainingDayType,
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
-import { BG_COLOR_M6 } from "~/utils/themes";
 import EditExerciseModal from "../Modals/EditExerciseModal";
 import { ExerciseCell, HeaderCell, MicrocycleCell, SessionCell } from "./Cells";
 import {
