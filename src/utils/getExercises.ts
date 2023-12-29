@@ -89,9 +89,6 @@ const INITIAL_EXERCISE: ExerciseType = {
   reps: 10,
   weight: 100,
   rir: 3,
-  meso_progression: [0, 0, 0],
-  meso_details: [null, null, null],
-  block_progression_matrix: [[], [], []],
 };
 
 const getMesoFrequency = (
@@ -285,15 +282,23 @@ export const getTotalExercisesForMuscleGroup = (
   exercisesPerSessionSchema: number
 ) => {
   let total_frequency = frequencyProgression[frequencyProgression.length - 1];
+  const muscleData = getMuscleData(group);
 
   const exercises = getGroupList(group);
 
   let exercise_list: ExerciseType[][] = [];
   let exercises_index = 0;
 
+  // Note: below guard clause checks to see if MEV or MV volume is 0
+  //       thus no need for exercises for this muscle group.
+  if (muscleData[rank] === 0) return exercise_list;
   const matrix = getVolumeProgressionMatrix(rank, exercisesPerSessionSchema);
 
-  const final_meso_frequency = matrix[total_frequency - 1] ?? matrix[0];
+  const final_meso_frequency = matrix[total_frequency - 1];
+
+  if (!final_meso_frequency) {
+    return exercise_list;
+  }
 
   for (let i = 0; i < final_meso_frequency.length; i++) {
     const session = final_meso_frequency[i];

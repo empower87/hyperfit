@@ -73,13 +73,18 @@ function Item({
   total_sessions,
   onMesoProgressionUpdate,
 }: ItemProps) {
-  const { mesoProgression, volume_landmark, muscle } = muscleGroup;
+  const { volume, muscle } = muscleGroup;
+  const { frequencyProgression, landmark } = volume;
 
   const [cellWidths, setCellWidths] = useState<string[]>([...CELL_WIDTHS]);
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
-  const volumeSets = getVolumeSets(muscle, mesoProgression[2], volume_landmark);
-  const bgColor = VOLUME_BG_COLORS[muscleGroup.volume_landmark];
+  const volumeSets = getVolumeSets(
+    muscle,
+    frequencyProgression[frequencyProgression.length - 1],
+    landmark
+  );
+  const bgColor = VOLUME_BG_COLORS[landmark];
 
   const onSelectHandler = (value: string) => {
     onVolumeChange(index, value as VolumeLandmarkType);
@@ -114,7 +119,7 @@ function Item({
 
       <div className={" flex justify-evenly"} style={{ width: cellWidths[2] }}>
         <Select
-          volume_landmark={volume_landmark}
+          volume_landmark={landmark}
           options={["MRV", "MEV", "MV"]}
           onSelect={onSelectHandler}
           bgColor={bgColor}
@@ -123,7 +128,7 @@ function Item({
       </div>
 
       <MesocycleFrequency
-        mesoProgression={mesoProgression}
+        mesoProgression={frequencyProgression}
         total_sessions={total_sessions}
         isEditing={isEditing}
         onEditHandler={onEditHandler}

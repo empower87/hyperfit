@@ -43,8 +43,7 @@ const hasSessionReachedMaxExercises = (
 const findSessionWithLowestVolume = (
   training_week: TrainingDayType[],
   group: string,
-  split: string[],
-  exercises: ExerciseType[]
+  split: string[]
 ) => {
   let minVolume = 1000;
   let currentPosition = [0, 0];
@@ -54,17 +53,12 @@ const findSessionWithLowestVolume = (
 
     for (let j = 0; j < sessions.length; j++) {
       const session = sessions[j];
+      const hasMaxed = hasSessionReachedMaxExercises(group, session.exercises);
 
-      if (!split.includes(session.split)) continue;
-      const hasMaxed = hasSessionReachedMaxExercises(
-        exercises[0].group,
-        session.exercises
-      );
+      if (!split.includes(session.split) || hasMaxed) continue;
 
-      console.log(hasMaxed, session.exercises, group, "WTF");
-      // if (!canAddExercises) continue;
       const total_exercises = session.exercises.flat();
-      if (total_exercises.length < minVolume && !hasMaxed) {
+      if (total_exercises.length < minVolume) {
         minVolume = total_exercises.length;
         currentPosition = [i, j];
       }
@@ -102,32 +96,13 @@ const distributeExercisesAmongSplit = (
     for (let k = 0; k < exercises.length; k++) {
       const indices = findSessionWithLowestVolume(
         training_week,
-        muscle,
-        splits,
-        exercises[k]
+        exercises[k][0].group,
+        splits
       );
       training_week[indices[0]]?.sessions[indices[1]]?.exercises.push(
         exercises[k]
       );
     }
-
-    // for (let j = 0; j < training_week.length; j++) {
-    //   if (exercises.length) {
-    //     const sessions = training_week[j].sessions;
-
-    //     for (let k = 0; k < sessions.length; k++) {
-    //       if (splits.includes(sessions[k].split)) {
-    //         let add_exercises = exercises[0].map((each) => ({
-    //           ...each,
-    //           session: j,
-    //         }));
-
-    //         training_week[j].sessions[k].exercises.push(add_exercises);
-    //         exercises.shift();
-    //       }
-    //     }
-    //   }
-    // }
   }
   return training_week;
 };

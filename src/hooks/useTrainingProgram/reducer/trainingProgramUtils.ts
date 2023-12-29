@@ -193,13 +193,13 @@ function getExercisesForPrioritizedMuscles(
     const frequencyProgression =
       muscle_priority_with_exercises[i].volume.frequencyProgression;
 
-    let exercises_test = getTotalExercisesForMuscleGroup(
+    let exercises = getTotalExercisesForMuscleGroup(
       muscle,
       volumeLandmark,
       frequencyProgression,
       exercisesPerSessionSchema
     );
-    muscle_priority_with_exercises[i].exercises = exercises_test;
+    muscle_priority_with_exercises[i].exercises = exercises;
   }
   return muscle_priority_with_exercises;
 }
@@ -258,7 +258,6 @@ function attachMesocycleFrequencyProgression(
     }
 
     let mesoProgression: number[] = [];
-    console.log(muscle, sessions, mesocycles, "LOOK AT DEEZ");
     const getFrequencyProgression = (sessions: number, mesocycles: number) => {
       let frequencyProgression: number[] = [];
 

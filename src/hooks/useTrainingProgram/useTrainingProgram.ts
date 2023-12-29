@@ -69,10 +69,6 @@ export default function useTrainingProgram() {
   }, [frequency, split_sessions, muscle_priority_list]);
 
   useEffect(() => {
-    dispatch({ type: "TEST" });
-  }, [frequency, split_sessions, muscle_priority_list]);
-
-  useEffect(() => {
     dispatch({ type: "GET_TRAINING_BLOCK" });
   }, [frequency, split_sessions, muscle_priority_list]);
 

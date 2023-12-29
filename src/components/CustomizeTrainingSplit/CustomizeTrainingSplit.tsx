@@ -44,7 +44,7 @@ export default function CustomizeTrainingSplit({
     for (let i = 0; i < prioritized_muscle_list.length; i++) {
       const totalVolume = getEndOfMesocycleVolume(
         prioritized_muscle_list[i].muscle,
-        prioritized_muscle_list[i].mesoProgression[2],
+        prioritized_muscle_list[i].volume.frequencyProgression[2],
         prioritized_muscle_list[i].volume_landmark
       );
       count = count + totalVolume;
@@ -103,9 +103,13 @@ export default function CustomizeTrainingSplit({
         total_sessions={frequency}
       />
 
-      <div>
-        <WeekSessions training_week={training_week} />
-      </div>
+      {training_block.length ? (
+        <div>
+          {training_block.map((meso) => {
+            return <WeekSessions training_week={meso} />;
+          })}
+        </div>
+      ) : null}
     </div>
   );
 }

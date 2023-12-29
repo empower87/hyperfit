@@ -222,10 +222,11 @@ type DraggableExercisesObjectType = {
     exercises: ExerciseType[];
   }[];
 };
+
 type WeekSessionsProps = {
-  training_week: TrainingDayType[];
+  training_block: TrainingDayType[];
 };
-export default function WeekSessions({ training_week }: WeekSessionsProps) {
+export default function WeekSessions({ training_block }: WeekSessionsProps) {
   const [draggableExercisesObject, setDraggableExercisesObject] = useState<
     DraggableExercisesObjectType[]
   >([]);
@@ -241,18 +242,19 @@ export default function WeekSessions({ training_week }: WeekSessionsProps) {
 
   useEffect(() => {
     let draggableExerciseList: DraggableExercisesObjectType[] = [];
-    for (let i = 0; i < training_week.length; i++) {
+    for (let i = 0; i < training_block.length; i++) {
+      const sessions = training_block[i].sessions;
       let day: DraggableExercisesObjectType = {
-        day: training_week[i].day,
+        day: training_block[i].day,
         sessions: [],
       };
 
-      for (let j = 0; j < training_week[i].sessions.length; j++) {
-        if (training_week[i].isTrainingDay) {
+      for (let j = 0; j < sessions.length; j++) {
+        if (training_block[i].isTrainingDay) {
           day.sessions.push({
-            id: `${training_week[i].day}_${j}`,
-            split: training_week[i].sessions[j].split,
-            exercises: training_week[i].sessions[j].exercises.flat(),
+            id: `${training_block[i].day}_${j}`,
+            split: sessions[j].split,
+            exercises: sessions[j].exercises.flat(),
           });
         }
       }
@@ -260,14 +262,12 @@ export default function WeekSessions({ training_week }: WeekSessionsProps) {
       draggableExerciseList.push(day);
     }
     setDraggableExercisesObject(draggableExerciseList);
-  }, [training_week]);
+  }, [training_block]);
 
   // NOTE: a lot of logic missing here to determine if an exercise CAN move to another split
   //       as well as if it can should it change the split type?
-
   const onDragEnd = useCallback(
     (result: DropResult) => {
-      console.log(result, "OK WHAT ARE WE WORKING WITH ERE??");
       if (!result.destination) return;
 
       let outerDestinationId = 0;
