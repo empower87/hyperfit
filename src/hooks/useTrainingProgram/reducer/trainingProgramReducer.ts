@@ -118,6 +118,13 @@ export type ExerciseDetails = {
   rir: number;
 };
 
+export type ExerciseMesocycleProgressionType = {
+  week: number;
+  sets: number;
+  reps: number;
+  weight: number;
+  rir: number;
+};
 export type ExerciseType = {
   id: string;
   exercise: string;
@@ -128,6 +135,7 @@ export type ExerciseType = {
   reps: number;
   weight: number;
   rir: number;
+  mesocycle_progression: ExerciseMesocycleProgressionType[];
 };
 
 export type TrainingProgramParamsType = {

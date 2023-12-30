@@ -1,5 +1,6 @@
 import { MuscleType, getMusclesSplit } from "~/constants/workoutSplits";
 import {
+  ExerciseMesocycleProgressionType,
   ExerciseType,
   MusclePriorityType,
   SplitSessionsType,
@@ -57,7 +58,6 @@ const findSessionWithLowestVolume = (
 
       if (!split.includes(session.split) || hasMaxed) continue;
 
-      console.log(split, session, hasMaxed, "OK PROBLEM HERE FOR SURE");
       const total_exercises = session.exercises.flat();
       if (total_exercises.length < minVolume) {
         minVolume = total_exercises.length;
@@ -66,6 +66,31 @@ const findSessionWithLowestVolume = (
     }
   }
   return currentPosition;
+};
+
+const attachMesocycleProgressionToExercise = (
+  exercises: ExerciseType[],
+  exercises_index: number,
+  matrix: number[][][]
+) => {
+  let updated_exercises = [...exercises];
+  for (let i = 0; i < updated_exercises.length; i++) {
+    let mesocycle_progression: ExerciseMesocycleProgressionType[] = [];
+    for (let j = 0; j < matrix.length; j++) {
+      const microcycle_progression = matrix[j];
+      const microcycle_sets = microcycle_progression[exercises_index][i];
+      const details: ExerciseMesocycleProgressionType = {
+        week: j + 1,
+        sets: microcycle_sets,
+        reps: 10,
+        weight: 100,
+        rir: 3,
+      };
+      mesocycle_progression.push(details);
+    }
+    updated_exercises[i].mesocycle_progression = mesocycle_progression;
+  }
+  return updated_exercises;
 };
 
 const distributeExercisesAmongSplit = (
@@ -80,8 +105,6 @@ const distributeExercisesAmongSplit = (
     });
     return { ...each, sessions: emptySessionSets };
   });
-
-  // let training_week = _training_week;
 
   for (let i = 0; i < muscle_priority.length; i++) {
     const muscle = muscle_priority[i].muscle;
@@ -101,9 +124,15 @@ const distributeExercisesAmongSplit = (
         exercises[k][0].muscle,
         splits
       );
-
+      const mesocycle_progression = setProgressionMatrix[mesocycle];
+      const exercise_position = k;
+      const exercises_w_progression = attachMesocycleProgressionToExercise(
+        exercises[k],
+        exercise_position,
+        mesocycle_progression
+      );
       training_week[indices[0]]?.sessions[indices[1]]?.exercises.push(
-        exercises[k]
+        exercises_w_progression
       );
     }
   }

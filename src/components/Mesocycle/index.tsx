@@ -1,4 +1,3 @@
-// import { SessionDayType } from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
 import { BG_COLOR_M6, BG_COLOR_M7, BORDER_COLOR_M6 } from "~/constants/themes";
 import { TrainingDayType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { SessionRow } from "./Rows";

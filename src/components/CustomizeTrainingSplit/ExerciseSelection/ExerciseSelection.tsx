@@ -75,14 +75,14 @@ type DaySessionItemProps = {
 function DaySessionItem({ index, exercise }: DaySessionItemProps) {
   const bgColor = getRankColor(exercise.rank);
   const exercises = getGroupList(exercise.muscle);
+  const mesocycle_progression = exercise.mesocycle_progression;
+  const sets = mesocycle_progression[mesocycle_progression.length - 1].sets;
   return (
     <li className={" text-xxs mb-0.5 flex w-full text-white"}>
       <div className={" flex w-1/12 indent-1"}>{index}</div>
 
       <div className={BORDER_COLOR_M7 + " flex w-11/12 border-2 " + bgColor.bg}>
-        <div className={BORDER_COLOR_M7 + " w-1/12 border-r-2"}>
-          {exercise.sets}x
-        </div>
+        <div className={BORDER_COLOR_M7 + " w-1/12 border-r-2"}>{sets}x</div>
 
         <div className=" flex w-11/12 flex-col">
           <select className={bgColor.bg + " truncate"}>

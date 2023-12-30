@@ -34,17 +34,11 @@ function DataRow({
   currentMesocycleIndex,
   position,
 }: DataRowProps) {
-  // const details = exercise.meso_details[currentMesocycleIndex];
-  // if (!details) return null;
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  // const details = exercise.block_progression_matrix[currentMesocycleIndex];
-  const details = [
-    [2, 100, 3, 3],
-    [2, 100, 3, 3],
-    [2, 100, 3, 3],
-    [2, 100, 3, 3],
-    [2, 100, 3, 3],
-  ];
+
+  const details = exercise.mesocycle_progression.map((each) => {
+    return [each.sets, each.reps, each.weight, each.rir];
+  });
 
   const closeModal = () => {
     setIsOpen(false);
