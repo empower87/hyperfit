@@ -10,16 +10,6 @@ export default function TrainingBlock({ training_block }: TrainingBlockProps) {
   return (
     // <TraingingBlockProvider training_week={training_week}>
     <div className={" flex flex-col"}>
-      <Mesocycles training_block={training_block} />
-    </div>
-    // </TraingingBlockProvider>
-  );
-}
-
-const Mesocycles = ({ training_block }: TrainingBlockProps) => {
-  // const { trainingBlock, editExerciseHandler } = useTrainingBlockContext();
-  return (
-    <>
       {training_block.map((each, index) => {
         return (
           <Mesocycle
@@ -29,6 +19,7 @@ const Mesocycles = ({ training_block }: TrainingBlockProps) => {
           />
         );
       })}
-    </>
+    </div>
+    // </TraingingBlockProvider>
   );
-};
+}

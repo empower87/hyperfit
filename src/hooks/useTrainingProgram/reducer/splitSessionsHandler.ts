@@ -1,81 +1,16 @@
-import {
-  getBroSplit,
-  getPushPullLegsSplit,
-  getUpperLowerSplit,
-} from "~/constants/workoutSplits";
+import { getBroSplit } from "~/constants/workoutSplits";
 import {
   BROSessionsType,
   FBSessionsType,
   MusclePriorityType,
   OPTSessionsType,
+  PPLSessionsType,
   PPLULSessionsType,
   SessionType,
   SplitSessionsType,
   TrainingDayType,
   ULSessionsType,
 } from "./trainingProgramReducer";
-
-const getPPLULSplitSessions = (
-  total_sessions: [number, number],
-  list: MusclePriorityType[]
-) => {
-  const totalSessions = total_sessions[0] + total_sessions[1];
-  let initEvenDistribution = Math.floor(totalSessions / 5);
-  let count = totalSessions % 5;
-
-  const pplul_sessions = {
-    push: initEvenDistribution,
-    legs: initEvenDistribution,
-    pull: initEvenDistribution,
-    upper: initEvenDistribution,
-    lower: initEvenDistribution,
-  };
-
-  let added: ("push" | "pull" | "legs" | "upper" | "lower")[] = [];
-
-  for (let i = 0; i < list.length; i++) {
-    if (count < 1) break;
-    const pplKey = getPushPullLegsSplit(list[i].muscle);
-    const pplulKey = getUpperLowerSplit(list[i].muscle);
-
-    if (added.includes(pplKey)) {
-      pplul_sessions[pplulKey]++;
-      count--;
-      added.push(pplulKey);
-    } else {
-      pplul_sessions[pplKey]++;
-      count--;
-      added.push(pplKey);
-    }
-  }
-  return pplul_sessions;
-};
-
-const getPPLSplitSessions = (
-  total_sessions: [number, number],
-  list: MusclePriorityType[]
-) => {
-  const totalSessions = total_sessions[0] + total_sessions[1];
-  let initEvenDistribution = Math.floor(totalSessions / 3);
-  let count = totalSessions % 3;
-
-  const ppl_sessions = {
-    push: initEvenDistribution,
-    legs: initEvenDistribution,
-    pull: initEvenDistribution,
-  };
-
-  let added: ("push" | "pull" | "legs")[] = [];
-  for (let i = 0; i < list.length; i++) {
-    if (count < 1) break;
-    const pplKey = getPushPullLegsSplit(list[i].muscle);
-
-    ppl_sessions[pplKey]++;
-    count--;
-    added.push(pplKey);
-  }
-  return ppl_sessions;
-};
 
 export const getBroSplitSessions = (
   total_sessions: [number, number],
@@ -104,21 +39,6 @@ export const getBroSplitSessions = (
   }
 
   return bro_sessions;
-};
-
-const getULSplitSessions = (
-  total: [number, number],
-  priority: MusclePriorityType[]
-) => {
-  const totalSessions = total[0] + total[1];
-
-  let initEvenDistribution = Math.floor(totalSessions / 2);
-  let count = totalSessions % 2;
-
-  const ul_sessions = {
-    upper: 0,
-    lower: 0,
-  };
 };
 
 const getNextSplitPPL = (
@@ -150,6 +70,7 @@ const getNextSplitPPL = (
       return null;
   }
 };
+
 const getNextSplitPPLUL = (
   prevSplit: string,
   count: {
@@ -268,7 +189,7 @@ const getNextSplitBRO = (
 
 export const distributePPLSplitAcrossWeek = (
   week: TrainingDayType[],
-  sessions: { push: number; legs: number; pull: number }
+  sessions: PPLSessionsType["sessions"]
 ) => {
   let counter = { ...sessions };
 

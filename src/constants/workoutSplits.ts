@@ -60,17 +60,17 @@ export const PUSH_MUSCLES = [
   "chest",
   "triceps",
   "delts_front",
-  "delts_side",
-  "traps",
+  // "delts_side",
+  // "traps",
 ] as const;
 
 export const PULL_MUSCLES = [
   "back",
   "biceps",
-  "delts_side",
   "delts_rear",
-  "traps",
   "forearms",
+  // "delts_side",
+  // "traps",
 ] as const;
 
 export const ARMS_MUSCLES = ["biceps", "triceps", "forearms"] as const;
@@ -95,6 +95,7 @@ export const ANY_MUSCLES = ["delts_side", "traps", "abs", "forearms"] as const;
 
 export const PERIPHERAL_MUSCLES = ["forearms", "abs", "calves"] as const;
 
+export type PeripheralMuscles = (typeof PERIPHERAL_MUSCLES)[number];
 export const getGroupList = (split: SplitType) => {
   switch (split) {
     case "upper":
@@ -136,12 +137,14 @@ const getPPLULSplit = (muscle: MuscleType) => {
 
 const getOPTSplit = (muscle: MuscleType) => {
   let allSplits: ("pull" | "push" | "lower" | "upper" | "full")[] = ["full"];
-  if (includes(PULL_MUSCLES, muscle)) {
+  if (includes(PUSH_AND_PULL_MUSCLES, muscle)) {
+    allSplits.push("push", "pull", "upper");
+  } else if (includes(PULL_MUSCLES, muscle)) {
     allSplits.push("pull", "upper");
-  } else if (includes(LOWER_MUSCLES, muscle) || muscle === "abs") {
-    allSplits.push("lower");
+  } else if (includes(PUSH_MUSCLES, muscle)) {
+    allSplits.push("push", "upper");
   } else {
-    allSplits.push("pull", "upper");
+    allSplits.push("lower");
   }
   return allSplits;
 };
@@ -149,7 +152,7 @@ const getOPTSplit = (muscle: MuscleType) => {
 export const getMusclesSplit = (
   split: SplitSessionsNameType,
   muscle: MuscleType
-) => {
+): SplitType[] => {
   switch (split) {
     case "OPT":
       return getOPTSplit(muscle);
@@ -170,6 +173,18 @@ export const getMusclesSplit = (
   }
 };
 
+export const getOptimizedSplitForWeights = (muscle: MuscleType) => {
+  if (includes(PUSH_AND_PULL_MUSCLES, muscle)) {
+    return "both";
+  } else if (includes(PUSH_MUSCLES, muscle)) {
+    return "push";
+  } else if (includes(PULL_MUSCLES, muscle)) {
+    return "pull";
+  } else if (includes(LOWER_MUSCLES, muscle)) {
+    return "lower";
+  }
+};
+
 export const getBroSplit = (muscle: MuscleType) => {
   if (includes(SHOULDERS_MUSCLES, muscle)) {
     return "shoulders";
@@ -185,12 +200,14 @@ export const getBroSplit = (muscle: MuscleType) => {
 };
 
 export const getPushPullLegsSplit = (muscle: MuscleType) => {
-  if (includes(PUSH_MUSCLES, muscle)) {
+  if (includes(PUSH_AND_PULL_MUSCLES, muscle)) {
     return "push";
-  } else if (includes(LOWER_MUSCLES, muscle)) {
-    return "legs";
-  } else {
+  } else if (includes(PUSH_MUSCLES, muscle)) {
+    return "push";
+  } else if (includes(PULL_MUSCLES, muscle)) {
     return "pull";
+  } else {
+    return "legs";
   }
 };
 
@@ -202,47 +219,15 @@ export const getUpperLowerSplit = (muscle: MuscleType) => {
 export const getOptimizedSplit = (muscle: MuscleType) => {
   let all: ("upper" | "lower" | "push" | "pull" | "full")[] = [];
 
-  switch (muscle) {
-    case "delts_side":
-      all.push("push", "pull", "upper");
-      break;
-    case "traps":
-      all.push("push", "pull", "upper");
-      break;
-    case "chest":
-      all.push("push", "upper");
-      break;
-    case "delts_front":
-      all.push("push", "upper");
-      break;
-    case "triceps":
-      all.push("push", "upper");
-      break;
-    case "back":
-      all.push("pull", "upper");
-      break;
-    case "biceps":
-      all.push("pull", "upper");
-      break;
-    case "delts_rear":
-      all.push("pull", "upper");
-      break;
-    default:
-      all.push("lower");
-      break;
+  if (includes(PUSH_AND_PULL_MUSCLES, muscle)) {
+    all.push("push", "pull", "upper");
+  } else if (includes(PUSH_MUSCLES, muscle)) {
+    all.push("push", "upper");
+  } else if (includes(PULL_MUSCLES, muscle)) {
+    all.push("pull", "upper");
+  } else if (includes(LOWER_MUSCLES, muscle)) {
+    all.push("lower");
   }
-
-  // if (includes(LOWER_MUSCLES, muscle)) {
-  //   all.push("lower");
-  // } else if (includes(PUSH_AND_PULL_MUSCLES, muscle)) {
-  //   all.push("push", "pull", "upper");
-  // }
-
-  // else if (includes(PULL_MUSCLES, muscle)) {
-  //   all.push("pull", "upper");
-  // } else if (includes(PUSH_MUSCLES, muscle)) {
-  //   all.push("lower");
-  // }
 
   all.push("full");
   return all;

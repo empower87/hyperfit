@@ -86,7 +86,7 @@ function ExerciseCell({
         alignment="justify-center"
       />
       <Cell
-        value={exercise.group}
+        value={exercise.muscle}
         width={cellWidths[1]}
         alignment="justify-start"
       />

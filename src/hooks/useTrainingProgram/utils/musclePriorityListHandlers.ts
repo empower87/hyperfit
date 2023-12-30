@@ -224,7 +224,7 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
 // NOTE: updates only on REORDERING of list or changing MEV/MRV BREAKPOINT
 const getVolumeLandmarkForMuscle = (
   index: number,
-  volume_landmark: "MRV" | "MEV" | "MV",
+  volume_landmark: VolumeLandmarkType,
   volume_breakpoints?: [number, number]
 ) => {
   if (!volume_breakpoints) return volume_landmark;
@@ -238,7 +238,7 @@ const getVolumeLandmarkForMuscle = (
     return "MV";
   }
 };
-const getRankWeightForMuscle = (index: number, muscle: string) => {
+const getRankWeightForMuscle = (index: number, muscle: MuscleType) => {
   let muscle_rank = 0;
   switch (muscle) {
     case "hamstrings":

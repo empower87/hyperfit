@@ -3,6 +3,7 @@ import {
   ExerciseType,
   MusclePriorityType,
   SplitSessionsType,
+  SplitType,
   TrainingDayType,
 } from "../reducer/trainingProgramReducer";
 
@@ -36,14 +37,13 @@ const hasSessionReachedMaxExercises = (
       break;
     }
   }
-  console.log(hasReachedMax, group, exercises, "WHY IS THIS ALWAYS FALSE");
   return hasReachedMax;
 };
 
 const findSessionWithLowestVolume = (
   training_week: TrainingDayType[],
   muscle: MuscleType,
-  split: string[]
+  split: SplitType[]
 ) => {
   let minVolume = 1000;
   let currentPosition = [0, 0];
@@ -57,6 +57,7 @@ const findSessionWithLowestVolume = (
 
       if (!split.includes(session.split) || hasMaxed) continue;
 
+      console.log(split, session, hasMaxed, "OK PROBLEM HERE FOR SURE");
       const total_exercises = session.exercises.flat();
       if (total_exercises.length < minVolume) {
         minVolume = total_exercises.length;
@@ -80,6 +81,8 @@ const distributeExercisesAmongSplit = (
     return { ...each, sessions: emptySessionSets };
   });
 
+  // let training_week = _training_week;
+
   for (let i = 0; i < muscle_priority.length; i++) {
     const muscle = muscle_priority[i].muscle;
     const muscle_exercises = muscle_priority[i].exercises;
@@ -92,13 +95,13 @@ const distributeExercisesAmongSplit = (
     );
 
     const splits = getMusclesSplit(split_sessions.split, muscle);
-
     for (let k = 0; k < exercises.length; k++) {
       const indices = findSessionWithLowestVolume(
         training_week,
         exercises[k][0].muscle,
         splits
       );
+
       training_week[indices[0]]?.sessions[indices[1]]?.exercises.push(
         exercises[k]
       );

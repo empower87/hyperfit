@@ -1,4 +1,5 @@
 import { getVolumeProgressionMatrix } from "~/constants/volumeProgressionMatrices";
+import { MuscleType } from "~/constants/workoutSplits";
 import {
   ExerciseDetails,
   ExerciseType,
@@ -134,14 +135,14 @@ export const getTopExercises = (
       : "MV";
 
   for (let i = 0; i < volume_meso_three.length; i++) {
-    console.log(
-      volume_meso_one,
-      volume_meso_two,
-      mesoProgression,
-      key,
-      group,
-      "WHAT IS GOING ON HERE???"
-    );
+    // console.log(
+    //   volume_meso_one,
+    //   volume_meso_two,
+    //   mesoProgression,
+    //   key,
+    //   group,
+    //   "WHAT IS GOING ON HERE???"
+    // );
     let split_three = volume_meso_three[i].split("-");
 
     let split_two = volume_meso_two[i] ? volume_meso_two[i].split("-") : [];
@@ -232,51 +233,8 @@ export const getTopExercises = (
   return exercise_list;
 };
 
-// export const getTotalExercisesForMuscleGroup = (
-//   group: string,
-//   rank: VolumeLandmarkType,
-//   frequencyProgression: number[],
-//   exercisesPerSessionSchema: number
-// ) => {
-//   let total_frequency = frequencyProgression[frequencyProgression.length - 1];
-
-//   const exercises = getGroupList(group);
-
-//   let exercise_list: ExerciseType[] = [];
-//   let exercises_index = 0;
-
-//   const matrix = getVolumeProgressionMatrix(rank, exercisesPerSessionSchema);
-
-//   const final_meso_frequency = matrix[total_frequency - 1] ?? matrix[0];
-
-//   for (let i = 0; i < final_meso_frequency.length; i++) {
-//     const session = final_meso_frequency[i];
-
-//     for (let j = 0; j < session.length; j++) {
-//       if (session[j] === 0) continue;
-//       if (!exercises[exercises_index]) {
-//         exercises_index = 0;
-//       }
-
-//       if (exercises[exercises_index]) {
-//         let exercise = {
-//           ...INITIAL_EXERCISE,
-//           id: exercises[exercises_index].id,
-//           exercise: exercises[exercises_index].name,
-//           group: group,
-//           rank: rank,
-//           meso_progression: frequencyProgression,
-//         };
-//         exercise_list.push(exercise);
-//         exercises_index++;
-//       }
-//     }
-//   }
-//   return exercise_list;
-// };
-
 export const getTotalExercisesForMuscleGroup = (
-  group: string,
+  group: MuscleType,
   rank: VolumeLandmarkType,
   frequencyProgression: number[],
   exercisesPerSessionSchema: number
@@ -315,7 +273,7 @@ export const getTotalExercisesForMuscleGroup = (
           ...INITIAL_EXERCISE,
           id: exercises[exercises_index].id,
           exercise: exercises[exercises_index].name,
-          group: group,
+          muscle: group,
           rank: rank,
           meso_progression: frequencyProgression,
         };

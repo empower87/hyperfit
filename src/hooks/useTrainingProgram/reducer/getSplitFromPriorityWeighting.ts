@@ -1,13 +1,6 @@
 import {
-  ARMS_MUSCLES,
-  BACK_MUSCLES,
-  CHEST_MUSCLES,
-  LEGS_MUSCLES,
-  LOWER_MUSCLES,
-  PULL_MUSCLES,
-  PUSH_AND_PULL_MUSCLES,
-  PUSH_MUSCLES,
-  SHOULDERS_MUSCLES,
+  getBroSplit,
+  getOptimizedSplitForWeights,
 } from "~/constants/workoutSplits";
 import { getKeyWithHighestValue } from "~/utils/getKeyWithHighestValue";
 import {
@@ -27,22 +20,29 @@ export function getSplitFromWeights(
 
   for (let i = 0; i < priority.length; i++) {
     const rank = priority[i].rank;
-    if (PUSH_AND_PULL_MUSCLES.includes(priority[i].muscle)) {
-      let split = Math.round(rank / 2);
-      push = push + split;
-      pull = pull + split;
-    } else if (PUSH_MUSCLES.includes(priority[i].muscle)) {
-      push = push + rank;
-    } else if (PULL_MUSCLES.includes(priority[i].muscle)) {
-      pull = pull + rank;
-    } else if (LOWER_MUSCLES.includes(priority[i].muscle)) {
-      lower = lower + rank;
+    const muscle = priority[i].muscle;
+    const split = getOptimizedSplitForWeights(muscle);
+    switch (split) {
+      case "both":
+        let split = Math.round(rank / 2);
+        push = push + split;
+        pull = pull + split;
+        break;
+      case "pull":
+        pull = pull + rank;
+        break;
+      case "push":
+        push = push + rank;
+        break;
+      case "lower":
+        lower = lower + rank;
+        break;
+      default:
+        break;
     }
   }
 
   const total_sessions = sessions[0] + sessions[1];
-  const first_sessions = sessions[0];
-  const second_sessions = sessions[1];
 
   let session_maxes_per_week = [0, 0, 0];
 
@@ -263,18 +263,28 @@ function distributeIntoSessionsBro(
 
   for (let i = 0; i < priority.length; i++) {
     const rank = priority[i].rank;
-    if (LEGS_MUSCLES.includes(priority[i].muscle)) {
-      BRO_WEIGHTS.legs = BRO_WEIGHTS.legs + rank;
-    } else if (CHEST_MUSCLES.includes(priority[i].muscle)) {
-      let total = (MODIFIER + 3) * WEIGHT - i;
-      BRO_WEIGHTS.chest = BRO_WEIGHTS.chest + rank + total;
-    } else if (BACK_MUSCLES.includes(priority[i].muscle)) {
-      let total = (MODIFIER + 3) * WEIGHT - i;
-      BRO_WEIGHTS.back = BRO_WEIGHTS.back + rank + total;
-    } else if (SHOULDERS_MUSCLES.includes(priority[i].muscle)) {
-      BRO_WEIGHTS.shoulders = BRO_WEIGHTS.shoulders + rank;
-    } else if (ARMS_MUSCLES.includes(priority[i].muscle)) {
-      BRO_WEIGHTS.arms = BRO_WEIGHTS.arms + rank;
+    const muscle = priority[i].muscle;
+
+    const split = getBroSplit(muscle);
+    switch (split) {
+      case "legs":
+        BRO_WEIGHTS.legs = BRO_WEIGHTS.legs + rank;
+        break;
+      case "shoulders":
+        BRO_WEIGHTS.shoulders = BRO_WEIGHTS.shoulders + rank;
+        break;
+      case "arms":
+        BRO_WEIGHTS.arms = BRO_WEIGHTS.arms + rank;
+        break;
+      case "back":
+        let back_total = (MODIFIER + 3) * WEIGHT - i;
+        BRO_WEIGHTS.back = BRO_WEIGHTS.back + rank + back_total;
+        break;
+      case "chest":
+        let chest_total = (MODIFIER + 3) * WEIGHT - i;
+        BRO_WEIGHTS.chest = BRO_WEIGHTS.chest + rank + chest_total;
+        break;
+      default:
     }
   }
   BRO_WEIGHTS.arms = BRO_WEIGHTS.arms + (MODIFIER + 1) * WEIGHT;
