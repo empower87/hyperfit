@@ -26,12 +26,15 @@ export default function useTrainingProgram() {
     });
   };
 
-  const handleUpdateMuscleList = useCallback((items: MusclePriorityType[]) => {
-    dispatch({
-      type: "UPDATE_MUSCLE_PRIORITY_LIST",
-      payload: { priority_list: items },
-    });
-  }, []);
+  const handleUpdateMuscleList = useCallback(
+    (items: MusclePriorityType[]) => {
+      dispatch({
+        type: "UPDATE_MUSCLE_PRIORITY_LIST",
+        payload: { priority_list: items },
+      });
+    },
+    [muscle_priority_list]
+  );
 
   const handleUpdateBreakpoint = useCallback(
     (type: "mev_breakpoint" | "mrv_breakpoint", value: number) => {

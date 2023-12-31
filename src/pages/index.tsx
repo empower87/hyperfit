@@ -1,8 +1,6 @@
 import { type NextPage } from "next";
 import { useState } from "react";
-import CustomizeTrainingSplit from "~/components/CustomizeTrainingSplit/CustomizeTrainingSplit";
-import Section from "~/components/Layout/Section";
-import TrainingBlock from "~/components/Macrocycle/TrainingBlock/TrainingBlock";
+import PageContent from "~/components/CustomizeTrainingSplit/CustomizeTrainingSplit";
 import { BG_COLOR_M6, BG_COLOR_M7, BG_COLOR_M8 } from "~/constants/themes";
 import { TrainingDayType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 
@@ -39,7 +37,7 @@ const Home: NextPage = () => {
           id="edit-modal"
           className="relative flex h-full w-4/5 items-center justify-center"
         >
-          <div
+          {/* <div
             className="flex h-full w-full flex-col overflow-y-scroll"
             style={{ height: "97%", width: "98%" }}
           >
@@ -50,7 +48,8 @@ const Home: NextPage = () => {
             <Section title="Training Block">
               <TrainingBlock training_block={trainingBlock} />
             </Section>
-          </div>
+          </div> */}
+          <PageContent />
         </div>
       </div>
     </div>
