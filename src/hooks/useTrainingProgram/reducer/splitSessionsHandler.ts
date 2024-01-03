@@ -205,7 +205,7 @@ export const distributePPLSplitAcrossWeek = (
 
     if (_week[i].isTrainingDay && nextSession) {
       let session: SessionType = {
-        id: "",
+        id: `${i}_${nextSession}_session`,
         split: nextSession,
         exercises: [],
       };
@@ -240,7 +240,7 @@ export const distributePPLULSplitAcrossWeek = (
 
     if (_week[i].isTrainingDay && nextSession) {
       let session: SessionType = {
-        id: "",
+        id: `${i}_${nextSession}_session`,
         split: nextSession,
         exercises: [],
       };
@@ -275,7 +275,7 @@ export const distributeBROSplitAcrossWeek = (
 
     if (_week[i].isTrainingDay && nextSession) {
       let session: SessionType = {
-        id: "",
+        id: `${i}_${nextSession}_session`,
         split: nextSession,
         exercises: [],
       };
@@ -341,7 +341,7 @@ export const distributeULSplitAcrossWeek = (
 
     if (_week[i].isTrainingDay && nextSession) {
       let session: SessionType = {
-        id: "",
+        id: `${i}_${nextSession}_session`,
         split: nextSession,
         exercises: [],
       };
@@ -371,7 +371,7 @@ export const distributeFBSplitAcrossWeek = (
   for (let i = 0; i < _week.length; i++) {
     if (_week[i].isTrainingDay) {
       let session: SessionType = {
-        id: "",
+        id: `${i}_full_session`,
         split: "full",
         exercises: [],
       };

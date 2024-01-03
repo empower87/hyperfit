@@ -165,6 +165,7 @@ function DroppableDay({ split, droppableId, exercises }: DroppableDayProps) {
                 </Draggable>
               );
             })}
+            {provided.placeholder}
           </ul>
         )}
       </StrictModeDroppable>
@@ -399,6 +400,7 @@ export default function WeekSessions({
     setDraggableExercisesObject(updateList);
     setIsModalPrompted(false);
   };
+
   if (title !== selectedMesocycle) {
     return (
       <Title

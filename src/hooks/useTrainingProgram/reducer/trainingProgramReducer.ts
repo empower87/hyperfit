@@ -201,6 +201,9 @@ type UpdateSplitSessionsAction = {
 type UpdateTrainingWeekAction = {
   type: "UPDATE_TRAINING_WEEK";
 };
+type MoveTrainingSessionAction = {
+  type: "MOVE_TRAINING_SESSION";
+};
 type UpdateBreakpointAction = {
   type: "UPDATE_VOLUME_BREAKPOINT";
   payload: { indicator: "mev_breakpoint" | "mrv_breakpoint"; value: number };
@@ -215,7 +218,8 @@ type Action =
   | UpdateSplitSessionsAction
   | UpdateTrainingWeekAction
   | UpdateBreakpointAction
-  | GetTrainingBlockAction;
+  | GetTrainingBlockAction
+  | MoveTrainingSessionAction;
 
 const INITIAL_MRV_BREAKPOINT = 4;
 const INITIAL_MEV_BREAKPOINT = 9;
@@ -398,6 +402,8 @@ export default function weeklySessionSplitReducer(
         ...state,
         training_week: updated_training_week,
       };
+    case "MOVE_TRAINING_SESSION":
+      return state;
     case "GET_TRAINING_BLOCK":
       const l = state.muscle_priority_list;
       const s = state.split_sessions;
