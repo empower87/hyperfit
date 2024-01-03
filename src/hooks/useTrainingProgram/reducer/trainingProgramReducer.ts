@@ -308,6 +308,10 @@ export default function weeklySessionSplitReducer(
   const split_sessions = state.split_sessions;
   const mesocycles = state.training_program_params.mesocycles;
   const microcycles = state.training_program_params.microcycles;
+  const breakpoints: [number, number] = [
+    state.mrv_breakpoint,
+    state.mev_breakpoint,
+  ];
 
   switch (action.type) {
     case "UPDATE_FREQUENCY":
@@ -337,11 +341,14 @@ export default function weeklySessionSplitReducer(
       };
     case "UPDATE_MUSCLE_PRIORITY_LIST":
       const new_list = action.payload.priority_list;
-      const reordered_list = onReorderUpdateMusclePriorityList(new_list);
+      const reordered_list = onReorderUpdateMusclePriorityList(
+        new_list,
+        breakpoints
+      );
 
       const update_split_sessions = getSplitFromWeights(
         state.frequency,
-        new_list,
+        reordered_list,
         split_sessions.split
       );
       const updated_list = onSplitChangeUpdateMusclePriorityList(
@@ -365,7 +372,7 @@ export default function weeklySessionSplitReducer(
         type
       );
       const updated_list_sessions = onSplitChangeUpdateMusclePriorityList(
-        muscle_priority_list,
+        [...muscle_priority_list],
         splitSessions,
         mesocycles,
         microcycles

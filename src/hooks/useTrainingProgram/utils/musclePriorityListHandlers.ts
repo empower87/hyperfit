@@ -230,6 +230,7 @@ const getVolumeLandmarkForMuscle = (
   if (!volume_breakpoints) return volume_landmark;
   const mrv_bp = volume_breakpoints[0];
   const mev_bp = volume_breakpoints[1];
+
   if (index < mrv_bp) {
     return "MRV";
   } else if (index >= mrv_bp && index < mev_bp) {
@@ -273,7 +274,7 @@ export const onReorderUpdateMusclePriorityList = (
   let updated_list = [...muscle_priority_list];
   for (let i = 0; i < updated_list.length; i++) {
     const muscle = updated_list[i].muscle;
-    const current_volume_landmark = updated_list[i].volume.landmark;
+    const current_volume_landmark = muscle_priority_list[i].volume.landmark;
 
     const muscle_rank = getRankWeightForMuscle(i, muscle);
     const volume_landmark = getVolumeLandmarkForMuscle(
@@ -284,6 +285,7 @@ export const onReorderUpdateMusclePriorityList = (
 
     updated_list[i].rank = muscle_rank;
     updated_list[i].volume.landmark = volume_landmark;
+    updated_list[i].volume_landmark = volume_landmark;
   }
   return updated_list;
 };

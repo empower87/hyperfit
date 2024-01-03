@@ -58,6 +58,8 @@ function SessionList({ sessions }: SessionListProps) {
 
       const getOutterIndex = (droppableId: string) => {
         switch (droppableId) {
+          case "Sunday":
+            return 0;
           case "Monday":
             return 1;
           case "Tuesday":

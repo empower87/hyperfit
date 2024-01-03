@@ -1,6 +1,4 @@
-import { useEffect, useState } from "react";
 import useTrainingProgram from "~/hooks/useTrainingProgram/useTrainingProgram";
-import { getEndOfMesocycleVolume } from "~/utils/musclePriorityHandlers";
 import Section from "../Layout/Section";
 import TrainingBlock from "../Macrocycle/TrainingBlock/TrainingBlock";
 import { MesocycleExerciseLayout } from "./ExerciseSelection/ExerciseSelection";
@@ -132,32 +130,6 @@ export default function PageContent() {
     handleUpdateSplitSessions,
     handleUpdateBreakpoint,
   } = useTrainingProgram();
-  const [entireVolume, setEntireVolume] = useState<number>(0);
-  const [splitVolume, setSplitVolume] = useState<
-    { session: string; sets: number }[]
-  >([]);
-
-  useEffect(() => {
-    let splits = [];
-    let count = 0;
-    for (let i = 0; i < prioritized_muscle_list.length; i++) {
-      const totalVolume = getEndOfMesocycleVolume(
-        prioritized_muscle_list[i].muscle,
-        prioritized_muscle_list[i].volume.frequencyProgression[2],
-        prioritized_muscle_list[i].volume_landmark
-      );
-      count = count + totalVolume;
-    }
-    let total = frequency[0] + frequency[1];
-    let setsPerDay = Math.round(count / total);
-
-    for (let j = 0; j < total; j++) {
-      splits.push({ session: `Session ${j + 1}`, sets: setsPerDay });
-    }
-
-    setEntireVolume(count);
-    setSplitVolume(splits);
-  }, [prioritized_muscle_list]);
 
   const onVolumeChange = () => {};
   const updateMesoProgression = () => {};
@@ -185,8 +157,8 @@ export default function PageContent() {
                 onBreakpointChange={handleUpdateBreakpoint}
               />
               <WeekVolumeDetails
-                entireVolume={entireVolume}
-                splitVolume={splitVolume}
+                frequency={frequency}
+                prioritized_muscle_list={prioritized_muscle_list}
               />
               {/* <SplitOverview onSplitChange={handleUpdateSplitSessions} /> */}
             </div>

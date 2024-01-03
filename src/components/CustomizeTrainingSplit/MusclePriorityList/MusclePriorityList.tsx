@@ -35,7 +35,7 @@ function Select({ volume_landmark, options, onSelect, bgColor }: SelectProps) {
             className={
               volume_landmark === each ? BG_COLOR_M5 : BG_COLOR_M6 + " "
             }
-            value={each}
+            // value={each}
             selected={volume_landmark === each ? true : false}
           >
             {each}
