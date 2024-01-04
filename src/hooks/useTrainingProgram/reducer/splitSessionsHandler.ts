@@ -459,7 +459,7 @@ export const distributeOPTSplitAcrossWeek = (
 
     if (_week[i].isTrainingDay && nextSession) {
       let session: SessionType = {
-        id: "",
+        id: `${i}_${nextSession}_session`,
         split: nextSession,
         exercises: [],
       };

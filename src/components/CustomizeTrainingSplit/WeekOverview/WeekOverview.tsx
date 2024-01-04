@@ -8,7 +8,6 @@ import {
 } from "~/constants/themes";
 import {
   DayType,
-  MusclePriorityType,
   SplitSessionsType,
   SplitType,
   TrainingDayType,
@@ -16,6 +15,7 @@ import {
 import StrictModeDroppable from "~/lib/react-beautiful-dnd/StrictModeDroppable";
 import { getSessionSplitColor } from "~/utils/getSessionSplitColor";
 import SplitOverview from "../Settings/SplitOverview";
+import { TrainingWeek } from "./DraggableSessions";
 
 type SessionListProps = {
   sessions: DraggableSplitObjectType[][];
@@ -283,15 +283,13 @@ function Week({ training_week }: TrainingSplitProps) {
 type WeekOverviewProps = {
   split_sessions: SplitSessionsType;
   training_week: TrainingDayType[];
-  list: MusclePriorityType[];
-  total_sessions: [number, number];
+  onSplitReorder: (week: TrainingDayType[]) => void;
 };
 
 export default function WeekOverview({
   split_sessions,
   training_week,
-  list,
-  total_sessions,
+  onSplitReorder,
 }: WeekOverviewProps) {
   return (
     <div className={" mb-2 flex"}>
@@ -303,12 +301,10 @@ export default function WeekOverview({
       </div>
 
       <div className={BG_COLOR_M6 + " w-3/4 p-1"}>
-        {/* <WeekTest
-          title="Hard Coded For Testing Purposes"
-          list={list}
-          total_sessions={total_sessions}
-        /> */}
-        <Week training_week={training_week} />
+        <TrainingWeek
+          training_week={training_week}
+          onSplitReorder={onSplitReorder}
+        />
       </div>
     </div>
   );

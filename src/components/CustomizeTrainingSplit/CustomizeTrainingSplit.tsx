@@ -129,6 +129,7 @@ export default function PageContent() {
     handleFrequencyChange,
     handleUpdateSplitSessions,
     handleUpdateBreakpoint,
+    handleRearrangeTrainingWeek,
   } = useTrainingProgram();
 
   const onVolumeChange = () => {};
@@ -175,8 +176,7 @@ export default function PageContent() {
           <WeekOverview
             split_sessions={split_sessions}
             training_week={training_week}
-            list={prioritized_muscle_list}
-            total_sessions={frequency}
+            onSplitReorder={handleRearrangeTrainingWeek}
           />
 
           {/* {training_block.length ? (

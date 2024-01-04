@@ -3,6 +3,7 @@ import weeklySessionSplitReducer, {
   INITIAL_STATE,
   MusclePriorityType,
   SplitSessionsNameType,
+  TrainingDayType,
 } from "./reducer/trainingProgramReducer";
 
 export default function useTrainingProgram() {
@@ -53,6 +54,13 @@ export default function useTrainingProgram() {
     });
   };
 
+  const handleRearrangeTrainingWeek = (week: TrainingDayType[]) => {
+    dispatch({
+      type: "REARRANGE_TRAINING_WEEK",
+      payload: { rearranged_week: week },
+    });
+  };
+
   useEffect(() => {
     dispatch({ type: "UPDATE_SPLIT_SESSIONS", payload: { split: "OPT" } });
   }, []);
@@ -73,7 +81,7 @@ export default function useTrainingProgram() {
 
   useEffect(() => {
     dispatch({ type: "GET_TRAINING_BLOCK" });
-  }, [frequency, split_sessions, muscle_priority_list]);
+  }, [frequency, split_sessions, muscle_priority_list, training_week]);
 
   return {
     training_week,
@@ -85,6 +93,7 @@ export default function useTrainingProgram() {
     handleUpdateBreakpoint,
     handleUpdateSplitSessions,
     handleFrequencyChange,
+    handleRearrangeTrainingWeek,
     mrv_breakpoint,
     mev_breakpoint,
   };
