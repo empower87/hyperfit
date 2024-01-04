@@ -406,7 +406,18 @@ export default function weeklySessionSplitReducer(
     case "REARRANGE_TRAINING_WEEK":
       const rearranged_week = action.payload.rearranged_week;
 
-      return { ...state, training_week: rearranged_week };
+      const filteredWeek = rearranged_week.map((each) => {
+        const sessions = each.sessions.filter(
+          (ea) => ea.split !== ("off" as SplitType)
+        );
+        return {
+          ...each,
+          isTrainingDay: sessions.length ? true : false,
+          sessions: sessions,
+        };
+      });
+
+      return { ...state, training_week: filteredWeek };
     case "GET_TRAINING_BLOCK":
       const l = state.muscle_priority_list;
       const s = state.split_sessions;

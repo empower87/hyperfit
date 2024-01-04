@@ -24,11 +24,20 @@ const DAYS: DayType[] = [
   "Friday",
   "Saturday",
 ];
+const getIndexOfDay = (droppableId: string) => {
+  let index = 0;
+  for (let i = 0; i < DAYS.length; i++) {
+    if (DAYS[i] === droppableId) {
+      index = i;
+    }
+  }
+  return index;
+};
 
-function TrainingSplitHeaders() {
+function TrainingSplitHeaders({ headers }: { headers: DayType[] }) {
   return (
     <div className=" mb-1 flex justify-evenly">
-      {DAYS.map((day, index) => {
+      {headers.map((day, index) => {
         return (
           <div
             key={`${day}_${index}`}
@@ -56,8 +65,8 @@ export function TrainingWeek({
 
   const onDragEnd = useCallback(
     (result: DropResult) => {
-      console.log(result, "am i getting here?");
       if (!result.destination) return;
+      console.log(result, "drop result data");
 
       let outerDestinationId = 0;
       let outerSourceId = 0;
@@ -65,34 +74,19 @@ export function TrainingWeek({
       let innerDestinationId = result.destination.index;
       let innerSourceId = result.source.index;
 
-      const getOutterIndex = (droppableId: string) => {
-        switch (droppableId) {
-          case "Sunday":
-            return 0;
-          case "Monday":
-            return 1;
-          case "Tuesday":
-            return 2;
-          case "Wednesday":
-            return 3;
-          case "Thursday":
-            return 4;
-          case "Friday":
-            return 5;
-          case "Saturday":
-            return 6;
-          default:
-            return 0;
-        }
-      };
-
-      outerDestinationId = getOutterIndex(result.destination.droppableId);
-      outerSourceId = getOutterIndex(result.source.droppableId);
+      outerDestinationId = getIndexOfDay(result.destination.droppableId);
+      outerSourceId = getIndexOfDay(result.source.droppableId);
 
       const items = [...draggableWeek];
       const sourceRemoved = items[outerSourceId].sessions[innerSourceId];
-      const destinationRemoved =
+      let destinationRemoved: SessionType;
+      destinationRemoved =
         items[outerDestinationId].sessions[innerDestinationId];
+      if (!destinationRemoved) {
+        innerDestinationId--;
+        destinationRemoved =
+          items[outerDestinationId].sessions[innerDestinationId];
+      }
       items[outerDestinationId].sessions[innerDestinationId] = sourceRemoved;
       items[outerSourceId].sessions[innerSourceId] = destinationRemoved;
       console.log(items, "WHAT THIS LOOK LIKE????");
@@ -103,19 +97,34 @@ export function TrainingWeek({
 
   const onSaveHandler = () => {
     // TODO: should do this filtering logic within REDUCER
-    const filteredWeek = draggableWeek.map((each) => {
-      const sessions = each.sessions.filter(
-        (ea) => ea.split !== ("off" as SplitType)
-      );
-      return { ...each, sessions: sessions };
-    });
-    onSplitReorder(filteredWeek);
+    // const filteredWeek = draggableWeek.map((each) => {
+    //   const sessions = each.sessions.filter(
+    //     (ea) => ea.split !== ("off" as SplitType)
+    //   );
+    //   return { ...each, sessions: sessions };
+    // });
+    onSplitReorder(draggableWeek);
   };
 
+  const onResetHandler = () => {
+    setDraggableWeek(training_week);
+  };
+
+  const onSplitChange = (newSplit: SplitType | "off", id: string) => {
+    const update_week = draggableWeek.map((day) => {
+      const sessions: SessionType[] = day.sessions.map((session) => {
+        if (session.id === id)
+          return { ...session, split: newSplit as SplitType };
+        else return session;
+      });
+      return { ...day, sessions: sessions };
+    });
+    setDraggableWeek(update_week);
+  };
   return (
     <>
       <div className=" mb-1 flex flex-col overflow-x-auto">
-        <TrainingSplitHeaders />
+        <TrainingSplitHeaders headers={DAYS} />
 
         <div className=" flex justify-evenly">
           <DragDropContext onDragEnd={onDragEnd}>
@@ -126,13 +135,28 @@ export function TrainingWeek({
                   key={`${each.day}_${index}`}
                   droppableId={each.day}
                   sessions={each.sessions}
+                  onSplitChange={onSplitChange}
                 />
               );
             })}
           </DragDropContext>
         </div>
       </div>
-      <button onClick={onSaveHandler}>save</button>
+
+      <div className=" flex justify-end p-1">
+        <button
+          className=" mr-1 bg-slate-500 p-1 text-xs text-slate-700"
+          onClick={onResetHandler}
+        >
+          reset
+        </button>
+        <button
+          className="bg-rose-400 p-1 text-xs font-bold text-white"
+          onClick={onSaveHandler}
+        >
+          save
+        </button>
+      </div>
     </>
   );
 }
@@ -140,9 +164,11 @@ export function TrainingWeek({
 const DroppableDay = ({
   sessions,
   droppableId,
+  onSplitChange,
 }: {
   sessions: SessionType[];
   droppableId: string;
+  onSplitChange: (newSplit: SplitType | "off", id: string) => void;
 }) => {
   const offDay = {
     id: `${droppableId}_off_session`,
@@ -153,39 +179,46 @@ const DroppableDay = ({
   if (!sesh.length) {
     sesh.push(offDay as unknown as SessionType);
   }
+
   return (
-    <StrictModeDroppable droppableId={droppableId} type={"sessionx"}>
-      {(provided, snapshot) => (
-        <ul
-          id="sessionx"
-          className=" mr-1 flex w-20 flex-col"
-          {...provided.droppableProps}
-          ref={provided.innerRef}
-        >
-          {sesh.map((each, index) => {
-            console.log(each, "OK I THINK THERES NO ID HERE!");
-            return (
-              <Draggable
-                key={`${each.id}_${index}_DroppableDay`}
-                draggableId={each.id}
-                index={index}
-              >
-                {(provided, snapshot) => (
-                  <div
-                    ref={provided.innerRef}
-                    {...provided.draggableProps}
-                    {...provided.dragHandleProps}
-                  >
-                    <SessionItem session={each} index={index} />
-                  </div>
-                )}
-              </Draggable>
-            );
-          })}
-          {provided.placeholder}
-        </ul>
-      )}
-    </StrictModeDroppable>
+    <>
+      <StrictModeDroppable droppableId={droppableId} type={"sessionx"}>
+        {(provided, snapshot) => (
+          <ul
+            id="sessionx"
+            className=" mr-1 flex w-20 flex-col border-2 border-slate-500"
+            {...provided.droppableProps}
+            ref={provided.innerRef}
+          >
+            {sesh.map((each, index) => {
+              console.log(each, "OK I THINK THERES NO ID HERE!");
+              return (
+                <Draggable
+                  key={`${each.id}_${index}_DroppableDay`}
+                  draggableId={each.id}
+                  index={index}
+                >
+                  {(provided, snapshot) => (
+                    <div
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      {...provided.dragHandleProps}
+                    >
+                      <SessionItem
+                        session={each}
+                        index={index}
+                        onSplitChange={onSplitChange}
+                      />
+                    </div>
+                  )}
+                </Draggable>
+              );
+            })}
+            {provided.placeholder}
+          </ul>
+        )}
+      </StrictModeDroppable>
+    </>
   );
 };
 const SESSIONS_TEST: (SplitType | "off")[] = [
@@ -205,9 +238,13 @@ const SESSIONS_TEST: (SplitType | "off")[] = [
 type SessionItemProps = {
   session: SessionType;
   index: number;
+  onSplitChange: (newSplit: SplitType | "off", id: string) => void;
 };
-function SessionItem({ session, index }: SessionItemProps) {
+function SessionItem({ session, index, onSplitChange }: SessionItemProps) {
   const bottomMargin = index === 0 ? "mb-1 " : " ";
+  const onSelectChange = (newSplit: SplitType | "off") => {
+    onSplitChange(newSplit, session.id);
+  };
   return (
     <li
       className={
@@ -217,15 +254,24 @@ function SessionItem({ session, index }: SessionItemProps) {
       <div className=" text-xxs flex w-1/6 justify-center text-white">
         {/* {session.session > 0 ? session.session : ""} */}
       </div>
-      <SelectSession session={session.split} splits={SESSIONS_TEST} />
+      <SelectSession
+        session={session.split}
+        splits={SESSIONS_TEST}
+        onSelect={onSelectChange}
+      />
     </li>
   );
 }
 type SelectSessionProps = {
   session: SplitType | "off";
   splits: (SplitType | "off")[];
+  onSelect: (newSplit: SplitType | "off") => void;
 };
-function SelectSession({ session, splits }: SelectSessionProps) {
+function SelectSession({ session, splits, onSelect }: SelectSessionProps) {
+  const onSelectHandler = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const newSplit = event.target.value as SplitType | "off";
+    onSelect(newSplit);
+  };
   return (
     <select
       className={
@@ -233,12 +279,14 @@ function SelectSession({ session, splits }: SelectSessionProps) {
         " text-xxs w-4/6 font-bold " +
         BG_COLOR_M6
       }
+      onChange={onSelectHandler}
     >
       {splits.map((split, index) => {
         return (
           <option
             key={`${split}_${index}`}
             selected={split === session ? true : false}
+            value={split}
           >
             {split}
           </option>
