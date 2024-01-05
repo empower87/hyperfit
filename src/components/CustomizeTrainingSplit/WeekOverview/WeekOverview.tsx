@@ -128,6 +128,7 @@ export function TrainingWeek({
     });
     setDraggableWeek(update_week);
   };
+
   return (
     <>
       <div className=" mb-1 flex flex-col overflow-x-auto">
@@ -228,19 +229,7 @@ const DroppableDay = ({
     </>
   );
 };
-const SESSIONS_TEST: (SplitType | "off")[] = [
-  "upper",
-  "lower",
-  "full",
-  "push",
-  "pull",
-  "legs",
-  "back",
-  "chest",
-  "arms",
-  "shoulders",
-  "off",
-];
+
 
 type SessionItemProps = {
   session: SessionType;
@@ -252,6 +241,20 @@ function SessionItem({ session, index, onSplitChange }: SessionItemProps) {
   const onSelectChange = (newSplit: SplitType | "off") => {
     onSplitChange(newSplit, session.id);
   };
+  const SESSIONS_TEST: (SplitType | "off")[] = [
+    "upper",
+    "lower",
+    "full",
+    "push",
+    "pull",
+    "legs",
+    "back",
+    "chest",
+    "arms",
+    "shoulders",
+    "off",
+  ];
+  
   return (
     <li
       className={
@@ -269,6 +272,7 @@ function SessionItem({ session, index, onSplitChange }: SessionItemProps) {
     </li>
   );
 }
+
 type SelectSessionProps = {
   session: SplitType | "off";
   splits: (SplitType | "off")[];

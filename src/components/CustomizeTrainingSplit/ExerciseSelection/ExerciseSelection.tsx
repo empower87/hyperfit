@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { DragDropContext, Draggable, DropResult } from "react-beautiful-dnd";
 import ReactDOM from "react-dom";
 import {
+  BG_COLOR_M5,
   BG_COLOR_M6,
   BG_COLOR_M7,
   BORDER_COLOR_M6,
@@ -232,6 +233,7 @@ type TitleProps = {
 };
 function Title({ title, selected, onClick }: TitleProps) {
   const isSelected = title === selected;
+  const text = isSelected ? "text-sm text-white" : "text-xs text-slate-400";
   return (
     <div
       className={cn(
@@ -240,7 +242,7 @@ function Title({ title, selected, onClick }: TitleProps) {
       )}
       onClick={() => onClick(title)}
     >
-      <p className="text-sm text-white">{title}</p>
+      <p className={text}>{title}</p>
     </div>
   );
 }
@@ -450,11 +452,16 @@ type MesocycleExerciseLayoutProps = {
 export const MesocycleExerciseLayout = ({
   training_block,
 }: MesocycleExerciseLayoutProps) => {
-  const [selectedMesocycle, setSelectedMesocycle] = useState("Mesocycle 1");
+  const lastMesocycle = training_block.length;
+  const [selectedMesocycle, setSelectedMesocycle] = useState(
+    `Mesocycle ${lastMesocycle}`
+  );
 
   const onTitleClick = (title: string) => {
+    if (title === selectedMesocycle) return;
     setSelectedMesocycle(title);
   };
+
   return (
     <div className={" flex flex-col"}>
       <div className={BORDER_COLOR_M6 + " mb-2 border-b-2"}>
@@ -463,11 +470,28 @@ export const MesocycleExerciseLayout = ({
 
       <div className=" text-xxs mb-2 flex text-white">
         <div className=" flex flex-col">
-          <div className="mb-0.5">Calculate Duration</div>
-          <div className=" flex">
-            <div>Rest Period - </div>
-            <div> 2:00</div>
-          </div>
+          <div className="mb-0.5 text-sm">Workout Duration Variables</div>
+          <TimeIncrementFrame
+            title="Warmup"
+            initialTime={2}
+            increment={0.25}
+            _limits={[0, 5]}
+            format="m"
+          />
+          <TimeIncrementFrame
+            title="Rest"
+            initialTime={5}
+            increment={0.5}
+            _limits={[0, 10]}
+            format="m"
+          />
+          <TimeIncrementFrame
+            title="Rep"
+            initialTime={1}
+            increment={1}
+            _limits={[1, 10]}
+            format="s"
+          />
         </div>
       </div>
 
@@ -481,6 +505,100 @@ export const MesocycleExerciseLayout = ({
           />
         );
       })}
+    </div>
+  );
+};
+
+type TimeIncrementFrameProps = {
+  title: string;
+  initialTime: number;
+  increment: number;
+  _limits: [number, number];
+  format: "s" | "m";
+};
+
+type IncrementBtnProps = {
+  operation: "+" | "-";
+  onClick: () => void;
+};
+const IncrementBtn = ({ operation, onClick }: IncrementBtnProps) => {
+  return (
+    <button
+      className={cn(
+        `${BG_COLOR_M5} m-1 flex h-4 w-4 items-center justify-center p-1 text-xs text-white`
+      )}
+      onClick={onClick}
+    >
+      {operation}
+    </button>
+  );
+};
+
+const TimeIncrementFrame = ({
+  title,
+  initialTime,
+  increment,
+  _limits,
+  format,
+}: TimeIncrementFrameProps) => {
+  const [time, setTime] = useState<string>("00:00");
+  const [timeInMs, setTimeInMs] = useState<number>(0);
+  const [incrementInMs, setIncrementInMs] = useState<number>(0);
+
+  const [limits, setLimits] = useState<[number, number]>([
+    _limits[0],
+    _limits[1],
+  ]);
+
+  useEffect(() => {
+    if (format === "s") {
+      setTimeInMs(initialTime * 1000);
+      setIncrementInMs(increment * 1000);
+    } else {
+      setTimeInMs(initialTime * 60 * 1000);
+      setIncrementInMs(increment * 60 * 1000);
+    }
+  }, [initialTime, increment]);
+
+  useEffect(() => {
+    const formattedTime = formatTime(timeInMs, format);
+    setTime(formattedTime);
+  }, [timeInMs]);
+
+  const onIncrement = (operation: "+" | "-") => {
+    if (operation === "+") {
+      setTimeInMs((prev) => prev + increment);
+    } else {
+      setTimeInMs((prev) => prev - increment);
+    }
+  };
+
+  const formatTime = (time: number, format: "s" | "m") => {
+    if (format === "s") {
+      let stringTime = (time / 1000).toFixed(1);
+      return `00:${stringTime}`;
+    } else {
+      const seconds = Math.floor(time / 1000);
+      const minutes = Math.floor(seconds / 60);
+      const remainingSeconds = seconds % 60;
+
+      let stringTime = (time / 1000).toFixed(1);
+      return `${minutes.toString().padStart(2, "0")}:${remainingSeconds
+        .toString()
+        .padStart(2, "0")}`;
+    }
+  };
+
+  return (
+    <div className="flex">
+      <div className="m-1 w-12 text-xs text-white">{title}</div>
+      <div className="flex ">
+        <IncrementBtn operation={"-"} onClick={() => onIncrement("-")} />
+        <div className="m-1 flex w-6 items-center justify-center text-xs text-white">
+          {time}
+        </div>
+        <IncrementBtn operation={"+"} onClick={() => onIncrement("+")} />
+      </div>
     </div>
   );
 };
