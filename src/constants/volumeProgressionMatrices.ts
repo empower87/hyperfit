@@ -71,6 +71,40 @@ const MRV_PROGRESSION_MATRIX_THREE = [
   ],
 ] as const;
 
+export const MEV_PROGRESSION_MATRIX_FOUR = [
+  [[4]],
+  [[2], [2]],
+  [[2], [2], [1]],
+] as const;
+
+export const MEV_PROGRESSION_MATRIX_TWO = [
+  [[2, 2]],
+  [
+    [2, 2],
+    [2, 0],
+  ],
+  [[2, 2], [2, 0], [1]],
+] as const;
+
+// NOTE: MV probably shouldn't require progression since the volume is already so low
+export const MV_PROGRESSION_MATRIX_SIX = [
+  [[3, 3]],
+  [
+    [3, 0],
+    [3, 0],
+  ],
+] as const;
+
+export const MV_PROGRESSION_MATRIX_FOUR = [
+  [[2, 2]],
+  [
+    [2, 0],
+    [2, 0],
+  ],
+] as const;
+
+export const MV_PROGRESSION_MATRIX_THREE = [[[3]]] as const;
+
 // microcycles = week 1 --- week 2 --- week 3 --- week 4 --- week 5 --- week 6 --- week 7 --- week 8 ---
 //   one-one   =   2          2          3          3          4          4          5          5
 //   one-two   =   2          3          3          4          4          5          5          6

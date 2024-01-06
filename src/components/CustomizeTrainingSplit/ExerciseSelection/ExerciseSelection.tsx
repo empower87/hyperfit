@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { DragDropContext, Draggable, DropResult } from "react-beautiful-dnd";
 import ReactDOM from "react-dom";
 import {
@@ -77,7 +77,8 @@ function DaySessionItem({ index, exercise }: DaySessionItemProps) {
   const bgColor = getRankColor(exercise.rank);
   const exercises = getGroupList(exercise.muscle);
   const mesocycle_progression = exercise.mesocycle_progression;
-  const sets = mesocycle_progression[mesocycle_progression.length - 1].sets;
+  console.log(exercise, exercise.mesocycle_progression, index, "WTF?");
+  const sets = mesocycle_progression[0].sets;
   return (
     <li className={" text-xxs mb-0.5 flex w-full text-white"}>
       <div className={" flex w-1/12 indent-1"}>{index}</div>
@@ -116,8 +117,14 @@ type DroppableDayProps = {
   split: SplitType;
   droppableId: string;
   exercises: ExerciseType[];
+  children: ReactNode;
 };
-function DroppableDay({ split, droppableId, exercises }: DroppableDayProps) {
+function DroppableDay({
+  split,
+  droppableId,
+  exercises,
+  children,
+}: DroppableDayProps) {
   const totalSets = exercises.reduce((acc, prev) => acc + prev.sets, 0);
   const setDurationInSeconds = totalSets * 20;
   const setRestDurationInSeconds = totalSets * 120;
@@ -170,20 +177,17 @@ function DroppableDay({ split, droppableId, exercises }: DroppableDayProps) {
           </ul>
         )}
       </StrictModeDroppable>
-
-      <div className=" mt-1 flex w-full flex-col">
-        <div className=" text-xxs text-white">Total Est. Duration</div>
-        <div className=" text-xxs text-white">{totalDuration}min</div>
-      </div>
+      {children}
     </li>
   );
 }
 
 type DayLayoutProps = {
   session: DraggableExercisesObjectType;
+  sessionDurationCalcuator: (exercises: ExerciseType[]) => number;
 };
 
-function DayLayout({ session }: DayLayoutProps) {
+function DayLayout({ session, sessionDurationCalcuator }: DayLayoutProps) {
   const { day, sessions } = session;
 
   return (
@@ -201,13 +205,23 @@ function DayLayout({ session }: DayLayoutProps) {
             ref={provided.innerRef}
           >
             {sessions.map((each, index) => {
+              const totalDuration = sessionDurationCalcuator(each.exercises);
               return (
                 <DroppableDay
                   key={`${each.id}_${index}`}
                   split={each.split}
                   droppableId={each.id}
                   exercises={each.exercises}
-                />
+                >
+                  <div className=" mt-1 flex w-full flex-col">
+                    <div className=" text-xxs text-white">
+                      Total Est. Duration
+                    </div>
+                    <div className=" text-xxs text-white">
+                      {totalDuration}min
+                    </div>
+                  </div>
+                </DroppableDay>
               );
             })}
           </ul>
@@ -252,12 +266,14 @@ type WeekSessionsProps = {
   selectedMesocycle: string;
   training_week: TrainingDayType[];
   onTitleClick: (title: string) => void;
+  sessionDurationCalcuator: (exercises: ExerciseType[]) => number;
 };
 export default function WeekSessions({
   week_index,
   selectedMesocycle,
   training_week,
   onTitleClick,
+  sessionDurationCalcuator,
 }: WeekSessionsProps) {
   const title = `Mesocycle ${week_index}`;
 
@@ -437,6 +453,7 @@ export default function WeekSessions({
               <DayLayout
                 key={`${each.day}_${index}_draggableExercisesObject`}
                 session={each}
+                sessionDurationCalcuator={sessionDurationCalcuator}
               />
             );
           })}
@@ -508,6 +525,27 @@ export const MesocycleExerciseLayout = ({
     setDurationTimeConstants(newDurationTimeConstants);
   };
 
+  const sessionDurationCalcuator = useCallback(
+    (exercises: ExerciseType[]) => {
+      const { warmup, rest, rep } = durationTimeConstants;
+      // const totalSets = exercises.reduce((acc, prev) => acc + prev.sets, 0);
+      const totalExercises = exercises.length;
+      const restTime = totalExercises * rest.value;
+      let totalRepTime = 0;
+      for (let i = 0; i < exercises.length; i++) {
+        const exercise = exercises[i];
+        const repTime = exercise.sets * exercise.reps * rep.value;
+        totalRepTime += repTime;
+      }
+      const totalTimeInMinutes = Math.round(
+        (warmup.value + restTime + totalRepTime) / 60
+      );
+      console.log(exercises, "lets take alooksie");
+      return totalTimeInMinutes;
+    },
+    [durationTimeConstants]
+  );
+
   return (
     <div className={" flex flex-col"}>
       <div className={BORDER_COLOR_M6 + " mb-2 border-b-2"}>
@@ -542,6 +580,7 @@ export const MesocycleExerciseLayout = ({
             training_week={each}
             selectedMesocycle={selectedMesocycle}
             onTitleClick={onTitleClick}
+            sessionDurationCalcuator={sessionDurationCalcuator}
           />
         );
       })}

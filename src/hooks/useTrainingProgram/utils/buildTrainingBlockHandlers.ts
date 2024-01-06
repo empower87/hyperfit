@@ -20,6 +20,7 @@ const getMuscleGroupsExercisesForMesocycle = (
     const session_exercises = [...total_exercises[i]];
     if (!current_mesocycle[0]) break;
     if (!current_mesocycle[0][i]) break;
+
     meso_exercises.push(session_exercises);
   }
 
@@ -105,10 +106,11 @@ const distributeExercisesAmongSplit = (
     });
     return { ...each, sessions: emptySessionSets };
   });
+  // const muscle_priority = [..._muscle_priority] as const;
 
   for (let i = 0; i < muscle_priority.length; i++) {
     const muscle = muscle_priority[i].muscle;
-    const muscle_exercises = muscle_priority[i].exercises;
+    const muscle_exercises = [...muscle_priority[i].exercises];
     const { setProgressionMatrix } = muscle_priority[i].volume;
 
     const exercises = getMuscleGroupsExercisesForMesocycle(
@@ -119,18 +121,28 @@ const distributeExercisesAmongSplit = (
 
     const splits = getMusclesSplit(split_sessions.split, muscle);
     for (let k = 0; k < exercises.length; k++) {
+      // const muscle = exercises[k][0].muscle
       const indices = findSessionWithLowestVolume(
         training_week,
-        exercises[k][0].muscle,
+        muscle,
         splits
       );
       const mesocycle_progression = setProgressionMatrix[mesocycle];
       const exercise_position = k;
+      console.log(
+        muscle,
+        exercises,
+        exercise_position,
+        mesocycle_progression[exercise_position],
+        mesocycle,
+        "SO CONFUSING"
+      );
       const exercises_w_progression = attachMesocycleProgressionToExercise(
-        exercises[k],
+        [...exercises[k]],
         exercise_position,
         mesocycle_progression
       );
+
       training_week[indices[0]]?.sessions[indices[1]]?.exercises.push(
         exercises_w_progression
       );
@@ -147,9 +159,10 @@ export const buildMesocyclesTEST = (
 ) => {
   let mesocycle_weeks: TrainingDayType[][] = [];
 
+  const muscle_list = [...muscle_priority_list];
   for (let i = 0; i < mesocycles; i++) {
     const distributed_mesocycle = distributeExercisesAmongSplit(
-      muscle_priority_list,
+      muscle_list,
       split_sessions,
       training_week,
       i

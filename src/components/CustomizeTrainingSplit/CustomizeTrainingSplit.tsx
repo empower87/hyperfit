@@ -186,9 +186,8 @@ export default function PageContent() {
           />
         </div>
       ) : null} */}
-          {training_block.length ? (
-            <MesocycleExerciseLayout training_block={training_block} />
-          ) : null}
+
+          <MesocycleExerciseLayout training_block={training_block} />
         </div>
       </Section>
 

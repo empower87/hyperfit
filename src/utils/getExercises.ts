@@ -90,6 +90,7 @@ const INITIAL_EXERCISE: ExerciseType = {
   reps: 10,
   weight: 100,
   rir: 3,
+  mesocycle_progression: [],
 };
 
 const getMesoFrequency = (

@@ -81,6 +81,7 @@ export default function useTrainingProgram() {
 
   useEffect(() => {
     dispatch({ type: "GET_TRAINING_BLOCK" });
+    console.log(muscle_priority_list, training_block, "TEST: TRAINING BLOCK");
   }, [frequency, split_sessions, muscle_priority_list, training_week]);
 
   return {
