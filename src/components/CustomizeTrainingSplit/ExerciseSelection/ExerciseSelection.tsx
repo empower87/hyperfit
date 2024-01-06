@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { DragDropContext, Draggable, DropResult } from "react-beautiful-dnd";
 import ReactDOM from "react-dom";
 import {
@@ -446,9 +446,45 @@ export default function WeekSessions({
   );
 }
 
+type DurationTimeConstraint = {
+  value: number;
+  min: number;
+  max: number;
+  increment: number;
+};
+type DurationTimeConstants = {
+  warmup: DurationTimeConstraint;
+  rest: DurationTimeConstraint;
+  rep: DurationTimeConstraint;
+};
+type DurationTimeConstantsKeys = keyof DurationTimeConstants;
+
+// NOTE: use seconds
+const DURATION_TIME_CONSTRAINTS = {
+  warmup: {
+    value: 300,
+    min: 0,
+    max: 600,
+    increment: 30,
+  },
+  rest: {
+    value: 120,
+    min: 0,
+    max: 300,
+    increment: 15,
+  },
+  rep: {
+    value: 2,
+    min: 1,
+    max: 10,
+    increment: 1,
+  },
+};
+
 type MesocycleExerciseLayoutProps = {
   training_block: TrainingDayType[][];
 };
+
 export const MesocycleExerciseLayout = ({
   training_block,
 }: MesocycleExerciseLayoutProps) => {
@@ -456,10 +492,20 @@ export const MesocycleExerciseLayout = ({
   const [selectedMesocycle, setSelectedMesocycle] = useState(
     `Mesocycle ${lastMesocycle}`
   );
+  const [durationTimeConstants, setDurationTimeConstants] =
+    useState<DurationTimeConstants>({ ...DURATION_TIME_CONSTRAINTS });
 
   const onTitleClick = (title: string) => {
     if (title === selectedMesocycle) return;
     setSelectedMesocycle(title);
+  };
+
+  const onTimeChange = (key: DurationTimeConstantsKeys, time: number) => {
+    const newDurationTimeConstants = {
+      ...durationTimeConstants,
+      [key]: { ...durationTimeConstants[key], value: time },
+    };
+    setDurationTimeConstants(newDurationTimeConstants);
   };
 
   return (
@@ -472,25 +518,19 @@ export const MesocycleExerciseLayout = ({
         <div className=" flex flex-col">
           <div className="mb-0.5 text-sm">Workout Duration Variables</div>
           <TimeIncrementFrame
-            title="Warmup"
-            initialTime={2}
-            increment={0.25}
-            _limits={[0, 5]}
-            format="m"
+            title="warmup"
+            constraints={durationTimeConstants.warmup}
+            onTimeChange={onTimeChange}
           />
           <TimeIncrementFrame
-            title="Rest"
-            initialTime={5}
-            increment={0.5}
-            _limits={[0, 10]}
-            format="m"
+            title="rest"
+            constraints={durationTimeConstants.rest}
+            onTimeChange={onTimeChange}
           />
           <TimeIncrementFrame
-            title="Rep"
-            initialTime={1}
-            increment={1}
-            _limits={[1, 10]}
-            format="s"
+            title="rep"
+            constraints={durationTimeConstants.rep}
+            onTimeChange={onTimeChange}
           />
         </div>
       </div>
@@ -510,11 +550,9 @@ export const MesocycleExerciseLayout = ({
 };
 
 type TimeIncrementFrameProps = {
-  title: string;
-  initialTime: number;
-  increment: number;
-  _limits: [number, number];
-  format: "s" | "m";
+  title: DurationTimeConstantsKeys;
+  constraints: DurationTimeConstraint;
+  onTimeChange: (key: DurationTimeConstantsKeys, time: number) => void;
 };
 
 type IncrementBtnProps = {
@@ -536,57 +574,38 @@ const IncrementBtn = ({ operation, onClick }: IncrementBtnProps) => {
 
 const TimeIncrementFrame = ({
   title,
-  initialTime,
-  increment,
-  _limits,
-  format,
+  constraints,
+  onTimeChange,
 }: TimeIncrementFrameProps) => {
   const [time, setTime] = useState<string>("00:00");
-  const [timeInMs, setTimeInMs] = useState<number>(0);
-  const [incrementInMs, setIncrementInMs] = useState<number>(0);
-
-  const [limits, setLimits] = useState<[number, number]>([
-    _limits[0],
-    _limits[1],
-  ]);
+  const { value, min, max, increment } = constraints;
+  const timeInSecondsRef = useRef<number>(value);
 
   useEffect(() => {
-    if (format === "s") {
-      setTimeInMs(initialTime * 1000);
-      setIncrementInMs(increment * 1000);
-    } else {
-      setTimeInMs(initialTime * 60 * 1000);
-      setIncrementInMs(increment * 60 * 1000);
-    }
-  }, [initialTime, increment]);
-
-  useEffect(() => {
-    const formattedTime = formatTime(timeInMs, format);
+    const formattedTime = formatTime(timeInSecondsRef.current);
     setTime(formattedTime);
-  }, [timeInMs]);
+  }, [timeInSecondsRef]);
 
   const onIncrement = (operation: "+" | "-") => {
     if (operation === "+") {
-      setTimeInMs((prev) => prev + increment);
+      if (timeInSecondsRef.current + increment > max) return;
+      timeInSecondsRef.current = timeInSecondsRef.current + increment;
     } else {
-      setTimeInMs((prev) => prev - increment);
+      if (timeInSecondsRef.current - increment < min) return;
+      timeInSecondsRef.current = timeInSecondsRef.current - increment;
     }
+    const formattedTime = formatTime(timeInSecondsRef.current);
+    setTime(formattedTime);
+    onTimeChange(title, timeInSecondsRef.current);
   };
 
-  const formatTime = (time: number, format: "s" | "m") => {
-    if (format === "s") {
-      let stringTime = (time / 1000).toFixed(1);
-      return `00:${stringTime}`;
-    } else {
-      const seconds = Math.floor(time / 1000);
-      const minutes = Math.floor(seconds / 60);
-      const remainingSeconds = seconds % 60;
+  const formatTime = (time: number) => {
+    const minutes = Math.floor(time / 60);
+    const remainingSeconds = time % 60;
 
-      let stringTime = (time / 1000).toFixed(1);
-      return `${minutes.toString().padStart(2, "0")}:${remainingSeconds
-        .toString()
-        .padStart(2, "0")}`;
-    }
+    return `${minutes.toString().padStart(2, "0")}:${remainingSeconds
+      .toString()
+      .padStart(2, "0")}`;
   };
 
   return (
