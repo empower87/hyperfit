@@ -77,7 +77,6 @@ function DaySessionItem({ index, exercise }: DaySessionItemProps) {
   const bgColor = getRankColor(exercise.rank);
   const exercises = getGroupList(exercise.muscle);
   const mesocycle_progression = exercise.mesocycle_progression;
-  console.log(exercise, exercise.mesocycle_progression, index, "WTF?");
   const sets = mesocycle_progression[0].sets;
   return (
     <li className={" text-xxs mb-0.5 flex w-full text-white"}>
@@ -540,7 +539,7 @@ export const MesocycleExerciseLayout = ({
       const totalTimeInMinutes = Math.round(
         (warmup.value + restTime + totalRepTime) / 60
       );
-      console.log(exercises, "lets take alooksie");
+
       return totalTimeInMinutes;
     },
     [durationTimeConstants]

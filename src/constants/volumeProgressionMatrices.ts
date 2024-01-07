@@ -152,6 +152,11 @@ export const getVolumeProgressionMatrix = (
         return MRV_PROGRESSION_MATRIX_ONE;
       }
     case "MV":
+      if (exercisesPerSession === 2) {
+        return MRV_PROGRESSION_MATRIX_TWO;
+      } else {
+        return MRV_PROGRESSION_MATRIX_ONE;
+      }
     default:
       return MRV_PROGRESSION_MATRIX_TWO;
   }
