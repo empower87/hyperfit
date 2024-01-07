@@ -159,8 +159,9 @@ export const buildMesocyclesTEST = (
 ) => {
   let mesocycle_weeks: TrainingDayType[][] = [];
 
-  const muscle_list = [...muscle_priority_list];
+  
   for (let i = 0; i < mesocycles; i++) {
+    const muscle_list = [...muscle_priority_list];
     const distributed_mesocycle = distributeExercisesAmongSplit(
       muscle_list,
       split_sessions,
