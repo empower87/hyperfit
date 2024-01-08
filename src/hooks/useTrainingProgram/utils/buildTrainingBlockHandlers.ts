@@ -101,18 +101,18 @@ const attachMesocycleProgressionToExercise = (
 };
 
 const distributeExercisesAmongSplit = (
-  muscle_priority: MusclePriorityType[],
+  _muscle_priority: MusclePriorityType[],
   split_sessions: SplitSessionsType,
-  training_week: TrainingDayType[],
+  _training_week: TrainingDayType[],
   mesocycle: number
 ) => {
-  // let training_week: TrainingDayType[] = [..._training_week].map((each) => {
-  //   const emptySessionSets = each.sessions.map((ea) => {
-  //     return { ...ea, exercises: [] as ExerciseType[][] };
-  //   });
-  //   return { ...each, sessions: emptySessionSets };
-  // });
-
+  let training_week: TrainingDayType[] = [..._training_week].map((each) => {
+    const emptySessionSets = each.sessions.map((ea) => {
+      return { ...ea, exercises: [] as ExerciseType[][] };
+    });
+    return { ...each, sessions: emptySessionSets };
+  });
+  const muscle_priority = structuredClone(_muscle_priority);
   for (let i = 0; i < muscle_priority.length; i++) {
     const muscle = muscle_priority[i].muscle;
     const muscle_exercises = muscle_priority[i].exercises;
@@ -203,15 +203,16 @@ export const buildMesocyclesTEST = (
   let mesocycle_weeks: TrainingDayType[][] = [];
 
   const muscle_list = [...muscle_priority_list];
-  const week = [...training_week];
+
+  // let week: TrainingDayType[] = training_week.map((each) => {
+  //   const emptySessionSets = each.sessions.map((ea) => {
+  //     return { ...ea, exercises: [] as ExerciseType[][] };
+  //   });
+  //   return { ...each, sessions: emptySessionSets };
+  // });
 
   for (let i = 0; i < mesocycles; i++) {
-    let training_week: TrainingDayType[] = week.map((each) => {
-      const emptySessionSets = each.sessions.map((ea) => {
-        return { ...ea, exercises: [] as ExerciseType[][] };
-      });
-      return { ...each, sessions: emptySessionSets };
-    });
+    // const training_week = structuredClone(week);
 
     const distributed_mesocycle = distributeExercisesAmongSplit(
       muscle_list,
@@ -219,7 +220,7 @@ export const buildMesocyclesTEST = (
       training_week,
       i
     );
-    mesocycle_weeks.push([...distributed_mesocycle]);
+    mesocycle_weeks.push(distributed_mesocycle);
   }
   console.log(mesocycle_weeks, "MESOCYCLE WEEKS");
   return mesocycle_weeks;
