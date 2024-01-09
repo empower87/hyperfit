@@ -122,6 +122,7 @@ export default function PageContent() {
     training_block,
     split_sessions,
     frequency,
+    training_program_params,
     mrv_breakpoint,
     mev_breakpoint,
     prioritized_muscle_list,
@@ -132,6 +133,7 @@ export default function PageContent() {
     handleRearrangeTrainingWeek,
   } = useTrainingProgram();
 
+  const { microcycles } = training_program_params;
   const onVolumeChange = () => {};
   const updateMesoProgression = () => {};
 
@@ -161,7 +163,7 @@ export default function PageContent() {
                 frequency={frequency}
                 prioritized_muscle_list={prioritized_muscle_list}
               />
-              
+
               {/* <SplitOverview onSplitChange={handleUpdateSplitSessions} /> */}
             </div>
 
@@ -180,7 +182,10 @@ export default function PageContent() {
             onSplitReorder={handleRearrangeTrainingWeek}
           />
 
-          <MesocycleExerciseLayout training_block={training_block} />
+          <MesocycleExerciseLayout
+            training_block={training_block}
+            microcycles={microcycles}
+          />
         </div>
       </Section>
 

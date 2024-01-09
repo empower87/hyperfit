@@ -1,20 +1,14 @@
 import {
   UPPER_MUSCLES,
   getBroSplit,
-  getMusclesSplit,
   getOptimizedSplit,
   getPushPullLegsSplit,
 } from "~/constants/workoutSplits";
-import {
-  getTopExercises,
-  getTotalExercisesForMuscleGroup,
-} from "~/utils/getExercises";
+import { getTotalExercisesForMuscleGroup } from "~/utils/getExercises";
 import { includes } from "~/utils/readOnlyArrayIncludes";
 import {
-  ExerciseType,
   MusclePriorityType,
   SplitSessionsType,
-  TrainingDayType,
 } from "./trainingProgramReducer";
 
 export type VolumeLandmarkType = "MRV" | "MEV" | "MV";
@@ -316,61 +310,61 @@ function attachMesocycleFrequencyProgression(
   return items;
 }
 
-const distributeExercisesAmongSplit = (
-  muscle_priority: MusclePriorityType[],
-  split_sessions: SplitSessionsType,
-  _training_week: TrainingDayType[]
-) => {
-  let training_week: TrainingDayType[] = [..._training_week].map((each) => {
-    const emptySessionSets = each.sessions.map((ea) => {
-      return { ...ea, exercises: [] as ExerciseType[][] };
-    });
-    return { ...each, sessions: emptySessionSets };
-  });
+// const distributeExercisesAmongSplit = (
+//   muscle_priority: MusclePriorityType[],
+//   split_sessions: SplitSessionsType,
+//   _training_week: TrainingDayType[]
+// ) => {
+//   let training_week: TrainingDayType[] = [..._training_week].map((each) => {
+//     const emptySessionSets = each.sessions.map((ea) => {
+//       return { ...ea, exercises: [] as ExerciseType[][] };
+//     });
+//     return { ...each, sessions: emptySessionSets };
+//   });
 
-  for (let i = 0; i < muscle_priority.length; i++) {
-    const volumeLandmark = muscle_priority[i].volume_landmark;
-    const key: VolumeKey =
-      volumeLandmark === "MRV"
-        ? "mrv_progression_matrix"
-        : volumeLandmark === "MEV"
-        ? "mev_progression_matrix"
-        : "mv_progression_matrix";
+//   for (let i = 0; i < muscle_priority.length; i++) {
+//     const volumeLandmark = muscle_priority[i].volume_landmark;
+//     const key: VolumeKey =
+//       volumeLandmark === "MRV"
+//         ? "mrv_progression_matrix"
+//         : volumeLandmark === "MEV"
+//         ? "mev_progression_matrix"
+//         : "mv_progression_matrix";
 
-    let exercises = getTopExercises(
-      muscle_priority[i].muscle,
-      key,
-      muscle_priority[i].mesoProgression
-    );
+//     let exercises = getTopExercises(
+//       muscle_priority[i].muscle,
+//       key,
+//       muscle_priority[i].mesoProgression
+//     );
 
-    const splits = getMusclesSplit(
-      split_sessions.split,
-      muscle_priority[i].muscle
-    );
+//     const splits = getMusclesSplit(
+//       split_sessions.split,
+//       muscle_priority[i].muscle
+//     );
 
-    for (let j = 0; j < training_week.length; j++) {
-      if (exercises.length) {
-        const sessions = training_week[j].sessions;
+//     for (let j = 0; j < training_week.length; j++) {
+//       if (exercises.length) {
+//         const sessions = training_week[j].sessions;
 
-        for (let k = 0; k < sessions.length; k++) {
-          if (splits.includes(sessions[k].split)) {
-            let add_exercises = exercises[0];
+//         for (let k = 0; k < sessions.length; k++) {
+//           if (splits.includes(sessions[k].split)) {
+//             let add_exercises = exercises[0];
 
-            for (let l = 0; l < add_exercises.length; l++) {
-              add_exercises[l] = {
-                ...add_exercises[l],
-                session: j,
-              };
-            }
-            training_week[j].sessions[k].exercises.push(add_exercises);
-            exercises.shift();
-          }
-        }
-      }
-    }
-  }
-  return training_week;
-};
+//             for (let l = 0; l < add_exercises.length; l++) {
+//               add_exercises[l] = {
+//                 ...add_exercises[l],
+//                 session: j,
+//               };
+//             }
+//             training_week[j].sessions[k].exercises.push(add_exercises);
+//             exercises.shift();
+//           }
+//         }
+//       }
+//     }
+//   }
+//   return training_week;
+// };
 
 function getSplitOverview(split_sessions: SplitSessionsType) {
   let newObj = Object.entries(split_sessions).filter(
@@ -384,7 +378,7 @@ export {
   addMesoProgression,
   addRankWeightsToMusclePriority,
   attachMesocycleFrequencyProgression,
-  distributeExercisesAmongSplit,
+  // distributeExercisesAmongSplit,
   getExercisesForPrioritizedMuscles,
   getSplitOverview,
 };

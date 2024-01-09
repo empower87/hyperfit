@@ -72,13 +72,19 @@ function Prompt({ options, isOpen, onClose }: PromptProps) {
 type DaySessionItemProps = {
   index: number;
   exercise: ExerciseType;
+  selectedMicrocycleIndex: number;
 };
-function DaySessionItem({ index, exercise }: DaySessionItemProps) {
+function DaySessionItem({
+  index,
+  exercise,
+  selectedMicrocycleIndex,
+}: DaySessionItemProps) {
   const bgColor = getRankColor(exercise.rank);
   const exercises = getGroupList(exercise.muscle);
   const mesocycle_progression = exercise.mesocycle_progression;
-  const sets = mesocycle_progression[0].sets;
-  const reps = mesocycle_progression[0].reps;
+
+  const sets = mesocycle_progression[selectedMicrocycleIndex].sets;
+  const reps = mesocycle_progression[selectedMicrocycleIndex].reps;
   return (
     <li className={" text-xxs mb-0.5 flex w-full text-white"}>
       <div className={" flex w-1/12 indent-1"}>{index}</div>
@@ -117,12 +123,14 @@ type DroppableDayProps = {
   split: SplitType;
   droppableId: string;
   exercises: ExerciseType[];
+  selectedMicrocycleIndex: number;
   children: ReactNode;
 };
 function DroppableDay({
   split,
   droppableId,
   exercises,
+  selectedMicrocycleIndex,
   children,
 }: DroppableDayProps) {
   return (
@@ -158,7 +166,11 @@ function DroppableDay({
                       {...provided.draggableProps}
                       {...provided.dragHandleProps}
                     >
-                      <DaySessionItem index={index + 1} exercise={each} />
+                      <DaySessionItem
+                        index={index + 1}
+                        exercise={each}
+                        selectedMicrocycleIndex={selectedMicrocycleIndex}
+                      />
                     </div>
                   )}
                 </Draggable>
@@ -176,9 +188,14 @@ function DroppableDay({
 type DayLayoutProps = {
   session: DraggableExercisesObjectType;
   sessionDurationCalcuator: (exercises: ExerciseType[]) => number;
+  selectedMicrocycleIndex: number;
 };
 
-function DayLayout({ session, sessionDurationCalcuator }: DayLayoutProps) {
+function DayLayout({
+  session,
+  sessionDurationCalcuator,
+  selectedMicrocycleIndex,
+}: DayLayoutProps) {
   const { day, sessions } = session;
 
   return (
@@ -203,6 +220,7 @@ function DayLayout({ session, sessionDurationCalcuator }: DayLayoutProps) {
                   split={each.split}
                   droppableId={each.id}
                   exercises={each.exercises}
+                  selectedMicrocycleIndex={selectedMicrocycleIndex}
                 >
                   <div className=" mt-1 flex w-full flex-col">
                     <div className=" text-xxs text-white">
@@ -253,20 +271,22 @@ function Title({ title, selected, onClick }: TitleProps) {
 }
 
 type WeekSessionsProps = {
-  week_index: number;
+  mesocycle_index: number;
+  microcycles: number;
   selectedMesocycle: string;
   training_week: TrainingDayType[];
   onTitleClick: (title: string) => void;
   sessionDurationCalcuator: (exercises: ExerciseType[]) => number;
 };
 export default function WeekSessions({
-  week_index,
+  mesocycle_index,
+  microcycles,
   selectedMesocycle,
   training_week,
   onTitleClick,
   sessionDurationCalcuator,
 }: WeekSessionsProps) {
-  const title = `Mesocycle ${week_index}`;
+  const title = `Mesocycle ${mesocycle_index}`;
 
   const [draggableExercisesObject, setDraggableExercisesObject] = useState<
     DraggableExercisesObjectType[]
@@ -410,6 +430,14 @@ export default function WeekSessions({
     setIsModalPrompted(false);
   };
 
+  const [selectedMicrocycleIndex, setSelectedMicrocycleIndex] =
+    useState<number>(0);
+
+  const selectWeekIndexHandler = (week: string) => {
+    const weekNumber = week.split(" ")[1];
+    setSelectedMicrocycleIndex(parseInt(weekNumber) - 1);
+  };
+
   if (title !== selectedMesocycle) {
     return (
       <Title
@@ -425,6 +453,10 @@ export default function WeekSessions({
         title={title}
         selected={selectedMesocycle}
         onClick={onTitleClick}
+      />
+      <SelectMicrocycleList
+        microcycles={microcycles}
+        onWeekClick={selectWeekIndexHandler}
       />
 
       {isModalPrompted && (
@@ -445,6 +477,7 @@ export default function WeekSessions({
                 key={`${each.day}_${index}_draggableExercisesObject`}
                 session={each}
                 sessionDurationCalcuator={sessionDurationCalcuator}
+                selectedMicrocycleIndex={selectedMicrocycleIndex}
               />
             );
           })}
@@ -454,6 +487,43 @@ export default function WeekSessions({
   );
 }
 
+type SelectMicrocycleListProps = {
+  microcycles: number;
+  onWeekClick: (week: string) => void;
+};
+
+const SelectMicrocycleList = ({
+  microcycles,
+  onWeekClick,
+}: SelectMicrocycleListProps) => {
+  const list = Array.from(Array(microcycles), (e, i) => `Week ${i + 1}`);
+  const [selectedWeek, setSelectedWeek] = useState<string>("Week 1");
+  const selected = `${BG_COLOR_M5} text-white font-bold`;
+  const onClickHandler = (week: string) => {
+    setSelectedWeek(week);
+    onWeekClick(week);
+  };
+  return (
+    <ul className={cn(`mb-1 flex w-full cursor-pointer`)}>
+      {list.map((week, i) => {
+        return (
+          <li
+            key={week}
+            className={cn(
+              `text-xs hover:${BG_COLOR_M5} mr-1 p-1 text-slate-400`,
+              {
+                [selected]: selectedWeek === week,
+              }
+            )}
+            onClick={() => onClickHandler(week)}
+          >
+            {week}
+          </li>
+        );
+      })}
+    </ul>
+  );
+};
 type DurationTimeConstraint = {
   value: number;
   min: number;
@@ -491,10 +561,12 @@ const DURATION_TIME_CONSTRAINTS = {
 
 type MesocycleExerciseLayoutProps = {
   training_block: TrainingDayType[][];
+  microcycles: number;
 };
 
 export const MesocycleExerciseLayout = ({
   training_block,
+  microcycles,
 }: MesocycleExerciseLayoutProps) => {
   const lastMesocycle = training_block.length;
   const [selectedMesocycle, setSelectedMesocycle] = useState(
@@ -567,7 +639,8 @@ export const MesocycleExerciseLayout = ({
       {training_block.map((each, index) => {
         return (
           <WeekSessions
-            week_index={index + 1}
+            mesocycle_index={index + 1}
+            microcycles={microcycles}
             training_week={each}
             selectedMesocycle={selectedMesocycle}
             onTitleClick={onTitleClick}
