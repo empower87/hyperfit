@@ -78,14 +78,15 @@ function DaySessionItem({ index, exercise }: DaySessionItemProps) {
   const exercises = getGroupList(exercise.muscle);
   const mesocycle_progression = exercise.mesocycle_progression;
   const sets = mesocycle_progression[0].sets;
+  const reps = mesocycle_progression[0].reps;
   return (
     <li className={" text-xxs mb-0.5 flex w-full text-white"}>
       <div className={" flex w-1/12 indent-1"}>{index}</div>
 
       <div className={BORDER_COLOR_M7 + " flex w-11/12 border-2 " + bgColor.bg}>
         <div className={BORDER_COLOR_M7 + " w-1/12 border-r-2"}>{sets}x</div>
-
-        <div className=" flex w-11/12 flex-col">
+        <div className={BORDER_COLOR_M7 + " w-1/12 border-r-2"}>{reps}</div>
+        <div className=" flex w-10/12 flex-col">
           <select className={bgColor.bg + " truncate"}>
             {exercises.map((each, index) => {
               return (
@@ -124,15 +125,6 @@ function DroppableDay({
   exercises,
   children,
 }: DroppableDayProps) {
-  const totalSets = exercises.reduce((acc, prev) => acc + prev.sets, 0);
-  const setDurationInSeconds = totalSets * 20;
-  const setRestDurationInSeconds = totalSets * 120;
-  const setDurationInMinutes = setDurationInSeconds / 60;
-  const setRestDurationInMinutes = setRestDurationInSeconds / 60;
-  const totalDuration = Math.round(
-    setDurationInMinutes + setRestDurationInMinutes
-  );
-
   return (
     <li className=" w-52">
       <div className={" mb-1 p-1"}>

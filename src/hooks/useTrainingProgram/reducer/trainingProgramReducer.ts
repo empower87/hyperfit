@@ -131,6 +131,7 @@ export type ExerciseType = {
   reps: number;
   weight: number;
   rir: number;
+  weightIncrement: number;
   mesocycle_progression: ExerciseMesocycleProgressionType[];
 };
 

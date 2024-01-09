@@ -161,6 +161,7 @@ export default function PageContent() {
                 frequency={frequency}
                 prioritized_muscle_list={prioritized_muscle_list}
               />
+              
               {/* <SplitOverview onSplitChange={handleUpdateSplitSessions} /> */}
             </div>
 
@@ -178,14 +179,6 @@ export default function PageContent() {
             training_week={training_week}
             onSplitReorder={handleRearrangeTrainingWeek}
           />
-
-          {/* {training_block.length ? (
-        <div>
-          <WeekSessions
-            training_week={training_block[training_block.length - 1]}
-          />
-        </div>
-      ) : null} */}
 
           <MesocycleExerciseLayout training_block={training_block} />
         </div>

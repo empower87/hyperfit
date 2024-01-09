@@ -112,6 +112,7 @@ const distributeExercisesAmongSplit = (
     });
     return { ...each, sessions: emptySessionSets };
   });
+
   const muscle_priority = structuredClone(_muscle_priority);
   for (let i = 0; i < muscle_priority.length; i++) {
     const muscle = muscle_priority[i].muscle;
@@ -124,10 +125,6 @@ const distributeExercisesAmongSplit = (
       mesocycle_progression[0].length
     );
 
-    // const exercises = getMuscleGroupsExercisesForMesocycle(
-    //   mesocycle_progression,
-    //   muscle_exercises
-    // );
     const newExercises = new Map<
       ExerciseType,
       ExerciseMesocycleProgressionType[]
@@ -147,20 +144,19 @@ const distributeExercisesAmongSplit = (
             weight: 100,
             rir: 3,
           };
-          // exercise[l].mesocycle_progression.push(details);
-          // exercises[k][l].mesocycle_progression.push(details);
 
-          const getted = newExercises.get(exercise[l]);
-          if (getted) {
-            const newDetails = [...getted, details];
+          const exersiseDetails = newExercises.get(exercise[l]);
+
+          if (exersiseDetails) {
+            const newDetails = [...exersiseDetails, details];
             newExercises.set(exercise[l], newDetails);
           } else {
             newExercises.set(exercise[l], [details]);
           }
-          // newExercises.set(exercise[l], details);
         }
       }
     }
+
     const splits = getMusclesSplit(split_sessions.split, muscle);
 
     for (let k = 0; k < exercises.length; k++) {
@@ -169,7 +165,6 @@ const distributeExercisesAmongSplit = (
         muscle,
         splits
       );
-
       let sessionExercises = [...exercises[k]];
       for (let l = 0; l < sessionExercises.length; l++) {
         let exercise = sessionExercises[l];
@@ -178,18 +173,10 @@ const distributeExercisesAmongSplit = (
           sessionExercises[l].mesocycle_progression = details;
         }
       }
-
       training_week[indices[0]]?.sessions[indices[1]]?.exercises.push([
         ...sessionExercises,
       ]);
     }
-    console.log(
-      mesocycle,
-      muscle,
-      setProgressionMatrix,
-      newExercises,
-      "BIG FOUR"
-    );
   }
   return training_week;
 };
@@ -202,20 +189,9 @@ export const buildMesocyclesTEST = (
 ) => {
   let mesocycle_weeks: TrainingDayType[][] = [];
 
-  const muscle_list = [...muscle_priority_list];
-
-  // let week: TrainingDayType[] = training_week.map((each) => {
-  //   const emptySessionSets = each.sessions.map((ea) => {
-  //     return { ...ea, exercises: [] as ExerciseType[][] };
-  //   });
-  //   return { ...each, sessions: emptySessionSets };
-  // });
-
   for (let i = 0; i < mesocycles; i++) {
-    // const training_week = structuredClone(week);
-
     const distributed_mesocycle = distributeExercisesAmongSplit(
-      muscle_list,
+      muscle_priority_list,
       split_sessions,
       training_week,
       i
