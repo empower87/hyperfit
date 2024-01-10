@@ -96,6 +96,42 @@ export const ANY_MUSCLES = ["delts_side", "traps", "abs", "forearms"] as const;
 export const PERIPHERAL_MUSCLES = ["forearms", "abs", "calves"] as const;
 
 export type PeripheralMuscles = (typeof PERIPHERAL_MUSCLES)[number];
+
+export const getAvailableSplitsByMuscle = (muscle: MuscleType): SplitType[] => {
+  switch (muscle) {
+    case "abs":
+      return ["full", "upper", "lower"];
+    case "back":
+      return ["full", "upper", "pull", "back"];
+    case "biceps":
+      return ["full", "upper", "pull", "arms"];
+    case "calves":
+      return ["full", "lower", "legs"];
+    case "chest":
+      return ["full", "upper", "push", "chest"];
+    case "delts_front":
+      return ["full", "upper", "push", "shoulders"];
+    case "delts_rear":
+      return ["full", "upper", "pull", "shoulders"];
+    case "delts_side":
+      return ["full", "upper", "push", "pull", "shoulders"];
+    case "forearms":
+      return ["full", "upper", "pull", "arms"];
+    case "glutes":
+      return ["full", "lower", "legs"];
+    case "hamstrings":
+      return ["full", "lower", "legs"];
+    case "quads":
+      return ["full", "lower", "legs"];
+    case "traps":
+      return ["full", "upper", "push", "pull", "shoulders"];
+    case "triceps":
+      return ["full", "upper", "push", "arms"];
+    default:
+      return [];
+  }
+};
+
 export const getGroupList = (split: SplitType) => {
   switch (split) {
     case "upper":

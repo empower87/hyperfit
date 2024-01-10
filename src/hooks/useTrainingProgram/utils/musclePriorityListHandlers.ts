@@ -231,9 +231,9 @@ const getVolumeLandmarkForMuscle = (
   const mrv_bp = volume_breakpoints[0];
   const mev_bp = volume_breakpoints[1];
 
-  if (index <= mrv_bp) {
+  if (index < mrv_bp) {
     return "MRV";
-  } else if (index > mrv_bp && index <= mev_bp) {
+  } else if (index >= mrv_bp && index < mev_bp) {
     return "MEV";
   } else {
     return "MV";

@@ -20,12 +20,12 @@ import StrictModeDroppable from "~/lib/react-beautiful-dnd/StrictModeDroppable";
 import { getGroupList } from "~/utils/getExercises";
 import { getRankColor } from "~/utils/getRankColor";
 import { getSessionSplitColor } from "~/utils/getSessionSplitColor";
-import { canAddExerciseToSplit, getSplitOptions } from "./exerciseSelectUtils";
+import { canAddExerciseToSplit, findOptimalSplit } from "./exerciseSelectUtils";
 
 type PromptProps = {
-  options: { name: string; list: string[] }[];
+  options: SplitType[];
   isOpen: boolean;
-  onClose: (split: string) => void;
+  onClose: (split: SplitType) => void;
 };
 
 // probably don't even need to prompt user for this, just automatically change it.
@@ -53,12 +53,12 @@ function Prompt({ options, isOpen, onClose }: PromptProps) {
           {options.map((each, index) => {
             return (
               <li
-                key={`${each.name}_${index}`}
+                key={`${each}_${index}`}
                 className={BG_COLOR_M6 + " flex text-sm text-white"}
-                onClick={() => onClose(each.name)}
+                onClick={() => onClose(each)}
               >
                 <div className=" mr-1 indent-1">{index + 1}</div>
-                <div className=" ">{each.name}</div>
+                <div className=" ">{each}</div>
               </li>
             );
           })}
@@ -292,9 +292,7 @@ export default function WeekSessions({
     DraggableExercisesObjectType[]
   >([]);
   const [isModalPrompted, setIsModalPrompted] = useState<boolean>(false);
-  const [modalOptions, setModalOptions] = useState<
-    { name: string; list: string[] }[]
-  >([]);
+  const [modalOptions, setModalOptions] = useState<SplitType[]>([]);
   const [updateSplit, setUpdateSplit] = useState<{
     id: string;
     oldSplit: string;
@@ -384,9 +382,14 @@ export default function WeekSessions({
       );
 
       if (!canAdd) {
-        const splitOptions = getSplitOptions(
+        // const splitOptions = getSplitOptions(
+        //   sourceExercise.muscle,
+        //   targetSplit.split,
+        //   targetSplit.exercises
+        // );
+        const splitOptions = findOptimalSplit(
           sourceExercise.muscle,
-          targetSplit.split
+          targetSplit.exercises
         );
         setModalOptions(splitOptions);
         setUpdateSplit({
@@ -410,14 +413,14 @@ export default function WeekSessions({
     [draggableExercisesObject]
   );
 
-  const onCloseModal = (split: string) => {
+  const onCloseModal = (split: SplitType) => {
     if (!updateSplit) return;
 
     const updateList: DraggableExercisesObjectType[] =
       draggableExercisesObject.map((each) => {
         const sessions = each.sessions.map((each) => {
           if (each.id === updateSplit.id) {
-            return { ...each, split: split as SplitType };
+            return { ...each, split: split };
           } else return each;
         });
 

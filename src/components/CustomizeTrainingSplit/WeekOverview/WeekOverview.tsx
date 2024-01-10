@@ -305,6 +305,7 @@ export default function WeekOverview({
       <div className="mb-2 flex text-sm text-white">
         Split: {split_sessions.split}
       </div>
+
       <div className={BG_COLOR_M6 + " w-full p-2"}>
         <TrainingWeek
           training_week={training_week}

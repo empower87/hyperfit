@@ -1,4 +1,8 @@
-import { MuscleType, getGroupList } from "~/constants/workoutSplits";
+import {
+  MuscleType,
+  getAvailableSplitsByMuscle,
+  getGroupList,
+} from "~/constants/workoutSplits";
 import {
   ExerciseType,
   SplitType,
@@ -74,9 +78,53 @@ const COMBINED_SPLITS = [
   },
 ];
 
+export const findOptimalSplit = (
+  muscle: MuscleType,
+  targetExercises: ExerciseType[]
+) => {
+  let targetMuscles = targetExercises.map((each) => each.muscle);
+  const allMuscles = [...targetMuscles, muscle];
+  const muscleSet = new Set(allMuscles);
+
+  const splitMap = new Map<SplitType, number>();
+  for (const item of muscleSet.values()) {
+    const splits = getAvailableSplitsByMuscle(item);
+    splits.forEach((each) => {
+      if (splitMap.has(each)) {
+        const value = splitMap.get(each);
+        if (value) {
+          splitMap.set(each, value + 1);
+        }
+      } else {
+        splitMap.set(each, 1);
+      }
+    });
+  }
+
+  let optimalSplits: SplitType[] = [];
+
+  const setSize = muscleSet.size;
+  splitMap.forEach((value, key) => {
+    if (value >= setSize) {
+      optimalSplits.push(key);
+    }
+  });
+
+  console.log(
+    splitMap,
+    muscleSet,
+    muscle,
+    targetExercises,
+    optimalSplits,
+    "what does this look like?"
+  );
+  return optimalSplits;
+};
+
 export const getSplitOptions = (
   muscleGroup: MuscleType,
-  targetSplit: SplitType
+  targetSplit: SplitType,
+  targetSplitExercises: ExerciseType[]
 ) => {
   let groupList = getGroupList(targetSplit);
   let combinedGroup = [...groupList, muscleGroup];
