@@ -1,7 +1,5 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { BG_COLOR_M5, BG_COLOR_M6 } from "~/constants/themes";
-import { MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
-import { getEndOfMesocycleVolume } from "~/utils/musclePriorityHandlers";
 
 type VolumeSettingFrameProps = {
   title: string;
@@ -83,64 +81,6 @@ export function ListVolumeSettings({
         breakpoint={mevBreakpoint}
         onChange={onBreakpointChange}
       />
-    </div>
-  );
-}
-
-type WeekVolumeDetailsProps = {
-  // entireVolume: number;
-  // splitVolume: { session: string; sets: number }[];
-  prioritized_muscle_list: MusclePriorityType[];
-  frequency: [number, number];
-};
-export function WeekVolumeDetails({
-  // entireVolume,
-  // splitVolume,
-  frequency,
-  prioritized_muscle_list,
-}: WeekVolumeDetailsProps) {
-  const [entireVolume, setEntireVolume] = useState<number>(0);
-  const [splitVolume, setSplitVolume] = useState<
-    { session: string; sets: number }[]
-  >([]);
-
-  useEffect(() => {
-    let splits = [];
-    let count = 0;
-    for (let i = 0; i < prioritized_muscle_list.length; i++) {
-      const totalVolume = getEndOfMesocycleVolume(
-        prioritized_muscle_list[i].muscle,
-        prioritized_muscle_list[i].volume.frequencyProgression[2],
-        prioritized_muscle_list[i].volume.landmark
-      );
-      count = count + totalVolume;
-    }
-    let total = frequency[0] + frequency[1];
-    let setsPerDay = Math.round(count / total);
-
-    for (let j = 0; j < total; j++) {
-      splits.push({ session: `Session ${j + 1}`, sets: setsPerDay });
-    }
-
-    setEntireVolume(count);
-    setSplitVolume(splits);
-  }, [prioritized_muscle_list]);
-
-  return (
-    <div className=" mb-2">
-      <div className=" text-xxs text-white">Week Volume</div>
-      <div className=" text-xxs text-white">{entireVolume}</div>
-      {splitVolume.map((each, index) => {
-        return (
-          <div
-            key={`${each.session}_${each.sets}_${index}`}
-            className=" text-xxs flex text-white"
-          >
-            <div className=" mr-2">{each.session}</div>
-            <div className="">{each.sets}</div>
-          </div>
-        );
-      })}
     </div>
   );
 }

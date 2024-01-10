@@ -4,7 +4,7 @@ import TrainingBlock from "../Macrocycle/TrainingBlock/TrainingBlock";
 import { MesocycleExerciseLayout } from "./ExerciseSelection/ExerciseSelection";
 import { MusclePriorityList } from "./MusclePriorityList/MusclePriorityList";
 import SelectFrequencySplit from "./Settings/SelectFrequencySplit";
-import { ListVolumeSettings, WeekVolumeDetails } from "./Settings/Settings";
+import { ListVolumeSettings } from "./Settings/Settings";
 import WeekOverview from "./WeekOverview/WeekOverview";
 
 // type CustomizeTrainingSplitProps = {
@@ -158,10 +158,6 @@ export default function PageContent() {
                 mrvBreakpoint={mrv_breakpoint}
                 mevBreakpoint={mev_breakpoint}
                 onBreakpointChange={handleUpdateBreakpoint}
-              />
-              <WeekVolumeDetails
-                frequency={frequency}
-                prioritized_muscle_list={prioritized_muscle_list}
               />
 
               {/* <SplitOverview onSplitChange={handleUpdateSplitSessions} /> */}

@@ -1,11 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { DragDropContext, Draggable, DropResult } from "react-beautiful-dnd";
-import {
-  BG_COLOR_M6,
-  BG_COLOR_M7,
-  BORDER_COLOR_M6,
-  BORDER_COLOR_M7,
-} from "~/constants/themes";
+import Section from "~/components/Layout/Section";
+import { BG_COLOR_M6, BG_COLOR_M7, BORDER_COLOR_M7 } from "~/constants/themes";
 import {
   DayType,
   SessionType,
@@ -15,7 +11,6 @@ import {
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import StrictModeDroppable from "~/lib/react-beautiful-dnd/StrictModeDroppable";
 import { getSessionSplitColor } from "~/utils/getSessionSplitColor";
-import SplitOverview from "../Settings/SplitOverview";
 
 type TrainingSplitProps = {
   training_week: TrainingDayType[];
@@ -40,25 +35,6 @@ const getIndexOfDay = (droppableId: string) => {
   }
   return index;
 };
-
-function TrainingSplitHeaders({ headers }: { headers: DayType[] }) {
-  return (
-    <div className=" mb-1 flex justify-evenly">
-      {headers.map((day, index) => {
-        return (
-          <div
-            key={`${day}_${index}`}
-            className={
-              BG_COLOR_M7 + " flex w-20 justify-center text-xs text-white"
-            }
-          >
-            {day}
-          </div>
-        );
-      })}
-    </div>
-  );
-}
 
 export function TrainingWeek({
   training_week,
@@ -131,27 +107,24 @@ export function TrainingWeek({
 
   return (
     <>
-      <div className=" mb-1 flex flex-col overflow-x-auto">
-        <TrainingSplitHeaders headers={DAYS} />
-
-        <div className=" flex justify-evenly">
-          <DragDropContext onDragEnd={onDragEnd}>
-            {draggableWeek.map((each, index) => {
-              const droppable_id = DAYS[index];
-              return (
-                <DroppableDay
-                  key={`${each.day}_${index}`}
-                  droppableId={each.day}
-                  sessions={each.sessions}
-                  onSplitChange={onSplitChange}
-                />
-              );
-            })}
-          </DragDropContext>
-        </div>
+      <div className=" mb-1 flex overflow-x-auto">
+        <DragDropContext onDragEnd={onDragEnd}>
+          {draggableWeek.map((each, index) => {
+            const day = DAYS[index];
+            return (
+              <DroppableDay
+                key={`${each.day}_${index}`}
+                day={day}
+                droppableId={each.day}
+                sessions={each.sessions}
+                onSplitChange={onSplitChange}
+              />
+            );
+          })}
+        </DragDropContext>
       </div>
 
-      <div className=" flex justify-end p-1">
+      <div className=" flex justify-start p-1">
         <button
           className=" mr-1 bg-slate-500 p-1 text-xs text-slate-700"
           onClick={onResetHandler}
@@ -170,10 +143,12 @@ export function TrainingWeek({
 }
 
 const DroppableDay = ({
+  day,
   sessions,
   droppableId,
   onSplitChange,
 }: {
+  day: DayType;
   sessions: SessionType[];
   droppableId: string;
   onSplitChange: (newSplit: SplitType | "off", id: string) => void;
@@ -189,12 +164,20 @@ const DroppableDay = ({
   }
 
   return (
-    <>
+    <div className="mr-2 flex w-20 flex-col">
+      <div
+        className={
+          BG_COLOR_M7 + " mb-1 flex w-full justify-center text-xs text-white"
+        }
+      >
+        {day}
+      </div>
+
       <StrictModeDroppable droppableId={droppableId} type={"sessionx"}>
         {(provided, snapshot) => (
           <ul
             id="sessionx"
-            className=" mr-1 flex w-20 flex-col border-2 border-slate-500"
+            className=" mr-1 flex w-full flex-col border-2 border-slate-500"
             {...provided.droppableProps}
             ref={provided.innerRef}
           >
@@ -226,10 +209,9 @@ const DroppableDay = ({
           </ul>
         )}
       </StrictModeDroppable>
-    </>
+    </div>
   );
 };
-
 
 type SessionItemProps = {
   session: SessionType;
@@ -254,7 +236,7 @@ function SessionItem({ session, index, onSplitChange }: SessionItemProps) {
     "shoulders",
     "off",
   ];
-  
+
   return (
     <li
       className={
@@ -319,20 +301,16 @@ export default function WeekOverview({
   onSplitReorder,
 }: WeekOverviewProps) {
   return (
-    <div className={" mb-2 flex"}>
-      <div className=" flex w-1/4 flex-col pr-2">
-        <div className={BORDER_COLOR_M6 + " mb-2 h-6 border-b-2"}>
-          <h3 className=" indent-1 text-sm text-white">Week Overview</h3>
-        </div>
-        <SplitOverview split_sessions={split_sessions} />
+    <Section title="Week Overview">
+      <div className="mb-2 flex text-sm text-white">
+        Split: {split_sessions.split}
       </div>
-
-      <div className={BG_COLOR_M6 + " w-3/4 p-1"}>
+      <div className={BG_COLOR_M6 + " w-full p-2"}>
         <TrainingWeek
           training_week={training_week}
           onSplitReorder={onSplitReorder}
         />
       </div>
-    </div>
+    </Section>
   );
 }

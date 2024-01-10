@@ -1,11 +1,11 @@
 import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { DragDropContext, Draggable, DropResult } from "react-beautiful-dnd";
 import ReactDOM from "react-dom";
+import Section from "~/components/Layout/Section";
 import {
   BG_COLOR_M5,
   BG_COLOR_M6,
   BG_COLOR_M7,
-  BORDER_COLOR_M6,
   BORDER_COLOR_M7,
   BORDER_COLOR_M8,
 } from "~/constants/themes";
@@ -300,6 +300,8 @@ export default function WeekSessions({
     oldSplit: string;
     newSplit: string;
   }>();
+  const [selectedMicrocycleIndex, setSelectedMicrocycleIndex] =
+    useState<number>(0);
 
   useEffect(() => {
     let draggableExerciseList: DraggableExercisesObjectType[] = [];
@@ -408,10 +410,6 @@ export default function WeekSessions({
     [draggableExercisesObject]
   );
 
-  // TODO: add settings UI.
-  // REST TIME INTERVAL BTN,
-  // RESET BTN, UNDO BTN, SAVE BTN
-
   const onCloseModal = (split: string) => {
     if (!updateSplit) return;
 
@@ -429,9 +427,6 @@ export default function WeekSessions({
     setDraggableExercisesObject(updateList);
     setIsModalPrompted(false);
   };
-
-  const [selectedMicrocycleIndex, setSelectedMicrocycleIndex] =
-    useState<number>(0);
 
   const selectWeekIndexHandler = (week: string) => {
     const weekNumber = week.split(" ")[1];
@@ -497,22 +492,23 @@ const SelectMicrocycleList = ({
   onWeekClick,
 }: SelectMicrocycleListProps) => {
   const list = Array.from(Array(microcycles), (e, i) => `Week ${i + 1}`);
+  const selectedClasses = `${BG_COLOR_M5} text-white font-bold`;
   const [selectedWeek, setSelectedWeek] = useState<string>("Week 1");
-  const selected = `${BG_COLOR_M5} text-white font-bold`;
+
   const onClickHandler = (week: string) => {
     setSelectedWeek(week);
     onWeekClick(week);
   };
   return (
-    <ul className={cn(`mb-1 flex w-full cursor-pointer`)}>
+    <ul className={cn(`mb-1 flex w-full`)}>
       {list.map((week, i) => {
         return (
           <li
             key={week}
             className={cn(
-              `text-xs hover:${BG_COLOR_M5} mr-1 p-1 text-slate-400`,
+              `text-xs hover:${BG_COLOR_M5} mr-1 cursor-pointer p-1 text-slate-400`,
               {
-                [selected]: selectedWeek === week,
+                [selectedClasses]: selectedWeek === week,
               }
             )}
             onClick={() => onClickHandler(week)}
@@ -524,6 +520,7 @@ const SelectMicrocycleList = ({
     </ul>
   );
 };
+
 type DurationTimeConstraint = {
   value: number;
   min: number;
@@ -595,13 +592,16 @@ export const MesocycleExerciseLayout = ({
       const totalExercises = exercises.length;
       const restTime = totalExercises * rest.value;
       let totalRepTime = 0;
+      let totalRestTime = 0;
       for (let i = 0; i < exercises.length; i++) {
         const exercise = exercises[i];
         const repTime = exercise.sets * exercise.reps * rep.value;
+        const restTime = exercise.sets * rest.value;
+        totalRestTime += restTime;
         totalRepTime += repTime;
       }
       const totalTimeInMinutes = Math.round(
-        (warmup.value + restTime + totalRepTime) / 60
+        (warmup.value + restTime + totalRepTime + totalRestTime) / 60
       );
 
       return totalTimeInMinutes;
@@ -610,11 +610,7 @@ export const MesocycleExerciseLayout = ({
   );
 
   return (
-    <div className={" flex flex-col"}>
-      <div className={BORDER_COLOR_M6 + " mb-2 border-b-2"}>
-        <h3 className=" text-white">Exercises</h3>
-      </div>
-
+    <Section title={"Exercises"}>
       <div className=" text-xxs mb-2 flex text-white">
         <div className=" flex flex-col">
           <div className="mb-0.5 text-sm">Workout Duration Variables</div>
@@ -648,7 +644,7 @@ export const MesocycleExerciseLayout = ({
           />
         );
       })}
-    </div>
+    </Section>
   );
 };
 
