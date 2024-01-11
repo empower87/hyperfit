@@ -1,4 +1,4 @@
-import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { DragDropContext, Draggable, DropResult } from "react-beautiful-dnd";
 import ReactDOM from "react-dom";
 import Section from "~/components/Layout/Section";
@@ -23,13 +23,13 @@ import { getSessionSplitColor } from "~/utils/getSessionSplitColor";
 import { canAddExerciseToSplit, findOptimalSplit } from "./exerciseSelectUtils";
 
 type PromptProps = {
-  options: SplitType[];
+  splitOptions: SplitType[];
   isOpen: boolean;
   onClose: (split: SplitType) => void;
 };
 
 // probably don't even need to prompt user for this, just automatically change it.
-function Prompt({ options, isOpen, onClose }: PromptProps) {
+function Prompt({ splitOptions, isOpen, onClose }: PromptProps) {
   const root = document.getElementById("modal-body")!;
 
   if (!isOpen) return null;
@@ -50,11 +50,13 @@ function Prompt({ options, isOpen, onClose }: PromptProps) {
         </div>
 
         <ul>
-          {options.map((each, index) => {
+          {splitOptions.map((each, index) => {
             return (
               <li
                 key={`${each}_${index}`}
-                className={BG_COLOR_M6 + " flex text-sm text-white"}
+                className={cn(
+                  `${BG_COLOR_M6} flex cursor-pointer text-sm text-white hover:${BG_COLOR_M5}`
+                )}
                 onClick={() => onClose(each)}
               >
                 <div className=" mr-1 indent-1">{index + 1}</div>
@@ -69,18 +71,58 @@ function Prompt({ options, isOpen, onClose }: PromptProps) {
   );
 }
 
+type DropdownProps = {
+  items: ExerciseType[];
+};
+function DropdownList({ items }: DropdownProps) {
+  return (
+    <ul>
+      {items.map((each, index) => {
+        return (
+          <li>
+            {index + 1} {each.exercise}
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+function Dropdown({ items }: DropdownProps) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const onDropdownClick = () => {
+    setIsOpen(true);
+  };
+  return (
+    <div
+      className={
+        BORDER_COLOR_M7 +
+        " flex w-1/12 flex-col items-center justify-center border-l-2"
+      }
+      onClick={() => onDropdownClick()}
+    >
+      <div className="flex h-2 w-2 items-center justify-center">.</div>
+      <div className="flex h-2 w-2 items-center justify-center">.</div>
+      <div className="flex h-2 w-2 items-center justify-center">.</div>
+      {isOpen ? <DropdownList items={items} /> : null}
+    </div>
+  );
+}
+
 type DaySessionItemProps = {
   index: number;
   exercise: ExerciseType;
+  exercises: ExerciseType[];
   selectedMicrocycleIndex: number;
 };
 function DaySessionItem({
   index,
   exercise,
+  exercises,
   selectedMicrocycleIndex,
 }: DaySessionItemProps) {
   const bgColor = getRankColor(exercise.rank);
-  const exercises = getGroupList(exercise.muscle);
+  const allExercises = getGroupList(exercise.muscle);
   const mesocycle_progression = exercise.mesocycle_progression;
 
   const sets = mesocycle_progression[selectedMicrocycleIndex].sets;
@@ -92,9 +134,9 @@ function DaySessionItem({
       <div className={BORDER_COLOR_M7 + " flex w-11/12 border-2 " + bgColor.bg}>
         <div className={BORDER_COLOR_M7 + " w-1/12 border-r-2"}>{sets}x</div>
         <div className={BORDER_COLOR_M7 + " w-1/12 border-r-2"}>{reps}</div>
-        <div className=" flex w-10/12 flex-col">
+        <div className=" flex w-9/12 flex-col">
           <select className={bgColor.bg + " truncate"}>
-            {exercises.map((each, index) => {
+            {allExercises.map((each, index) => {
               return (
                 <option
                   key={`${each}_option_${index}`}
@@ -114,6 +156,7 @@ function DaySessionItem({
             {exercise.muscle}
           </div>
         </div>
+        <Dropdown items={exercises} />
       </div>
     </li>
   );
@@ -124,15 +167,29 @@ type DroppableDayProps = {
   droppableId: string;
   exercises: ExerciseType[];
   selectedMicrocycleIndex: number;
-  children: ReactNode;
+  sessionDurationCalculator: (
+    exercises: ExerciseType[],
+    currentMicrocycleIndex: number
+  ) => number;
 };
 function DroppableDay({
   split,
   droppableId,
   exercises,
   selectedMicrocycleIndex,
-  children,
+  sessionDurationCalculator,
 }: DroppableDayProps) {
+  const [totalDuration, setTotalDuration] = useState(0);
+  const [isSelectingSuperset, setIsSelectingSuperset] = useState(false);
+
+  useEffect(() => {
+    const totalDuration = sessionDurationCalculator(
+      exercises,
+      selectedMicrocycleIndex
+    );
+    setTotalDuration(totalDuration);
+  }, [selectedMicrocycleIndex, exercises]);
+
   return (
     <li className=" w-52">
       <div className={" mb-1 p-1"}>
@@ -169,6 +226,7 @@ function DroppableDay({
                       <DaySessionItem
                         index={index + 1}
                         exercise={each}
+                        exercises={exercises}
                         selectedMicrocycleIndex={selectedMicrocycleIndex}
                       />
                     </div>
@@ -180,20 +238,27 @@ function DroppableDay({
           </ul>
         )}
       </StrictModeDroppable>
-      {children}
+
+      <div className=" mt-1 flex w-full flex-col">
+        <div className=" text-xxs text-white">Total Est. Duration</div>
+        <div className=" text-xxs text-white">{totalDuration}min</div>
+      </div>
     </li>
   );
 }
 
 type DayLayoutProps = {
   session: DraggableExercisesObjectType;
-  sessionDurationCalcuator: (exercises: ExerciseType[]) => number;
+  sessionDurationCalculator: (
+    exercises: ExerciseType[],
+    currentMicrocycleIndex: number
+  ) => number;
   selectedMicrocycleIndex: number;
 };
 
 function DayLayout({
   session,
-  sessionDurationCalcuator,
+  sessionDurationCalculator,
   selectedMicrocycleIndex,
 }: DayLayoutProps) {
   const { day, sessions } = session;
@@ -213,7 +278,7 @@ function DayLayout({
             ref={provided.innerRef}
           >
             {sessions.map((each, index) => {
-              const totalDuration = sessionDurationCalcuator(each.exercises);
+              // const totalDuration = sessionDurationCalcuator(each.exercises);
               return (
                 <DroppableDay
                   key={`${each.id}_${index}`}
@@ -221,16 +286,8 @@ function DayLayout({
                   droppableId={each.id}
                   exercises={each.exercises}
                   selectedMicrocycleIndex={selectedMicrocycleIndex}
-                >
-                  <div className=" mt-1 flex w-full flex-col">
-                    <div className=" text-xxs text-white">
-                      Total Est. Duration
-                    </div>
-                    <div className=" text-xxs text-white">
-                      {totalDuration}min
-                    </div>
-                  </div>
-                </DroppableDay>
+                  sessionDurationCalculator={sessionDurationCalculator}
+                />
               );
             })}
           </ul>
@@ -276,7 +333,10 @@ type WeekSessionsProps = {
   selectedMesocycle: string;
   training_week: TrainingDayType[];
   onTitleClick: (title: string) => void;
-  sessionDurationCalcuator: (exercises: ExerciseType[]) => number;
+  sessionDurationCalculator: (
+    exercises: ExerciseType[],
+    currentMicrocycleIndex: number
+  ) => number;
 };
 export default function WeekSessions({
   mesocycle_index,
@@ -284,7 +344,7 @@ export default function WeekSessions({
   selectedMesocycle,
   training_week,
   onTitleClick,
-  sessionDurationCalcuator,
+  sessionDurationCalculator,
 }: WeekSessionsProps) {
   const title = `Mesocycle ${mesocycle_index}`;
 
@@ -382,15 +442,11 @@ export default function WeekSessions({
       );
 
       if (!canAdd) {
-        // const splitOptions = getSplitOptions(
-        //   sourceExercise.muscle,
-        //   targetSplit.split,
-        //   targetSplit.exercises
-        // );
         const splitOptions = findOptimalSplit(
           sourceExercise.muscle,
           targetSplit.exercises
         );
+
         setModalOptions(splitOptions);
         setUpdateSplit({
           id: targetSplit.id,
@@ -459,7 +515,7 @@ export default function WeekSessions({
 
       {isModalPrompted && (
         <Prompt
-          options={modalOptions}
+          splitOptions={modalOptions}
           isOpen={isModalPrompted}
           onClose={onCloseModal}
         />
@@ -474,7 +530,7 @@ export default function WeekSessions({
               <DayLayout
                 key={`${each.day}_${index}_draggableExercisesObject`}
                 session={each}
-                sessionDurationCalcuator={sessionDurationCalcuator}
+                sessionDurationCalculator={sessionDurationCalculator}
                 selectedMicrocycleIndex={selectedMicrocycleIndex}
               />
             );
@@ -588,18 +644,20 @@ export const MesocycleExerciseLayout = ({
     setDurationTimeConstants(newDurationTimeConstants);
   };
 
-  const sessionDurationCalcuator = useCallback(
-    (exercises: ExerciseType[]) => {
+  const sessionDurationCalculator = useCallback(
+    (exercises: ExerciseType[], currentMicrocycleIndex: number) => {
       const { warmup, rest, rep } = durationTimeConstants;
       // const totalSets = exercises.reduce((acc, prev) => acc + prev.sets, 0);
       const totalExercises = exercises.length;
       const restTime = totalExercises * rest.value;
       let totalRepTime = 0;
       let totalRestTime = 0;
+
       for (let i = 0; i < exercises.length; i++) {
-        const exercise = exercises[i];
-        const repTime = exercise.sets * exercise.reps * rep.value;
-        const restTime = exercise.sets * rest.value;
+        const exercise = exercises[i].mesocycle_progression;
+        const { sets, reps } = exercise[currentMicrocycleIndex];
+        const repTime = sets * reps * rep.value;
+        const restTime = sets * rest.value;
         totalRestTime += restTime;
         totalRepTime += repTime;
       }
@@ -643,7 +701,7 @@ export const MesocycleExerciseLayout = ({
             training_week={each}
             selectedMesocycle={selectedMesocycle}
             onTitleClick={onTitleClick}
-            sessionDurationCalcuator={sessionDurationCalcuator}
+            sessionDurationCalculator={sessionDurationCalculator}
           />
         );
       })}

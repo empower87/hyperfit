@@ -56,28 +56,6 @@ export const canAddExerciseSets = (
   }
 };
 
-const COMBINED_SPLITS = [
-  {
-    name: "FB",
-    list: [
-      "abs",
-      "back",
-      "biceps",
-      "calves",
-      "chest",
-      "delts_front",
-      "delts_rear",
-      "delts_side",
-      "forearms",
-      "glutes",
-      "hamstrings",
-      "quads",
-      "traps",
-      "triceps",
-    ],
-  },
-];
-
 export const findOptimalSplit = (
   muscle: MuscleType,
   targetExercises: ExerciseType[]
@@ -89,6 +67,7 @@ export const findOptimalSplit = (
   const splitMap = new Map<SplitType, number>();
   for (const item of muscleSet.values()) {
     const splits = getAvailableSplitsByMuscle(item);
+
     splits.forEach((each) => {
       if (splitMap.has(each)) {
         const value = splitMap.get(each);
@@ -119,35 +98,4 @@ export const findOptimalSplit = (
     "what does this look like?"
   );
   return optimalSplits;
-};
-
-export const getSplitOptions = (
-  muscleGroup: MuscleType,
-  targetSplit: SplitType,
-  targetSplitExercises: ExerciseType[]
-) => {
-  let groupList = getGroupList(targetSplit);
-  let combinedGroup = [...groupList, muscleGroup];
-
-  const list = COMBINED_SPLITS.filter(
-    (each) => each.list.length >= combinedGroup.length
-  );
-
-  let options = [];
-  for (let i = 0; i < list.length; i++) {
-    let option = list[i];
-    let listlist = list[i].list;
-
-    let add = true;
-    for (let j = 0; j < combinedGroup.length; j++) {
-      if (!listlist.includes(combinedGroup[j])) {
-        add = false;
-        break;
-      }
-    }
-    if (add) {
-      options.push(option);
-    }
-  }
-  return options;
 };
