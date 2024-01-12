@@ -73,38 +73,75 @@ function Prompt({ splitOptions, isOpen, onClose }: PromptProps) {
 
 type DropdownProps = {
   items: ExerciseType[];
+  selectedId: ExerciseType["id"];
 };
-function DropdownList({ items }: DropdownProps) {
-  return (
-    <ul>
-      {items.map((each, index) => {
-        return (
-          <li>
-            {index + 1} {each.exercise}
-          </li>
-        );
-      })}
-    </ul>
+
+type DropdownListProps = DropdownProps & {
+  onClose: () => void;
+  isOpen: boolean;
+};
+function DropdownList({
+  items,
+  selectedId,
+  isOpen,
+  onClose,
+}: DropdownListProps) {
+  const root = document.getElementById("modal-body")!;
+  if (!isOpen) return null;
+  return ReactDOM.createPortal(
+    <div
+      className="absolute flex h-full w-full items-center justify-center"
+      onClick={onClose}
+    >
+      <ul className={cn(`w-52 ${BG_COLOR_M6}`)}>
+        {items.map((each, index) => {
+          return (
+            <li
+              className={cn("text-xs text-white", getRankColor(each.rank), {
+                "border-2 border-white": each.id === selectedId,
+              })}
+              key={each.id}
+            >
+              {index + 1} {each.exercise}
+            </li>
+          );
+        })}
+      </ul>
+    </div>,
+    root
   );
 }
-function Dropdown({ items }: DropdownProps) {
+
+function Dropdown({ items, selectedId }: DropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const onDropdownClick = () => {
     setIsOpen(true);
   };
+
+  const onDropdownClose = () => {
+    setIsOpen(false);
+  };
   return (
     <div
+      id="dropdown-modal"
       className={
         BORDER_COLOR_M7 +
-        " flex w-1/12 flex-col items-center justify-center border-l-2"
+        " relative flex w-1/12 flex-col items-center justify-center border-l-2"
       }
       onClick={() => onDropdownClick()}
     >
       <div className="flex h-2 w-2 items-center justify-center">.</div>
       <div className="flex h-2 w-2 items-center justify-center">.</div>
       <div className="flex h-2 w-2 items-center justify-center">.</div>
-      {isOpen ? <DropdownList items={items} /> : null}
+      {isOpen ? (
+        <DropdownList
+          items={items}
+          selectedId={selectedId}
+          isOpen={isOpen}
+          onClose={onDropdownClose}
+        />
+      ) : null}
     </div>
   );
 }
@@ -156,7 +193,7 @@ function DaySessionItem({
             {exercise.muscle}
           </div>
         </div>
-        <Dropdown items={exercises} />
+        <Dropdown items={exercises} selectedId={exercise.id} />
       </div>
     </li>
   );
