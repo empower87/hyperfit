@@ -1,4 +1,11 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { DragDropContext, Draggable, DropResult } from "react-beautiful-dnd";
 import ReactDOM from "react-dom";
 import Section from "~/components/Layout/Section";
@@ -74,6 +81,7 @@ function Prompt({ splitOptions, isOpen, onClose }: PromptProps) {
 type DropdownProps = {
   items: ExerciseType[];
   selectedId: ExerciseType["id"];
+  onItemClick: (exercise: ExerciseType) => void;
 };
 
 type DropdownListProps = DropdownProps & {
@@ -85,8 +93,15 @@ function DropdownList({
   selectedId,
   isOpen,
   onClose,
+  onItemClick,
 }: DropdownListProps) {
   const root = document.getElementById("modal-body")!;
+
+  const onClickHandler = (exercise: ExerciseType) => {
+    onItemClick(exercise);
+    onClose();
+  };
+
   if (!isOpen) return null;
   return ReactDOM.createPortal(
     <div
@@ -97,10 +112,15 @@ function DropdownList({
         {items.map((each, index) => {
           return (
             <li
-              className={cn("text-xs text-white", getRankColor(each.rank), {
-                "border-2 border-white": each.id === selectedId,
-              })}
+              className={cn(
+                "pointer-cursor text-xs text-white",
+                getRankColor(each.rank),
+                {
+                  "border-2 border-white": each.id === selectedId,
+                }
+              )}
               key={each.id}
+              onClick={() => onClickHandler(each)}
             >
               {index + 1} {each.exercise}
             </li>
@@ -112,7 +132,7 @@ function DropdownList({
   );
 }
 
-function Dropdown({ items, selectedId }: DropdownProps) {
+function Dropdown({ items, selectedId, onItemClick }: DropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const onDropdownClick = () => {
@@ -122,6 +142,7 @@ function Dropdown({ items, selectedId }: DropdownProps) {
   const onDropdownClose = () => {
     setIsOpen(false);
   };
+
   return (
     <div
       id="dropdown-modal"
@@ -140,6 +161,7 @@ function Dropdown({ items, selectedId }: DropdownProps) {
           selectedId={selectedId}
           isOpen={isOpen}
           onClose={onDropdownClose}
+          onItemClick={onItemClick}
         />
       ) : null}
     </div>
@@ -150,12 +172,14 @@ type DaySessionItemProps = {
   index: number;
   exercise: ExerciseType;
   exercises: ExerciseType[];
+  setExercises: Dispatch<SetStateAction<ExerciseType[]>>;
   selectedMicrocycleIndex: number;
 };
 function DaySessionItem({
   index,
   exercise,
   exercises,
+  setExercises,
   selectedMicrocycleIndex,
 }: DaySessionItemProps) {
   const bgColor = getRankColor(exercise.rank);
@@ -164,6 +188,23 @@ function DaySessionItem({
 
   const sets = mesocycle_progression[selectedMicrocycleIndex].sets;
   const reps = mesocycle_progression[selectedMicrocycleIndex].reps;
+
+  const onItemClick = (_exercise: ExerciseType) => {
+    const newList = exercises.map((each) => {
+      if (each.id === _exercise.id) {
+        return { ...each, supersetWith: exercise.id };
+      } else if (each.id === exercise.id) {
+        return { ...each, supersetWith: _exercise.id };
+      } else return each;
+    });
+    console.log(
+      newList,
+      exercise,
+      _exercise,
+      "WHAT IS GOING ON HERE WITH THE ITEM CLICKED"
+    );
+    setExercises(newList);
+  };
   return (
     <li className={" text-xxs mb-0.5 flex w-full text-white"}>
       <div className={" flex w-1/12 indent-1"}>{index}</div>
@@ -193,7 +234,11 @@ function DaySessionItem({
             {exercise.muscle}
           </div>
         </div>
-        <Dropdown items={exercises} selectedId={exercise.id} />
+        <Dropdown
+          items={exercises}
+          selectedId={exercise.id}
+          onItemClick={onItemClick}
+        />
       </div>
     </li>
   );
@@ -218,6 +263,13 @@ function DroppableDay({
 }: DroppableDayProps) {
   const [totalDuration, setTotalDuration] = useState(0);
   const [isSelectingSuperset, setIsSelectingSuperset] = useState(false);
+  const [draggableExercises, setDraggableExercsises] = useState<ExerciseType[]>(
+    []
+  );
+
+  useEffect(() => {
+    setDraggableExercsises(exercises);
+  }, [exercises]);
 
   useEffect(() => {
     const totalDuration = sessionDurationCalculator(
@@ -247,7 +299,7 @@ function DroppableDay({
             {...provided.droppableProps}
             ref={provided.innerRef}
           >
-            {exercises.map((each, index) => {
+            {draggableExercises.map((each, index) => {
               return (
                 <Draggable
                   key={`${each.id}`}
@@ -263,7 +315,8 @@ function DroppableDay({
                       <DaySessionItem
                         index={index + 1}
                         exercise={each}
-                        exercises={exercises}
+                        exercises={draggableExercises}
+                        setExercises={setDraggableExercsises}
                         selectedMicrocycleIndex={selectedMicrocycleIndex}
                       />
                     </div>
