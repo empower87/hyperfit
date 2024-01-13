@@ -79,14 +79,15 @@ function Prompt({ splitOptions, isOpen, onClose }: PromptProps) {
 }
 
 type DropdownProps = {
-  items: ExerciseType[];
-  selectedId: ExerciseType["id"];
-  onItemClick: (exercise: ExerciseType) => void;
+  onDropdownClick: () => void;
 };
 
-type DropdownListProps = DropdownProps & {
-  onClose: () => void;
+type DropdownListProps = {
+  items: ExerciseType[];
+  selectedId: ExerciseType["id"];
   isOpen: boolean;
+  onClose: () => void;
+  onItemClick: (exercise: ExerciseType) => void;
 };
 function DropdownList({
   items,
@@ -97,30 +98,25 @@ function DropdownList({
 }: DropdownListProps) {
   const root = document.getElementById("modal-body")!;
 
-  const onClickHandler = (exercise: ExerciseType) => {
-    onItemClick(exercise);
-    onClose();
-  };
-
   if (!isOpen) return null;
   return ReactDOM.createPortal(
     <div
-      className="absolute flex h-full w-full items-center justify-center"
-      onClick={onClose}
+      className="absolute z-10 flex h-full w-full items-center justify-center"
+      onClick={() => onClose()}
     >
       <ul className={cn(`w-52 ${BG_COLOR_M6}`)}>
         {items.map((each, index) => {
           return (
             <li
               className={cn(
-                "pointer-cursor text-xs text-white",
+                `${BORDER_COLOR_M7} m-0.5 cursor-pointer border-2 text-xs text-white`,
                 getRankColor(each.rank),
                 {
                   "border-2 border-white": each.id === selectedId,
                 }
               )}
               key={each.id}
-              onClick={() => onClickHandler(each)}
+              onClick={() => onItemClick(each)}
             >
               {index + 1} {each.exercise}
             </li>
@@ -132,17 +128,22 @@ function DropdownList({
   );
 }
 
-function Dropdown({ items, selectedId, onItemClick }: DropdownProps) {
-  const [isOpen, setIsOpen] = useState(false);
+function Dropdown({ onDropdownClick }: DropdownProps) {
+  // const [isOpen, setIsOpen] = useState<boolean>(false);
 
-  const onDropdownClick = () => {
-    setIsOpen(true);
-  };
+  // const onDropdownClick = () => {
+  //   setIsOpen(true);
+  // };
 
-  const onDropdownClose = () => {
-    setIsOpen(false);
-  };
+  // const onDropdownClose = () => {
+  //   setIsOpen(false);
+  // };
 
+  // const handleItemClick = (exercise: ExerciseType) => {
+  //   setIsOpen(false);
+  //   onItemClick(exercise);
+  //   console.log(isOpen, "CLICKED WHY AINT IT CLOSING?");
+  // };
   return (
     <div
       id="dropdown-modal"
@@ -155,15 +156,6 @@ function Dropdown({ items, selectedId, onItemClick }: DropdownProps) {
       <div className="flex h-2 w-2 items-center justify-center">.</div>
       <div className="flex h-2 w-2 items-center justify-center">.</div>
       <div className="flex h-2 w-2 items-center justify-center">.</div>
-      {isOpen ? (
-        <DropdownList
-          items={items}
-          selectedId={selectedId}
-          isOpen={isOpen}
-          onClose={onDropdownClose}
-          onItemClick={onItemClick}
-        />
-      ) : null}
     </div>
   );
 }
@@ -188,8 +180,9 @@ function DaySessionItem({
 
   const sets = mesocycle_progression[selectedMicrocycleIndex].sets;
   const reps = mesocycle_progression[selectedMicrocycleIndex].reps;
+  const [isOpen, setIsOpen] = useState<boolean>(false);
 
-  const onItemClick = (_exercise: ExerciseType) => {
+  const onItemClick = useCallback((_exercise: ExerciseType) => {
     const newList = exercises.map((each) => {
       if (each.id === _exercise.id) {
         return { ...each, supersetWith: exercise.id };
@@ -197,13 +190,22 @@ function DaySessionItem({
         return { ...each, supersetWith: _exercise.id };
       } else return each;
     });
+
     console.log(
       newList,
       exercise,
       _exercise,
       "WHAT IS GOING ON HERE WITH THE ITEM CLICKED"
     );
+
     setExercises(newList);
+  }, []);
+
+  const onDropdownClick = () => {
+    setIsOpen(true);
+  };
+  const onDropdownClose = () => {
+    setIsOpen(false);
   };
   return (
     <li className={" text-xxs mb-0.5 flex w-full text-white"}>
@@ -234,9 +236,13 @@ function DaySessionItem({
             {exercise.muscle}
           </div>
         </div>
-        <Dropdown
+
+        <Dropdown onDropdownClick={onDropdownClick} />
+        <DropdownList
           items={exercises}
           selectedId={exercise.id}
+          isOpen={isOpen}
+          onClose={onDropdownClose}
           onItemClick={onItemClick}
         />
       </div>
