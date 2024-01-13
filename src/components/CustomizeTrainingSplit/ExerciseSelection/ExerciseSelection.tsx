@@ -183,21 +183,29 @@ function DaySessionItem({
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const onItemClick = useCallback((_exercise: ExerciseType) => {
-    const newList = exercises.map((each) => {
+    let indexOne = 0;
+    let indexTwo = 0;
+
+    const newList = exercises.map((each, index) => {
       if (each.id === _exercise.id) {
+        indexOne = index;
         return { ...each, supersetWith: exercise.id };
       } else if (each.id === exercise.id) {
+        indexTwo = index;
         return { ...each, supersetWith: _exercise.id };
       } else return each;
     });
 
-    console.log(
-      newList,
-      exercise,
-      _exercise,
-      "WHAT IS GOING ON HERE WITH THE ITEM CLICKED"
-    );
+    if (indexOne > indexTwo) {
+      const temp = indexOne;
+      indexOne = indexTwo;
+      indexTwo = temp;
+    }
 
+    const supersetExercises = newList.splice(indexTwo, 1);
+    newList.splice(indexOne, 0, ...supersetExercises);
+
+    console.log(newList, exercises, "are the different???");
     setExercises(newList);
   }, []);
 
