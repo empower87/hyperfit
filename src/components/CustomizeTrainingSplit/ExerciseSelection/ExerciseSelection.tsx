@@ -46,7 +46,7 @@ function Prompt({ splitOptions, isOpen, onClose }: PromptProps) {
       style={{ background: "#00000082" }}
     >
       <div className={BG_COLOR_M7 + " flex w-64 flex-col p-2"}>
-        <div className=" text-xxs flex flex-col text-white">
+        <div className=" flex flex-col text-xxs text-white">
           <div className=" mb-0.5 text-slate-300">
             Adding this Exercise to this day would change the Training Split for
             that day.
@@ -62,7 +62,7 @@ function Prompt({ splitOptions, isOpen, onClose }: PromptProps) {
               <li
                 key={`${each}_${index}`}
                 className={cn(
-                  `${BG_COLOR_M6} flex cursor-pointer text-sm text-white hover:${BG_COLOR_M5}`
+                  `${BG_COLOR_M6} text-sm flex cursor-pointer text-white hover:${BG_COLOR_M5}`
                 )}
                 onClick={() => onClose(each)}
               >
@@ -109,7 +109,7 @@ function DropdownList({
           return (
             <li
               className={cn(
-                `${BORDER_COLOR_M7} m-0.5 cursor-pointer border-2 text-xs text-white`,
+                `${BORDER_COLOR_M7} text-xs m-0.5 cursor-pointer border-2 text-white`,
                 getRankColor(each.rank),
                 {
                   "border-2 border-white": each.id === selectedId,
@@ -215,13 +215,19 @@ function DaySessionItem({
   const onDropdownClose = () => {
     setIsOpen(false);
   };
+
+  const BORDER_COLOR = exercise.supersetWith ? "border-white" : BORDER_COLOR_M7;
   return (
-    <li className={" text-xxs mb-0.5 flex w-full text-white"}>
+    <li className={cn(`mb-0.5 flex w-full text-white`)}>
       <div className={" flex w-1/12 indent-1"}>{index}</div>
 
-      <div className={BORDER_COLOR_M7 + " flex w-11/12 border-2 " + bgColor.bg}>
-        <div className={BORDER_COLOR_M7 + " w-1/12 border-r-2"}>{sets}x</div>
-        <div className={BORDER_COLOR_M7 + " w-1/12 border-r-2"}>{reps}</div>
+      <div
+        className={cn(
+          `${BORDER_COLOR} flex w-11/12 border-2 text-xxs ${bgColor.bg}`
+        )}
+      >
+        <div className={cn(`${BORDER_COLOR} w-1/12 border-r-2`)}>{sets}x</div>
+        <div className={cn(`${BORDER_COLOR} w-1/12 border-r-2`)}>{reps}</div>
         <div className=" flex w-9/12 flex-col">
           <select className={bgColor.bg + " truncate"}>
             {allExercises.map((each, index) => {
@@ -298,7 +304,7 @@ function DroppableDay({
       <div className={" mb-1 p-1"}>
         <div
           className={
-            getSessionSplitColor(split).bg + " indent-1 text-sm text-white"
+            getSessionSplitColor(split).bg + " text-sm indent-1 text-white"
           }
         >
           {split}
@@ -776,9 +782,9 @@ export const MesocycleExerciseLayout = ({
 
   return (
     <Section title={"Exercises"}>
-      <div className=" text-xxs mb-2 flex text-white">
+      <div className=" mb-2 flex text-xxs text-white">
         <div className=" flex flex-col">
-          <div className="mb-0.5 text-sm">Workout Duration Variables</div>
+          <div className="text-sm mb-0.5">Workout Duration Variables</div>
           <TimeIncrementFrame
             title="warmup"
             constraints={durationTimeConstants.warmup}
@@ -827,7 +833,7 @@ const IncrementBtn = ({ operation, onClick }: IncrementBtnProps) => {
   return (
     <button
       className={cn(
-        `${BG_COLOR_M5} m-1 flex h-4 w-4 items-center justify-center p-1 text-xs text-white`
+        `${BG_COLOR_M5} text-xs m-1 flex h-4 w-4 items-center justify-center p-1 text-white`
       )}
       onClick={onClick}
     >
@@ -874,10 +880,10 @@ const TimeIncrementFrame = ({
 
   return (
     <div className="flex">
-      <div className="m-1 w-12 text-xs text-white">{title}</div>
+      <div className="text-xs m-1 w-12 text-white">{title}</div>
       <div className="flex ">
         <IncrementBtn operation={"-"} onClick={() => onIncrement("-")} />
-        <div className="m-1 flex w-6 items-center justify-center text-xs text-white">
+        <div className="text-xs m-1 flex w-6 items-center justify-center text-white">
           {time}
         </div>
         <IncrementBtn operation={"+"} onClick={() => onIncrement("+")} />
