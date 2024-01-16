@@ -89,13 +89,5 @@ export const findOptimalSplit = (
     }
   });
 
-  console.log(
-    splitMap,
-    muscleSet,
-    muscle,
-    targetExercises,
-    optimalSplits,
-    "what does this look like?"
-  );
   return optimalSplits;
 };

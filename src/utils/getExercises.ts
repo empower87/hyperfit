@@ -79,6 +79,7 @@ const INITIAL_EXERCISE: ExerciseType = {
   rir: 3,
   weightIncrement: 5,
   mesocycle_progression: [],
+  supersetWith: null,
 };
 
 export const getTotalExercisesForMuscleGroup = (

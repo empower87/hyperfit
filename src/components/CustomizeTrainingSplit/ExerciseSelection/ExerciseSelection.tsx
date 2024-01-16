@@ -1,11 +1,4 @@
-import {
-  Dispatch,
-  SetStateAction,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { DragDropContext, Draggable, DropResult } from "react-beautiful-dnd";
 import ReactDOM from "react-dom";
 import Section from "~/components/Layout/Section";
@@ -17,7 +10,6 @@ import {
   BORDER_COLOR_M8,
 } from "~/constants/themes";
 import {
-  DayType,
   ExerciseType,
   SplitType,
   TrainingDayType,
@@ -28,11 +20,14 @@ import { getGroupList } from "~/utils/getExercises";
 import { getRankColor } from "~/utils/getRankColor";
 import { getSessionSplitColor } from "~/utils/getSessionSplitColor";
 import { canAddExerciseToSplit, findOptimalSplit } from "./exerciseSelectUtils";
+import useExerciseSelection, {
+  DraggableExercises,
+} from "./useExerciseSelection";
 
 type PromptProps = {
-  splitOptions: SplitType[];
+  splitOptions: { id: string; options: SplitType[] } | undefined;
   isOpen: boolean;
-  onClose: (split: SplitType) => void;
+  onClose: (sessionId: string, split: SplitType) => void;
 };
 
 // probably don't even need to prompt user for this, just automatically change it.
@@ -57,14 +52,14 @@ function Prompt({ splitOptions, isOpen, onClose }: PromptProps) {
         </div>
 
         <ul>
-          {splitOptions.map((each, index) => {
+          {splitOptions?.options.map((each, index) => {
             return (
               <li
                 key={`${each}_${index}`}
                 className={cn(
                   `${BG_COLOR_M6} text-sm flex cursor-pointer text-white hover:${BG_COLOR_M5}`
                 )}
-                onClick={() => onClose(each)}
+                onClick={() => onClose(splitOptions.id, each)}
               >
                 <div className=" mr-1 indent-1">{index + 1}</div>
                 <div className=" ">{each}</div>
@@ -163,16 +158,22 @@ function Dropdown({ onDropdownClick }: DropdownProps) {
 type DaySessionItemProps = {
   index: number;
   exercise: ExerciseType;
+  sessionId: string;
   exercises: ExerciseType[];
-  setExercises: Dispatch<SetStateAction<ExerciseType[]>>;
   selectedMicrocycleIndex: number;
+  onSupersetUpdate: (
+    _exercise: ExerciseType,
+    exercise: ExerciseType,
+    sessionId: string
+  ) => void;
 };
 function DaySessionItem({
   index,
   exercise,
+  sessionId,
   exercises,
-  setExercises,
   selectedMicrocycleIndex,
+  onSupersetUpdate,
 }: DaySessionItemProps) {
   const bgColor = getRankColor(exercise.rank);
   const allExercises = getGroupList(exercise.muscle);
@@ -182,36 +183,38 @@ function DaySessionItem({
   const reps = mesocycle_progression[selectedMicrocycleIndex].reps;
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
-  const onItemClick = useCallback((_exercise: ExerciseType) => {
-    let indexOne = 0;
-    let indexTwo = 0;
+  const onItemClick = useCallback((exerciseOne: ExerciseType) => {
+    onSupersetUpdate(exerciseOne, exercise, sessionId);
+    // let indexOne = 0;
+    // let indexTwo = 0;
 
-    const newList = exercises.map((each, index) => {
-      if (each.id === _exercise.id) {
-        indexOne = index;
-        return { ...each, supersetWith: exercise.id };
-      } else if (each.id === exercise.id) {
-        indexTwo = index;
-        return { ...each, supersetWith: _exercise.id };
-      } else return each;
-    });
+    // const newList = exercises.map((each, index) => {
+    //   if (each.id === _exercise.id) {
+    //     indexOne = index;
+    //     return { ...each, supersetWith: exercise.id };
+    //   } else if (each.id === exercise.id) {
+    //     indexTwo = index;
+    //     return { ...each, supersetWith: _exercise.id };
+    //   } else return each;
+    // });
 
-    if (indexOne > indexTwo) {
-      const temp = indexOne;
-      indexOne = indexTwo;
-      indexTwo = temp;
-    }
+    // if (indexOne > indexTwo) {
+    //   const temp = indexOne;
+    //   indexOne = indexTwo;
+    //   indexTwo = temp;
+    // }
 
-    const supersetExercises = newList.splice(indexTwo, 1);
-    newList.splice(indexOne, 0, ...supersetExercises);
+    // const supersetExercises = newList.splice(indexTwo, 1);
+    // newList.splice(indexOne + 1, 0, ...supersetExercises);
 
-    console.log(newList, exercises, "are the different???");
-    setExercises(newList);
+    // console.log(newList, exercises, "are the different???");
+    // setExercises(newList);
   }, []);
 
   const onDropdownClick = () => {
     setIsOpen(true);
   };
+
   const onDropdownClose = () => {
     setIsOpen(false);
   };
@@ -273,6 +276,11 @@ type DroppableDayProps = {
     exercises: ExerciseType[],
     currentMicrocycleIndex: number
   ) => number;
+  onSupersetUpdate: (
+    _exercise: ExerciseType,
+    exercise: ExerciseType,
+    sessionId: string
+  ) => void;
 };
 function DroppableDay({
   split,
@@ -280,16 +288,16 @@ function DroppableDay({
   exercises,
   selectedMicrocycleIndex,
   sessionDurationCalculator,
+  onSupersetUpdate,
 }: DroppableDayProps) {
   const [totalDuration, setTotalDuration] = useState(0);
-  const [isSelectingSuperset, setIsSelectingSuperset] = useState(false);
-  const [draggableExercises, setDraggableExercsises] = useState<ExerciseType[]>(
-    []
-  );
+  // const [draggableExercises, setDraggableExercsises] = useState<ExerciseType[]>(
+  //   []
+  // );
 
-  useEffect(() => {
-    setDraggableExercsises(exercises);
-  }, [exercises]);
+  // useEffect(() => {
+  //   setDraggableExercsises(exercises);
+  // }, [exercises]);
 
   useEffect(() => {
     const totalDuration = sessionDurationCalculator(
@@ -319,7 +327,7 @@ function DroppableDay({
             {...provided.droppableProps}
             ref={provided.innerRef}
           >
-            {draggableExercises.map((each, index) => {
+            {exercises.map((each, index) => {
               return (
                 <Draggable
                   key={`${each.id}`}
@@ -335,9 +343,10 @@ function DroppableDay({
                       <DaySessionItem
                         index={index + 1}
                         exercise={each}
-                        exercises={draggableExercises}
-                        setExercises={setDraggableExercsises}
+                        sessionId={droppableId}
+                        exercises={exercises}
                         selectedMicrocycleIndex={selectedMicrocycleIndex}
+                        onSupersetUpdate={onSupersetUpdate}
                       />
                     </div>
                   )}
@@ -358,18 +367,24 @@ function DroppableDay({
 }
 
 type DayLayoutProps = {
-  session: DraggableExercisesObjectType;
+  session: DraggableExercises;
   sessionDurationCalculator: (
     exercises: ExerciseType[],
     currentMicrocycleIndex: number
   ) => number;
   selectedMicrocycleIndex: number;
+  onSupersetUpdate: (
+    _exercise: ExerciseType,
+    exercise: ExerciseType,
+    sessionId: string
+  ) => void;
 };
 
 function DayLayout({
   session,
   sessionDurationCalculator,
   selectedMicrocycleIndex,
+  onSupersetUpdate,
 }: DayLayoutProps) {
   const { day, sessions } = session;
 
@@ -383,12 +398,11 @@ function DayLayout({
         {(provided, snapshot) => (
           <ul
             id="session"
-            className=" flex flex-col"
+            className="flex flex-col"
             {...provided.droppableProps}
             ref={provided.innerRef}
           >
             {sessions.map((each, index) => {
-              // const totalDuration = sessionDurationCalcuator(each.exercises);
               return (
                 <DroppableDay
                   key={`${each.id}_${index}`}
@@ -397,6 +411,7 @@ function DayLayout({
                   exercises={each.exercises}
                   selectedMicrocycleIndex={selectedMicrocycleIndex}
                   sessionDurationCalculator={sessionDurationCalculator}
+                  onSupersetUpdate={onSupersetUpdate}
                 />
               );
             })}
@@ -407,14 +422,14 @@ function DayLayout({
   );
 }
 
-type DraggableExercisesObjectType = {
-  day: DayType;
-  sessions: {
-    id: string;
-    split: SplitType;
-    exercises: ExerciseType[];
-  }[];
-};
+// type DraggableExercisesObjectType = {
+//   day: DayType;
+//   sessions: {
+//     id: string;
+//     split: SplitType;
+//     exercises: ExerciseType[];
+//   }[];
+// };
 
 type TitleProps = {
   title: string;
@@ -457,43 +472,52 @@ export default function WeekSessions({
   sessionDurationCalculator,
 }: WeekSessionsProps) {
   const title = `Mesocycle ${mesocycle_index}`;
+  const {
+    draggableExercises,
+    setDraggableExercises,
+    onSplitChange,
+    onSupersetUpdate,
+  } = useExerciseSelection(training_week);
 
-  const [draggableExercisesObject, setDraggableExercisesObject] = useState<
-    DraggableExercisesObjectType[]
-  >([]);
+  // const [draggableExercisesObject, setDraggableExercisesObject] = useState<
+  //   DraggableExercisesObjectType[]
+  // >([]);
   const [isModalPrompted, setIsModalPrompted] = useState<boolean>(false);
-  const [modalOptions, setModalOptions] = useState<SplitType[]>([]);
-  const [updateSplit, setUpdateSplit] = useState<{
+  const [modalOptions, setModalOptions] = useState<{
     id: string;
-    oldSplit: string;
-    newSplit: string;
+    options: SplitType[];
   }>();
+  // const [updateSplit, setUpdateSplit] = useState<{
+  //   id: string;
+  //   oldSplit: string;
+  //   newSplit: string;
+  // }>();
   const [selectedMicrocycleIndex, setSelectedMicrocycleIndex] =
     useState<number>(0);
 
-  useEffect(() => {
-    let draggableExerciseList: DraggableExercisesObjectType[] = [];
-    for (let i = 0; i < training_week.length; i++) {
-      const sessions = training_week[i].sessions;
-      let day: DraggableExercisesObjectType = {
-        day: training_week[i].day,
-        sessions: [],
-      };
+  // useEffect(() => {
+  //   let draggableExerciseList: DraggableExercisesObjectType[] = [];
+  //   for (let i = 0; i < training_week.length; i++) {
+  //     const sessions = training_week[i].sessions;
+  //     let day: DraggableExercisesObjectType = {
+  //       day: training_week[i].day,
+  //       sessions: [],
+  //     };
 
-      for (let j = 0; j < sessions.length; j++) {
-        if (training_week[i].isTrainingDay) {
-          day.sessions.push({
-            id: `${training_week[i].day}_${j}`,
-            split: sessions[j].split,
-            exercises: sessions[j].exercises.flat(),
-          });
-        }
-      }
+  //     for (let j = 0; j < sessions.length; j++) {
+  //       if (training_week[i].isTrainingDay) {
+  //         day.sessions.push({
+  //           id: `${training_week[i].day}_${j}`,
+  //           split: sessions[j].split,
+  //           exercises: sessions[j].exercises.flat(),
+  //         });
+  //       }
+  //     }
 
-      draggableExerciseList.push(day);
-    }
-    setDraggableExercisesObject(draggableExerciseList);
-  }, [training_week]);
+  //     draggableExerciseList.push(day);
+  //   }
+  //   setDraggableExercisesObject(draggableExerciseList);
+  // }, [training_week]);
 
   // NOTE: a lot of logic missing here to determine if an exercise CAN move to another split
   //       as well as if it can should it change the split type?
@@ -538,7 +562,7 @@ export default function WeekSessions({
       outerSourceId = sourceIndices[0];
       outerSourceSessionId = sourceIndices[1];
 
-      const items = [...draggableExercisesObject];
+      const items = [...draggableExercises];
 
       const sourceExercise =
         items[outerSourceId].sessions[outerSourceSessionId].exercises[
@@ -557,12 +581,12 @@ export default function WeekSessions({
           targetSplit.exercises
         );
 
-        setModalOptions(splitOptions);
-        setUpdateSplit({
-          id: targetSplit.id,
-          oldSplit: targetSplit.split,
-          newSplit: "",
-        });
+        setModalOptions({ id: targetSplit.id, options: splitOptions });
+        // setUpdateSplit({
+        //   id: targetSplit.id,
+        //   oldSplit: targetSplit.split,
+        //   newSplit: "",
+        // });
         setIsModalPrompted(true);
       }
 
@@ -574,28 +598,87 @@ export default function WeekSessions({
         outerDestinationSessionId
       ].exercises.splice(outerDestinationExerciseIndex, 0, removed);
 
-      setDraggableExercisesObject(items);
+      setDraggableExercises(items);
     },
-    [draggableExercisesObject]
+    [draggableExercises]
   );
 
-  const onCloseModal = (split: SplitType) => {
-    if (!updateSplit) return;
+  // const onSupersetUpdate = useCallback(
+  //   (
+  //     exerciseOne: ExerciseType,
+  //     exerciseTwo: ExerciseType,
+  //     sessionId: string,
+  //     exercises: ExerciseType[]
+  //   ) => {
+  //     let indexOne = 0;
+  //     let indexTwo = 0;
 
-    const updateList: DraggableExercisesObjectType[] =
-      draggableExercisesObject.map((each) => {
-        const sessions = each.sessions.map((each) => {
-          if (each.id === updateSplit.id) {
-            return { ...each, split: split };
-          } else return each;
-        });
+  //     const filteredObject = draggableExercisesObject.map((each) => {
+  //       const session = each.sessions.filter((each) => {
+  //         return each.id === sessionId;
+  //       });
+  //       return session[0];
+  //     });
+  //     const _exercises = structuredClone(filteredObject[0]?.exercises);
+  //     const newList = _exercises.map((each, index) => {
+  //       if (each.id === exerciseOne.id) {
+  //         indexOne = index;
+  //         return { ...each, supersetWith: exerciseTwo.id };
+  //       } else if (each.id === exerciseTwo.id) {
+  //         indexTwo = index;
+  //         return { ...each, supersetWith: exerciseOne.id };
+  //       } else return each;
+  //     });
 
-        return { ...each, sessions: sessions };
-      });
+  //     if (indexOne > indexTwo) {
+  //       const temp = indexOne;
+  //       indexOne = indexTwo;
+  //       indexTwo = temp;
+  //     }
 
-    setDraggableExercisesObject(updateList);
-    setIsModalPrompted(false);
-  };
+  //     const supersetExercises = newList.splice(indexTwo, 1);
+  //     newList.splice(indexOne + 1, 0, ...supersetExercises);
+
+  //     const updateList = draggableExercisesObject.map((each) => {
+  //       const sessions = each.sessions.map((each) => {
+  //         if (each.id === sessionId) {
+  //           return { ...each, exercises: newList };
+  //         } else return each;
+  //       });
+
+  //       return { ...each, sessions: sessions };
+  //     });
+
+  //     console.log(
+  //       newList,
+  //       updateList,
+  //       sessionId,
+  //       draggableExercisesObject,
+  //       "are the different???"
+  //     );
+  //     setDraggableExercisesObject(updateList);
+  //     // setExercises(newList);
+  //   },
+  //   [draggableExercisesObject]
+  // );
+
+  // const onCloseModal = (split: SplitType) => {
+  //   if (!updateSplit) return;
+
+  //   const updateList: DraggableExercisesObjectType[] =
+  //     draggableExercisesObject.map((each) => {
+  //       const sessions = each.sessions.map((each) => {
+  //         if (each.id === updateSplit.id) {
+  //           return { ...each, split: split };
+  //         } else return each;
+  //       });
+
+  //       return { ...each, sessions: sessions };
+  //     });
+
+  //   setDraggableExercisesObject(updateList);
+  //   setIsModalPrompted(false);
+  // };
 
   const selectWeekIndexHandler = (week: string) => {
     const weekNumber = week.split(" ")[1];
@@ -627,12 +710,13 @@ export default function WeekSessions({
         <Prompt
           splitOptions={modalOptions}
           isOpen={isModalPrompted}
-          onClose={onCloseModal}
+          onClose={onSplitChange}
         />
       )}
+
       <div className="flex">
         <DragDropContext onDragEnd={onDragEnd}>
-          {draggableExercisesObject.map((each, index) => {
+          {draggableExercises.map((each, index) => {
             // NOTE: to not display days w/o any sessions
             const hasSessions = each.sessions.find((ea) => ea.exercises.length);
             if (!hasSessions) return null;
@@ -642,6 +726,7 @@ export default function WeekSessions({
                 session={each}
                 sessionDurationCalculator={sessionDurationCalculator}
                 selectedMicrocycleIndex={selectedMicrocycleIndex}
+                onSupersetUpdate={onSupersetUpdate}
               />
             );
           })}

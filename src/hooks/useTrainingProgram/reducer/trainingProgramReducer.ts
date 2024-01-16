@@ -133,7 +133,7 @@ export type ExerciseType = {
   rir: number;
   weightIncrement: number;
   mesocycle_progression: ExerciseMesocycleProgressionType[];
-  supersetWith?: ExerciseType["id"];
+  supersetWith?: ExerciseType["id"] | null;
 };
 
 export type TrainingProgramParamsType = {
@@ -417,9 +417,9 @@ export default function weeklySessionSplitReducer(
 
       return { ...state, training_week: filteredWeek };
     case "GET_TRAINING_BLOCK":
-      const l = [...state.muscle_priority_list];
+      const l = state.muscle_priority_list;
       const s = state.split_sessions;
-      const w = [...state.training_week];
+      const w = state.training_week;
       const m = state.training_program_params.mesocycles;
 
       const training_block = buildMesocyclesTEST(l, s, w, m);
