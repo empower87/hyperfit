@@ -49,6 +49,26 @@ export default function useExerciseSelection(training_week: TrainingDayType[]) {
     setDraggableExercises(updatedSplitForExercises);
   }, []);
 
+  const sortListOnSuperset = (exercises: ExerciseType[]) => {
+    let sorted: ExerciseType[] = [];
+    let skippableIds: string[] = [];
+
+    for (let i = 0; i < exercises.length; i++) {
+      const exercise = exercises[i];
+      if (skippableIds.includes(exercise.id)) continue;
+      if (exercise.supersetWith) {
+        const index = exercises.findIndex(
+          (each) => each.id === exercise.supersetWith
+        );
+        sorted.push(exercises[i], exercises[index]);
+        skippableIds.push(exercise.supersetWith);
+      } else {
+        sorted.push(exercise);
+      }
+    }
+    return sorted;
+  };
+
   const onSupersetUpdate = useCallback(
     (
       exerciseOne: ExerciseType,
@@ -70,7 +90,7 @@ export default function useExerciseSelection(training_week: TrainingDayType[]) {
 
       console.log(_exercises, sessionId, "THIS GOING WRONG?");
       // const _exercises = structuredClone(getExercises);
-      if (!_exercises) return;
+      // if (!_exercises) return;
       const newList = _exercises.map((each, index) => {
         if (each.id === exerciseOne.id) {
           indexOne = index;
@@ -86,20 +106,84 @@ export default function useExerciseSelection(training_week: TrainingDayType[]) {
         indexOne = indexTwo;
         indexTwo = temp;
       }
-
-      const supersetExercises = newList.splice(indexTwo, 1);
-      newList.splice(indexOne + 1, 0, ...supersetExercises);
+      const newNewList = sortListOnSuperset(newList);
+      // const supersetExercises = newList.splice(indexTwo, 1);
+      // newList.splice(indexOne + 1, 0, ...supersetExercises);
 
       const updateList = draggableExercises.map((each) => {
         const sessions = each.sessions.map((each) => {
           if (each.id === sessionId) {
-            return { ...each, exercises: newList };
+            return { ...each, exercises: newNewList };
           } else return each;
         });
         return { ...each, sessions: sessions };
       });
 
       setDraggableExercises(updateList);
+    },
+    []
+  );
+
+  const getInnerAndOuterIndices = (droppableId: string) => {
+    const splitId = droppableId.split("_");
+    const index = parseInt(splitId[1]);
+    switch (splitId[0]) {
+      case "Monday":
+        return [1, index];
+      case "Tuesday":
+        return [2, index];
+      case "Wednesday":
+        return [3, index];
+      case "Thursday":
+        return [4, index];
+      case "Friday":
+        return [5, index];
+      case "Saturday":
+        return [6, index];
+      default:
+        return [0, index];
+    }
+  };
+
+  const onDraggableReorder = useCallback(
+    (
+      destinationId: string,
+      sourceId: string,
+      destinationIndex: number,
+      sourceIndex: number
+    ) => {
+      // const destIndices = getOutterIndex(result.destination.droppableId);
+      // outerDestinationId = destIndices[0];
+      // outerDestinationSessionId = destIndices[1];
+      // const sourceIndices = getOutterIndex(result.source.droppableId);
+      // outerSourceId = sourceIndices[0];
+      // outerSourceSessionId = sourceIndices[1];
+      // const items = [...draggableExercises];
+      // const sourceExercise =
+      //   items[outerSourceId].sessions[outerSourceSessionId].exercises[
+      //     innerSourceId
+      //   ];
+      // const targetSplit =
+      //   items[outerDestinationId].sessions[outerDestinationSessionId];
+      // const canAdd = canAddExerciseToSplit(
+      //   sourceExercise.muscle,
+      //   targetSplit.split
+      // );
+      // if (!canAdd) {
+      //   const splitOptions = findOptimalSplit(
+      //     sourceExercise.muscle,
+      //     targetSplit.exercises
+      //   );
+      //   setModalOptions({ id: targetSplit.id, options: splitOptions });
+      //   setIsModalPrompted(true);
+      // }
+      // const [removed] = items[outerSourceId].sessions[
+      //   outerSourceSessionId
+      // ].exercises.splice(innerSourceId, 1);
+      // items[outerDestinationId].sessions[
+      //   outerDestinationSessionId
+      // ].exercises.splice(outerDestinationExerciseIndex, 0, removed);
+      // setDraggableExercises(items);
     },
     []
   );

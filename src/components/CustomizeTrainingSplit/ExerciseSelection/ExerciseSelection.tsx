@@ -222,7 +222,7 @@ function DaySessionItem({
   const BORDER_COLOR = exercise.supersetWith ? "border-white" : BORDER_COLOR_M7;
   return (
     <li className={cn(`mb-0.5 flex w-full text-white`)}>
-      <div className={" flex w-1/12 indent-1"}>{index}</div>
+      <div className={" flex w-1/12 indent-1 text-xxs"}>{index}</div>
 
       <div
         className={cn(
@@ -291,21 +291,16 @@ function DroppableDay({
   onSupersetUpdate,
 }: DroppableDayProps) {
   const [totalDuration, setTotalDuration] = useState(0);
-  // const [draggableExercises, setDraggableExercsises] = useState<ExerciseType[]>(
-  //   []
-  // );
-
-  // useEffect(() => {
-  //   setDraggableExercsises(exercises);
-  // }, [exercises]);
+  // const _exercises = sortListOnSuperset(exercises);
+  const _exercises = exercises;
 
   useEffect(() => {
     const totalDuration = sessionDurationCalculator(
-      exercises,
+      _exercises,
       selectedMicrocycleIndex
     );
     setTotalDuration(totalDuration);
-  }, [selectedMicrocycleIndex, exercises]);
+  }, [selectedMicrocycleIndex, _exercises]);
 
   return (
     <li className=" w-52">
@@ -327,7 +322,7 @@ function DroppableDay({
             {...provided.droppableProps}
             ref={provided.innerRef}
           >
-            {exercises.map((each, index) => {
+            {_exercises.map((each, index) => {
               return (
                 <Draggable
                   key={`${each.id}`}
@@ -422,15 +417,6 @@ function DayLayout({
   );
 }
 
-// type DraggableExercisesObjectType = {
-//   day: DayType;
-//   sessions: {
-//     id: string;
-//     split: SplitType;
-//     exercises: ExerciseType[];
-//   }[];
-// };
-
 type TitleProps = {
   title: string;
   selected: string;
@@ -478,46 +464,13 @@ export default function WeekSessions({
     onSplitChange,
     onSupersetUpdate,
   } = useExerciseSelection(training_week);
-
-  // const [draggableExercisesObject, setDraggableExercisesObject] = useState<
-  //   DraggableExercisesObjectType[]
-  // >([]);
   const [isModalPrompted, setIsModalPrompted] = useState<boolean>(false);
   const [modalOptions, setModalOptions] = useState<{
     id: string;
     options: SplitType[];
   }>();
-  // const [updateSplit, setUpdateSplit] = useState<{
-  //   id: string;
-  //   oldSplit: string;
-  //   newSplit: string;
-  // }>();
   const [selectedMicrocycleIndex, setSelectedMicrocycleIndex] =
     useState<number>(0);
-
-  // useEffect(() => {
-  //   let draggableExerciseList: DraggableExercisesObjectType[] = [];
-  //   for (let i = 0; i < training_week.length; i++) {
-  //     const sessions = training_week[i].sessions;
-  //     let day: DraggableExercisesObjectType = {
-  //       day: training_week[i].day,
-  //       sessions: [],
-  //     };
-
-  //     for (let j = 0; j < sessions.length; j++) {
-  //       if (training_week[i].isTrainingDay) {
-  //         day.sessions.push({
-  //           id: `${training_week[i].day}_${j}`,
-  //           split: sessions[j].split,
-  //           exercises: sessions[j].exercises.flat(),
-  //         });
-  //       }
-  //     }
-
-  //     draggableExerciseList.push(day);
-  //   }
-  //   setDraggableExercisesObject(draggableExerciseList);
-  // }, [training_week]);
 
   // NOTE: a lot of logic missing here to determine if an exercise CAN move to another split
   //       as well as if it can should it change the split type?
@@ -582,11 +535,6 @@ export default function WeekSessions({
         );
 
         setModalOptions({ id: targetSplit.id, options: splitOptions });
-        // setUpdateSplit({
-        //   id: targetSplit.id,
-        //   oldSplit: targetSplit.split,
-        //   newSplit: "",
-        // });
         setIsModalPrompted(true);
       }
 
@@ -602,83 +550,6 @@ export default function WeekSessions({
     },
     [draggableExercises]
   );
-
-  // const onSupersetUpdate = useCallback(
-  //   (
-  //     exerciseOne: ExerciseType,
-  //     exerciseTwo: ExerciseType,
-  //     sessionId: string,
-  //     exercises: ExerciseType[]
-  //   ) => {
-  //     let indexOne = 0;
-  //     let indexTwo = 0;
-
-  //     const filteredObject = draggableExercisesObject.map((each) => {
-  //       const session = each.sessions.filter((each) => {
-  //         return each.id === sessionId;
-  //       });
-  //       return session[0];
-  //     });
-  //     const _exercises = structuredClone(filteredObject[0]?.exercises);
-  //     const newList = _exercises.map((each, index) => {
-  //       if (each.id === exerciseOne.id) {
-  //         indexOne = index;
-  //         return { ...each, supersetWith: exerciseTwo.id };
-  //       } else if (each.id === exerciseTwo.id) {
-  //         indexTwo = index;
-  //         return { ...each, supersetWith: exerciseOne.id };
-  //       } else return each;
-  //     });
-
-  //     if (indexOne > indexTwo) {
-  //       const temp = indexOne;
-  //       indexOne = indexTwo;
-  //       indexTwo = temp;
-  //     }
-
-  //     const supersetExercises = newList.splice(indexTwo, 1);
-  //     newList.splice(indexOne + 1, 0, ...supersetExercises);
-
-  //     const updateList = draggableExercisesObject.map((each) => {
-  //       const sessions = each.sessions.map((each) => {
-  //         if (each.id === sessionId) {
-  //           return { ...each, exercises: newList };
-  //         } else return each;
-  //       });
-
-  //       return { ...each, sessions: sessions };
-  //     });
-
-  //     console.log(
-  //       newList,
-  //       updateList,
-  //       sessionId,
-  //       draggableExercisesObject,
-  //       "are the different???"
-  //     );
-  //     setDraggableExercisesObject(updateList);
-  //     // setExercises(newList);
-  //   },
-  //   [draggableExercisesObject]
-  // );
-
-  // const onCloseModal = (split: SplitType) => {
-  //   if (!updateSplit) return;
-
-  //   const updateList: DraggableExercisesObjectType[] =
-  //     draggableExercisesObject.map((each) => {
-  //       const sessions = each.sessions.map((each) => {
-  //         if (each.id === updateSplit.id) {
-  //           return { ...each, split: split };
-  //         } else return each;
-  //       });
-
-  //       return { ...each, sessions: sessions };
-  //     });
-
-  //   setDraggableExercisesObject(updateList);
-  //   setIsModalPrompted(false);
-  // };
 
   const selectWeekIndexHandler = (week: string) => {
     const weekNumber = week.split(" ")[1];
@@ -842,7 +713,6 @@ export const MesocycleExerciseLayout = ({
   const sessionDurationCalculator = useCallback(
     (exercises: ExerciseType[], currentMicrocycleIndex: number) => {
       const { warmup, rest, rep } = durationTimeConstants;
-      // const totalSets = exercises.reduce((acc, prev) => acc + prev.sets, 0);
       const totalExercises = exercises.length;
       const restTime = totalExercises * rest.value;
       let totalRepTime = 0;
