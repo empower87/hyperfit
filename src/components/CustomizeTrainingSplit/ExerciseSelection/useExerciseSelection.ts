@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
+import { DropResult } from "react-beautiful-dnd";
 import {
   ExerciseType,
   SessionType,
   SplitType,
   TrainingDayType,
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
+import { canAddExerciseToSplit, findOptimalSplit } from "./exerciseSelectUtils";
 
 type DraggableSessionType = Pick<SessionType, "id" | "split"> & {
   exercises: ExerciseType[];
@@ -20,6 +22,11 @@ export default function useExerciseSelection(training_week: TrainingDayType[]) {
   const [draggableExercises, setDraggableExercises] = useState<
     DraggableExercises[]
   >([]);
+  const [modalOptions, setModalOptions] = useState<{
+    id: string;
+    options: SplitType[];
+    isOpen: boolean;
+  }>();
 
   useEffect(() => {
     const draggableExercises: DraggableExercises[] = training_week.map(
@@ -32,7 +39,6 @@ export default function useExerciseSelection(training_week: TrainingDayType[]) {
         return { ...each, sessions: sessions };
       }
     );
-    console.log(draggableExercises, "THIS GETTING CALLED AFTER SUPERSET??");
     setDraggableExercises(draggableExercises);
   }, [training_week]);
 
@@ -49,26 +55,6 @@ export default function useExerciseSelection(training_week: TrainingDayType[]) {
 
     setDraggableExercises(updatedSplitForExercises);
   }, []);
-
-  const sortListOnSuperset = (exercises: ExerciseType[]) => {
-    let sorted: ExerciseType[] = [];
-    let skippableIds: string[] = [];
-
-    for (let i = 0; i < exercises.length; i++) {
-      const exercise = exercises[i];
-      if (skippableIds.includes(exercise.id)) continue;
-      if (exercise.supersetWith) {
-        const index = exercises.findIndex(
-          (each) => each.id === exercise.supersetWith
-        );
-        sorted.push(exercises[i], exercises[index]);
-        skippableIds.push(exercise.supersetWith);
-      } else {
-        sorted.push(exercise);
-      }
-    }
-    return sorted;
-  };
 
   /// not working correctly, returning empty array
   const onSupersetUpdate = useCallback(
@@ -108,20 +94,14 @@ export default function useExerciseSelection(training_week: TrainingDayType[]) {
         indexTwo = temp;
       }
 
-      const newNewList = sortListOnSuperset(newList);
+      // const newNewList = sortListOnSuperset(newList);
       // const supersetExercises = newList.splice(indexTwo, 1);
       // newList.splice(indexOne + 1, 0, ...supersetExercises);
-      console.log(
-        _exercises,
-        sessionId,
-        newList,
-        newNewList,
-        "THIS GOING WRONG?"
-      );
+
       const updateList = draggableExercises.map((each) => {
         const sessions = each.sessions.map((each) => {
           if (each.id === sessionId) {
-            return { ...each, exercises: newNewList };
+            return { ...each, exercises: newList };
           } else return each;
         });
         return { ...each, sessions: sessions };
@@ -152,6 +132,68 @@ export default function useExerciseSelection(training_week: TrainingDayType[]) {
         return [0, index];
     }
   };
+
+  const onDragEnd = useCallback(
+    (result: DropResult) => {
+      if (!result.destination) return;
+
+      let outerDestinationId = 0;
+      let outerDestinationSessionId = 0;
+      let outerDestinationExerciseIndex = result.destination.index;
+
+      let outerSourceId = 0;
+      let outerSourceSessionId = 0;
+      let innerSourceId = result.source.index;
+
+      const destIndices = getInnerAndOuterIndices(
+        result.destination.droppableId
+      );
+      outerDestinationId = destIndices[0];
+      outerDestinationSessionId = destIndices[1];
+
+      const sourceIndices = getInnerAndOuterIndices(result.source.droppableId);
+      outerSourceId = sourceIndices[0];
+      outerSourceSessionId = sourceIndices[1];
+
+      const items = [...draggableExercises];
+
+      const sourceExercise =
+        items[outerSourceId].sessions[outerSourceSessionId].exercises[
+          innerSourceId
+        ];
+      const targetSplit =
+        items[outerDestinationId].sessions[outerDestinationSessionId];
+      const canAdd = canAddExerciseToSplit(
+        sourceExercise.muscle,
+        targetSplit.split
+      );
+
+      if (!canAdd) {
+        const splitOptions = findOptimalSplit(
+          sourceExercise.muscle,
+          targetSplit.exercises
+        );
+
+        setModalOptions({
+          id: targetSplit.id,
+          options: splitOptions,
+          isOpen: true,
+        });
+        // setIsModalPrompted(true);
+      }
+
+      const [removed] = items[outerSourceId].sessions[
+        outerSourceSessionId
+      ].exercises.splice(innerSourceId, 1);
+
+      items[outerDestinationId].sessions[
+        outerDestinationSessionId
+      ].exercises.splice(outerDestinationExerciseIndex, 0, removed);
+
+      setDraggableExercises(items);
+    },
+    [draggableExercises]
+  );
 
   const onDraggableReorder = useCallback(
     (
@@ -201,5 +243,7 @@ export default function useExerciseSelection(training_week: TrainingDayType[]) {
     setDraggableExercises,
     onSplitChange,
     onSupersetUpdate,
+    modalOptions,
+    onDragEnd,
   };
 }

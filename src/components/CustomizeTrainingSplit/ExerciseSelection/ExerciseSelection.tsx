@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { DragDropContext, Draggable, DropResult } from "react-beautiful-dnd";
+import { DragDropContext, Draggable } from "react-beautiful-dnd";
 import ReactDOM from "react-dom";
 import Section from "~/components/Layout/Section";
 import {
@@ -19,7 +19,6 @@ import StrictModeDroppable from "~/lib/react-beautiful-dnd/StrictModeDroppable";
 import { getGroupList } from "~/utils/getExercises";
 import { getRankColor } from "~/utils/getRankColor";
 import { getSessionSplitColor } from "~/utils/getSessionSplitColor";
-import { canAddExerciseToSplit, findOptimalSplit } from "./exerciseSelectUtils";
 import useExerciseSelection, {
   DraggableExercises,
 } from "./useExerciseSelection";
@@ -282,6 +281,27 @@ type DroppableDayProps = {
     sessionId: string
   ) => void;
 };
+
+const sortListOnSuperset = (exercises: ExerciseType[]) => {
+  let sorted: ExerciseType[] = [];
+  let skippableIds: string[] = [];
+
+  for (let i = 0; i < exercises.length; i++) {
+    const exercise = exercises[i];
+    if (skippableIds.includes(exercise.id)) continue;
+    if (exercise.supersetWith) {
+      const index = exercises.findIndex(
+        (each) => each.id === exercise.supersetWith
+      );
+      sorted.push(exercises[i], exercises[index]);
+      skippableIds.push(exercise.supersetWith);
+    } else {
+      sorted.push(exercise);
+    }
+  }
+  return sorted;
+};
+
 function DroppableDay({
   split,
   droppableId,
@@ -291,14 +311,14 @@ function DroppableDay({
   onSupersetUpdate,
 }: DroppableDayProps) {
   const [totalDuration, setTotalDuration] = useState(0);
-
+  const _exercises = sortListOnSuperset(exercises);
   useEffect(() => {
     const totalDuration = sessionDurationCalculator(
-      exercises,
+      _exercises,
       selectedMicrocycleIndex
     );
     setTotalDuration(totalDuration);
-  }, [selectedMicrocycleIndex, exercises]);
+  }, [selectedMicrocycleIndex, _exercises]);
 
   return (
     <li className="w-52">
@@ -320,7 +340,7 @@ function DroppableDay({
             {...provided.droppableProps}
             ref={provided.innerRef}
           >
-            {exercises.map((each, index) => {
+            {_exercises.map((each, index) => {
               return (
                 <Draggable
                   key={`${each.id}`}
@@ -457,94 +477,20 @@ export default function WeekSessions({
 }: WeekSessionsProps) {
   const title = `Mesocycle ${mesocycle_index}`;
   const {
+    modalOptions,
     draggableExercises,
     setDraggableExercises,
+    onDragEnd,
     onSplitChange,
     onSupersetUpdate,
   } = useExerciseSelection(training_week);
   const [isModalPrompted, setIsModalPrompted] = useState<boolean>(false);
-  const [modalOptions, setModalOptions] = useState<{
-    id: string;
-    options: SplitType[];
-  }>();
+
   const [selectedMicrocycleIndex, setSelectedMicrocycleIndex] =
     useState<number>(0);
 
   // NOTE: a lot of logic missing here to determine if an exercise CAN move to another split
   //       as well as if it can should it change the split type?
-  const onDragEnd = useCallback((result: DropResult) => {
-    if (!result.destination) return;
-
-    let outerDestinationId = 0;
-    let outerDestinationSessionId = 0;
-    let outerDestinationExerciseIndex = result.destination.index;
-
-    let outerSourceId = 0;
-    let outerSourceSessionId = 0;
-    let innerSourceId = result.source.index;
-
-    const getOutterIndex = (droppableId: string) => {
-      const splitId = droppableId.split("_");
-      const index = parseInt(splitId[1]);
-      switch (splitId[0]) {
-        case "Monday":
-          return [1, index];
-        case "Tuesday":
-          return [2, index];
-        case "Wednesday":
-          return [3, index];
-        case "Thursday":
-          return [4, index];
-        case "Friday":
-          return [5, index];
-        case "Saturday":
-          return [6, index];
-        default:
-          return [0, index];
-      }
-    };
-
-    const destIndices = getOutterIndex(result.destination.droppableId);
-    outerDestinationId = destIndices[0];
-    outerDestinationSessionId = destIndices[1];
-
-    const sourceIndices = getOutterIndex(result.source.droppableId);
-    outerSourceId = sourceIndices[0];
-    outerSourceSessionId = sourceIndices[1];
-
-    const items = [...draggableExercises];
-
-    const sourceExercise =
-      items[outerSourceId].sessions[outerSourceSessionId].exercises[
-        innerSourceId
-      ];
-    const targetSplit =
-      items[outerDestinationId].sessions[outerDestinationSessionId];
-    const canAdd = canAddExerciseToSplit(
-      sourceExercise.muscle,
-      targetSplit.split
-    );
-
-    if (!canAdd) {
-      const splitOptions = findOptimalSplit(
-        sourceExercise.muscle,
-        targetSplit.exercises
-      );
-
-      setModalOptions({ id: targetSplit.id, options: splitOptions });
-      setIsModalPrompted(true);
-    }
-
-    const [removed] = items[outerSourceId].sessions[
-      outerSourceSessionId
-    ].exercises.splice(innerSourceId, 1);
-
-    items[outerDestinationId].sessions[
-      outerDestinationSessionId
-    ].exercises.splice(outerDestinationExerciseIndex, 0, removed);
-
-    setDraggableExercises(items);
-  }, []);
 
   const selectWeekIndexHandler = (week: string) => {
     const weekNumber = week.split(" ")[1];
@@ -692,18 +638,21 @@ export const MesocycleExerciseLayout = ({
   const [durationTimeConstants, setDurationTimeConstants] =
     useState<DurationTimeConstants>({ ...DURATION_TIME_CONSTRAINTS });
 
-  const onTitleClick = (title: string) => {
+  const onTitleClick = useCallback((title: string) => {
     if (title === selectedMesocycle) return;
     setSelectedMesocycle(title);
-  };
+  }, []);
 
-  const onTimeChange = (key: DurationTimeConstantsKeys, time: number) => {
-    const newDurationTimeConstants = {
-      ...durationTimeConstants,
-      [key]: { ...durationTimeConstants[key], value: time },
-    };
-    setDurationTimeConstants(newDurationTimeConstants);
-  };
+  const onTimeChange = useCallback(
+    (key: DurationTimeConstantsKeys, time: number) => {
+      const newDurationTimeConstants = {
+        ...durationTimeConstants,
+        [key]: { ...durationTimeConstants[key], value: time },
+      };
+      setDurationTimeConstants(newDurationTimeConstants);
+    },
+    []
+  );
 
   const sessionDurationCalculator = useCallback(
     (exercises: ExerciseType[], currentMicrocycleIndex: number) => {
