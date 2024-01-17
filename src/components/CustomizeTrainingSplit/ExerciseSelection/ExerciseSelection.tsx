@@ -291,20 +291,18 @@ function DroppableDay({
   onSupersetUpdate,
 }: DroppableDayProps) {
   const [totalDuration, setTotalDuration] = useState(0);
-  // const _exercises = sortListOnSuperset(exercises);
-  const _exercises = exercises;
 
   useEffect(() => {
     const totalDuration = sessionDurationCalculator(
-      _exercises,
+      exercises,
       selectedMicrocycleIndex
     );
     setTotalDuration(totalDuration);
-  }, [selectedMicrocycleIndex, _exercises]);
+  }, [selectedMicrocycleIndex, exercises]);
 
   return (
-    <li className=" w-52">
-      <div className={" mb-1 p-1"}>
+    <li className="w-52">
+      <div className={"mb-1 p-1"}>
         <div
           className={
             getSessionSplitColor(split).bg + " text-sm indent-1 text-white"
@@ -322,7 +320,7 @@ function DroppableDay({
             {...provided.droppableProps}
             ref={provided.innerRef}
           >
-            {_exercises.map((each, index) => {
+            {exercises.map((each, index) => {
               return (
                 <Draggable
                   key={`${each.id}`}
@@ -474,82 +472,79 @@ export default function WeekSessions({
 
   // NOTE: a lot of logic missing here to determine if an exercise CAN move to another split
   //       as well as if it can should it change the split type?
-  const onDragEnd = useCallback(
-    (result: DropResult) => {
-      if (!result.destination) return;
+  const onDragEnd = useCallback((result: DropResult) => {
+    if (!result.destination) return;
 
-      let outerDestinationId = 0;
-      let outerDestinationSessionId = 0;
-      let outerDestinationExerciseIndex = result.destination.index;
+    let outerDestinationId = 0;
+    let outerDestinationSessionId = 0;
+    let outerDestinationExerciseIndex = result.destination.index;
 
-      let outerSourceId = 0;
-      let outerSourceSessionId = 0;
-      let innerSourceId = result.source.index;
+    let outerSourceId = 0;
+    let outerSourceSessionId = 0;
+    let innerSourceId = result.source.index;
 
-      const getOutterIndex = (droppableId: string) => {
-        const splitId = droppableId.split("_");
-        const index = parseInt(splitId[1]);
-        switch (splitId[0]) {
-          case "Monday":
-            return [1, index];
-          case "Tuesday":
-            return [2, index];
-          case "Wednesday":
-            return [3, index];
-          case "Thursday":
-            return [4, index];
-          case "Friday":
-            return [5, index];
-          case "Saturday":
-            return [6, index];
-          default:
-            return [0, index];
-        }
-      };
+    const getOutterIndex = (droppableId: string) => {
+      const splitId = droppableId.split("_");
+      const index = parseInt(splitId[1]);
+      switch (splitId[0]) {
+        case "Monday":
+          return [1, index];
+        case "Tuesday":
+          return [2, index];
+        case "Wednesday":
+          return [3, index];
+        case "Thursday":
+          return [4, index];
+        case "Friday":
+          return [5, index];
+        case "Saturday":
+          return [6, index];
+        default:
+          return [0, index];
+      }
+    };
 
-      const destIndices = getOutterIndex(result.destination.droppableId);
-      outerDestinationId = destIndices[0];
-      outerDestinationSessionId = destIndices[1];
+    const destIndices = getOutterIndex(result.destination.droppableId);
+    outerDestinationId = destIndices[0];
+    outerDestinationSessionId = destIndices[1];
 
-      const sourceIndices = getOutterIndex(result.source.droppableId);
-      outerSourceId = sourceIndices[0];
-      outerSourceSessionId = sourceIndices[1];
+    const sourceIndices = getOutterIndex(result.source.droppableId);
+    outerSourceId = sourceIndices[0];
+    outerSourceSessionId = sourceIndices[1];
 
-      const items = [...draggableExercises];
+    const items = [...draggableExercises];
 
-      const sourceExercise =
-        items[outerSourceId].sessions[outerSourceSessionId].exercises[
-          innerSourceId
-        ];
-      const targetSplit =
-        items[outerDestinationId].sessions[outerDestinationSessionId];
-      const canAdd = canAddExerciseToSplit(
+    const sourceExercise =
+      items[outerSourceId].sessions[outerSourceSessionId].exercises[
+        innerSourceId
+      ];
+    const targetSplit =
+      items[outerDestinationId].sessions[outerDestinationSessionId];
+    const canAdd = canAddExerciseToSplit(
+      sourceExercise.muscle,
+      targetSplit.split
+    );
+
+    if (!canAdd) {
+      const splitOptions = findOptimalSplit(
         sourceExercise.muscle,
-        targetSplit.split
+        targetSplit.exercises
       );
 
-      if (!canAdd) {
-        const splitOptions = findOptimalSplit(
-          sourceExercise.muscle,
-          targetSplit.exercises
-        );
+      setModalOptions({ id: targetSplit.id, options: splitOptions });
+      setIsModalPrompted(true);
+    }
 
-        setModalOptions({ id: targetSplit.id, options: splitOptions });
-        setIsModalPrompted(true);
-      }
+    const [removed] = items[outerSourceId].sessions[
+      outerSourceSessionId
+    ].exercises.splice(innerSourceId, 1);
 
-      const [removed] = items[outerSourceId].sessions[
-        outerSourceSessionId
-      ].exercises.splice(innerSourceId, 1);
+    items[outerDestinationId].sessions[
+      outerDestinationSessionId
+    ].exercises.splice(outerDestinationExerciseIndex, 0, removed);
 
-      items[outerDestinationId].sessions[
-        outerDestinationSessionId
-      ].exercises.splice(outerDestinationExerciseIndex, 0, removed);
-
-      setDraggableExercises(items);
-    },
-    [draggableExercises]
-  );
+    setDraggableExercises(items);
+  }, []);
 
   const selectWeekIndexHandler = (week: string) => {
     const weekNumber = week.split(" ")[1];

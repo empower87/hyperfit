@@ -32,6 +32,7 @@ export default function useExerciseSelection(training_week: TrainingDayType[]) {
         return { ...each, sessions: sessions };
       }
     );
+    console.log(draggableExercises, "THIS GETTING CALLED AFTER SUPERSET??");
     setDraggableExercises(draggableExercises);
   }, [training_week]);
 
@@ -69,6 +70,7 @@ export default function useExerciseSelection(training_week: TrainingDayType[]) {
     return sorted;
   };
 
+  /// not working correctly, returning empty array
   const onSupersetUpdate = useCallback(
     (
       exerciseOne: ExerciseType,
@@ -88,7 +90,6 @@ export default function useExerciseSelection(training_week: TrainingDayType[]) {
         _exercises = session.exercises;
       }
 
-      console.log(_exercises, sessionId, "THIS GOING WRONG?");
       // const _exercises = structuredClone(getExercises);
       // if (!_exercises) return;
       const newList = _exercises.map((each, index) => {
@@ -106,10 +107,17 @@ export default function useExerciseSelection(training_week: TrainingDayType[]) {
         indexOne = indexTwo;
         indexTwo = temp;
       }
+
       const newNewList = sortListOnSuperset(newList);
       // const supersetExercises = newList.splice(indexTwo, 1);
       // newList.splice(indexOne + 1, 0, ...supersetExercises);
-
+      console.log(
+        _exercises,
+        sessionId,
+        newList,
+        newNewList,
+        "THIS GOING WRONG?"
+      );
       const updateList = draggableExercises.map((each) => {
         const sessions = each.sessions.map((each) => {
           if (each.id === sessionId) {
@@ -121,7 +129,7 @@ export default function useExerciseSelection(training_week: TrainingDayType[]) {
 
       setDraggableExercises(updateList);
     },
-    []
+    [draggableExercises]
   );
 
   const getInnerAndOuterIndices = (droppableId: string) => {
