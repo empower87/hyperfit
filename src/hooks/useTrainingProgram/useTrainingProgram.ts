@@ -64,25 +64,24 @@ export default function useTrainingProgram() {
 
   useEffect(() => {
     dispatch({ type: "UPDATE_SPLIT_SESSIONS", payload: { split: "OPT" } });
+    // dispatch({ type: "UPDATE_TRAINING_WEEK" });
   }, []);
 
   useEffect(() => {
     dispatch({ type: "UPDATE_TRAINING_WEEK" });
-
     console.log(
       frequency,
       split_sessions,
       muscle_priority_list,
-      mrv_breakpoint,
-      mev_breakpoint,
+      training_block,
       training_week,
-      "TEST: ALL STATE DATA"
+      "ALL DATA"
     );
   }, [frequency, split_sessions, muscle_priority_list]);
 
   useEffect(() => {
-    dispatch({ type: "GET_TRAINING_BLOCK" });
-    console.log(muscle_priority_list, training_block, "TEST: TRAINING BLOCK");
+    // dispatch({ type: "GET_TRAINING_BLOCK" });
+    // console.log(muscle_priority_list, training_block, "TEST: TRAINING BLOCK");
   }, [training_week, muscle_priority_list, frequency, split_sessions]);
 
   return {

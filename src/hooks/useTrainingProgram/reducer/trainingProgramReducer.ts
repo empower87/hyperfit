@@ -348,7 +348,6 @@ export default function weeklySessionSplitReducer(
         new_list,
         breakpoints
       );
-
       const update_split_sessions = getSplitFromWeights(
         state.frequency,
         reordered_list,
@@ -374,12 +373,14 @@ export default function weeklySessionSplitReducer(
         muscle_priority_list,
         type
       );
+
       const updated_list_sessions = onSplitChangeUpdateMusclePriorityList(
-        [...muscle_priority_list],
+        muscle_priority_list,
         splitSessions,
         mesocycles,
         microcycles
       );
+
       return {
         ...state,
         split_sessions: splitSessions,
@@ -388,8 +389,8 @@ export default function weeklySessionSplitReducer(
     case "UPDATE_TRAINING_WEEK":
       const new_training_week = distributeSplitAcrossWeek(
         [...INITIAL_WEEK],
-        state.frequency,
-        state.split_sessions
+        frequency,
+        split_sessions
       );
       // const updated_training_week = distributeExercisesAmongSplit(
       //   state.muscle_priority_list,
@@ -397,9 +398,17 @@ export default function weeklySessionSplitReducer(
       //   new_training_week
       // );
 
+      const get_training_block = buildMesocyclesTEST(
+        muscle_priority_list,
+        split_sessions,
+        new_training_week,
+        mesocycles
+      );
+
       return {
         ...state,
         training_week: new_training_week,
+        training_block: get_training_block,
       };
     case "REARRANGE_TRAINING_WEEK":
       const rearranged_week = action.payload.rearranged_week;

@@ -280,6 +280,7 @@ type DroppableDayProps = {
     exercise: ExerciseType,
     sessionId: string
   ) => void;
+  supersets: [string, string][];
 };
 
 const sortListOnSuperset = (exercises: ExerciseType[]) => {
@@ -309,9 +310,50 @@ function DroppableDay({
   selectedMicrocycleIndex,
   sessionDurationCalculator,
   onSupersetUpdate,
+  supersets,
 }: DroppableDayProps) {
   const [totalDuration, setTotalDuration] = useState(0);
-  const _exercises = sortListOnSuperset(exercises);
+  const [_exercises, setExercises] = useState(exercises);
+
+  useEffect(() => {
+    let newExercises: ExerciseType[] = [];
+    let skippableIds: string[] = [];
+    for (let i = 0; i < exercises.length; i++) {
+      const exercise = exercises[i];
+
+      const getSuperset = supersets.find(
+        (each) => each[0] === exercise.id || each[1] === exercise.id
+      );
+
+      if (getSuperset) {
+        if (
+          skippableIds.includes(getSuperset[0]) ||
+          skippableIds.includes(getSuperset[1])
+        )
+          continue;
+        if (getSuperset[0] === exercise.id) {
+          const secondExercise = exercises.find(
+            (each) => each.id === getSuperset[1]
+          );
+          if (!secondExercise) continue;
+          newExercises.push(exercise);
+          newExercises.push(secondExercise);
+          skippableIds.push(...getSuperset);
+        } else {
+          const firstExercise = exercises.find(
+            (each) => each.id === getSuperset[0]
+          );
+          if (!firstExercise) continue;
+          newExercises.push(firstExercise);
+          newExercises.push(exercise);
+        }
+      } else {
+        newExercises.push(exercise);
+      }
+    }
+    setExercises(newExercises);
+  }, [exercises]);
+
   useEffect(() => {
     const totalDuration = sessionDurationCalculator(
       _exercises,
@@ -391,6 +433,7 @@ type DayLayoutProps = {
     exercise: ExerciseType,
     sessionId: string
   ) => void;
+  supersets: [string, string][];
 };
 
 function DayLayout({
@@ -398,6 +441,7 @@ function DayLayout({
   sessionDurationCalculator,
   selectedMicrocycleIndex,
   onSupersetUpdate,
+  supersets,
 }: DayLayoutProps) {
   const { day, sessions } = session;
 
@@ -425,6 +469,7 @@ function DayLayout({
                   selectedMicrocycleIndex={selectedMicrocycleIndex}
                   sessionDurationCalculator={sessionDurationCalculator}
                   onSupersetUpdate={onSupersetUpdate}
+                  supersets={supersets}
                 />
               );
             })}
@@ -476,10 +521,11 @@ export default function WeekSessions({
   sessionDurationCalculator,
 }: WeekSessionsProps) {
   const title = `Mesocycle ${mesocycle_index}`;
+
   const {
     modalOptions,
     draggableExercises,
-    setDraggableExercises,
+    supersets,
     onDragEnd,
     onSplitChange,
     onSupersetUpdate,
@@ -539,6 +585,7 @@ export default function WeekSessions({
                 sessionDurationCalculator={sessionDurationCalculator}
                 selectedMicrocycleIndex={selectedMicrocycleIndex}
                 onSupersetUpdate={onSupersetUpdate}
+                supersets={supersets}
               />
             );
           })}
