@@ -47,30 +47,87 @@ export default function useExerciseSelection(
     setDraggableExercises(draggableExercises);
   }, [training_week]);
 
-  const onSplitChange = useCallback((sessionId: string, split: SplitType) => {
-    const updatedSplitForExercises = draggableExercises.map((each) => {
-      const sessions = each.sessions.map((each) => {
-        if (each.id === sessionId) {
-          return { ...each, split: split };
-        } else return each;
+  useEffect(() => {
+    const newDraggableExercises = structuredClone(draggableExercises);
+    for (let i = 0; i < newDraggableExercises.length; i++) {
+      let day = newDraggableExercises[i];
+      for (let j = 0; j < day.sessions.length; j++) {
+        const session = day.sessions[j];
+        const exercises = session.exercises;
+        const sorted = updateExercisesWithSuperset(exercises, supersets);
+        newDraggableExercises[i].sessions[j].exercises = sorted;
+      }
+    }
+    setDraggableExercises(newDraggableExercises);
+  }, [supersets]);
+
+  const onSplitChange = useCallback(
+    (sessionId: string, split: SplitType) => {
+      const updatedSplitForExercises = draggableExercises.map((each) => {
+        const sessions = each.sessions.map((each) => {
+          if (each.id === sessionId) {
+            return { ...each, split: split };
+          } else return each;
+        });
+
+        return { ...each, sessions: sessions };
       });
 
-      return { ...each, sessions: sessions };
-    });
+      setDraggableExercises(updatedSplitForExercises);
+    },
+    [draggableExercises]
+  );
 
-    setDraggableExercises(updatedSplitForExercises);
-  }, []);
+  const updateExercisesWithSuperset = (
+    exercises: ExerciseType[],
+    supersets: [string, string][]
+  ) => {
+    const paired: { [key: string]: boolean } = {};
+    const newExercises: ExerciseType[] = [];
 
-  /// not working correctly, returning empty array
+    for (let exercise of exercises) {
+      if (paired[exercise.id]) continue;
+
+      const superset = supersets.find((set) => {
+        return set.includes(exercise.id);
+      });
+
+      if (superset) {
+        const [first, second] = superset;
+        let supersetExercise = exercises.find(
+          (e) => e.id === (first === exercise.id ? second : first)
+        );
+        if (!supersetExercise) continue;
+        paired[first] = true;
+        paired[second] = true;
+        supersetExercise = {
+          ...supersetExercise,
+          supersetWith: first === supersetExercise.id ? second : first,
+        };
+        newExercises.push(supersetExercise);
+      }
+
+      exercise = {
+        ...exercise,
+        supersetWith:
+          superset && exercise.id === superset[0]
+            ? superset[1]
+            : superset && exercise.id === superset[1]
+            ? superset[0]
+            : null,
+      };
+      newExercises.push(exercise);
+    }
+
+    return newExercises;
+  };
+
   const onSupersetUpdate = useCallback(
     (
       exerciseOne: ExerciseType,
       exerciseTwo: ExerciseType,
       sessionId: string
     ) => {
-      let indexOne = 0;
-      let indexTwo = 0;
-
       let _exercises: ExerciseType[] = [];
 
       const newExercises = structuredClone(draggableExercises);
@@ -101,48 +158,10 @@ export default function useExerciseSelection(
           }
         }
       }
-      // console.log(
-      //   newSupersets,
-      //   exerciseOne,
-      //   exerciseTwo,
-      //   "OK THIS SHOULD WORK??"
-      // );
+
       setSupersets(newSupersets);
-      // const _exercises = structuredClone(getExercises);
-      // if (!_exercises) return;
-      const newList = _exercises.map((each, index) => {
-        if (each.id === exerciseOne.id) {
-          indexOne = index;
-          return { ...each, supersetWith: exerciseTwo.id };
-        } else if (each.id === exerciseTwo.id) {
-          indexTwo = index;
-          return { ...each, supersetWith: exerciseOne.id };
-        } else return each;
-      });
-
-      if (indexOne > indexTwo) {
-        const temp = indexOne;
-        indexOne = indexTwo;
-        indexTwo = temp;
-      }
-
-      // const newNewList = sortListOnSuperset(newList);
-      // const supersetExercises = newList.splice(indexTwo, 1);
-      // newList.splice(indexOne + 1, 0, ...supersetExercises);
-
-      const updateList = newExercises.map((each) => {
-        const sessions = each.sessions.map((each) => {
-          if (each.id === sessionId) {
-            return { ...each, exercises: newList };
-          } else return each;
-        });
-        return { ...each, sessions: sessions };
-      });
-      console.log(newExercises, "onSuperset called a");
-      // setSupersets([...supersets, [exerciseOne.id, exerciseTwo.id]]);
-      setDraggableExercises(updateList);
     },
-    [draggableExercises]
+    [draggableExercises, supersets]
   );
 
   const getInnerAndOuterIndices = (droppableId: string) => {
@@ -166,10 +185,10 @@ export default function useExerciseSelection(
     }
   };
 
+  // TODO: Needs to check if exercise has a superset and drag that along with it.
   const onDragEnd = useCallback(
     (result: DropResult) => {
       if (!result.destination) return;
-      console.log(result, "onDragEnd called");
       let outerDestinationId = 0;
       let outerDestinationSessionId = 0;
       let outerDestinationExerciseIndex = result.destination.index;
@@ -212,7 +231,6 @@ export default function useExerciseSelection(
           options: splitOptions,
           isOpen: true,
         });
-        // setIsModalPrompted(true);
       }
 
       const [removed] = items[outerSourceId].sessions[

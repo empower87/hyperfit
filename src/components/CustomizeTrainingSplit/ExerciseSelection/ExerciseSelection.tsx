@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { DragDropContext, Draggable } from "react-beautiful-dnd";
 import ReactDOM from "react-dom";
 import Section from "~/components/Layout/Section";
@@ -184,30 +184,6 @@ function DaySessionItem({
 
   const onItemClick = useCallback((exerciseOne: ExerciseType) => {
     onSupersetUpdate(exerciseOne, exercise, sessionId);
-    // let indexOne = 0;
-    // let indexTwo = 0;
-
-    // const newList = exercises.map((each, index) => {
-    //   if (each.id === _exercise.id) {
-    //     indexOne = index;
-    //     return { ...each, supersetWith: exercise.id };
-    //   } else if (each.id === exercise.id) {
-    //     indexTwo = index;
-    //     return { ...each, supersetWith: _exercise.id };
-    //   } else return each;
-    // });
-
-    // if (indexOne > indexTwo) {
-    //   const temp = indexOne;
-    //   indexOne = indexTwo;
-    //   indexTwo = temp;
-    // }
-
-    // const supersetExercises = newList.splice(indexTwo, 1);
-    // newList.splice(indexOne + 1, 0, ...supersetExercises);
-
-    // console.log(newList, exercises, "are the different???");
-    // setExercises(newList);
   }, []);
 
   const onDropdownClick = () => {
@@ -281,27 +257,6 @@ type DroppableDayProps = {
     exercise: ExerciseType,
     sessionId: string
   ) => void;
-  supersets: [string, string][];
-};
-
-const sortListOnSuperset = (exercises: ExerciseType[]) => {
-  let sorted: ExerciseType[] = [];
-  let skippableIds: string[] = [];
-
-  for (let i = 0; i < exercises.length; i++) {
-    const exercise = exercises[i];
-    if (skippableIds.includes(exercise.id)) continue;
-    if (exercise.supersetWith) {
-      const index = exercises.findIndex(
-        (each) => each.id === exercise.supersetWith
-      );
-      sorted.push(exercises[i], exercises[index]);
-      skippableIds.push(exercise.supersetWith);
-    } else {
-      sorted.push(exercise);
-    }
-  }
-  return sorted;
 };
 
 function DroppableDay({
@@ -312,65 +267,16 @@ function DroppableDay({
   selectedMicrocycleIndex,
   sessionDurationCalculator,
   onSupersetUpdate,
-  supersets,
 }: DroppableDayProps) {
   const [totalDuration, setTotalDuration] = useState(0);
-  // const [_exercises, setExercises] = useState(exercises);
-
-  const _exercises = sortListOnSuperset(exercises);
-  // useEffect(() => {
-  //   let newExercises: ExerciseType[] = [];
-  //   let skippableIds: string[] = [];
-  //   for (let i = 0; i < exercises.length; i++) {
-  //     const exercise = exercises[i];
-
-  //     const getSuperset = supersets.find(
-  //       (each) => each[0] === exercise.id || each[1] === exercise.id
-  //     );
-
-  //     if (getSuperset) {
-  //       if (
-  //         skippableIds.includes(getSuperset[0]) ||
-  //         skippableIds.includes(getSuperset[1])
-  //       )
-  //         continue;
-  //       if (getSuperset[0] === exercise.id) {
-  //         const secondExercise = exercises.find(
-  //           (each) => each.id === getSuperset[1]
-  //         );
-  //         if (!secondExercise) continue;
-  //         newExercises.push(exercise);
-  //         newExercises.push(secondExercise);
-  //         skippableIds.push(...getSuperset);
-  //       } else {
-  //         const firstExercise = exercises.find(
-  //           (each) => each.id === getSuperset[0]
-  //         );
-  //         if (!firstExercise) continue;
-  //         newExercises.push(firstExercise);
-  //         newExercises.push(exercise);
-  //       }
-  //     } else {
-  //       newExercises.push(exercise);
-  //     }
-  //   }
-  //   console.log(
-  //     exercises,
-  //     newExercises,
-  //     skippableIds,
-  //     supersets,
-  //     "are the different???"
-  //   );
-  //   setExercises(newExercises);
-  // }, [exercises, supersets]);
 
   useEffect(() => {
     const totalDuration = sessionDurationCalculator(
-      _exercises,
+      exercises,
       selectedMicrocycleIndex
     );
     setTotalDuration(totalDuration);
-  }, [selectedMicrocycleIndex, _exercises]);
+  }, [selectedMicrocycleIndex, exercises]);
 
   return (
     <li className="w-52">
@@ -395,11 +301,11 @@ function DroppableDay({
             {...provided.droppableProps}
             ref={provided.innerRef}
           >
-            {_exercises.map((each, index) => {
+            {exercises.map((each, index) => {
               return (
                 <Draggable
                   key={`${each.id}_${mesocycleIndex}`}
-                  draggableId={`each.id_${mesocycleIndex}`}
+                  draggableId={`${each.id}`}
                   index={index}
                 >
                   {(provided, snapshot) => (
@@ -447,7 +353,6 @@ type DayLayoutProps = {
     exercise: ExerciseType,
     sessionId: string
   ) => void;
-  supersets: [string, string][];
 };
 
 function DayLayout({
@@ -456,7 +361,6 @@ function DayLayout({
   sessionDurationCalculator,
   selectedMicrocycleIndex,
   onSupersetUpdate,
-  supersets,
 }: DayLayoutProps) {
   const { day, sessions } = session;
 
@@ -480,7 +384,7 @@ function DayLayout({
             {sessions.map((each, index) => {
               return (
                 <DroppableDay
-                  key={`${each.id}_${mesocycleIndex}`}
+                  key={`${each.id}_${index}_${mesocycleIndex}`}
                   split={each.split}
                   mesocycleIndex={mesocycleIndex}
                   droppableId={each.id}
@@ -488,7 +392,6 @@ function DayLayout({
                   selectedMicrocycleIndex={selectedMicrocycleIndex}
                   sessionDurationCalculator={sessionDurationCalculator}
                   onSupersetUpdate={onSupersetUpdate}
-                  supersets={supersets}
                 />
               );
             })}
@@ -541,15 +444,19 @@ export default function WeekSessions({
   sessionDurationCalculator,
 }: WeekSessionsProps) {
   const title = `Mesocycle ${mesocycle_index}`;
+  const initial_week = useMemo(
+    () => structuredClone(training_week),
+    [training_week]
+  );
 
   const {
     modalOptions,
     draggableExercises,
-    supersets,
     onDragEnd,
     onSplitChange,
     onSupersetUpdate,
-  } = useExerciseSelection(training_week, mesocycle_index);
+  } = useExerciseSelection(initial_week, mesocycle_index);
+
   const [isModalPrompted, setIsModalPrompted] = useState<boolean>(false);
 
   const [selectedMicrocycleIndex, setSelectedMicrocycleIndex] =
@@ -592,16 +499,15 @@ export default function WeekSessions({
                 const hasSessions = each.sessions.find(
                   (ea) => ea.exercises.length
                 );
-                if (!hasSessions) return null;
+                if (!hasSessions) return <></>;
                 return (
                   <DayLayout
-                    key={`${each.day}_${index}_draggableExercisesObject`}
+                    key={`${each.day}_${mesocycle_index}_draggableExercisesObject`}
                     session={each}
                     mesocycleIndex={mesocycle_index}
                     sessionDurationCalculator={sessionDurationCalculator}
                     selectedMicrocycleIndex={selectedMicrocycleIndex}
                     onSupersetUpdate={onSupersetUpdate}
-                    supersets={supersets}
                   />
                 );
               })}
