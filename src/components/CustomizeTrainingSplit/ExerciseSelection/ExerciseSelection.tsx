@@ -269,6 +269,7 @@ function DaySessionItem({
 type DroppableDayProps = {
   split: SplitType;
   droppableId: string;
+  mesocycleIndex: number;
   exercises: ExerciseType[];
   selectedMicrocycleIndex: number;
   sessionDurationCalculator: (
@@ -306,6 +307,7 @@ const sortListOnSuperset = (exercises: ExerciseType[]) => {
 function DroppableDay({
   split,
   droppableId,
+  mesocycleIndex,
   exercises,
   selectedMicrocycleIndex,
   sessionDurationCalculator,
@@ -313,46 +315,54 @@ function DroppableDay({
   supersets,
 }: DroppableDayProps) {
   const [totalDuration, setTotalDuration] = useState(0);
-  const [_exercises, setExercises] = useState(exercises);
+  // const [_exercises, setExercises] = useState(exercises);
 
-  useEffect(() => {
-    let newExercises: ExerciseType[] = [];
-    let skippableIds: string[] = [];
-    for (let i = 0; i < exercises.length; i++) {
-      const exercise = exercises[i];
+  const _exercises = sortListOnSuperset(exercises);
+  // useEffect(() => {
+  //   let newExercises: ExerciseType[] = [];
+  //   let skippableIds: string[] = [];
+  //   for (let i = 0; i < exercises.length; i++) {
+  //     const exercise = exercises[i];
 
-      const getSuperset = supersets.find(
-        (each) => each[0] === exercise.id || each[1] === exercise.id
-      );
+  //     const getSuperset = supersets.find(
+  //       (each) => each[0] === exercise.id || each[1] === exercise.id
+  //     );
 
-      if (getSuperset) {
-        if (
-          skippableIds.includes(getSuperset[0]) ||
-          skippableIds.includes(getSuperset[1])
-        )
-          continue;
-        if (getSuperset[0] === exercise.id) {
-          const secondExercise = exercises.find(
-            (each) => each.id === getSuperset[1]
-          );
-          if (!secondExercise) continue;
-          newExercises.push(exercise);
-          newExercises.push(secondExercise);
-          skippableIds.push(...getSuperset);
-        } else {
-          const firstExercise = exercises.find(
-            (each) => each.id === getSuperset[0]
-          );
-          if (!firstExercise) continue;
-          newExercises.push(firstExercise);
-          newExercises.push(exercise);
-        }
-      } else {
-        newExercises.push(exercise);
-      }
-    }
-    setExercises(newExercises);
-  }, [exercises]);
+  //     if (getSuperset) {
+  //       if (
+  //         skippableIds.includes(getSuperset[0]) ||
+  //         skippableIds.includes(getSuperset[1])
+  //       )
+  //         continue;
+  //       if (getSuperset[0] === exercise.id) {
+  //         const secondExercise = exercises.find(
+  //           (each) => each.id === getSuperset[1]
+  //         );
+  //         if (!secondExercise) continue;
+  //         newExercises.push(exercise);
+  //         newExercises.push(secondExercise);
+  //         skippableIds.push(...getSuperset);
+  //       } else {
+  //         const firstExercise = exercises.find(
+  //           (each) => each.id === getSuperset[0]
+  //         );
+  //         if (!firstExercise) continue;
+  //         newExercises.push(firstExercise);
+  //         newExercises.push(exercise);
+  //       }
+  //     } else {
+  //       newExercises.push(exercise);
+  //     }
+  //   }
+  //   console.log(
+  //     exercises,
+  //     newExercises,
+  //     skippableIds,
+  //     supersets,
+  //     "are the different???"
+  //   );
+  //   setExercises(newExercises);
+  // }, [exercises, supersets]);
 
   useEffect(() => {
     const totalDuration = sessionDurationCalculator(
@@ -374,10 +384,13 @@ function DroppableDay({
         </div>
       </div>
 
-      <StrictModeDroppable droppableId={droppableId} type={"week"}>
+      <StrictModeDroppable
+        droppableId={`${droppableId}_${mesocycleIndex}`}
+        type={`week_${mesocycleIndex}`}
+      >
         {(provided, snapshot) => (
           <ul
-            id="week"
+            id={`week_${mesocycleIndex}`}
             className=" w-full"
             {...provided.droppableProps}
             ref={provided.innerRef}
@@ -385,8 +398,8 @@ function DroppableDay({
             {_exercises.map((each, index) => {
               return (
                 <Draggable
-                  key={`${each.id}`}
-                  draggableId={each.id}
+                  key={`${each.id}_${mesocycleIndex}`}
+                  draggableId={`each.id_${mesocycleIndex}`}
                   index={index}
                 >
                   {(provided, snapshot) => (
@@ -423,6 +436,7 @@ function DroppableDay({
 
 type DayLayoutProps = {
   session: DraggableExercises;
+  mesocycleIndex: number;
   sessionDurationCalculator: (
     exercises: ExerciseType[],
     currentMicrocycleIndex: number
@@ -438,6 +452,7 @@ type DayLayoutProps = {
 
 function DayLayout({
   session,
+  mesocycleIndex,
   sessionDurationCalculator,
   selectedMicrocycleIndex,
   onSupersetUpdate,
@@ -451,10 +466,13 @@ function DayLayout({
         <h3 className=" indent-1 text-white">{day}</h3>
       </div>
 
-      <StrictModeDroppable droppableId={day} type={"session"}>
+      <StrictModeDroppable
+        droppableId={`${day}_${mesocycleIndex}`}
+        type={`session_${mesocycleIndex}`}
+      >
         {(provided, snapshot) => (
           <ul
-            id="session"
+            id={`session_${mesocycleIndex}`}
             className="flex flex-col"
             {...provided.droppableProps}
             ref={provided.innerRef}
@@ -462,8 +480,9 @@ function DayLayout({
             {sessions.map((each, index) => {
               return (
                 <DroppableDay
-                  key={`${each.id}_${index}`}
+                  key={`${each.id}_${mesocycleIndex}`}
                   split={each.split}
+                  mesocycleIndex={mesocycleIndex}
                   droppableId={each.id}
                   exercises={each.exercises}
                   selectedMicrocycleIndex={selectedMicrocycleIndex}
@@ -473,6 +492,7 @@ function DayLayout({
                 />
               );
             })}
+            {provided.placeholder}
           </ul>
         )}
       </StrictModeDroppable>
@@ -529,7 +549,7 @@ export default function WeekSessions({
     onDragEnd,
     onSplitChange,
     onSupersetUpdate,
-  } = useExerciseSelection(training_week);
+  } = useExerciseSelection(training_week, mesocycle_index);
   const [isModalPrompted, setIsModalPrompted] = useState<boolean>(false);
 
   const [selectedMicrocycleIndex, setSelectedMicrocycleIndex] =
@@ -543,15 +563,6 @@ export default function WeekSessions({
     setSelectedMicrocycleIndex(parseInt(weekNumber) - 1);
   };
 
-  if (title !== selectedMesocycle) {
-    return (
-      <Title
-        title={title}
-        selected={selectedMesocycle}
-        onClick={onTitleClick}
-      />
-    );
-  }
   return (
     <div className={" mb-1 flex flex-col"}>
       <Title
@@ -559,38 +570,45 @@ export default function WeekSessions({
         selected={selectedMesocycle}
         onClick={onTitleClick}
       />
-      <SelectMicrocycleList
-        microcycles={microcycles}
-        onWeekClick={selectWeekIndexHandler}
-      />
+      {title === selectedMesocycle ? (
+        <>
+          <SelectMicrocycleList
+            microcycles={microcycles}
+            onWeekClick={selectWeekIndexHandler}
+          />
 
-      {isModalPrompted && (
-        <Prompt
-          splitOptions={modalOptions}
-          isOpen={isModalPrompted}
-          onClose={onSplitChange}
-        />
-      )}
+          {isModalPrompted && (
+            <Prompt
+              splitOptions={modalOptions}
+              isOpen={isModalPrompted}
+              onClose={onSplitChange}
+            />
+          )}
 
-      <div className="flex">
-        <DragDropContext onDragEnd={onDragEnd}>
-          {draggableExercises.map((each, index) => {
-            // NOTE: to not display days w/o any sessions
-            const hasSessions = each.sessions.find((ea) => ea.exercises.length);
-            if (!hasSessions) return null;
-            return (
-              <DayLayout
-                key={`${each.day}_${index}_draggableExercisesObject`}
-                session={each}
-                sessionDurationCalculator={sessionDurationCalculator}
-                selectedMicrocycleIndex={selectedMicrocycleIndex}
-                onSupersetUpdate={onSupersetUpdate}
-                supersets={supersets}
-              />
-            );
-          })}
-        </DragDropContext>
-      </div>
+          <div className="flex">
+            <DragDropContext onDragEnd={onDragEnd}>
+              {draggableExercises.map((each, index) => {
+                // NOTE: to not display days w/o any sessions
+                const hasSessions = each.sessions.find(
+                  (ea) => ea.exercises.length
+                );
+                if (!hasSessions) return null;
+                return (
+                  <DayLayout
+                    key={`${each.day}_${index}_draggableExercisesObject`}
+                    session={each}
+                    mesocycleIndex={mesocycle_index}
+                    sessionDurationCalculator={sessionDurationCalculator}
+                    selectedMicrocycleIndex={selectedMicrocycleIndex}
+                    onSupersetUpdate={onSupersetUpdate}
+                    supersets={supersets}
+                  />
+                );
+              })}
+            </DragDropContext>
+          </div>
+        </>
+      ) : null}
     </div>
   );
 }
@@ -752,6 +770,7 @@ export const MesocycleExerciseLayout = ({
       {training_block.map((each, index) => {
         return (
           <WeekSessions
+            key={`week_${index}`}
             mesocycle_index={index + 1}
             microcycles={microcycles}
             training_week={each}
