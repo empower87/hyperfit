@@ -194,7 +194,7 @@ function DaySessionItem({
     setIsOpen(false);
   };
 
-  console.log(exercise.supersetWith, "SUPERSET WITH");
+  console.log(exercises.length, exercise.supersetWith, "SUPERSET WITH");
   const BORDER_COLOR = exercise.supersetWith ? "border-white" : BORDER_COLOR_M7;
   return (
     <li className={cn(`mb-0.5 flex w-full text-white`)}>

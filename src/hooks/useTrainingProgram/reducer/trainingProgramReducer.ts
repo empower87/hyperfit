@@ -133,7 +133,7 @@ export type ExerciseType = {
   rir: number;
   weightIncrement: number;
   mesocycle_progression: ExerciseMesocycleProgressionType[];
-  supersetWith?: ExerciseType["id"] | null;
+  supersetWith: ExerciseType["id"] | null;
 };
 
 export type TrainingProgramParamsType = {
