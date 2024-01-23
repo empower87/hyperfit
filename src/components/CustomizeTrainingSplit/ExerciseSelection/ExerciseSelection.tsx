@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { DragDropContext, Draggable } from "react-beautiful-dnd";
 import ReactDOM from "react-dom";
 import Section from "~/components/Layout/Section";
@@ -83,7 +83,8 @@ type DropdownListProps = {
   onClose: () => void;
   onItemClick: (exercise: ExerciseType) => void;
 };
-function DropdownList({
+
+function DropdownListModal({
   items,
   selectedId,
   isOpen,
@@ -95,7 +96,7 @@ function DropdownList({
   if (!isOpen) return null;
   return ReactDOM.createPortal(
     <div
-      className="absolute z-10 flex h-full w-full items-center justify-center"
+      className="absolute z-10 flex h-full w-full flex-col items-center justify-center"
       onClick={() => onClose()}
     >
       <ul className={cn(`w-52 ${BG_COLOR_M6}`)}>
@@ -103,10 +104,10 @@ function DropdownList({
           return (
             <li
               className={cn(
-                `${BORDER_COLOR_M7} text-xs m-0.5 cursor-pointer border-2 text-white`,
+                `${BORDER_COLOR_M7} text-xs m-0.5 cursor-pointer border-2 text-white hover:${BG_COLOR_M5}`,
                 getRankColor(each.rank),
                 {
-                  "border-2 border-white": each.id === selectedId,
+                  [`${BG_COLOR_M5} border-white`]: each.id === selectedId,
                 }
               )}
               key={each.id}
@@ -117,33 +118,23 @@ function DropdownList({
           );
         })}
       </ul>
+
+      <div>
+        <button className=" text-xs text-white">Cancel</button>
+        <button className=" text-xs text-white">Select</button>
+      </div>
     </div>,
     root
   );
 }
 
-function Dropdown({ onDropdownClick }: DropdownProps) {
-  // const [isOpen, setIsOpen] = useState<boolean>(false);
-
-  // const onDropdownClick = () => {
-  //   setIsOpen(true);
-  // };
-
-  // const onDropdownClose = () => {
-  //   setIsOpen(false);
-  // };
-
-  // const handleItemClick = (exercise: ExerciseType) => {
-  //   setIsOpen(false);
-  //   onItemClick(exercise);
-  //   console.log(isOpen, "CLICKED WHY AINT IT CLOSING?");
-  // };
+function DropdownButton({ onDropdownClick }: DropdownProps) {
   return (
     <div
       id="dropdown-modal"
       className={
         BORDER_COLOR_M7 +
-        " relative flex w-1/12 flex-col items-center justify-center border-l-2"
+        " relative flex w-1/12 cursor-pointer flex-col items-center justify-center border-l-2"
       }
       onClick={() => onDropdownClick()}
     >
@@ -153,6 +144,15 @@ function Dropdown({ onDropdownClick }: DropdownProps) {
     </div>
   );
 }
+
+// function SupersettedDaySessionItem() {
+//   return (
+//     <>
+//       <DaySessionItem />
+//       <DaySessionItem />
+//     </>
+//   )
+// }
 
 type DaySessionItemProps = {
   index: number;
@@ -194,7 +194,6 @@ function DaySessionItem({
     setIsOpen(false);
   };
 
-  console.log(exercises.length, exercise.supersetWith, "SUPERSET WITH");
   const BORDER_COLOR = exercise.supersetWith ? "border-white" : BORDER_COLOR_M7;
   return (
     <li className={cn(`mb-0.5 flex w-full text-white`)}>
@@ -230,8 +229,8 @@ function DaySessionItem({
           </div>
         </div>
 
-        <Dropdown onDropdownClick={onDropdownClick} />
-        <DropdownList
+        <DropdownButton onDropdownClick={onDropdownClick} />
+        <DropdownListModal
           items={exercises}
           selectedId={exercise.id}
           isOpen={isOpen}
@@ -445,10 +444,10 @@ export default function WeekSessions({
   sessionDurationCalculator,
 }: WeekSessionsProps) {
   const title = `Mesocycle ${mesocycle_index}`;
-  const initial_week = useMemo(
-    () => structuredClone(training_week),
-    [training_week]
-  );
+  // const initial_week = useMemo(
+  //   () => structuredClone(training_week),
+  //   [training_week]
+  // );
 
   const {
     modalOptions,
@@ -456,7 +455,7 @@ export default function WeekSessions({
     onDragEnd,
     onSplitChange,
     onSupersetUpdate,
-  } = useExerciseSelection(initial_week, mesocycle_index);
+  } = useExerciseSelection(training_week, mesocycle_index);
 
   const [isModalPrompted, setIsModalPrompted] = useState<boolean>(false);
 

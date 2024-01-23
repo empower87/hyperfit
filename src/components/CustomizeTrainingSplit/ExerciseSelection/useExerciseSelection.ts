@@ -58,12 +58,6 @@ export default function useExerciseSelection(
         newDraggableExercises[i].sessions[j].exercises = sorted;
       }
     }
-    console.log(
-      draggableExercises,
-      newDraggableExercises,
-      supersets,
-      "OK DATA HERE SHOULD REVEAL PROBLEM"
-    );
     setDraggableExercises(newDraggableExercises);
   }, [supersets]);
 
@@ -88,7 +82,6 @@ export default function useExerciseSelection(
     exercises: ExerciseType[],
     supersets: [string, string][]
   ) => {
-    const pairedSet = new Map<ExerciseType["id"], ExerciseType["id"]>();
     const paired: { [key: string]: boolean } = {};
     const newExercises: ExerciseType[] = [];
 
@@ -123,7 +116,7 @@ export default function useExerciseSelection(
             ? superset[0]
             : null,
       };
-      console.log(exercise, supersets, "PROBLEM LIES HERE??");
+
       newExercises.push(exercise);
     }
 
@@ -136,30 +129,8 @@ export default function useExerciseSelection(
       exerciseTwo: ExerciseType,
       sessionId: string
     ) => {
-      // let _exercises: ExerciseType[] = [];
-
-      // const newExercises = structuredClone(draggableExercises);
-
-      // for (let i = 0; i < newExercises.length; i++) {
-      //   const session = newExercises[i].sessions.find((each) => {
-      //     return each.id === sessionId;
-      //   });
-      //   if (!session) continue;
-      //   _exercises = session.exercises;
-      // }
-      // for (let i = 0; i < supersets.length; i++) {
-      //   if (supersets[0] === exerciseOne.id || supersets[1] === exerciseOne.id) {
-      //     supersets[0] = exerciseTwo.id;
-      //   } else if (
-      //     supersets[0] === exerciseTwo.id ||
-      //     supersets[1] === exerciseTwo.id
-      //   ) {
-      //     supersets[1] = exerciseOne.id;
-      //   }
-      // }
-      // TODO: use this logic to update superset state and cause a resorting of draggableExercises in a useEffect
-
       let newSupersets: [string, string][] = [];
+
       if (!supersets.length) {
         newSupersets.push([exerciseOne.id, exerciseTwo.id]);
       } else {
@@ -178,7 +149,6 @@ export default function useExerciseSelection(
           }
         }
       }
-      console.log(newSupersets, supersets, "WHY ?");
       setSupersets((prev) => [...prev, ...newSupersets]);
     },
     [draggableExercises, supersets]
@@ -270,6 +240,7 @@ export default function useExerciseSelection(
   }, [onDragResults]);
 
   // TODO: Needs to check if exercise has a superset and drag that along with it.
+  //       This will extend to moving a exercise across week.
   const onDragEnd = useCallback((result: DropResult) => {
     if (!result.destination) return;
     let outerDestinationId = 0;
