@@ -91,3 +91,41 @@ export const findOptimalSplit = (
 
   return optimalSplits;
 };
+
+const SUPERSET_COLORS = [
+  "bg-rose-500",
+  "bg-rose-400",
+  "bg-rose-300",
+  "bg-rose-200",
+];
+
+export const getSupersetMap = (exercises: ExerciseType[]) => {
+  const paired = new Map<string, string>();
+  let supersetIndex = 0;
+
+  for (let i = 0; i < exercises.length; i++) {
+    const supersetWithId = exercises[i].supersetWith;
+    const currentId = exercises[i].id;
+
+    let supersetColor = SUPERSET_COLORS[supersetIndex];
+    if (!supersetWithId) continue;
+    const supersetKey = paired.get(supersetWithId);
+    const current = paired.get(currentId);
+    if (supersetKey) continue;
+    else {
+      if (current) {
+        paired.set(supersetWithId, current);
+      } else {
+        paired.set(supersetWithId, supersetColor);
+
+        if (supersetIndex + 1 >= SUPERSET_COLORS.length - 1) {
+          supersetIndex = 0;
+        } else {
+          supersetIndex++;
+        }
+      }
+    }
+  }
+
+  return paired;
+};

@@ -19,6 +19,7 @@ import StrictModeDroppable from "~/lib/react-beautiful-dnd/StrictModeDroppable";
 import { getGroupList } from "~/utils/getExercises";
 import { getRankColor } from "~/utils/getRankColor";
 import { getSessionSplitColor } from "~/utils/getSessionSplitColor";
+import { getSupersetMap } from "./exerciseSelectUtils";
 import useExerciseSelection, {
   DraggableExercises,
 } from "./useExerciseSelection";
@@ -78,14 +79,23 @@ type DropdownProps = {
 
 type DropdownListProps = {
   items: ExerciseType[];
+  supersets: Map<string, string> | undefined;
   selectedId: ExerciseType["id"];
   isOpen: boolean;
   onClose: () => void;
   onItemClick: (exercise: ExerciseType) => void;
 };
 
+const SUPERSET_COLORS = [
+  "bg-rose-500",
+  "bg-rose-400",
+  "bg-rose-300",
+  "bg-rose-200",
+];
+
 function DropdownListModal({
   items,
+  supersets,
   selectedId,
   isOpen,
   onClose,
@@ -101,6 +111,7 @@ function DropdownListModal({
     >
       <ul className={cn(`w-52 ${BG_COLOR_M6}`)}>
         {items.map((each, index) => {
+          const supersetted = supersets?.get(each.id);
           return (
             <li
               className={cn(
@@ -108,6 +119,7 @@ function DropdownListModal({
                 getRankColor(each.rank),
                 {
                   [`${BG_COLOR_M5} border-white`]: each.id === selectedId,
+                  [`${supersets?.get(each.id)}`]: supersets?.get(each.id),
                 }
               )}
               key={each.id}
@@ -119,9 +131,9 @@ function DropdownListModal({
         })}
       </ul>
 
-      <div>
-        <button className=" text-xs text-white">Cancel</button>
-        <button className=" text-xs text-white">Select</button>
+      <div className="">
+        <button className="text-xs text-white">Cancel</button>
+        <button className="text-xs text-white">Select</button>
       </div>
     </div>,
     root
@@ -145,15 +157,6 @@ function DropdownButton({ onDropdownClick }: DropdownProps) {
   );
 }
 
-// function SupersettedDaySessionItem() {
-//   return (
-//     <>
-//       <DaySessionItem />
-//       <DaySessionItem />
-//     </>
-//   )
-// }
-
 type DaySessionItemProps = {
   index: number;
   exercise: ExerciseType;
@@ -174,16 +177,30 @@ function DaySessionItem({
   selectedMicrocycleIndex,
   onSupersetUpdate,
 }: DaySessionItemProps) {
-  const bgColor = getRankColor(exercise.rank);
-  const allExercises = getGroupList(exercise.muscle);
-  const mesocycle_progression = exercise.mesocycle_progression;
+  // const bgColor = getRankColor(exercise.rank);
+  const [bgColor, setBgColor] = useState<string>("");
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const supersets = getSupersetMap(exercises);
 
+  const allExercises = getGroupList(exercise.muscle);
+
+  const mesocycle_progression = exercise.mesocycle_progression;
   const sets = mesocycle_progression[selectedMicrocycleIndex].sets;
   const reps = mesocycle_progression[selectedMicrocycleIndex].reps;
-  const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const onItemClick = useCallback((exerciseOne: ExerciseType) => {
-    onSupersetUpdate(exerciseOne, exercise, sessionId);
+    // sorts supersetted exercises by place in list
+    let indexOne = exercises.findIndex((each) => each.id === exerciseOne.id);
+    let indexTwo = exercises.findIndex((each) => each.id === exercise.id);
+    if (indexOne === indexTwo) return;
+
+    let one = exerciseOne;
+    let two = exercise;
+    if (indexOne > indexTwo) {
+      one = exercise;
+      two = exerciseOne;
+    }
+    onSupersetUpdate(one, two, sessionId);
   }, []);
 
   const onDropdownClick = () => {
@@ -194,6 +211,18 @@ function DaySessionItem({
     setIsOpen(false);
   };
 
+  useEffect(() => {
+    const supersettedColor = supersets?.get(exercise.id);
+    let bgColor = "";
+    if (supersettedColor) {
+      bgColor = supersettedColor;
+    } else {
+      const bgColorByRank = getRankColor(exercise.rank);
+      bgColor = bgColorByRank.bg;
+    }
+    setBgColor(bgColor);
+  }, [supersets, exercise]);
+
   const BORDER_COLOR = exercise.supersetWith ? "border-white" : BORDER_COLOR_M7;
   return (
     <li className={cn(`mb-0.5 flex w-full text-white`)}>
@@ -201,13 +230,13 @@ function DaySessionItem({
 
       <div
         className={cn(
-          `${BORDER_COLOR} flex w-11/12 border-2 text-xxs ${bgColor.bg}`
+          `${BORDER_COLOR} flex w-11/12 border-2 text-xxs ${bgColor}`
         )}
       >
         <div className={cn(`${BORDER_COLOR} w-1/12 border-r-2`)}>{sets}x</div>
         <div className={cn(`${BORDER_COLOR} w-1/12 border-r-2`)}>{reps}</div>
         <div className=" flex w-9/12 flex-col">
-          <select className={bgColor.bg + " truncate"}>
+          <select className={bgColor + " truncate"}>
             {allExercises.map((each, index) => {
               return (
                 <option
@@ -232,6 +261,7 @@ function DaySessionItem({
         <DropdownButton onDropdownClick={onDropdownClick} />
         <DropdownListModal
           items={exercises}
+          supersets={supersets}
           selectedId={exercise.id}
           isOpen={isOpen}
           onClose={onDropdownClose}
@@ -444,17 +474,13 @@ export default function WeekSessions({
   sessionDurationCalculator,
 }: WeekSessionsProps) {
   const title = `Mesocycle ${mesocycle_index}`;
-  // const initial_week = useMemo(
-  //   () => structuredClone(training_week),
-  //   [training_week]
-  // );
 
   const {
-    modalOptions,
     draggableExercises,
-    onDragEnd,
     onSplitChange,
     onSupersetUpdate,
+    modalOptions,
+    onDragEnd,
   } = useExerciseSelection(training_week, mesocycle_index);
 
   const [isModalPrompted, setIsModalPrompted] = useState<boolean>(false);
@@ -470,6 +496,13 @@ export default function WeekSessions({
     setSelectedMicrocycleIndex(parseInt(weekNumber) - 1);
   };
 
+  useEffect(() => {
+    if (modalOptions) {
+      setIsModalPrompted(true);
+    } else {
+      setIsModalPrompted(false);
+    }
+  }, [modalOptions]);
   return (
     <div className={" mb-1 flex flex-col"}>
       <Title
@@ -484,13 +517,13 @@ export default function WeekSessions({
             onWeekClick={selectWeekIndexHandler}
           />
 
-          {isModalPrompted && (
+          {modalOptions && isModalPrompted ? (
             <Prompt
               splitOptions={modalOptions}
               isOpen={isModalPrompted}
               onClose={onSplitChange}
             />
-          )}
+          ) : null}
 
           <div className="flex">
             <DragDropContext onDragEnd={onDragEnd}>
