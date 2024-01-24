@@ -56,7 +56,7 @@ export default function useExerciseSelection(
 
         return { ...each, sessions: sessions };
       });
-
+      setModalOptions(undefined);
       setDraggableExercises(updatedSplitForExercises);
     },
     [draggableExercises]

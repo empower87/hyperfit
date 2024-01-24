@@ -1,4 +1,12 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  FC,
+  HTMLAttributes,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { DragDropContext, Draggable } from "react-beautiful-dnd";
 import ReactDOM from "react-dom";
 import Section from "~/components/Layout/Section";
@@ -86,13 +94,6 @@ type DropdownListProps = {
   onItemClick: (exercise: ExerciseType) => void;
 };
 
-const SUPERSET_COLORS = [
-  "bg-rose-500",
-  "bg-rose-400",
-  "bg-rose-300",
-  "bg-rose-200",
-];
-
 function DropdownListModal({
   items,
   supersets,
@@ -145,8 +146,7 @@ function DropdownButton({ onDropdownClick }: DropdownProps) {
     <div
       id="dropdown-modal"
       className={
-        BORDER_COLOR_M7 +
-        " relative flex w-1/12 cursor-pointer flex-col items-center justify-center border-l-2"
+        "relative flex w-full cursor-pointer flex-col items-center justify-center"
       }
       onClick={() => onDropdownClick()}
     >
@@ -157,6 +157,31 @@ function DropdownButton({ onDropdownClick }: DropdownProps) {
   );
 }
 
+interface ItemCellProps extends HTMLAttributes<HTMLDivElement> {
+  children: ReactNode;
+}
+const ItemCell: FC<ItemCellProps> = ({ children, className, ...props }) => {
+  return (
+    <div {...props} className={cn(`flex border-r-2 text-xxs `, className)}>
+      {children}
+    </div>
+  );
+};
+function DaySessionItemHeaders({}) {
+  return (
+    <div className="mb-0.5 flex w-full text-white">
+      <ItemCell className={`w-6`}>Sets</ItemCell>
+      <div className="flex w-full">
+        <ItemCell className={`w-6`}>Reps</ItemCell>
+        <ItemCell className={`w-6`}>Lbs</ItemCell>
+        <div className="flex w-full flex-col">
+          <ItemCell className={`w-full`}>Exercise</ItemCell>
+        </div>
+        <ItemCell className={`w-6`}> </ItemCell>
+      </div>
+    </div>
+  );
+}
 type DaySessionItemProps = {
   index: number;
   exercise: ExerciseType;
@@ -226,47 +251,48 @@ function DaySessionItem({
   const BORDER_COLOR = exercise.supersetWith ? "border-white" : BORDER_COLOR_M7;
   return (
     <li className={cn(`mb-0.5 flex w-full text-white`)}>
-      <div className={" flex w-1/12 indent-1 text-xxs"}>{index}</div>
+      <ItemCell className={cn(`${BORDER_COLOR} w-1/12 justify-center`)}>
+        {index}
+      </ItemCell>
+      <div className={cn(`${BORDER_COLOR} flex w-11/12 border-y-2 ${bgColor}`)}>
+        <ItemCell className={`${BORDER_COLOR} w-1/12`}>{sets}</ItemCell>
+        <ItemCell className={`${BORDER_COLOR} w-1/12`}>{reps}</ItemCell>
 
-      <div
-        className={cn(
-          `${BORDER_COLOR} flex w-11/12 border-2 text-xxs ${bgColor}`
-        )}
-      >
-        <div className={cn(`${BORDER_COLOR} w-1/12 border-r-2`)}>{sets}x</div>
-        <div className={cn(`${BORDER_COLOR} w-1/12 border-r-2`)}>{reps}</div>
-        <div className=" flex w-9/12 flex-col">
-          <select className={bgColor + " truncate"}>
-            {allExercises.map((each, index) => {
-              return (
-                <option
-                  key={`${each}_option_${index}`}
-                  selected={each.name === exercise.exercise ? true : false}
-                >
-                  {each.name}
-                </option>
-              );
-            })}
-          </select>
-
-          <div
-            className={
-              BORDER_COLOR_M7 + " truncate border-t indent-1 text-slate-300"
-            }
+        <div className=" flex w-9/12 flex-col text-xxs">
+          <ItemCell className={`${BORDER_COLOR} w-full`}>
+            <select className={bgColor + " w-full truncate"}>
+              {allExercises.map((each, index) => {
+                return (
+                  <option
+                    key={`${each}_option_${index}`}
+                    selected={each.name === exercise.exercise ? true : false}
+                  >
+                    {each.name}
+                  </option>
+                );
+              })}
+            </select>
+          </ItemCell>
+          <ItemCell
+            className={`${BORDER_COLOR} truncate border-t indent-1 text-slate-300`}
           >
             {exercise.muscle}
-          </div>
+          </ItemCell>
         </div>
 
-        <DropdownButton onDropdownClick={onDropdownClick} />
-        <DropdownListModal
-          items={exercises}
-          supersets={supersets}
-          selectedId={exercise.id}
-          isOpen={isOpen}
-          onClose={onDropdownClose}
-          onItemClick={onItemClick}
-        />
+        <ItemCell className={`${BORDER_COLOR} w-1/12`}>
+          <DropdownButton onDropdownClick={onDropdownClick} />
+        </ItemCell>
+        {isOpen ? (
+          <DropdownListModal
+            items={exercises}
+            supersets={supersets}
+            selectedId={exercise.id}
+            isOpen={isOpen}
+            onClose={onDropdownClose}
+            onItemClick={onItemClick}
+          />
+        ) : null}
       </div>
     </li>
   );
@@ -310,7 +336,7 @@ function DroppableDay({
 
   return (
     <li className="w-52">
-      <div className={"mb-1 p-1"}>
+      <div className={"mb-1 flex flex-col p-1"}>
         <div
           className={
             getSessionSplitColor(split).bg + " text-sm indent-1 text-white"
@@ -318,6 +344,7 @@ function DroppableDay({
         >
           {split}
         </div>
+        <DaySessionItemHeaders />
       </div>
 
       <StrictModeDroppable
@@ -327,7 +354,7 @@ function DroppableDay({
         {(provided, snapshot) => (
           <ul
             id={`week_${mesocycleIndex}`}
-            className=" w-full"
+            className="w-full p-1"
             {...provided.droppableProps}
             ref={provided.innerRef}
           >
@@ -440,16 +467,16 @@ type TitleProps = {
 };
 function Title({ title, selected, onClick }: TitleProps) {
   const isSelected = title === selected;
-  const text = isSelected ? "text-sm text-white" : "text-xs text-slate-400";
+  const text = isSelected ? "text-sm text-white" : "text-xxs text-slate-400";
   return (
     <div
       className={cn(
-        `mb-1 w-full cursor-pointer p-0.5 ${BG_COLOR_M7} hover:${BG_COLOR_M6}`,
-        { [BG_COLOR_M6]: isSelected }
+        `w-full cursor-pointer p-0.5 ${BG_COLOR_M7} hover:${BG_COLOR_M6}`,
+        { [`${BG_COLOR_M6} mb-1`]: isSelected }
       )}
       onClick={() => onClick(title)}
     >
-      <p className={text}>{title}</p>
+      <p className={cn(`indent-1 ${text}`)}>{title}</p>
     </div>
   );
 }
@@ -493,25 +520,19 @@ export default function WeekSessions({
 
   const selectWeekIndexHandler = (week: string) => {
     const weekNumber = week.split(" ")[1];
+    console.log(week, weekNumber, "err?");
     setSelectedMicrocycleIndex(parseInt(weekNumber) - 1);
   };
 
-  useEffect(() => {
-    if (modalOptions) {
-      setIsModalPrompted(true);
-    } else {
-      setIsModalPrompted(false);
-    }
-  }, [modalOptions]);
   return (
-    <div className={" mb-1 flex flex-col"}>
-      <Title
-        title={title}
-        selected={selectedMesocycle}
-        onClick={onTitleClick}
-      />
+    <div className={" my-1 flex flex-col"}>
       {title === selectedMesocycle ? (
         <>
+          <Title
+            title={title}
+            selected={selectedMesocycle}
+            onClick={onTitleClick}
+          />
           <SelectMicrocycleList
             microcycles={microcycles}
             onWeekClick={selectWeekIndexHandler}
@@ -547,7 +568,13 @@ export default function WeekSessions({
             </DragDropContext>
           </div>
         </>
-      ) : null}
+      ) : (
+        <Title
+          title={title}
+          selected={selectedMesocycle}
+          onClick={onTitleClick}
+        />
+      )}
     </div>
   );
 }
@@ -635,17 +662,23 @@ export const MesocycleExerciseLayout = ({
   training_block,
   microcycles,
 }: MesocycleExerciseLayoutProps) => {
-  const lastMesocycle = training_block.length;
-  const [selectedMesocycle, setSelectedMesocycle] = useState(
-    `Mesocycle ${lastMesocycle}`
-  );
+  // const lastMesocycle = training_block.length;
+  const [selectedMesocycle, setSelectedMesocycle] = useState(``);
   const [durationTimeConstants, setDurationTimeConstants] =
     useState<DurationTimeConstants>({ ...DURATION_TIME_CONSTRAINTS });
 
-  const onTitleClick = useCallback((title: string) => {
-    if (title === selectedMesocycle) return;
-    setSelectedMesocycle(title);
-  }, []);
+  useEffect(() => {
+    const lastMesocycle = training_block.length;
+    setSelectedMesocycle(`Mesocycle ${lastMesocycle}`);
+  }, [training_block]);
+
+  const onTitleClick = useCallback(
+    (title: string) => {
+      if (title === selectedMesocycle) return;
+      setSelectedMesocycle(title);
+    },
+    [selectedMesocycle]
+  );
 
   const onTimeChange = useCallback(
     (key: DurationTimeConstantsKeys, time: number) => {
