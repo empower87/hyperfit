@@ -121,6 +121,23 @@ export type ExerciseMesocycleProgressionType = {
   weight: number;
   rir: number;
 };
+
+export const EXERCISE_TRAINING_MODALITIES = [
+  "straight",
+  "down",
+  "eccentric",
+  "giant",
+  "myoreps",
+  "myorep match",
+  "drop",
+  "superset",
+  "pre-exhaust superset",
+  "lengthened partials",
+] as const;
+
+export type ExerciseTrainingModality =
+  (typeof EXERCISE_TRAINING_MODALITIES)[number];
+
 export type ExerciseType = {
   id: string;
   exercise: string;
@@ -132,6 +149,7 @@ export type ExerciseType = {
   weight: number;
   rir: number;
   weightIncrement: number;
+  trainingModality: ExerciseTrainingModality;
   mesocycle_progression: ExerciseMesocycleProgressionType[];
   supersetWith: ExerciseType["id"] | null;
 };
@@ -273,6 +291,7 @@ const MICROCYCLE = "1 week";
 const MESOCYCLE = "3-12 weeks";
 const BLOCK = "1-4 mesocycles";
 const MACROCYCLE = "1-4 blocks";
+
 const INITIAL_TRAINING_PROGRAM_PARAMS: TrainingProgramParamsType = {
   sessions: 1,
   days: 3,

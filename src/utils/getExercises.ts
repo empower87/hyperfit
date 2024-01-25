@@ -78,6 +78,7 @@ const INITIAL_EXERCISE: ExerciseType = {
   weight: 0,
   rir: 3,
   weightIncrement: 5,
+  trainingModality: "straight",
   mesocycle_progression: [],
   supersetWith: null,
 };

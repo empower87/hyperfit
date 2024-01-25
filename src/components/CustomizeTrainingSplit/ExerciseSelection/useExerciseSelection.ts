@@ -67,8 +67,16 @@ export default function useExerciseSelection(
     exerciseTwo: ExerciseType,
     exercises: ExerciseType[]
   ) => {
-    const one = { ...exerciseOne, supersetWith: exerciseTwo.id };
-    const two = { ...exerciseTwo, supersetWith: exerciseOne.id };
+    const one = {
+      ...exerciseOne,
+      supersetWith: exerciseTwo.id,
+      trainingModality: "superset",
+    };
+    const two = {
+      ...exerciseTwo,
+      supersetWith: exerciseOne.id,
+      trainingModality: "superset",
+    };
 
     const newExercises: ExerciseType[] = [];
     for (let i = 0; i < exercises.length; i++) {

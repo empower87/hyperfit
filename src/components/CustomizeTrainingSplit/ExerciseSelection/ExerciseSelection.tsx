@@ -18,6 +18,7 @@ import {
   BORDER_COLOR_M8,
 } from "~/constants/themes";
 import {
+  EXERCISE_TRAINING_MODALITIES,
   ExerciseType,
   SplitType,
   TrainingDayType,
@@ -27,6 +28,7 @@ import StrictModeDroppable from "~/lib/react-beautiful-dnd/StrictModeDroppable";
 import { getGroupList } from "~/utils/getExercises";
 import { getRankColor } from "~/utils/getRankColor";
 import { getSessionSplitColor } from "~/utils/getSessionSplitColor";
+import { capitalizeFirstLetter } from "~/utils/uiHelpers";
 import { getSupersetMap } from "./exerciseSelectUtils";
 import useExerciseSelection, {
   DraggableExercises,
@@ -157,12 +159,39 @@ function DropdownButton({ onDropdownClick }: DropdownProps) {
   );
 }
 
+interface SelectDropdownProps extends HTMLAttributes<HTMLSelectElement> {
+  options: string[];
+  selectedOption: string;
+}
+const SelectDropdown: FC<SelectDropdownProps> = ({
+  options,
+  selectedOption,
+  className,
+  ...props
+}) => {
+  return (
+    <select {...props} className={cn(` bg-inherit`, className)}>
+      {options.map((option, index) => {
+        return (
+          <option
+            key={`${option}_${index}`}
+            className={cn(`${BG_COLOR_M6}`)}
+            value={option}
+            selected={option === selectedOption}
+          >
+            {capitalizeFirstLetter(option)}
+          </option>
+        );
+      })}
+    </select>
+  );
+};
 interface ItemCellProps extends HTMLAttributes<HTMLDivElement> {
   children: ReactNode;
 }
 const ItemCell: FC<ItemCellProps> = ({ children, className, ...props }) => {
   return (
-    <div {...props} className={cn(`flex border-r-2 text-xxs `, className)}>
+    <div {...props} className={cn(`flex border-r-2 p-0.5 text-xxs`, className)}>
       {children}
     </div>
   );
@@ -182,6 +211,7 @@ function DaySessionItemHeaders({}) {
     </div>
   );
 }
+
 type DaySessionItemProps = {
   index: number;
   exercise: ExerciseType;
@@ -194,6 +224,17 @@ type DaySessionItemProps = {
     sessionId: string
   ) => void;
 };
+
+const ITEM_CELL_WIDTHS = {
+  index: "w-4",
+  sets: "w-4",
+  reps: "w-6",
+  lbs: "w-6",
+  exercise: "w-36",
+  actions: "w-4",
+  modality: "w-14",
+};
+
 function DaySessionItem({
   index,
   exercise,
@@ -212,6 +253,8 @@ function DaySessionItem({
   const mesocycle_progression = exercise.mesocycle_progression;
   const sets = mesocycle_progression[selectedMicrocycleIndex].sets;
   const reps = mesocycle_progression[selectedMicrocycleIndex].reps;
+  const lbs = mesocycle_progression[selectedMicrocycleIndex].weight;
+  const modality = exercise.trainingModality;
 
   const onItemClick = useCallback((exerciseOne: ExerciseType) => {
     // sorts supersetted exercises by place in list
@@ -250,16 +293,45 @@ function DaySessionItem({
 
   const BORDER_COLOR = exercise.supersetWith ? "border-white" : BORDER_COLOR_M7;
   return (
-    <li className={cn(`mb-0.5 flex w-full text-white`)}>
-      <ItemCell className={cn(`${BORDER_COLOR} w-1/12 justify-center`)}>
+    <li className={cn(`mb-0.5 flex text-white`)}>
+      <ItemCell
+        className={cn(
+          `${BORDER_COLOR} ${ITEM_CELL_WIDTHS.index} justify-center`
+        )}
+      >
         {index}
       </ItemCell>
-      <div className={cn(`${BORDER_COLOR} flex w-11/12 border-y-2 ${bgColor}`)}>
-        <ItemCell className={`${BORDER_COLOR} w-1/12`}>{sets}</ItemCell>
-        <ItemCell className={`${BORDER_COLOR} w-1/12`}>{reps}</ItemCell>
+      <div className={cn(`${BORDER_COLOR} flex border-y-2 ${bgColor}`)}>
+        <div className="flex flex-col">
+          <div className={cn(`${BORDER_COLOR} flex border-b`)}>
+            <ItemCell
+              className={`${BORDER_COLOR} ${ITEM_CELL_WIDTHS.sets} justify-center border-r`}
+            >
+              {sets}
+            </ItemCell>
+            <ItemCell
+              className={`${BORDER_COLOR} ${ITEM_CELL_WIDTHS.reps} justify-center border-r`}
+            >
+              {reps}
+            </ItemCell>
+            <ItemCell
+              className={`${BORDER_COLOR} ${ITEM_CELL_WIDTHS.lbs} justify-center`}
+            >
+              {lbs}
+            </ItemCell>
+          </div>
+          <ItemCell className={`${BORDER_COLOR}`}>
+            {/* {capitalizeFirstLetter(modality)} */}
+            <SelectDropdown
+              options={[...EXERCISE_TRAINING_MODALITIES]}
+              className={`${ITEM_CELL_WIDTHS.modality}`}
+              selectedOption={modality}
+            />
+          </ItemCell>
+        </div>
 
-        <div className=" flex w-9/12 flex-col text-xxs">
-          <ItemCell className={`${BORDER_COLOR} w-full`}>
+        <div className=" flex flex-col text-xxs">
+          <ItemCell className={`${BORDER_COLOR} ${ITEM_CELL_WIDTHS.exercise}`}>
             <select className={bgColor + " w-full truncate"}>
               {allExercises.map((each, index) => {
                 return (
@@ -274,13 +346,13 @@ function DaySessionItem({
             </select>
           </ItemCell>
           <ItemCell
-            className={`${BORDER_COLOR} truncate border-t indent-1 text-slate-300`}
+            className={`${BORDER_COLOR} ${ITEM_CELL_WIDTHS.exercise} truncate border-t indent-1 text-slate-300`}
           >
             {exercise.muscle}
           </ItemCell>
         </div>
 
-        <ItemCell className={`${BORDER_COLOR} w-1/12`}>
+        <ItemCell className={`${BORDER_COLOR} ${ITEM_CELL_WIDTHS.actions}`}>
           <DropdownButton onDropdownClick={onDropdownClick} />
         </ItemCell>
         {isOpen ? (
@@ -335,7 +407,7 @@ function DroppableDay({
   }, [selectedMicrocycleIndex, exercises]);
 
   return (
-    <li className="w-52">
+    <li className="">
       <div className={"mb-1 flex flex-col p-1"}>
         <div
           className={
