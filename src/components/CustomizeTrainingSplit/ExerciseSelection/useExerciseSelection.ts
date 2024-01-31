@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { DropResult } from "react-beautiful-dnd";
 import {
+  ExerciseTrainingModality,
   ExerciseType,
   SessionType,
   SplitType,
@@ -67,15 +68,16 @@ export default function useExerciseSelection(
     exerciseTwo: ExerciseType,
     exercises: ExerciseType[]
   ) => {
+    const superset: ExerciseTrainingModality = "superset";
     const one = {
       ...exerciseOne,
       supersetWith: exerciseTwo.id,
-      trainingModality: "superset",
+      trainingModality: superset,
     };
     const two = {
       ...exerciseTwo,
       supersetWith: exerciseOne.id,
-      trainingModality: "superset",
+      trainingModality: superset,
     };
 
     const newExercises: ExerciseType[] = [];

@@ -3,9 +3,11 @@ import { DragDropContext, Draggable, DropResult } from "react-beautiful-dnd";
 import { BG_COLOR_M5, BG_COLOR_M6, BORDER_COLOR_M8 } from "~/constants/themes";
 import {
   MusclePriorityType,
+  SplitSessionsType,
   VOLUME_BG_COLORS,
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { VolumeLandmarkType } from "~/hooks/useTrainingProgram/reducer/trainingProgramUtils";
+import { onMuscleListRepriorityChange } from "~/hooks/useTrainingProgram/utils/musclePriorityListHandlers";
 import StrictModeDroppable from "~/lib/react-beautiful-dnd/StrictModeDroppable";
 import { getVolumeSets } from "~/utils/musclePriorityHandlers";
 import MesocycleFrequency from "./components/MesocycleFrequency";
@@ -108,7 +110,7 @@ function Item({
   };
 
   return (
-    <li className={bgColor + " text-xxs mb-0.5 flex w-full  text-white"}>
+    <li className={bgColor + " mb-0.5 flex w-full text-xxs  text-white"}>
       <div className={" indent-1"} style={{ width: cellWidths[0] }}>
         {index + 1}
       </div>
@@ -147,6 +149,10 @@ type MusclePriorityListProps = {
   total_sessions: [number, number];
   onMesoProgressionUpdate: (id: string, newMesoProgression: number[]) => void;
   onPriorityChange: (items: MusclePriorityType[]) => void;
+  split_sessions: SplitSessionsType;
+  breakpoints: [number, number];
+  mesocycles: number;
+  microcycles: number;
 };
 
 export function MusclePriorityList({
@@ -155,6 +161,10 @@ export function MusclePriorityList({
   total_sessions,
   onMesoProgressionUpdate,
   onPriorityChange,
+  split_sessions,
+  breakpoints,
+  mesocycles,
+  microcycles,
 }: MusclePriorityListProps) {
   const [cellWidths, setCellWidths] = useState<string[]>([...CELL_WIDTHS]);
   const [draggableList, setDraggableList] = useState<MusclePriorityType[]>([
@@ -167,15 +177,25 @@ export function MusclePriorityList({
       const items = [...draggableList];
       const [removed] = items.splice(result.source.index, 1);
       items.splice(result.destination.index, 0, removed);
-      setDraggableList(items);
-      onPriorityChange(items);
+
+      const updatedItems = onMuscleListRepriorityChange(
+        items,
+        total_sessions,
+        breakpoints,
+        split_sessions,
+        mesocycles,
+        microcycles
+      );
+      setDraggableList(updatedItems);
+
+      // onPriorityChange(updatedItems);
     },
     [draggableList]
   );
 
   return (
     <div className=" w-3/4">
-      <div className={BG_COLOR_M6 + " text-xxs mb-1 flex w-full text-white"}>
+      <div className={BG_COLOR_M6 + " mb-1 flex w-full text-xxs text-white"}>
         <div
           className={BORDER_COLOR_M8 + " border-r-2 indent-1"}
           style={{ width: cellWidths[0] }}

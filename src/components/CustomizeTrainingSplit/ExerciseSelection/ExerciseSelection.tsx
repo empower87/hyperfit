@@ -321,7 +321,6 @@ function DaySessionItem({
             </ItemCell>
           </div>
           <ItemCell className={`${BORDER_COLOR}`}>
-            {/* {capitalizeFirstLetter(modality)} */}
             <SelectDropdown
               options={[...EXERCISE_TRAINING_MODALITIES]}
               className={`${ITEM_CELL_WIDTHS.modality}`}
@@ -690,19 +689,40 @@ const SelectMicrocycleList = ({
   );
 };
 
-type DurationTimeConstraint = {
-  value: number;
-  min: number;
-  max: number;
-  increment: number;
-};
-type DurationTimeConstants = {
-  warmup: DurationTimeConstraint;
-  rest: DurationTimeConstraint;
-  rep: DurationTimeConstraint;
-};
+// type DurationTimeConstraint = {
+//   value: number;
+//   min: number;
+//   max: number;
+//   increment: number;
+// };
+// type DurationTimeConstants = {
+//   warmup: DurationTimeConstraint;
+//   rest: DurationTimeConstraint;
+//   rep: DurationTimeConstraint;
+// };
+type DurationTimeConstants = typeof DURATION_TIME_CONSTRAINTS;
 type DurationTimeConstantsKeys = keyof DurationTimeConstants;
+type DurationTimeConstraint = DurationTimeConstants[DurationTimeConstantsKeys];
 
+const MODALITY_TIME_CONSTRAINTS = {
+  myoreps: {
+    value: 10,
+    min: 1,
+    max: 15,
+    increment: 1,
+    rir: "0-2",
+    initialReps: 10,
+    followingReps: 5,
+    followingRepsPercentageConstant: 0.41,
+  },
+  dropsets: {
+    value: 5,
+    min: 0,
+    max: 10,
+    increment: 1,
+    rir: "0-4",
+  },
+};
 // NOTE: use seconds
 const DURATION_TIME_CONSTRAINTS = {
   warmup: {
@@ -716,6 +736,12 @@ const DURATION_TIME_CONSTRAINTS = {
     min: 0,
     max: 300,
     increment: 15,
+  },
+  superset: {
+    value: 90,
+    min: 0,
+    max: 120,
+    increment: 10,
   },
   rep: {
     value: 2,
@@ -763,9 +789,33 @@ export const MesocycleExerciseLayout = ({
     []
   );
 
+  const exerciseModalityRepCalculator = (
+    modality: ExerciseType["trainingModality"],
+    sets: number,
+    reps: number,
+    repTime: DurationTimeConstraint
+  ) => {
+    switch (modality) {
+      case "myoreps":
+        const followingSets = sets - 1;
+        const MYOREP_MULTIPLIER_CONSTANT = 0.41;
+        const followingReps = Math.round(reps * MYOREP_MULTIPLIER_CONSTANT);
+        const initialRepTotal = reps * repTime.value;
+        const followingRepsTotal =
+          followingReps * followingSets * repTime.value;
+        const totalRepDuration = initialRepTotal + followingRepsTotal;
+        return totalRepDuration;
+      case "eccentric":
+        const ECCENTRIC_MULTIPLIER_CONSTANT = 6;
+        return sets * (reps * ECCENTRIC_MULTIPLIER_CONSTANT);
+      default:
+        return sets * reps * repTime.value;
+    }
+  };
+
   const sessionDurationCalculator = useCallback(
     (exercises: ExerciseType[], currentMicrocycleIndex: number) => {
-      const { warmup, rest, rep } = durationTimeConstants;
+      const { warmup, rest, rep, superset } = durationTimeConstants;
       const totalExercises = exercises.length;
       const restTime = totalExercises * rest.value;
       let totalRepTime = 0;
@@ -773,9 +823,21 @@ export const MesocycleExerciseLayout = ({
 
       for (let i = 0; i < exercises.length; i++) {
         const exercise = exercises[i].mesocycle_progression;
+        const modality = exercises[i].trainingModality;
         const { sets, reps } = exercise[currentMicrocycleIndex];
-        const repTime = sets * reps * rep.value;
-        const restTime = sets * rest.value;
+        // const repTime = sets * reps * rep.value;
+        const repTime = exerciseModalityRepCalculator(
+          modality,
+          sets,
+          reps,
+          rep
+        );
+        let restTime = 0;
+        if (exercises[i].trainingModality === "superset") {
+          restTime = Math.round(superset.value / 2) * sets;
+        } else {
+          restTime = sets * rest.value;
+        }
         totalRestTime += restTime;
         totalRepTime += repTime;
       }
@@ -801,6 +863,11 @@ export const MesocycleExerciseLayout = ({
           <TimeIncrementFrame
             title="rest"
             constraints={durationTimeConstants.rest}
+            onTimeChange={onTimeChange}
+          />
+          <TimeIncrementFrame
+            title="superset"
+            constraints={durationTimeConstants.superset}
             onTimeChange={onTimeChange}
           />
           <TimeIncrementFrame

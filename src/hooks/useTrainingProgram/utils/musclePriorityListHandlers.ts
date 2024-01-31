@@ -11,6 +11,7 @@ import {
 } from "~/constants/workoutSplits";
 import { getTotalExercisesForMuscleGroup } from "~/utils/getExercises";
 import { includes } from "~/utils/readOnlyArrayIncludes";
+import { getSplitFromWeights } from "../reducer/getSplitFromPriorityWeighting";
 import {
   MusclePriorityType,
   SplitSessionsType,
@@ -510,4 +511,30 @@ const attachMesocycleFrequencyProgression = (
       break;
   }
   return mesoProgression;
+};
+
+export const onMuscleListRepriorityChange = (
+  reprioritized_muscles: MusclePriorityType[],
+  frequency: [number, number],
+  breakpoints: [number, number],
+  split_sessions: SplitSessionsType,
+  mesocycles: number,
+  microcycles: number
+) => {
+  const reordered_list = onReorderUpdateMusclePriorityList(
+    reprioritized_muscles,
+    breakpoints
+  );
+  const update_split_sessions = getSplitFromWeights(
+    frequency,
+    reordered_list,
+    split_sessions.split
+  );
+  const updated_list = onSplitChangeUpdateMusclePriorityList(
+    reordered_list,
+    update_split_sessions,
+    mesocycles,
+    microcycles
+  );
+  return updated_list;
 };

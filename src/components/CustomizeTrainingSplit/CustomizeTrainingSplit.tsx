@@ -169,6 +169,10 @@ export default function PageContent() {
               total_sessions={frequency}
               onMesoProgressionUpdate={updateMesoProgression}
               onPriorityChange={handleUpdateMuscleList}
+              split_sessions={split_sessions}
+              breakpoints={[mrv_breakpoint, mev_breakpoint]}
+              mesocycles={training_program_params.mesocycles}
+              microcycles={training_program_params.microcycles}
             />
           </div>
 
