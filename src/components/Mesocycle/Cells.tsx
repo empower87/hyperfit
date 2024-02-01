@@ -181,6 +181,7 @@ function MicrocycleCell({
     >
       {cells.map((cell, index) => (
         <Cell
+          key={`${cell}_${index}_cell`}
           value={cell}
           width={cellWidths[index]}
           alignment="justify-center"

@@ -1,4 +1,4 @@
-import useTrainingProgram from "~/hooks/useTrainingProgram/useTrainingProgram";
+import { useTrainingProgram } from "~/hooks/useTrainingProgram/useTrainingProgram";
 import Section from "../Layout/Section";
 import TrainingBlock from "../Macrocycle/TrainingBlock/TrainingBlock";
 import { MesocycleExerciseLayout } from "./ExerciseSelection/ExerciseSelection";
@@ -133,7 +133,7 @@ export default function PageContent() {
     handleRearrangeTrainingWeek,
   } = useTrainingProgram();
 
-  const { microcycles } = training_program_params;
+  const { microcycles, mesocycles } = training_program_params;
   const onVolumeChange = () => {};
   const updateMesoProgression = () => {};
 
@@ -171,8 +171,8 @@ export default function PageContent() {
               onPriorityChange={handleUpdateMuscleList}
               split_sessions={split_sessions}
               breakpoints={[mrv_breakpoint, mev_breakpoint]}
-              mesocycles={training_program_params.mesocycles}
-              microcycles={training_program_params.microcycles}
+              mesocycles={mesocycles}
+              microcycles={microcycles}
             />
           </div>
 

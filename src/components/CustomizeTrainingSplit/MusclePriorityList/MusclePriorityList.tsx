@@ -7,7 +7,7 @@ import {
   VOLUME_BG_COLORS,
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { VolumeLandmarkType } from "~/hooks/useTrainingProgram/reducer/trainingProgramUtils";
-import { onMuscleListRepriorityChange } from "~/hooks/useTrainingProgram/utils/musclePriorityListHandlers";
+import { onMuscleListReprioritize } from "~/hooks/useTrainingProgram/utils/musclePriorityListHandlers";
 import StrictModeDroppable from "~/lib/react-beautiful-dnd/StrictModeDroppable";
 import { getVolumeSets } from "~/utils/musclePriorityHandlers";
 import MesocycleFrequency from "./components/MesocycleFrequency";
@@ -38,7 +38,7 @@ function Select({ volume_landmark, options, onSelect, bgColor }: SelectProps) {
               volume_landmark === each ? BG_COLOR_M5 : BG_COLOR_M6 + " "
             }
             // value={each}
-            selected={volume_landmark === each ? true : false}
+            // selected={volume_landmark === each ? true : false}
           >
             {each}
           </option>
@@ -88,9 +88,12 @@ function Item({
   );
   const bgColor = VOLUME_BG_COLORS[landmark];
 
-  const onSelectHandler = (value: string) => {
-    onVolumeChange(index, value as VolumeLandmarkType);
-  };
+  const onSelectHandler = useCallback(
+    (value: string) => {
+      onVolumeChange(index, value as VolumeLandmarkType);
+    },
+    [index]
+  );
 
   const changeCellWidthsHandler = (isEditing: boolean) => {
     if (isEditing) {
@@ -171,6 +174,14 @@ export function MusclePriorityList({
     ...musclePriority,
   ]);
 
+  // useEffect(() => {
+  //   setDraggableList(musclePriority);
+  // }, [musclePriority]);
+
+  // useEffect(() => {
+  //   onPriorityChange(draggableList);
+  // }, [draggableList]);
+
   const onDragEnd = useCallback(
     (result: DropResult) => {
       if (!result.destination) return;
@@ -178,7 +189,7 @@ export function MusclePriorityList({
       const [removed] = items.splice(result.source.index, 1);
       items.splice(result.destination.index, 0, removed);
 
-      const updatedItems = onMuscleListRepriorityChange(
+      const updatedItems = onMuscleListReprioritize(
         items,
         total_sessions,
         breakpoints,
@@ -188,7 +199,7 @@ export function MusclePriorityList({
       );
       setDraggableList(updatedItems);
 
-      // onPriorityChange(updatedItems);
+      onPriorityChange(updatedItems);
     },
     [draggableList]
   );
@@ -258,7 +269,7 @@ export function MusclePriorityList({
               {draggableList.map((each, index) => {
                 return (
                   <Draggable
-                    key={`${each.id}`}
+                    key={`${each.id}_draggable`}
                     draggableId={each.id}
                     index={index}
                   >

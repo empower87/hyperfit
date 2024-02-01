@@ -177,7 +177,7 @@ const SelectDropdown: FC<SelectDropdownProps> = ({
             key={`${option}_${index}`}
             className={cn(`${BG_COLOR_M6}`)}
             value={option}
-            selected={option === selectedOption}
+            // selected={option === selectedOption}
           >
             {capitalizeFirstLetter(option)}
           </option>
@@ -248,8 +248,11 @@ function DaySessionItem({
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const supersets = getSupersetMap(exercises);
 
-  const allExercises = getGroupList(exercise.muscle);
+  const allExercises = getGroupList(exercise.muscle).map((each) => each.name);
 
+  const [selectedExerciseName, setSelectedExerciseName] = useState<string>(
+    exercise.exercise
+  );
   const mesocycle_progression = exercise.mesocycle_progression;
   const sets = mesocycle_progression[selectedMicrocycleIndex].sets;
   const reps = mesocycle_progression[selectedMicrocycleIndex].reps;
@@ -331,7 +334,11 @@ function DaySessionItem({
 
         <div className=" flex flex-col text-xxs">
           <ItemCell className={`${BORDER_COLOR} ${ITEM_CELL_WIDTHS.exercise}`}>
-            <select className={bgColor + " w-full truncate"}>
+            <SelectDropdown
+              options={allExercises}
+              selectedOption={selectedExerciseName}
+            />
+            {/* <select className={bgColor + " w-full truncate"}>
               {allExercises.map((each, index) => {
                 return (
                   <option
@@ -342,7 +349,7 @@ function DaySessionItem({
                   </option>
                 );
               })}
-            </select>
+            </select> */}
           </ItemCell>
           <ItemCell
             className={`${BORDER_COLOR} ${ITEM_CELL_WIDTHS.exercise} truncate border-t indent-1 text-slate-300`}
@@ -627,7 +634,7 @@ export default function WeekSessions({
                 if (!hasSessions) return <></>;
                 return (
                   <DayLayout
-                    key={`${each.day}_${mesocycle_index}_draggableExercisesObject`}
+                    key={`${each.day}_${mesocycle_index}_draggableExercisesObject_${index}`}
                     session={each}
                     mesocycleIndex={mesocycle_index}
                     sessionDurationCalculator={sessionDurationCalculator}
@@ -672,7 +679,7 @@ const SelectMicrocycleList = ({
       {list.map((week, i) => {
         return (
           <li
-            key={week}
+            key={`${week}_weeks_${i}`}
             className={cn(
               `text-xs hover:${BG_COLOR_M5} mr-1 cursor-pointer p-1 text-slate-400`,
               {
@@ -700,6 +707,7 @@ const SelectMicrocycleList = ({
 //   rest: DurationTimeConstraint;
 //   rep: DurationTimeConstraint;
 // };
+
 type DurationTimeConstants = typeof DURATION_TIME_CONSTRAINTS;
 type DurationTimeConstantsKeys = keyof DurationTimeConstants;
 type DurationTimeConstraint = DurationTimeConstants[DurationTimeConstantsKeys];
@@ -808,6 +816,9 @@ export const MesocycleExerciseLayout = ({
       case "eccentric":
         const ECCENTRIC_MULTIPLIER_CONSTANT = 6;
         return sets * (reps * ECCENTRIC_MULTIPLIER_CONSTANT);
+      case "lengthened partials":
+        const lengthenedPartialRepTime = Math.round(repTime.value / 2);
+        return sets * reps * lengthenedPartialRepTime;
       default:
         return sets * reps * repTime.value;
     }
@@ -825,7 +836,7 @@ export const MesocycleExerciseLayout = ({
         const exercise = exercises[i].mesocycle_progression;
         const modality = exercises[i].trainingModality;
         const { sets, reps } = exercise[currentMicrocycleIndex];
-        // const repTime = sets * reps * rep.value;
+
         const repTime = exerciseModalityRepCalculator(
           modality,
           sets,
@@ -852,9 +863,12 @@ export const MesocycleExerciseLayout = ({
 
   return (
     <Section title={"Exercises"}>
-      <div className=" mb-2 flex text-xxs text-white">
-        <div className=" flex flex-col">
-          <div className="text-sm mb-0.5">Workout Duration Variables</div>
+      <div className="mb-2 flex text-xxs text-white">
+        <div className="flex flex-col">
+          <div className="text-sm mb-0.5">
+            Workout Duration Variables
+          </div>
+
           <TimeIncrementFrame
             title="warmup"
             constraints={durationTimeConstants.warmup}
@@ -881,7 +895,7 @@ export const MesocycleExerciseLayout = ({
       {training_block.map((each, index) => {
         return (
           <WeekSessions
-            key={`week_${index}`}
+            key={`${each[index].day}_training_block_meso_${index}`}
             mesocycle_index={index + 1}
             microcycles={microcycles}
             training_week={each}

@@ -1,4 +1,11 @@
-import { useCallback, useEffect, useReducer } from "react";
+import {
+  ReactNode,
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useReducer,
+} from "react";
 import weeklySessionSplitReducer, {
   INITIAL_STATE,
   MusclePriorityType,
@@ -6,7 +13,38 @@ import weeklySessionSplitReducer, {
   TrainingDayType,
 } from "./reducer/trainingProgramReducer";
 
-export default function useTrainingProgram() {
+type TrainingProgramType = ReturnType<typeof useTrainingProgram>;
+
+const TrainingProgramContext = createContext<TrainingProgramType>({
+  training_week: INITIAL_STATE.training_week,
+  training_block: INITIAL_STATE.training_block,
+  split_sessions: INITIAL_STATE.split_sessions,
+  frequency: INITIAL_STATE.frequency,
+  training_program_params: INITIAL_STATE.training_program_params,
+  prioritized_muscle_list: [],
+  handleUpdateMuscleList: () => {},
+  handleUpdateBreakpoint: () => {},
+  handleUpdateSplitSessions: () => {},
+  handleFrequencyChange: () => {},
+  handleRearrangeTrainingWeek: () => {},
+  mrv_breakpoint: 4,
+  mev_breakpoint: 9,
+});
+
+const TrainingProgramProvider = ({ children }: { children: ReactNode }) => {
+  const values = useTrainingProgram();
+  return (
+    <TrainingProgramContext.Provider value={values}>
+      {children}
+    </TrainingProgramContext.Provider>
+  );
+};
+
+const useTrainingProgramContext = () => {
+  return useContext(TrainingProgramContext);
+};
+
+function useTrainingProgram() {
   const [
     {
       frequency,
@@ -48,6 +86,8 @@ export default function useTrainingProgram() {
     []
   );
 
+  const handleChangeVolumeBenchmark = useCallback((value: number) => {}, []);
+
   const handleUpdateSplitSessions = (type: SplitSessionsNameType) => {
     dispatch({
       type: "UPDATE_SPLIT_SESSIONS",
@@ -79,10 +119,10 @@ export default function useTrainingProgram() {
     );
   }, [frequency, split_sessions, muscle_priority_list]);
 
-  useEffect(() => {
-    // dispatch({ type: "GET_TRAINING_BLOCK" });
-    // console.log(muscle_priority_list, training_block, "TEST: TRAINING BLOCK");
-  }, [training_week, muscle_priority_list, frequency, split_sessions]);
+  // useEffect(() => {
+  //   dispatch({ type: "GET_TRAINING_BLOCK" });
+  //   console.log(muscle_priority_list, training_block, "TEST: TRAINING BLOCK");
+  // }, [training_week, muscle_priority_list, frequency, split_sessions]);
 
   return {
     training_week,
@@ -100,3 +140,9 @@ export default function useTrainingProgram() {
     mev_breakpoint,
   };
 }
+
+export {
+  TrainingProgramProvider,
+  useTrainingProgram,
+  useTrainingProgramContext,
+};

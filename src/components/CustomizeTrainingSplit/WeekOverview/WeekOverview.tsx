@@ -126,13 +126,13 @@ export function TrainingWeek({
 
       <div className=" flex justify-start p-1">
         <button
-          className=" mr-1 bg-slate-500 p-1 text-xs text-slate-700"
+          className=" text-xs mr-1 bg-slate-500 p-1 text-slate-700"
           onClick={onResetHandler}
         >
           reset
         </button>
         <button
-          className="bg-rose-400 p-1 text-xs font-bold text-white"
+          className="text-xs bg-rose-400 p-1 font-bold text-white"
           onClick={onSaveHandler}
         >
           save
@@ -167,7 +167,7 @@ const DroppableDay = ({
     <div className="mr-2 flex w-20 flex-col">
       <div
         className={
-          BG_COLOR_M7 + " mb-1 flex w-full justify-center text-xs text-white"
+          BG_COLOR_M7 + " text-xs mb-1 flex w-full justify-center text-white"
         }
       >
         {day}
@@ -182,7 +182,6 @@ const DroppableDay = ({
             ref={provided.innerRef}
           >
             {sesh.map((each, index) => {
-              console.log(each, "OK I THINK THERES NO ID HERE!");
               return (
                 <Draggable
                   key={`${each.id}_${index}_DroppableDay`}
@@ -243,7 +242,7 @@ function SessionItem({ session, index, onSplitChange }: SessionItemProps) {
         BORDER_COLOR_M7 + " flex h-8 items-center border-2 " + bottomMargin
       }
     >
-      <div className=" text-xxs flex w-1/6 justify-center text-white">
+      <div className=" flex w-1/6 justify-center text-xxs text-white">
         {/* {session.session > 0 ? session.session : ""} */}
       </div>
       <SelectSession
@@ -269,7 +268,7 @@ function SelectSession({ session, splits, onSelect }: SelectSessionProps) {
     <select
       className={
         getSessionSplitColor(session).text +
-        " text-xxs w-4/6 font-bold " +
+        " w-4/6 text-xxs font-bold " +
         BG_COLOR_M6
       }
       onChange={onSelectHandler}
@@ -278,7 +277,7 @@ function SelectSession({ session, splits, onSelect }: SelectSessionProps) {
         return (
           <option
             key={`${split}_${index}`}
-            selected={split === session ? true : false}
+            // selected={split === session ? true : false}
             value={split}
           >
             {split}
@@ -302,7 +301,7 @@ export default function WeekOverview({
 }: WeekOverviewProps) {
   return (
     <Section title="Week Overview">
-      <div className="mb-2 flex text-sm text-white">
+      <div className="text-sm mb-2 flex text-white">
         Split: {split_sessions.split}
       </div>
 

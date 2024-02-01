@@ -76,9 +76,10 @@ export default function Mesocycle({
           <SessionHeaderLayout />
         </div>
         <div className="flex flex-col">
-          {split.map((each) => {
+          {split.map((each, index) => {
             return (
               <SessionRow
+                key={`${each.day}-${index}`}
                 training_day={each}
                 currentMesocycleIndex={currentMesocycleIndex}
               />

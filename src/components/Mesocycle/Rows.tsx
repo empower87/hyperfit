@@ -187,6 +187,7 @@ function SessionSplitRow({
                 : "mid";
             return (
               <DataRow
+                key={`${one}_exercises_training_block_${exercise.id}`}
                 split={split}
                 exercise={exercise}
                 index={count}
@@ -232,9 +233,10 @@ function SessionRow({ training_day, currentMesocycleIndex }: SessionRowProps) {
           sessionSplitIndex={1}
         />
       ) : null} */}
-      {sessions.map((each) => {
+      {sessions.map((each, index) => {
         return (
           <SessionSplitRow
+            key={`${each.split}_${index}_session`}
             day={day}
             split={each.split}
             exercises={each.exercises}

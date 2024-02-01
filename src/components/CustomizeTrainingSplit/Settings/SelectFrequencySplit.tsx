@@ -31,11 +31,7 @@ function Select<T extends string | number>({
     >
       {options.map((each, index) => {
         return (
-          <option
-            key={`${each}_${index}_select`}
-            value={each}
-            selected={selectedOption === each ? true : false}
-          >
+          <option key={`${each}_${index}_select`} value={each}>
             {each}
           </option>
         );
@@ -63,7 +59,7 @@ function SelectFrequency({
 
   return (
     <div className="flex h-6">
-      <p className="w-4/5 p-1 text-xs leading-3 text-slate-300">{title}</p>
+      <p className="text-xs w-4/5 p-1 leading-3 text-slate-300">{title}</p>
       <div className=" flex w-1/5">
         <Select
           selectedOption={selectedOption}
@@ -182,7 +178,7 @@ export default function SelectFrequencySplit({
       <div className="flex h-1/3 items-center justify-center">
         <button
           className={
-            BG_COLOR_M6 + " p-1 text-xs font-bold text-white hover:bg-slate-500"
+            BG_COLOR_M6 + " text-xs p-1 font-bold text-white hover:bg-slate-500"
           }
           style={{ height: "80%", width: "95%" }}
           onClick={() => onButtonClick()}

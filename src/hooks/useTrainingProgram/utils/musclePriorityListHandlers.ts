@@ -513,7 +513,7 @@ const attachMesocycleFrequencyProgression = (
   return mesoProgression;
 };
 
-export const onMuscleListRepriorityChange = (
+export const onMuscleListReprioritize = (
   reprioritized_muscles: MusclePriorityType[],
   frequency: [number, number],
   breakpoints: [number, number],

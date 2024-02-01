@@ -3,7 +3,7 @@ import {
   ExerciseType,
   SplitType,
   TrainingDayType,
-} from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
+} from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import Microcycle from "./Microcycle";
 
 type MesocycleTableProps = {
