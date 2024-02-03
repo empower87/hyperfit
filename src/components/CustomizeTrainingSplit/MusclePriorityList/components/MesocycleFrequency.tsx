@@ -25,7 +25,7 @@ function CellWithCounter({
       >
         -
       </button>
-      <div className={" text-xxs p-1"}>{currentValue}</div>
+      <div className={" p-1 text-xxs"}>{currentValue}</div>
       <button
         className={BG_COLOR_M6 + " h-4 w-4 text-xs font-bold"}
         onClick={() => onAddSubtract("add", mesocycle)}
@@ -142,7 +142,7 @@ export default function MesocycleFrequency({
   onMesoProgressionUpdate,
 }: MesocycleFrequencyProps) {
   return (
-    <div className={" flex justify-center"} style={{ width: width }}>
+    <div className={" flex w-full justify-center"}>
       {isEditing ? (
         <EditMesocycleFrequency
           mesoProgression={mesoProgression}
@@ -159,3 +159,29 @@ export default function MesocycleFrequency({
     </div>
   );
 }
+// export default function MesocycleFrequency({
+//   mesoProgression,
+//   total_sessions,
+//   isEditing,
+//   onEditHandler,
+//   width,
+//   onMesoProgressionUpdate,
+// }: MesocycleFrequencyProps) {
+//   return (
+//     <div className={" flex justify-center"} style={{ width: width }}>
+//       {isEditing ? (
+//         <EditMesocycleFrequency
+//           mesoProgression={mesoProgression}
+//           total_sessions={total_sessions}
+//           onEdit={onEditHandler}
+//           onMesoProgressionUpdate={onMesoProgressionUpdate}
+//         />
+//       ) : (
+//         <DefaultMesocycleFrequency
+//           mesoProgression={mesoProgression}
+//           onEdit={onEditHandler}
+//         />
+//       )}
+//     </div>
+//   );
+// }

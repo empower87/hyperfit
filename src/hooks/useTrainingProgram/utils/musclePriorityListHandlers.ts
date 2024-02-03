@@ -380,18 +380,23 @@ export const onSplitChangeUpdateMusclePriorityList = (
   muscle_priority_list: MusclePriorityType[],
   split_sessions: SplitSessionsType,
   mesocycles: number,
-  microcycles: number
+  microcycles: number,
+  update_frequency?: [MusclePriorityType["id"], "add" | "subtract"]
 ) => {
   let updated_list = [...muscle_priority_list];
 
   for (let i = 0; i < updated_list.length; i++) {
     const muscle = updated_list[i].muscle;
+    const muscleId = updated_list[i].id;
     const { exercisesPerSessionSchema, landmark } = updated_list[i].volume;
     const frequencyProgression = attachMesocycleFrequencyProgression(
       muscle,
       landmark,
       split_sessions,
-      mesocycles
+      mesocycles,
+      update_frequency && update_frequency[0] === muscleId
+        ? update_frequency[1]
+        : undefined
     );
     const exercises = getTotalExercisesForMuscleGroup(
       muscle,
@@ -450,7 +455,8 @@ const attachMesocycleFrequencyProgression = (
   muscle: MuscleType,
   volume_landmark: VolumeLandmarkType,
   split_sessions: SplitSessionsType,
-  mesocycles: number
+  mesocycles: number,
+  changeFrequency?: "add" | "subtract"
 ) => {
   let key = volume_landmark;
   let sessions = 0;
@@ -497,6 +503,12 @@ const attachMesocycleFrequencyProgression = (
   }
 
   let mesoProgression: number[] = [];
+
+  if (changeFrequency && changeFrequency === "add") {
+    sessions = sessions + 1;
+  } else if (changeFrequency && changeFrequency === "subtract") {
+    sessions = sessions - 1;
+  }
 
   switch (key) {
     case "MRV":

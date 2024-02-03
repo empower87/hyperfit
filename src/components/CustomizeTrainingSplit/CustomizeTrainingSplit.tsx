@@ -131,6 +131,7 @@ export default function PageContent() {
     handleUpdateSplitSessions,
     handleUpdateBreakpoint,
     handleRearrangeTrainingWeek,
+    handleChangeFrequencyProgression,
   } = useTrainingProgram();
 
   const { microcycles, mesocycles } = training_program_params;
@@ -168,10 +169,7 @@ export default function PageContent() {
               total_sessions={frequency}
               onMesoProgressionUpdate={updateMesoProgression}
               onPriorityChange={handleUpdateMuscleList}
-              split_sessions={split_sessions}
-              breakpoints={[mrv_breakpoint, mev_breakpoint]}
-              mesocycles={mesocycles}
-              microcycles={microcycles}
+              onFrequencyProgressionChange={handleChangeFrequencyProgression}
             />
           </div>
 

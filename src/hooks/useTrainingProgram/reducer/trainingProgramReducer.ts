@@ -228,7 +228,12 @@ type UpdateBreakpointAction = {
 type GetTrainingBlockAction = {
   type: "GET_TRAINING_BLOCK";
 };
-
+type AdjustFrequencyProgression = {
+  type: "ADJUST_FREQUENCY_PROGRESSION";
+  payload: {
+    update_frequency_tuple: [MusclePriorityType["id"], "add" | "subtract"];
+  };
+};
 type Action =
   | UpdateFrequencyAction
   | UpdateMusclePriorityListAction
@@ -236,7 +241,8 @@ type Action =
   | UpdateTrainingWeekAction
   | UpdateBreakpointAction
   | GetTrainingBlockAction
-  | RearrangeTrainingWeekAction;
+  | RearrangeTrainingWeekAction
+  | AdjustFrequencyProgression;
 
 const INITIAL_MRV_BREAKPOINT = 4;
 const INITIAL_MEV_BREAKPOINT = 9;
@@ -383,6 +389,30 @@ export default function weeklySessionSplitReducer(
         ...state,
         muscle_priority_list: updated_list,
         split_sessions: update_split_sessions,
+      };
+    case "ADJUST_FREQUENCY_PROGRESSION":
+      const tuple = action.payload.update_frequency_tuple;
+      const reordered_list_2 = onReorderUpdateMusclePriorityList(
+        muscle_priority_list,
+        breakpoints
+      );
+      const update_split_sessions_2 = getSplitFromWeights(
+        state.frequency,
+        reordered_list_2,
+        split_sessions.split
+      );
+      const updated_list_2 = onSplitChangeUpdateMusclePriorityList(
+        reordered_list_2,
+        update_split_sessions_2,
+        mesocycles,
+        microcycles,
+        tuple
+      );
+
+      return {
+        ...state,
+        muscle_priority_list: updated_list_2,
+        split_sessions: update_split_sessions_2,
       };
     case "UPDATE_SPLIT_SESSIONS":
       const type = action.payload.split;
