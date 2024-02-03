@@ -14,6 +14,7 @@ import {
   BG_COLOR_M5,
   BG_COLOR_M6,
   BG_COLOR_M7,
+  BORDER_COLOR_M6,
   BORDER_COLOR_M7,
   BORDER_COLOR_M8,
 } from "~/constants/themes";
@@ -198,15 +199,40 @@ const ItemCell: FC<ItemCellProps> = ({ children, className, ...props }) => {
 };
 function DaySessionItemHeaders({}) {
   return (
-    <div className="mb-0.5 flex w-full text-white">
-      <ItemCell className={`w-6`}>Sets</ItemCell>
+    <div className="mt-1 flex w-full text-white">
+      <ItemCell
+        className={`${BORDER_COLOR_M6} ${BG_COLOR_M7} ${ITEM_CELL_WIDTHS.index} text-xxxs`}
+      >
+        {" "}
+      </ItemCell>
       <div className="flex w-full">
-        <ItemCell className={`w-6`}>Reps</ItemCell>
-        <ItemCell className={`w-6`}>Lbs</ItemCell>
-        <div className="flex w-full flex-col">
-          <ItemCell className={`w-full`}>Exercise</ItemCell>
+        <ItemCell
+          className={`${BORDER_COLOR_M6} ${BG_COLOR_M7} ${ITEM_CELL_WIDTHS.sets} justify-center text-xxxs`}
+        >
+          Sets
+        </ItemCell>
+        <ItemCell
+          className={`${BORDER_COLOR_M6} ${BG_COLOR_M7} ${ITEM_CELL_WIDTHS.reps} justify-center text-xxxs`}
+        >
+          Reps
+        </ItemCell>
+        <ItemCell
+          className={`${BORDER_COLOR_M6} ${BG_COLOR_M7} ${ITEM_CELL_WIDTHS.lbs} justify-center text-xxxs`}
+        >
+          Lbs
+        </ItemCell>
+        <div className="flex flex-col">
+          <ItemCell
+            className={`${BORDER_COLOR_M6} ${BG_COLOR_M7} ${ITEM_CELL_WIDTHS.exercise} text-xxxs`}
+          >
+            Exercise
+          </ItemCell>
         </div>
-        <ItemCell className={`w-6`}> </ItemCell>
+        <ItemCell
+          className={`${BORDER_COLOR_M6} ${BG_COLOR_M7} ${ITEM_CELL_WIDTHS.actions} text-xxxs`}
+        >
+          {" "}
+        </ItemCell>
       </div>
     </div>
   );
@@ -227,7 +253,7 @@ type DaySessionItemProps = {
 
 const ITEM_CELL_WIDTHS = {
   index: "w-4",
-  sets: "w-4",
+  sets: "w-6",
   reps: "w-6",
   lbs: "w-6",
   exercise: "w-36",
@@ -335,21 +361,10 @@ function DaySessionItem({
         <div className=" flex flex-col text-xxs">
           <ItemCell className={`${BORDER_COLOR} ${ITEM_CELL_WIDTHS.exercise}`}>
             <SelectDropdown
+              className={`w-full truncate`}
               options={allExercises}
               selectedOption={selectedExerciseName}
             />
-            {/* <select className={bgColor + " w-full truncate"}>
-              {allExercises.map((each, index) => {
-                return (
-                  <option
-                    key={`${each}_option_${index}`}
-                    selected={each.name === exercise.exercise ? true : false}
-                  >
-                    {each.name}
-                  </option>
-                );
-              })}
-            </select> */}
           </ItemCell>
           <ItemCell
             className={`${BORDER_COLOR} ${ITEM_CELL_WIDTHS.exercise} truncate border-t indent-1 text-slate-300`}
@@ -414,10 +429,11 @@ function DroppableDay({
 
   return (
     <li className="">
-      <div className={"mb-1 flex flex-col p-1"}>
+      <div className={"flex flex-col px-1"}>
         <div
           className={
-            getSessionSplitColor(split).bg + " text-sm indent-1 text-white"
+            getSessionSplitColor(split).bg +
+            " text-sm indent-1 font-bold text-white"
           }
         >
           {split}
@@ -631,7 +647,7 @@ export default function WeekSessions({
                 const hasSessions = each.sessions.find(
                   (ea) => ea.exercises.length
                 );
-                if (!hasSessions) return <></>;
+                if (!hasSessions) return null;
                 return (
                   <DayLayout
                     key={`${each.day}_${mesocycle_index}_draggableExercisesObject_${index}`}
@@ -843,6 +859,7 @@ export const MesocycleExerciseLayout = ({
           reps,
           rep
         );
+
         let restTime = 0;
         if (exercises[i].trainingModality === "superset") {
           restTime = Math.round(superset.value / 2) * sets;
@@ -852,6 +869,7 @@ export const MesocycleExerciseLayout = ({
         totalRestTime += restTime;
         totalRepTime += repTime;
       }
+
       const totalTimeInMinutes = Math.round(
         (warmup.value + restTime + totalRepTime + totalRestTime) / 60
       );
@@ -865,9 +883,7 @@ export const MesocycleExerciseLayout = ({
     <Section title={"Exercises"}>
       <div className="mb-2 flex text-xxs text-white">
         <div className="flex flex-col">
-          <div className="text-sm mb-0.5">
-            Workout Duration Variables
-          </div>
+          <div className="text-sm mb-0.5">Workout Duration Variables</div>
 
           <TimeIncrementFrame
             title="warmup"
@@ -971,7 +987,8 @@ const TimeIncrementFrame = ({
   return (
     <div className="flex">
       <div className="text-xs m-1 w-12 text-white">{title}</div>
-      <div className="flex ">
+
+      <div className="flex">
         <IncrementBtn operation={"-"} onClick={() => onIncrement("-")} />
         <div className="text-xs m-1 flex w-6 items-center justify-center text-white">
           {time}

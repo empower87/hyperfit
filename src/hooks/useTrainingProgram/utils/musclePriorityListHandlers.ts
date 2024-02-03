@@ -10,6 +10,7 @@ import {
   getPushPullLegsSplit,
 } from "~/constants/workoutSplits";
 import { getTotalExercisesForMuscleGroup } from "~/utils/getExercises";
+import { getMuscleData } from "~/utils/getMuscleData";
 import { includes } from "~/utils/readOnlyArrayIncludes";
 import { getSplitFromWeights } from "../reducer/getSplitFromPriorityWeighting";
 import {
@@ -328,6 +329,7 @@ const getSetProgressionMatrixForMesocycle = (
   let prev_microcycle: number[][] = initialMesocycleLayout.map((each) => [
     ...each,
   ]);
+
   for (let i = 0; i < microcycles; i++) {
     if (i === 0) {
       mesocycle_sets.push(prev_microcycle);
@@ -410,13 +412,34 @@ export const onSplitChangeUpdateMusclePriorityList = (
   return updated_list;
 };
 
+const doesMuscleHaveVolume = (muscle: MuscleType, key: VolumeLandmarkType) => {
+  const data = getMuscleData(muscle);
+  if (key === "MRV") return true;
+  if (data[key] > 0) return true;
+  return false;
+};
+const getMaxFrequencyForMEVMV = (
+  muscle: MuscleType,
+  volume_landmark: VolumeLandmarkType
+) => {
+  const data = getMuscleData(muscle);
+  if (volume_landmark === "MRV") return 0;
+  const volume = data[volume_landmark];
+
+  if (volume > 8) return 3;
+  else if (volume > 4 && volume <= 8) return 2;
+  else if (volume > 0 && volume <= 4) return 1;
+  else return 0;
+};
 const getFrequencyProgression = (sessions: number, mesocycles: number) => {
   let frequencyProgression: number[] = [];
 
   for (let i = 0; i < mesocycles; i++) {
     let frequency = sessions - i;
-    if (frequency < 0) {
+    if (sessions === 0) {
       frequency = 0;
+    } else if (frequency <= 0) {
+      frequency = 1;
     }
     frequencyProgression.unshift(frequency);
   }
@@ -481,33 +504,22 @@ const attachMesocycleFrequencyProgression = (
       mesoProgression = mrv;
       break;
     case "MEV":
-      let sessions_capped = 2;
-      if (sessions === 0) {
-        sessions_capped = 0;
-      } else if (sessions <= 1) {
-        sessions_capped = 1;
-      } else if (sessions >= 3) {
-        if (["back", "quads", "calves"].includes(muscle)) {
-          sessions_capped = 3;
-        }
-      }
+      const sessions_capped = Math.min(
+        getMaxFrequencyForMEVMV(muscle, "MEV"),
+        sessions
+      );
       const mev = getFrequencyProgression(sessions_capped, mesocycles);
       mesoProgression = mev;
       break;
     case "MV":
-      let sessions_capped_mv = 1;
-      if (sessions === 0) {
-        sessions_capped_mv = 0;
-      } else if (sessions >= 2) {
-        if (["back", "quads", "calves"].includes(muscle)) {
-          sessions_capped_mv = 2;
-        }
-      }
+      const sessions_capped_mv = Math.min(
+        getMaxFrequencyForMEVMV(muscle, "MV"),
+        sessions
+      );
       const mv = getFrequencyProgression(sessions_capped_mv, mesocycles);
       mesoProgression = mv;
       break;
     default:
-      // mesoProgression = getFrequencyProgression(sessions, mesocycles);
       break;
   }
   return mesoProgression;

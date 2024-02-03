@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { getEndOfMesocycleVolume } from "../utils/getVolumeTotal";
 
@@ -8,20 +7,23 @@ type CellProps = {
 };
 
 function Cell({ muscleGroup, mesocycle }: CellProps) {
-  const [mesoTotalVolume, setMesoTotalVolume] = useState(0);
-  useEffect(() => {
-    const { muscle, mesoProgression, volume } = muscleGroup;
-    const { landmark, exercisesPerSessionSchema, setProgressionMatrix } =
-      volume;
-    const mesoTotalVolume = getEndOfMesocycleVolume(
-      muscle,
-      mesoProgression[mesocycle - 1],
-      landmark,
-      exercisesPerSessionSchema,
-      setProgressionMatrix
-    );
-    setMesoTotalVolume(mesoTotalVolume);
-  }, [muscleGroup, mesocycle]);
+  const { muscle, volume } = muscleGroup;
+  const {
+    landmark,
+    exercisesPerSessionSchema,
+    setProgressionMatrix,
+    frequencyProgression,
+  } = volume;
+
+  const mesoTotalVolume = getEndOfMesocycleVolume(
+    muscle,
+    mesocycle,
+    frequencyProgression[mesocycle - 1],
+    landmark,
+    exercisesPerSessionSchema,
+    setProgressionMatrix
+  );
+
   return <div className=" flex w-1/3 justify-center">{mesoTotalVolume}</div>;
 }
 

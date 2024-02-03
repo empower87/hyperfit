@@ -152,7 +152,7 @@ export default function PageContent() {
             />
           </div>
 
-          <div className=" mb-2 flex">
+          <div className=" mb-2 flex flex-col">
             <div className=" w-1/4 pr-2">
               <ListVolumeSettings
                 mrvBreakpoint={mrv_breakpoint}
@@ -162,7 +162,6 @@ export default function PageContent() {
 
               {/* <SplitOverview onSplitChange={handleUpdateSplitSessions} /> */}
             </div>
-
             <MusclePriorityList
               musclePriority={prioritized_muscle_list}
               onVolumeChange={onVolumeChange}
