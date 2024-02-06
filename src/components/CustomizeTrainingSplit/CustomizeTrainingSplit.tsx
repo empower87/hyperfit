@@ -1,3 +1,4 @@
+import { MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { useTrainingProgram } from "~/hooks/useTrainingProgram/useTrainingProgram";
 import Section from "../Layout/Section";
 import TrainingBlock from "../Macrocycle/TrainingBlock/TrainingBlock";
@@ -130,9 +131,18 @@ export default function PageContent() {
     handleFrequencyChange,
     handleUpdateSplitSessions,
     handleUpdateBreakpoint,
+    handleUpdateBreakpoints,
     handleRearrangeTrainingWeek,
     handleChangeFrequencyProgression,
   } = useTrainingProgram();
+
+  const onPrioritySaveHandler = (
+    new_list: MusclePriorityType[],
+    breakpoints: [number, number]
+  ) => {
+    handleUpdateMuscleList(new_list);
+    handleUpdateBreakpoints(breakpoints);
+  };
 
   const { microcycles, mesocycles } = training_program_params;
   const onVolumeChange = () => {};
@@ -144,8 +154,8 @@ export default function PageContent() {
       style={{ height: "97%", width: "98%" }}
     >
       <Section title="Customize Training Split">
-        <div>
-          <div className=" flex w-full">
+        <div className="">
+          <div className="flex w-full">
             <SelectFrequencySplit
               onFrequencyChange={handleFrequencyChange}
               onSplitChange={handleUpdateSplitSessions}
@@ -153,23 +163,27 @@ export default function PageContent() {
             />
           </div>
 
-          <div className=" mb-2 flex flex-col">
-            <div className=" w-1/4 pr-2">
+          <div className="mb-2 flex flex-col">
+            <div className="w-1/4 pr-2">
               <ListVolumeSettings
                 mrvBreakpoint={mrv_breakpoint}
                 mevBreakpoint={mev_breakpoint}
                 onBreakpointChange={handleUpdateBreakpoint}
               />
-
-              {/* <SplitOverview onSplitChange={handleUpdateSplitSessions} /> */}
             </div>
+
             <MusclePriorityList
               musclePriority={prioritized_muscle_list}
+              splitSessions={split_sessions}
+              mesocycles={mesocycles}
+              microcycles={microcycles}
+              volumeLandmarkBreakpoints={[mrv_breakpoint, mev_breakpoint]}
               onVolumeChange={onVolumeChange}
               total_sessions={frequency}
               onMesoProgressionUpdate={updateMesoProgression}
               onPriorityChange={handleUpdateMuscleList}
-              onFrequencyProgressionChange={handleChangeFrequencyProgression}
+              onPrioritySave={onPrioritySaveHandler}
+              // onFrequencyProgressionChange={handleChangeFrequencyProgression}
             />
           </div>
 

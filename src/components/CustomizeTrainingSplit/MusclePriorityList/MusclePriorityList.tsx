@@ -1,15 +1,18 @@
-import { useCallback, useState } from "react";
-import { DragDropContext, Draggable, DropResult } from "react-beautiful-dnd";
+import { HTMLAttributes, useCallback, useState } from "react";
+import { DragDropContext, Draggable } from "react-beautiful-dnd";
 import { BG_COLOR_M5, BG_COLOR_M6, BORDER_COLOR_M8 } from "~/constants/themes";
 import {
   MusclePriorityType,
+  SplitSessionsType,
   VOLUME_BG_COLORS,
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { VolumeLandmarkType } from "~/hooks/useTrainingProgram/reducer/trainingProgramUtils";
+import { cn } from "~/lib/clsx";
 import StrictModeDroppable from "~/lib/react-beautiful-dnd/StrictModeDroppable";
 import { getVolumeSets } from "~/utils/musclePriorityHandlers";
 import MesocycleFrequency from "./components/MesocycleFrequency";
 import { MesocycleVolumes } from "./components/MesocycleVolumes";
+import useMusclePriority from "./hooks/useMusclePriority";
 
 type SelectProps = {
   volume_landmark: VolumeLandmarkType;
@@ -61,7 +64,11 @@ const CELL_WIDTHS_ON_EDIT = ["5%", "15%", "20%", "40%", "20%"];
 type ItemProps = {
   muscleGroup: MusclePriorityType;
   index: number;
-  onVolumeChange: (index: number, newVolume: VolumeLandmarkType) => void;
+  onVolumeChange: (
+    id: MusclePriorityType["id"],
+    volume_landmark: VolumeLandmarkType
+  ) => void;
+  // onVolumeChange: (index: number, newVolume: VolumeLandmarkType) => void;
   total_sessions: [number, number];
   onMesoProgressionUpdate: (id: string, newMesoProgression: number[]) => void;
   onFrequencyProgressionChange: (
@@ -80,6 +87,11 @@ function Item({
 }: ItemProps) {
   const { volume, muscle } = muscleGroup;
   const { frequencyProgression, landmark } = volume;
+  const [freqProgression, setFreqProgression] = useState<number[]>([
+    ...frequencyProgression,
+  ]);
+  const [save, setSave] = useState<boolean>(false);
+  const [operation, setOperation] = useState<"add" | "subtract" | null>(null);
 
   const [cellWidths, setCellWidths] = useState<string[]>([...CELL_WIDTHS]);
   const [isEditing, setIsEditing] = useState<boolean>(false);
@@ -93,7 +105,7 @@ function Item({
 
   const onSelectHandler = useCallback(
     (value: string) => {
-      onVolumeChange(index, value as VolumeLandmarkType);
+      onVolumeChange(muscleGroup.id, value as VolumeLandmarkType);
     },
     [index]
   );
@@ -145,6 +157,7 @@ function Item({
         >
           -
         </div>
+
         <MesocycleFrequency
           mesoProgression={frequencyProgression}
           total_sessions={total_sessions}
@@ -153,6 +166,7 @@ function Item({
           width={cellWidths[3]}
           onMesoProgressionUpdate={onSaveMesoProgression}
         />
+
         <div
           className="curser:pointer font-bold"
           onClick={() => onFrequencyChangeClickHandler("add")}
@@ -167,39 +181,59 @@ function Item({
 
 type MusclePriorityListProps = {
   musclePriority: MusclePriorityType[];
+  splitSessions: SplitSessionsType;
+  mesocycles: number;
+  microcycles: number;
+  volumeLandmarkBreakpoints: [number, number];
   onVolumeChange: (index: number, newVolume: VolumeLandmarkType) => void;
   total_sessions: [number, number];
   onMesoProgressionUpdate: (id: string, newMesoProgression: number[]) => void;
   onPriorityChange: (items: MusclePriorityType[]) => void;
-  onFrequencyProgressionChange: (
-    id: MusclePriorityType["id"],
-    type: "add" | "subtract"
+  // onFrequencyProgressionChange: (
+  //   id: MusclePriorityType["id"],
+  //   type: "add" | "subtract"
+  // ) => void;
+  onPrioritySave: (
+    new_list: MusclePriorityType[],
+    breakpoints: [number, number]
   ) => void;
 };
 
 export function MusclePriorityList({
   musclePriority,
+  splitSessions,
+  mesocycles,
+  microcycles,
+  volumeLandmarkBreakpoints,
   onVolumeChange,
   total_sessions,
   onMesoProgressionUpdate,
   onPriorityChange,
-  onFrequencyProgressionChange,
+  onPrioritySave,
 }: MusclePriorityListProps) {
-  const [cellWidths, setCellWidths] = useState<string[]>([...CELL_WIDTHS]);
-  const [draggableList, setDraggableList] = useState<MusclePriorityType[]>([
-    ...musclePriority,
-  ]);
-  const onDragEnd = useCallback(
-    (result: DropResult) => {
-      if (!result.destination) return;
-      const items = [...draggableList];
-      const [removed] = items.splice(result.source.index, 1);
-      items.splice(result.destination.index, 0, removed);
-      setDraggableList(items);
-      onPriorityChange(items);
-    },
-    [draggableList]
+  const {
+    draggableList,
+    volumeBreakpoints,
+    setDraggableList,
+    onReorder,
+    onVolumeLandmarkChange,
+    onFrequencyProgressionChange,
+  } = useMusclePriority(
+    musclePriority,
+    volumeLandmarkBreakpoints,
+    splitSessions,
+    mesocycles,
+    microcycles
   );
+  const [cellWidths, setCellWidths] = useState<string[]>([...CELL_WIDTHS]);
+
+  const onSaveHandler = useCallback(() => {
+    onPrioritySave(draggableList, volumeBreakpoints);
+  }, [draggableList, volumeBreakpoints]);
+
+  const onResetHandler = useCallback(() => {
+    setDraggableList(musclePriority);
+  }, []);
 
   return (
     <div className="">
@@ -254,7 +288,7 @@ export function MusclePriorityList({
         </div>
       </div>
 
-      <DragDropContext onDragEnd={onDragEnd}>
+      <DragDropContext onDragEnd={onReorder}>
         <StrictModeDroppable droppableId="droppable">
           {(provided, snapshot) => (
             <ul
@@ -280,7 +314,7 @@ export function MusclePriorityList({
                           key={`${each.id}_MusclePriority`}
                           muscleGroup={each}
                           index={index}
-                          onVolumeChange={onVolumeChange}
+                          onVolumeChange={onVolumeLandmarkChange}
                           total_sessions={total_sessions}
                           onMesoProgressionUpdate={onMesoProgressionUpdate}
                           onFrequencyProgressionChange={
@@ -297,6 +331,28 @@ export function MusclePriorityList({
           )}
         </StrictModeDroppable>
       </DragDropContext>
+
+      <div>
+        <Button onClick={onResetHandler} title="Reset" />
+        <Button onClick={onSaveHandler} title="Save" />
+      </div>
     </div>
+  );
+}
+
+interface ButtonProps extends HTMLAttributes<HTMLButtonElement> {
+  onClick: () => void;
+  title: string;
+}
+
+function Button({ onClick, title, className, ...props }: ButtonProps) {
+  return (
+    <button
+      {...props}
+      className={cn(`flex items-center justify-center text-xs`, className)}
+      onClick={onClick}
+    >
+      {title}
+    </button>
   );
 }

@@ -24,6 +24,7 @@ const TrainingProgramContext = createContext<TrainingProgramType>({
   prioritized_muscle_list: [],
   handleUpdateMuscleList: () => {},
   handleUpdateBreakpoint: () => {},
+  handleUpdateBreakpoints: () => {},
   handleUpdateSplitSessions: () => {},
   handleFrequencyChange: () => {},
   handleRearrangeTrainingWeek: () => {},
@@ -86,6 +87,12 @@ function useTrainingProgram() {
     },
     []
   );
+  const handleUpdateBreakpoints = useCallback((value: [number, number]) => {
+    dispatch({
+      type: "UPDATE_VOLUME_BREAKPOINTS",
+      payload: { value: value },
+    });
+  }, []);
 
   const handleChangeFrequencyProgression = useCallback(
     (id: MusclePriorityType["id"], type: "add" | "subtract") => {
@@ -98,8 +105,6 @@ function useTrainingProgram() {
     },
     []
   );
-
-  const handleChangeVolumeBenchmark = useCallback((value: number) => {}, []);
 
   const handleUpdateSplitSessions = (type: SplitSessionsNameType) => {
     dispatch({
@@ -146,6 +151,7 @@ function useTrainingProgram() {
     prioritized_muscle_list: muscle_priority_list,
     handleUpdateMuscleList,
     handleUpdateBreakpoint,
+    handleUpdateBreakpoints,
     handleUpdateSplitSessions,
     handleFrequencyChange,
     handleRearrangeTrainingWeek,

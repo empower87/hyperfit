@@ -34,13 +34,6 @@ export const getEndOfMesocycleVolume = (
     }
   }
 
-  console.log(
-    frequencyList,
-    volFrequency,
-    setProgressionMatrix,
-    count,
-    "WHY IS THIS UNDFINED??"
-  );
   const numberOfMesocycles = 3;
   const addSets = numberOfMesocycles * frequency;
 

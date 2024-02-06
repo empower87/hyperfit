@@ -225,6 +225,10 @@ type UpdateBreakpointAction = {
   type: "UPDATE_VOLUME_BREAKPOINT";
   payload: { indicator: "mev_breakpoint" | "mrv_breakpoint"; value: number };
 };
+type UpdateBreakpointsAction = {
+  type: "UPDATE_VOLUME_BREAKPOINTS";
+  payload: { value: [number, number] };
+};
 type GetTrainingBlockAction = {
   type: "GET_TRAINING_BLOCK";
 };
@@ -242,7 +246,8 @@ type Action =
   | UpdateBreakpointAction
   | GetTrainingBlockAction
   | RearrangeTrainingWeekAction
-  | AdjustFrequencyProgression;
+  | AdjustFrequencyProgression
+  | UpdateBreakpointsAction;
 
 const INITIAL_MRV_BREAKPOINT = 4;
 const INITIAL_MEV_BREAKPOINT = 9;
@@ -485,6 +490,23 @@ export default function weeklySessionSplitReducer(
       return {
         ...state,
         training_block: training_block,
+      };
+    case "UPDATE_VOLUME_BREAKPOINTS":
+      let vol_breakpoints = action.payload.value;
+      // let mev_breakpoint = state.mev_breakpoint;
+
+      const update_priority_breakpoints = addMesoProgression(
+        state.muscle_priority_list,
+        state.split_sessions,
+        vol_breakpoints[0],
+        vol_breakpoints[1]
+      );
+
+      return {
+        ...state,
+        muscle_priority_list: update_priority_breakpoints,
+        mrv_breakpoint: vol_breakpoints[0],
+        mev_breakpoint: vol_breakpoints[1],
       };
     case "UPDATE_VOLUME_BREAKPOINT":
       let mrv_breakpoint = state.mrv_breakpoint;

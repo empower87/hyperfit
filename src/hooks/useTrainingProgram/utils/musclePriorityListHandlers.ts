@@ -160,7 +160,7 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
     volume: {
       landmark: "MV",
       frequencyProgression: [],
-      exercisesPerSessionSchema: 1,
+      exercisesPerSessionSchema: 2,
       setProgressionMatrix: [],
     },
   },
@@ -224,7 +224,7 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
 ];
 
 // NOTE: updates only on REORDERING of list or changing MEV/MRV BREAKPOINT
-const getVolumeLandmarkForMuscle = (
+export const getVolumeLandmarkForMuscle = (
   index: number,
   volume_landmark: VolumeLandmarkType,
   volume_breakpoints?: [number, number]
@@ -448,7 +448,6 @@ const getFrequencyProgression = (sessions: number, mesocycles: number) => {
     }
     frequencyProgression.unshift(frequency);
   }
-
   return frequencyProgression;
 };
 const attachMesocycleFrequencyProgression = (
@@ -561,4 +560,69 @@ export const onMuscleListReprioritize = (
     microcycles
   );
   return updated_list;
+};
+
+export const onVolumeLandmarkChangeHandler = (
+  id: MusclePriorityType["id"],
+  new_volume_landmark: VolumeLandmarkType,
+  muscle_priority_list: MusclePriorityType[],
+  volume_breakpoints: [number, number]
+) => {
+  const list = [...muscle_priority_list];
+  const index = list.findIndex((item) => item.id === id);
+  const prev_volume_landmark = list[index].volume.landmark;
+
+  const [removed] = list.splice(index, 1);
+  removed.volume.landmark = new_volume_landmark;
+  const new_volume_breakpoints = volume_breakpoints;
+  switch (new_volume_landmark) {
+    case "MRV":
+      list.splice(volume_breakpoints[0], 0, removed);
+      new_volume_breakpoints[0] = volume_breakpoints[0] + 1;
+      return { newList: list, newVolumeBreakpoints: new_volume_breakpoints };
+    case "MEV":
+      list.splice(volume_breakpoints[1], 0, removed);
+      new_volume_breakpoints[1] = volume_breakpoints[1] + 1;
+      return { newList: list, newVolumeBreakpoints: new_volume_breakpoints };
+    case "MV":
+      if (prev_volume_landmark === "MRV") {
+        new_volume_breakpoints[0] = new_volume_breakpoints[0] - 1;
+      } else {
+        new_volume_breakpoints[1] = new_volume_breakpoints[1] - 1;
+      }
+      list.push(removed);
+      return { newList: list, newVolumeBreakpoints: new_volume_breakpoints };
+    default:
+      return { newList: list, newVolumeBreakpoints: new_volume_breakpoints };
+  }
+};
+
+export const reorderListByVolumeBreakpoints = (
+  muscle_priority_list: MusclePriorityType[]
+) => {
+  const list = [...muscle_priority_list];
+  const mrv = [];
+  const mev = [];
+  const mv = [];
+
+  for (let i = 0; i < list.length; i++) {
+    if (list[i].volume.landmark === "MRV") {
+      mrv.push(list[i]);
+    } else if (list[i].volume.landmark === "MEV") {
+      mev.push(list[i]);
+    } else {
+      mv.push(list[i]);
+    }
+  }
+  const mrv_breakpoint = mrv.length;
+  const mev_breakpoint = mev.length + mrv_breakpoint;
+  const newVolumeBreakpoints: [number, number] = [
+    mrv_breakpoint,
+    mev_breakpoint,
+  ];
+  const newList = [...mrv, ...mev, ...mv];
+  return {
+    newList: newList,
+    newVolumeBreakpoints: newVolumeBreakpoints,
+  };
 };
