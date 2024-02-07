@@ -106,6 +106,7 @@ export type SplitSessionsType =
   | CUSSessionsType;
 
 export type SplitSessionsNameType = SplitSessionsType["split"];
+export type SplitSessionsSplitsType = SplitSessionsType["sessions"];
 
 export type ExerciseDetails = {
   sets: number;

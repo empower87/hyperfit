@@ -1,5 +1,6 @@
 import {
   SplitSessionsNameType,
+  SplitSessionsType,
   SplitType,
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { includes } from "~/utils/readOnlyArrayIncludes";
@@ -206,6 +207,39 @@ export const getMusclesSplit = (
       return [];
     default:
       return [];
+  }
+};
+
+export const getMusclesMaxFrequency = (
+  split_sessions: SplitSessionsType,
+  muscle: MuscleType
+): number => {
+  switch (split_sessions.split) {
+    case "OPT":
+      const opt = getOPTSplit(muscle);
+      return opt.reduce(
+        (acc, split) => acc + split_sessions.sessions[split],
+        0
+      );
+    case "PPL":
+      const ppl = getPushPullLegsSplit(muscle);
+      return split_sessions.sessions[ppl];
+    case "PPLUL":
+      const pplul = getPPLULSplit(muscle);
+      return pplul.reduce(
+        (acc, split) => acc + split_sessions.sessions[split],
+        0
+      );
+    case "UL":
+      return split_sessions.sessions[getUpperLowerSplit(muscle)];
+    case "FB":
+      return split_sessions.sessions["full"];
+    case "BRO":
+      return split_sessions.sessions[getBroSplit(muscle)];
+    case "CUS":
+      return 0;
+    default:
+      return 0;
   }
 };
 

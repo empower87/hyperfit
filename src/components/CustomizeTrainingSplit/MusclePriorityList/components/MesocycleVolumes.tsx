@@ -1,46 +1,25 @@
-import { MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
-import { getEndOfMesocycleVolume } from "../utils/getVolumeTotal";
-
 type CellProps = {
-  muscleGroup: MusclePriorityType;
-  mesocycle: number;
+  value: number;
 };
 
-function Cell({ muscleGroup, mesocycle }: CellProps) {
-  const { muscle, volume } = muscleGroup;
-  const {
-    landmark,
-    exercisesPerSessionSchema,
-    setProgressionMatrix,
-    frequencyProgression,
-  } = volume;
-
-  const mesoTotalVolume = getEndOfMesocycleVolume(
-    muscle,
-    mesocycle,
-    frequencyProgression[mesocycle - 1],
-    landmark,
-    exercisesPerSessionSchema,
-    setProgressionMatrix
-  );
-
-  return <div className=" flex w-1/3 justify-center">{mesoTotalVolume}</div>;
+function Cell({ value }: CellProps) {
+  return <div className=" flex w-1/3 justify-center">{value}</div>;
 }
 
 type MesocycleVolumesProps = {
-  muscleGroup: MusclePriorityType;
+  mesocycleVolumes: number[];
   width: string;
 };
 
 export function MesocycleVolumes({
-  muscleGroup,
+  mesocycleVolumes,
   width,
 }: MesocycleVolumesProps) {
   return (
     <div className={" flex"} style={{ width: width }}>
-      <Cell muscleGroup={muscleGroup} mesocycle={1} />
-      <Cell muscleGroup={muscleGroup} mesocycle={2} />
-      <Cell muscleGroup={muscleGroup} mesocycle={3} />
+      {mesocycleVolumes.map((each) => {
+        return <Cell value={each} />;
+      })}
     </div>
   );
 }

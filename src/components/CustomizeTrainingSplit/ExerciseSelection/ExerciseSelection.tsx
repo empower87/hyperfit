@@ -119,7 +119,7 @@ function DropdownListModal({
           return (
             <li
               className={cn(
-                `${BORDER_COLOR_M7} text-xs m-0.5 cursor-pointer border-2 text-white hover:${BG_COLOR_M5}`,
+                `${BORDER_COLOR_M7} m-0.5 cursor-pointer border-2 text-xs text-white hover:${BG_COLOR_M5}`,
                 getRankColor(each.rank),
                 {
                   [`${BG_COLOR_M5} border-white`]: each.id === selectedId,
@@ -171,7 +171,11 @@ const SelectDropdown: FC<SelectDropdownProps> = ({
   ...props
 }) => {
   return (
-    <select {...props} className={cn(` bg-inherit`, className)}>
+    <select
+      {...props}
+      className={cn(` bg-inherit`, className)}
+      defaultValue={selectedOption}
+    >
       {options.map((option, index) => {
         return (
           <option
@@ -187,6 +191,7 @@ const SelectDropdown: FC<SelectDropdownProps> = ({
     </select>
   );
 };
+
 interface ItemCellProps extends HTMLAttributes<HTMLDivElement> {
   children: ReactNode;
 }
@@ -939,7 +944,7 @@ const IncrementBtn = ({ operation, onClick }: IncrementBtnProps) => {
   return (
     <button
       className={cn(
-        `${BG_COLOR_M5} text-xs m-1 flex h-4 w-4 items-center justify-center p-1 text-white`
+        `${BG_COLOR_M5} m-1 flex h-4 w-4 items-center justify-center p-1 text-xs text-white`
       )}
       onClick={onClick}
     >
@@ -986,11 +991,11 @@ const TimeIncrementFrame = ({
 
   return (
     <div className="flex">
-      <div className="text-xs m-1 w-12 text-white">{title}</div>
+      <div className="m-1 w-12 text-xs text-white">{title}</div>
 
       <div className="flex">
         <IncrementBtn operation={"-"} onClick={() => onIncrement("-")} />
-        <div className="text-xs m-1 flex w-6 items-center justify-center text-white">
+        <div className="m-1 flex w-6 items-center justify-center text-xs text-white">
           {time}
         </div>
         <IncrementBtn operation={"+"} onClick={() => onIncrement("+")} />

@@ -1,11 +1,14 @@
 import { useCallback, useState } from "react";
 import { DropResult } from "react-beautiful-dnd";
+import { getMusclesMaxFrequency } from "~/constants/workoutSplits";
 import {
   MusclePriorityType,
   SplitSessionsType,
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { VolumeLandmarkType } from "~/hooks/useTrainingProgram/reducer/trainingProgramUtils";
 import {
+  getFrequencyProgression,
+  getSetProgressionMatrixForMuscle,
   onReorderUpdateMusclePriorityList,
   onSplitChangeUpdateMusclePriorityList,
   reorderListByVolumeBreakpoints,
@@ -25,6 +28,50 @@ export default function useMusclePriority(
     ...muscle_priority_list,
   ]);
 
+  const onFrequencyProgressionUpdate = (
+    muscle: MusclePriorityType,
+    operator: "add" | "subtract"
+  ) => {
+    let total = getMusclesMaxFrequency(split_sessions, muscle.muscle);
+    let current =
+      muscle.volume.frequencyProgression[
+        muscle.volume.frequencyProgression.length - 1
+      ];
+
+    if (operator === "add") {
+      if (current + 1 <= total) {
+        current++;
+      } else {
+        console.log(current, total, "error: can not add more frequency");
+      }
+    } else {
+      if (current - 1 >= 0) {
+        current--;
+      } else {
+        console.log(current, total, "error: can not subtract more frequency");
+      }
+    }
+    const new_frequency = getFrequencyProgression(current, mesocycles);
+    const matrix = getSetProgressionMatrixForMuscle(
+      new_frequency,
+      muscle.volume.exercisesPerSessionSchema,
+      microcycles
+    );
+    const updatedDraggableExercises = draggableList.map((item) => {
+      if (item.id === muscle.id) {
+        return {
+          ...item,
+          volume: {
+            ...item.volume,
+            frequencyProgression: new_frequency,
+            setProgressionMatrix: matrix,
+          },
+        };
+      } else return item;
+    });
+    setDraggableList(updatedDraggableExercises);
+  };
+
   const onDragEnd = useCallback(
     (result: DropResult) => {
       if (!result.destination) return;
@@ -35,9 +82,10 @@ export default function useMusclePriority(
         items,
         volumeBreakpoints
       );
+
       setDraggableList(reordered_items);
     },
-    [draggableList]
+    [draggableList, volumeBreakpoints]
   );
 
   const onFrequencyProgressionChange = useCallback(
@@ -96,5 +144,6 @@ export default function useMusclePriority(
     onReorder: onDragEnd,
     onVolumeLandmarkChange,
     onFrequencyProgressionChange,
+    onFrequencyProgressionUpdate,
   };
 }

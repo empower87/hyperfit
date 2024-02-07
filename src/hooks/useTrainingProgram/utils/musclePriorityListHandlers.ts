@@ -358,7 +358,7 @@ const getSetProgressionMatrixForMesocycle = (
   }
   return mesocycle_sets;
 };
-const getSetProgressionMatrixForMuscle = (
+export const getSetProgressionMatrixForMuscle = (
   frequencyProgression: number[],
   exercisesPerSessionSchema: number,
   microcycles: number
@@ -436,7 +436,10 @@ const getMaxFrequencyForMEVMV = (
   else if (volume > 0 && volume <= 4) return 1;
   else return 0;
 };
-const getFrequencyProgression = (sessions: number, mesocycles: number) => {
+export const getFrequencyProgression = (
+  sessions: number,
+  mesocycles: number
+) => {
   let frequencyProgression: number[] = [];
 
   for (let i = 0; i < mesocycles; i++) {

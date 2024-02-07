@@ -4,12 +4,9 @@ import { getMuscleData } from "~/utils/getMuscleData";
 export const getEndOfMesocycleVolume = (
   group: string,
   mesocycle: number,
-  frequency: number,
   volume_landmark: VolumeLandmarkType,
-  exercisesPerSessionSchema: number,
   setProgressionMatrix: number[][][][]
 ) => {
-  if (frequency === 0) return 0;
   const muscleData = getMuscleData(group);
   const key =
     volume_landmark === "MRV"
@@ -33,11 +30,6 @@ export const getEndOfMesocycleVolume = (
       count = count + frequencyList[i][j];
     }
   }
-
-  const numberOfMesocycles = 3;
-  const addSets = numberOfMesocycles * frequency;
-
-  const totalVolume = addSets + count;
 
   if (key === "mv_progression_matrix") return count;
   else if (key === "mev_progression_matrix") return muscleData.MEV;

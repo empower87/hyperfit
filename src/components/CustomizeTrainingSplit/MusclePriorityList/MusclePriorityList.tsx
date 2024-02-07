@@ -1,4 +1,10 @@
-import { HTMLAttributes, useCallback, useState } from "react";
+import {
+  HTMLAttributes,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import { DragDropContext, Draggable } from "react-beautiful-dnd";
 import { BG_COLOR_M5, BG_COLOR_M6, BORDER_COLOR_M8 } from "~/constants/themes";
 import {
@@ -13,6 +19,7 @@ import { getVolumeSets } from "~/utils/musclePriorityHandlers";
 import MesocycleFrequency from "./components/MesocycleFrequency";
 import { MesocycleVolumes } from "./components/MesocycleVolumes";
 import useMusclePriority from "./hooks/useMusclePriority";
+import { getEndOfMesocycleVolume } from "./utils/getVolumeTotal";
 
 type SelectProps = {
   volume_landmark: VolumeLandmarkType;
@@ -30,7 +37,6 @@ function Select({ volume_landmark, options, onSelect, bgColor }: SelectProps) {
     <select
       className={bgColor + " text-xxs font-bold text-white"}
       onChange={onSelectHandler}
-      defaultValue={volume_landmark}
     >
       {options.map((each) => {
         return (
@@ -40,6 +46,7 @@ function Select({ volume_landmark, options, onSelect, bgColor }: SelectProps) {
               volume_landmark === each ? BG_COLOR_M5 : BG_COLOR_M6 + " "
             }
             value={each}
+            selected={volume_landmark === each}
           >
             {each}
           </option>
@@ -75,6 +82,10 @@ type ItemProps = {
     id: MusclePriorityType["id"],
     type: "add" | "subtract"
   ) => void;
+  onFrequencyProgressionUpdate: (
+    muscle: MusclePriorityType,
+    operator: "add" | "subtract"
+  ) => void;
 };
 
 function Item({
@@ -84,15 +95,13 @@ function Item({
   total_sessions,
   onMesoProgressionUpdate,
   onFrequencyProgressionChange,
+  onFrequencyProgressionUpdate,
 }: ItemProps) {
   const { volume, muscle } = muscleGroup;
-  const { frequencyProgression, landmark } = volume;
-  const [freqProgression, setFreqProgression] = useState<number[]>([
-    ...frequencyProgression,
-  ]);
-  const [save, setSave] = useState<boolean>(false);
-  const [operation, setOperation] = useState<"add" | "subtract" | null>(null);
-
+  const { frequencyProgression, setProgressionMatrix, landmark } = volume;
+  const [totalVolumePerMesocycle, setTotalVolumePerMesocycle] = useState<
+    number[]
+  >([]);
   const [cellWidths, setCellWidths] = useState<string[]>([...CELL_WIDTHS]);
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
@@ -102,6 +111,22 @@ function Item({
     landmark
   );
   const bgColor = VOLUME_BG_COLORS[landmark];
+
+  useEffect(() => {
+    const { volume, muscle } = muscleGroup;
+    const { frequencyProgression, setProgressionMatrix, landmark } = volume;
+    let totalVolume: number[] = [];
+    for (let i = 0; i < frequencyProgression.length; i++) {
+      const mesoTotalVolume = getEndOfMesocycleVolume(
+        muscle,
+        i + 1,
+        landmark,
+        setProgressionMatrix
+      );
+      totalVolume.push(mesoTotalVolume);
+    }
+    setTotalVolumePerMesocycle(totalVolume);
+  }, [muscleGroup]);
 
   const onSelectHandler = useCallback(
     (value: string) => {
@@ -128,7 +153,8 @@ function Item({
   };
 
   const onFrequencyChangeClickHandler = (type: "add" | "subtract") => {
-    onFrequencyProgressionChange(muscleGroup.id, type);
+    // onFrequencyProgressionChange(muscleGroup.id, type);
+    onFrequencyProgressionUpdate(muscleGroup, type);
   };
 
   return (
@@ -151,12 +177,12 @@ function Item({
         <div className=" ">{volumeSets}</div>
       </div>
       <div style={{ width: cellWidths[3] }} className="flex justify-evenly">
-        <div
-          className="curser:pointer font-bold"
+        <Button
+          className={`h-4 w-4 ${BG_COLOR_M6} font-bold text-white hover:${BG_COLOR_M5}`}
           onClick={() => onFrequencyChangeClickHandler("subtract")}
         >
           -
-        </div>
+        </Button>
 
         <MesocycleFrequency
           mesoProgression={frequencyProgression}
@@ -167,14 +193,17 @@ function Item({
           onMesoProgressionUpdate={onSaveMesoProgression}
         />
 
-        <div
-          className="curser:pointer font-bold"
+        <Button
+          className={`h-4 w-4 ${BG_COLOR_M6} font-bold text-white hover:${BG_COLOR_M5}`}
           onClick={() => onFrequencyChangeClickHandler("add")}
         >
           +
-        </div>
+        </Button>
       </div>
-      <MesocycleVolumes muscleGroup={muscleGroup} width={cellWidths[4]} />
+      <MesocycleVolumes
+        mesocycleVolumes={totalVolumePerMesocycle}
+        width={cellWidths[4]}
+      />
     </li>
   );
 }
@@ -218,6 +247,7 @@ export function MusclePriorityList({
     onReorder,
     onVolumeLandmarkChange,
     onFrequencyProgressionChange,
+    onFrequencyProgressionUpdate,
   } = useMusclePriority(
     musclePriority,
     volumeLandmarkBreakpoints,
@@ -320,6 +350,9 @@ export function MusclePriorityList({
                           onFrequencyProgressionChange={
                             onFrequencyProgressionChange
                           }
+                          onFrequencyProgressionUpdate={
+                            onFrequencyProgressionUpdate
+                          }
                         />
                       </div>
                     )}
@@ -333,8 +366,8 @@ export function MusclePriorityList({
       </DragDropContext>
 
       <div>
-        <Button onClick={onResetHandler} title="Reset" />
-        <Button onClick={onSaveHandler} title="Save" />
+        <Button onClick={onResetHandler}>Reset</Button>
+        <Button onClick={onSaveHandler}>Save</Button>
       </div>
     </div>
   );
@@ -342,17 +375,17 @@ export function MusclePriorityList({
 
 interface ButtonProps extends HTMLAttributes<HTMLButtonElement> {
   onClick: () => void;
-  title: string;
+  children: ReactNode;
 }
 
-function Button({ onClick, title, className, ...props }: ButtonProps) {
+function Button({ onClick, children, className, ...props }: ButtonProps) {
   return (
     <button
       {...props}
       className={cn(`flex items-center justify-center text-xs`, className)}
       onClick={onClick}
     >
-      {title}
+      {children}
     </button>
   );
 }
