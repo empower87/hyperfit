@@ -78,10 +78,6 @@ type ItemProps = {
   // onVolumeChange: (index: number, newVolume: VolumeLandmarkType) => void;
   total_sessions: [number, number];
   onMesoProgressionUpdate: (id: string, newMesoProgression: number[]) => void;
-  onFrequencyProgressionChange: (
-    id: MusclePriorityType["id"],
-    type: "add" | "subtract"
-  ) => void;
   onFrequencyProgressionUpdate: (
     muscle: MusclePriorityType,
     operator: "add" | "subtract"
@@ -94,7 +90,6 @@ function Item({
   onVolumeChange,
   total_sessions,
   onMesoProgressionUpdate,
-  onFrequencyProgressionChange,
   onFrequencyProgressionUpdate,
 }: ItemProps) {
   const { volume, muscle } = muscleGroup;
@@ -113,9 +108,7 @@ function Item({
   const bgColor = VOLUME_BG_COLORS[landmark];
 
   useEffect(() => {
-    const { volume, muscle } = muscleGroup;
-    const { frequencyProgression, setProgressionMatrix, landmark } = volume;
-    let totalVolume: number[] = [];
+    const totalVolume: number[] = [];
     for (let i = 0; i < frequencyProgression.length; i++) {
       const mesoTotalVolume = getEndOfMesocycleVolume(
         muscle,
@@ -126,7 +119,7 @@ function Item({
       totalVolume.push(mesoTotalVolume);
     }
     setTotalVolumePerMesocycle(totalVolume);
-  }, [muscleGroup]);
+  }, [frequencyProgression]);
 
   const onSelectHandler = useCallback(
     (value: string) => {
@@ -217,11 +210,7 @@ type MusclePriorityListProps = {
   onVolumeChange: (index: number, newVolume: VolumeLandmarkType) => void;
   total_sessions: [number, number];
   onMesoProgressionUpdate: (id: string, newMesoProgression: number[]) => void;
-  onPriorityChange: (items: MusclePriorityType[]) => void;
-  // onFrequencyProgressionChange: (
-  //   id: MusclePriorityType["id"],
-  //   type: "add" | "subtract"
-  // ) => void;
+
   onPrioritySave: (
     new_list: MusclePriorityType[],
     breakpoints: [number, number]
@@ -237,7 +226,6 @@ export function MusclePriorityList({
   onVolumeChange,
   total_sessions,
   onMesoProgressionUpdate,
-  onPriorityChange,
   onPrioritySave,
 }: MusclePriorityListProps) {
   const {
@@ -246,7 +234,6 @@ export function MusclePriorityList({
     setDraggableList,
     onReorder,
     onVolumeLandmarkChange,
-    onFrequencyProgressionChange,
     onFrequencyProgressionUpdate,
   } = useMusclePriority(
     musclePriority,
@@ -317,7 +304,6 @@ export function MusclePriorityList({
           </div>
         </div>
       </div>
-
       <DragDropContext onDragEnd={onReorder}>
         <StrictModeDroppable droppableId="droppable">
           {(provided, snapshot) => (
@@ -347,9 +333,6 @@ export function MusclePriorityList({
                           onVolumeChange={onVolumeLandmarkChange}
                           total_sessions={total_sessions}
                           onMesoProgressionUpdate={onMesoProgressionUpdate}
-                          onFrequencyProgressionChange={
-                            onFrequencyProgressionChange
-                          }
                           onFrequencyProgressionUpdate={
                             onFrequencyProgressionUpdate
                           }
@@ -365,9 +348,19 @@ export function MusclePriorityList({
         </StrictModeDroppable>
       </DragDropContext>
 
-      <div>
-        <Button onClick={onResetHandler}>Reset</Button>
-        <Button onClick={onSaveHandler}>Save</Button>
+      <div className="my-1 flex">
+        <Button
+          className={`${BG_COLOR_M5} mr-1  text-slate-700`}
+          onClick={onResetHandler}
+        >
+          Reset
+        </Button>
+        <Button
+          className={`bg-rose-400 font-bold text-white`}
+          onClick={onSaveHandler}
+        >
+          Save
+        </Button>
       </div>
     </div>
   );
@@ -382,7 +375,7 @@ function Button({ onClick, children, className, ...props }: ButtonProps) {
   return (
     <button
       {...props}
-      className={cn(`flex items-center justify-center text-xs`, className)}
+      className={cn(`flex items-center justify-center p-1 text-xs`, className)}
       onClick={onClick}
     >
       {children}

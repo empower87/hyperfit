@@ -269,11 +269,12 @@ const getRankWeightForMuscle = (index: number, muscle: MuscleType) => {
   }
   return muscle_rank;
 };
+
 export const onReorderUpdateMusclePriorityList = (
   muscle_priority_list: MusclePriorityType[],
   volume_breakpoints?: [number, number]
 ) => {
-  let updated_list = [...muscle_priority_list];
+  let updated_list = structuredClone(muscle_priority_list);
   for (let i = 0; i < updated_list.length; i++) {
     const muscle = updated_list[i].muscle;
     const current_volume_landmark = muscle_priority_list[i].volume.landmark;

@@ -75,17 +75,22 @@ export default function useMusclePriority(
   const onDragEnd = useCallback(
     (result: DropResult) => {
       if (!result.destination) return;
-      const items = [...draggableList];
+      const items = structuredClone(draggableList);
       const [removed] = items.splice(result.source.index, 1);
       items.splice(result.destination.index, 0, removed);
       const reordered_items = onReorderUpdateMusclePriorityList(
         items,
         volumeBreakpoints
       );
-
-      setDraggableList(reordered_items);
+      const updated_list = onSplitChangeUpdateMusclePriorityList(
+        reordered_items,
+        split_sessions,
+        mesocycles,
+        microcycles
+      );
+      setDraggableList(updated_list);
     },
-    [draggableList, volumeBreakpoints]
+    [draggableList, volumeBreakpoints, split_sessions, mesocycles, microcycles]
   );
 
   const onFrequencyProgressionChange = useCallback(
@@ -104,7 +109,7 @@ export default function useMusclePriority(
 
   const onVolumeLandmarkChange = useCallback(
     (id: MusclePriorityType["id"], volume_landmark: VolumeLandmarkType) => {
-      const list = [...draggableList];
+      const list = structuredClone(draggableList);
       const index = list.findIndex((item) => item.id === id);
       list[index].volume.landmark = volume_landmark;
       const { newList, newVolumeBreakpoints } =

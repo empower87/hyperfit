@@ -181,7 +181,6 @@ export default function PageContent() {
               onVolumeChange={onVolumeChange}
               total_sessions={frequency}
               onMesoProgressionUpdate={updateMesoProgression}
-              onPriorityChange={handleUpdateMuscleList}
               onPrioritySave={onPrioritySaveHandler}
               // onFrequencyProgressionChange={handleChangeFrequencyProgression}
             />
