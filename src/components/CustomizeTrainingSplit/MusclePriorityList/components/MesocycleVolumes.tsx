@@ -17,8 +17,8 @@ export function MesocycleVolumes({
 }: MesocycleVolumesProps) {
   return (
     <div className={" flex"} style={{ width: width }}>
-      {mesocycleVolumes.map((each) => {
-        return <Cell value={each} />;
+      {mesocycleVolumes.map((each, index) => {
+        return <Cell key={`${each}_${index}_${width}_lol`} value={each} />;
       })}
     </div>
   );

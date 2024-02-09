@@ -1,4 +1,7 @@
+import { useEffect, useState } from "react";
 import { BG_COLOR_M5, BG_COLOR_M6 } from "~/constants/themes";
+import { MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
+import { Button, Cell } from "../MusclePriorityList";
 import useEditMesocycleFrequency from "../hooks/useEditMesocycleFrequency";
 
 type CellWithCounterProps = {
@@ -103,62 +106,239 @@ function EditMesocycleFrequency({
   );
 }
 
-type DefaultMesocycleFrequencyProps = {
-  mesoProgression: number[];
-  onEdit: (isEditing: true) => void;
-};
-
-function DefaultMesocycleFrequency({
-  mesoProgression,
-  onEdit,
-}: DefaultMesocycleFrequencyProps) {
-  return (
-    <div className=" flex w-full">
-      <div className=" flex w-1/3 justify-center">{mesoProgression[0]}</div>
-      <div className=" flex w-1/3 justify-center">{mesoProgression[1]}</div>
-      <div className=" flex w-1/3 justify-center">{mesoProgression[2]}</div>
-      <button className="  bg-blue-600 pl-1 pr-1" onClick={() => onEdit(true)}>
-        edit
-      </button>
-    </div>
-  );
-}
-
 type MesocycleFrequencyProps = {
+  muscle: MusclePriorityType;
+  maxFrequency: number;
   mesoProgression: number[];
-  total_sessions: [number, number];
-  isEditing: boolean;
-  onEditHandler: (isEditing: boolean) => void;
-  width: string;
-  onMesoProgressionUpdate: (newMesoProgression: number[]) => void;
+  selectedProgressionIndex: number | null;
+  onFrequencyChangeClickHandler: (
+    muscle: MusclePriorityType,
+    operator: "add" | "subtract"
+  ) => void;
 };
 
+const canPerformOperation = (
+  selectedIndex: number | null,
+  frequencyProgression: number[],
+  maxFrequency: number
+) => {
+  let first = frequencyProgression[0];
+  let last = frequencyProgression[frequencyProgression.length - 1];
+
+  const operations = {
+    add: false,
+    sub: false,
+  };
+  if (selectedIndex === null) {
+    if (first > 0) {
+      operations.sub = true;
+    } else {
+      operations.sub = false;
+    }
+    if (last < maxFrequency) {
+      operations.add = true;
+    } else {
+      operations.add = false;
+    }
+  } else {
+    first = frequencyProgression[selectedIndex - 1];
+    last = frequencyProgression[selectedIndex + 1];
+    if (frequencyProgression[selectedIndex] - 1 >= 0) {
+      operations.sub = true;
+    }
+    if (frequencyProgression[selectedIndex] + 1 <= last) {
+      operations.add = true;
+    }
+  }
+  return operations;
+};
+
+type SelectedMesocycle = {
+  index: number | null;
+  add: boolean;
+  subtract: boolean;
+};
+
+const SELECTED_MESOCYCLE: SelectedMesocycle = {
+  index: null,
+  add: true,
+  subtract: true,
+};
 export default function MesocycleFrequency({
+  muscle,
+  maxFrequency,
   mesoProgression,
-  total_sessions,
-  isEditing,
-  onEditHandler,
-  width,
-  onMesoProgressionUpdate,
+  selectedProgressionIndex,
+  onFrequencyChangeClickHandler,
 }: MesocycleFrequencyProps) {
+  const [frequencyProgression, setFrequencyProgression] = useState<number[]>([
+    ...mesoProgression,
+  ]);
+  const [selectedMesocycle, setSelectedMesocycle] = useState<SelectedMesocycle>(
+    { ...SELECTED_MESOCYCLE }
+  );
+
+  useEffect(() => {
+    setFrequencyProgression([...mesoProgression]);
+  }, [mesoProgression]);
+
+  useEffect(() => {
+    const { add, sub } = canPerformOperation(
+      selectedMesocycle.index,
+      frequencyProgression,
+      maxFrequency
+    );
+
+    // console.log(add, sub, "What is happening here");
+
+    setSelectedMesocycle({
+      index: selectedMesocycle.index,
+      add: add,
+      subtract: sub,
+    });
+  }, [frequencyProgression, selectedMesocycle.index, maxFrequency]);
+
+  const onFrequencyChange = (operator: "add" | "subtract") => {
+    const items = [...frequencyProgression];
+    if (selectedMesocycle.index === null) {
+      // onFrequencyChangeClickHandler(muscle, operator)
+      if (operator === "add" && selectedMesocycle.add) {
+        items[items.length - 1] = items[items.length - 1] + 1;
+      } else if (operator === "subtract" && selectedMesocycle.subtract) {
+        items[0] = items[0] - 1;
+      }
+    } else {
+      const prevIndex = selectedMesocycle.index - 1;
+      const nextIndex = selectedMesocycle.index + 1;
+      if (operator === "add" && selectedMesocycle.add) {
+        items[selectedMesocycle.index] = items[selectedMesocycle.index] + 1;
+        const canAdd = canPerformOperation(
+          nextIndex,
+          frequencyProgression,
+          maxFrequency
+        );
+        setSelectedMesocycle({
+          ...selectedMesocycle,
+          add: canAdd.add,
+          subtract: canAdd.sub,
+        });
+      } else if (operator === "subtract" && selectedMesocycle.subtract) {
+        items[selectedMesocycle.index] = items[selectedMesocycle.index] - 1;
+        const canSub = canPerformOperation(
+          prevIndex,
+          frequencyProgression,
+          maxFrequency
+        );
+        setSelectedMesocycle({
+          ...selectedMesocycle,
+          add: canSub.add,
+          subtract: canSub.sub,
+        });
+      }
+    }
+    setFrequencyProgression(items);
+  };
+
+  const onFrequencyIndexClick = (index: number) => {
+    if (selectedMesocycle.index === index) {
+      const canPerform = canPerformOperation(
+        null,
+        frequencyProgression,
+        maxFrequency
+      );
+      setSelectedMesocycle({
+        index: null,
+        add: canPerform.add,
+        subtract: canPerform.sub,
+      });
+    } else {
+      const canPerform = canPerformOperation(
+        index,
+        frequencyProgression,
+        maxFrequency
+      );
+      setSelectedMesocycle({
+        index: index,
+        add: canPerform.add,
+        subtract: canPerform.sub,
+      });
+    }
+  };
+
   return (
-    <div className={" flex w-full justify-center"}>
-      {isEditing ? (
-        <EditMesocycleFrequency
-          mesoProgression={mesoProgression}
-          total_sessions={total_sessions}
-          onEdit={onEditHandler}
-          onMesoProgressionUpdate={onMesoProgressionUpdate}
-        />
-      ) : (
-        <DefaultMesocycleFrequency
-          mesoProgression={mesoProgression}
-          onEdit={onEditHandler}
-        />
-      )}
-    </div>
+    <>
+      <Button
+        className={`h-4 w-4 ${BG_COLOR_M6} font-bold text-white hover:${BG_COLOR_M5}`}
+        onClick={() => onFrequencyChange("subtract")}
+      >
+        -
+      </Button>
+
+      <div className="flex">
+        {frequencyProgression.map((meso, index) => {
+          return (
+            <Cell
+              key={`${meso}_${index}_frequency_meso_${muscle}`}
+              className={`h-6 w-6 items-center justify-center hover:bg-slate-400 ${
+                selectedMesocycle.index !== null &&
+                selectedMesocycle.index === index
+                  ? "bg-slate-400"
+                  : "bg-inherit"
+              }`}
+              width={""}
+              onClick={() => onFrequencyIndexClick(index)}
+            >
+              {meso}
+            </Cell>
+          );
+        })}
+      </div>
+
+      <Button
+        className={`h-4 w-4 ${BG_COLOR_M6} font-bold text-white hover:${BG_COLOR_M5}`}
+        onClick={() => onFrequencyChange("add")}
+      >
+        +
+      </Button>
+    </>
   );
 }
+
+// type MesocycleFrequencyProps = {
+//   mesoProgression: number[];
+//   total_sessions: [number, number];
+//   isEditing: boolean;
+//   onEditHandler: (isEditing: boolean) => void;
+//   width: string;
+//   onMesoProgressionUpdate: (newMesoProgression: number[]) => void;
+// };
+
+// export default function MesocycleFrequency({
+//   mesoProgression,
+//   total_sessions,
+//   isEditing,
+//   onEditHandler,
+//   width,
+//   onMesoProgressionUpdate,
+// }: MesocycleFrequencyProps) {
+//   return (
+//     <div className={" flex w-full justify-center"}>
+//       {isEditing ? (
+//         <EditMesocycleFrequency
+//           mesoProgression={mesoProgression}
+//           total_sessions={total_sessions}
+//           onEdit={onEditHandler}
+//           onMesoProgressionUpdate={onMesoProgressionUpdate}
+//         />
+//       ) : (
+//         <DefaultMesocycleFrequency
+//           mesoProgression={mesoProgression}
+//           onEdit={onEditHandler}
+//         />
+//       )}
+//     </div>
+//   );
+// }
 // export default function MesocycleFrequency({
 //   mesoProgression,
 //   total_sessions,

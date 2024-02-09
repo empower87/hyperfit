@@ -16,6 +16,7 @@ import { VolumeLandmarkType } from "~/hooks/useTrainingProgram/reducer/trainingP
 import { cn } from "~/lib/clsx";
 import StrictModeDroppable from "~/lib/react-beautiful-dnd/StrictModeDroppable";
 import { getVolumeSets } from "~/utils/musclePriorityHandlers";
+import { EditMuscleModal } from "./components/EditMuscleModal";
 import MesocycleFrequency from "./components/MesocycleFrequency";
 import { MesocycleVolumes } from "./components/MesocycleVolumes";
 import useMusclePriority from "./hooks/useMusclePriority";
@@ -65,7 +66,7 @@ function Select({ volume_landmark, options, onSelect, bgColor }: SelectProps) {
 //   " w-2/12",
 // ];
 
-const CELL_WIDTHS = ["5%", "20%", "20%", "30%", "25%"];
+const CELL_WIDTHS = ["5%", "15%", "7%", "13%", "30%", "30%"];
 const CELL_WIDTHS_ON_EDIT = ["5%", "15%", "20%", "40%", "20%"];
 
 type ItemProps = {
@@ -93,12 +94,20 @@ function Item({
   onFrequencyProgressionUpdate,
 }: ItemProps) {
   const { volume, muscle } = muscleGroup;
-  const { frequencyProgression, setProgressionMatrix, landmark } = volume;
+  const { setProgressionMatrix, landmark, exercisesPerSessionSchema } = volume;
   const [totalVolumePerMesocycle, setTotalVolumePerMesocycle] = useState<
     number[]
   >([]);
   const [cellWidths, setCellWidths] = useState<string[]>([...CELL_WIDTHS]);
   const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [frequencyProgression, setFrequencyProgression] = useState<number[]>(
+    []
+  );
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+
+  useEffect(() => {
+    setFrequencyProgression(muscleGroup.volume.frequencyProgression);
+  }, [muscleGroup]);
 
   const volumeSets = getVolumeSets(
     muscle,
@@ -141,63 +150,91 @@ function Item({
     changeCellWidthsHandler(isEditing);
   };
 
-  const onSaveMesoProgression = (newMesoProgression: number[]) => {
-    onMesoProgressionUpdate(muscleGroup.id, newMesoProgression);
-  };
-
   const onFrequencyChangeClickHandler = (type: "add" | "subtract") => {
-    // onFrequencyProgressionChange(muscleGroup.id, type);
     onFrequencyProgressionUpdate(muscleGroup, type);
   };
 
+  const onFrequencyIndexClick = useCallback(
+    (index: number) => {
+      if (selectedIndex == index) {
+        setSelectedIndex(null);
+      } else {
+        setSelectedIndex(index);
+      }
+    },
+    [selectedIndex]
+  );
+
+  const onResetFrequency = () => {};
+
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+
+  const onCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
   return (
-    <li className={bgColor + " mb-0.5 flex w-full text-xs text-white"}>
-      <div className={" indent-1"} style={{ width: cellWidths[0] }}>
-        {index + 1}
-      </div>
+    <>
+      <li className={bgColor + " mb-0.5 flex w-full text-xs text-white"}>
+        {isModalOpen ? (
+          <EditMuscleModal onClose={onCloseModal} isOpen={isModalOpen}>
+            <EditMuscleModal.Card
+              muscleGroup={muscleGroup}
+              totalVolumePerMesocycle={totalVolumePerMesocycle}
+            />
+          </EditMuscleModal>
+        ) : null}
+        <div className={" indent-1"} style={{ width: cellWidths[0] }}>
+          {index + 1}
+        </div>
 
-      <div className={" indent-1"} style={{ width: cellWidths[1] }}>
-        {muscle}
-      </div>
+        <div className={" indent-1"} style={{ width: cellWidths[1] }}>
+          {muscle}
+        </div>
 
-      <div className={" flex justify-evenly"} style={{ width: cellWidths[2] }}>
-        <Select
-          volume_landmark={landmark}
-          options={["MRV", "MEV", "MV"]}
-          onSelect={onSelectHandler}
-          bgColor={bgColor}
-        />
-        <div className=" ">{volumeSets}</div>
-      </div>
-      <div style={{ width: cellWidths[3] }} className="flex justify-evenly">
-        <Button
-          className={`h-4 w-4 ${BG_COLOR_M6} font-bold text-white hover:${BG_COLOR_M5}`}
-          onClick={() => onFrequencyChangeClickHandler("subtract")}
+        <div className={"flex justify-center"} style={{ width: cellWidths[2] }}>
+          {exercisesPerSessionSchema}
+        </div>
+
+        <div
+          className={" flex justify-evenly"}
+          style={{ width: cellWidths[3] }}
         >
-          -
-        </Button>
-
-        <MesocycleFrequency
-          mesoProgression={frequencyProgression}
-          total_sessions={total_sessions}
-          isEditing={isEditing}
-          onEditHandler={onEditHandler}
-          width={cellWidths[3]}
-          onMesoProgressionUpdate={onSaveMesoProgression}
-        />
-
-        <Button
-          className={`h-4 w-4 ${BG_COLOR_M6} font-bold text-white hover:${BG_COLOR_M5}`}
-          onClick={() => onFrequencyChangeClickHandler("add")}
+          <Select
+            volume_landmark={landmark}
+            options={["MRV", "MEV", "MV"]}
+            onSelect={onSelectHandler}
+            bgColor={bgColor}
+          />
+          <div className=" ">{volumeSets}</div>
+        </div>
+        <div
+          style={{ width: cellWidths[4] }}
+          className="flex items-center justify-center"
         >
-          +
+          <MesocycleFrequency
+            muscle={muscleGroup}
+            maxFrequency={total_sessions[0] + total_sessions[1]}
+            mesoProgression={frequencyProgression}
+            selectedProgressionIndex={selectedIndex}
+            onFrequencyChangeClickHandler={onFrequencyProgressionUpdate}
+          />
+        </div>
+
+        <MesocycleVolumes
+          mesocycleVolumes={totalVolumePerMesocycle}
+          width={cellWidths[5]}
+        />
+      </li>
+      <div className="flex">
+        <Button
+          className="text-xxs text-white"
+          onClick={() => setIsModalOpen(true)}
+        >
+          Edit
         </Button>
       </div>
-      <MesocycleVolumes
-        mesocycleVolumes={totalVolumePerMesocycle}
-        width={cellWidths[4]}
-      />
-    </li>
+    </>
   );
 }
 
@@ -216,6 +253,76 @@ type MusclePriorityListProps = {
     breakpoints: [number, number]
   ) => void;
 };
+
+interface CellProps extends HTMLAttributes<HTMLDivElement> {
+  children: ReactNode;
+  width: string;
+}
+export function Cell({ children, width, className, ...props }: CellProps) {
+  return (
+    <div
+      {...props}
+      className={cn(
+        `${BG_COLOR_M6} mr-0.5 flex indent-1 text-white`,
+        className
+      )}
+      style={{ width: width }}
+    >
+      {children}
+    </div>
+  );
+}
+function RowHeader({
+  cellWidths,
+  mesocycles,
+}: {
+  cellWidths: string[];
+  mesocycles: number;
+}) {
+  const mesocycleArray = Array.from(Array(mesocycles).keys());
+  return (
+    <div className={" mb-1 flex w-full text-xxs text-white"}>
+      <Cell width={cellWidths[0]}>Rank</Cell>
+      <Cell width={cellWidths[1]}>Group</Cell>
+      <Cell className="text-center leading-3" width={cellWidths[2]}>
+        Exercises Per Session
+      </Cell>
+      <Cell width={cellWidths[3]}>Volume Landmark</Cell>
+      <Cell className="flex-col items-center" width={cellWidths[4]}>
+        Frequency Per Mesocycle
+        <div className={`${BORDER_COLOR_M8} flex w-full border-t`}>
+          {mesocycleArray.map((meso) => {
+            return (
+              <div
+                key={`${meso + 1}_mesocycleHeaderKeys_freq`}
+                className=" flex w-1/3 justify-center"
+              >
+                {meso + 1}
+              </div>
+            );
+          })}
+        </div>
+      </Cell>
+      <Cell className="flex-col items-center" width={cellWidths[5]}>
+        Total Volume Per Mesocycle
+        <div className={`${BORDER_COLOR_M8} flex w-full border-t`}>
+          {mesocycleArray.map((meso) => {
+            return (
+              <div
+                key={`${meso + 1}_mesocycleHeaderKeys_vol`}
+                className=" flex w-1/3 justify-center"
+              >
+                {meso + 1}
+              </div>
+            );
+          })}
+        </div>
+      </Cell>
+    </div>
+  );
+}
+
+MusclePriorityList.RowHeader = RowHeader;
 
 export function MusclePriorityList({
   musclePriority,
@@ -254,56 +361,10 @@ export function MusclePriorityList({
 
   return (
     <div className="">
-      <div className={BG_COLOR_M6 + " mb-1 flex w-full text-xxs text-white"}>
-        <div
-          className={BORDER_COLOR_M8 + " border-r-2 indent-1"}
-          style={{ width: cellWidths[0] }}
-        >
-          Rank
-        </div>
-
-        <div
-          className={BORDER_COLOR_M8 + " border-r-2 indent-1"}
-          style={{ width: cellWidths[1] }}
-        >
-          Group
-        </div>
-
-        <div
-          className={BORDER_COLOR_M8 + " flex border-r-2 text-center"}
-          style={{ width: cellWidths[2] }}
-        >
-          Volume Benchmark
-        </div>
-
-        <div
-          className={BORDER_COLOR_M8 + " flex flex-col border-r-2"}
-          style={{ width: cellWidths[3] }}
-        >
-          <div className=" mb-0.5 flex w-full justify-center">
-            Mesocycle Frequency
-          </div>
-          <div className=" flex w-full">
-            <div className=" flex w-1/3 justify-center">1</div>
-            <div className=" flex w-1/3 justify-center">2</div>
-            <div className=" flex w-1/3 justify-center">3</div>
-          </div>
-        </div>
-
-        <div
-          className={BORDER_COLOR_M8 + " flex flex-col border-r-2"}
-          style={{ width: cellWidths[4] }}
-        >
-          <div className=" mb-0.5 flex w-full justify-center">
-            Mesocycle Total Vol.
-          </div>
-          <div className=" flex w-full">
-            <div className=" flex w-1/3 justify-center">1</div>
-            <div className=" flex w-1/3 justify-center">2</div>
-            <div className=" flex w-1/3 justify-center">3</div>
-          </div>
-        </div>
-      </div>
+      <MusclePriorityList.RowHeader
+        cellWidths={cellWidths}
+        mesocycles={mesocycles}
+      />
       <DragDropContext onDragEnd={onReorder}>
         <StrictModeDroppable droppableId="droppable">
           {(provided, snapshot) => (
@@ -371,7 +432,12 @@ interface ButtonProps extends HTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
 }
 
-function Button({ onClick, children, className, ...props }: ButtonProps) {
+export function Button({
+  onClick,
+  children,
+  className,
+  ...props
+}: ButtonProps) {
   return (
     <button
       {...props}
