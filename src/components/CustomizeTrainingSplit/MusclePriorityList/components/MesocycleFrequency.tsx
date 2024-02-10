@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { BG_COLOR_M5, BG_COLOR_M6 } from "~/constants/themes";
 import { MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
-import { Button, Cell } from "../MusclePriorityList";
+import { cn } from "~/lib/clsx";
 import useEditMesocycleFrequency from "../hooks/useEditMesocycleFrequency";
 
 type CellWithCounterProps = {
@@ -267,43 +267,77 @@ export default function MesocycleFrequency({
 
   return (
     <>
-      <Button
+      {/* <Button
         className={`h-4 w-4 ${BG_COLOR_M6} font-bold text-white hover:${BG_COLOR_M5}`}
         onClick={() => onFrequencyChange("subtract")}
       >
         -
-      </Button>
+      </Button> */}
 
       <div className="flex">
         {frequencyProgression.map((meso, index) => {
           return (
-            <Cell
+            <CounterCell
               key={`${meso}_${index}_frequency_meso_${muscle}`}
-              className={`h-6 w-6 items-center justify-center hover:bg-slate-400 ${
-                selectedMesocycle.index !== null &&
-                selectedMesocycle.index === index
-                  ? "bg-slate-400"
-                  : "bg-inherit"
-              }`}
-              width={""}
-              onClick={() => onFrequencyIndexClick(index)}
-            >
-              {meso}
-            </Cell>
+              value={meso}
+              minMaxValues={[0, maxFrequency]}
+              frequencyProgression={frequencyProgression}
+            />
+            // <Cell
+            //   key={`${meso}_${index}_frequency_meso_${muscle}`}
+            //   className={`h-6 w-6 items-center justify-center hover:bg-slate-400 ${
+            //     selectedMesocycle.index !== null &&
+            //     selectedMesocycle.index === index
+            //       ? "bg-slate-400"
+            //       : "bg-inherit"
+            //   }`}
+            //   width={""}
+            //   onClick={() => onFrequencyIndexClick(index)}
+            // >
+            //   {meso}
+            // </Cell>
           );
         })}
       </div>
 
-      <Button
+      {/* <Button
         className={`h-4 w-4 ${BG_COLOR_M6} font-bold text-white hover:${BG_COLOR_M5}`}
         onClick={() => onFrequencyChange("add")}
       >
         +
-      </Button>
+      </Button> */}
     </>
   );
 }
 
+type CounterCellProps = {
+  value: number;
+  minMaxValues: [number, number];
+  frequencyProgression: number[];
+};
+export function CounterCell({
+  value,
+  minMaxValues,
+  frequencyProgression,
+}: CounterCellProps) {
+  return (
+    <div
+      className={cn(
+        "m-0.5 flex h-5 w-12 items-center justify-center text-white"
+      )}
+    >
+      <div className="flex w-1/3 items-center justify-center bg-red-400 hover:bg-red-600">
+        -
+      </div>
+      <div className="flex w-1/3 items-center justify-center bg-white text-black">
+        {value}
+      </div>
+      <div className="flex w-1/3 items-center justify-center bg-red-400 hover:bg-red-600">
+        +
+      </div>
+    </div>
+  );
+}
 // type MesocycleFrequencyProps = {
 //   mesoProgression: number[];
 //   total_sessions: [number, number];

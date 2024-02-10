@@ -196,6 +196,12 @@ function Item({
           {exercisesPerSessionSchema}
         </div>
 
+        {/* <VolumeLandmarkCell
+          landmark={landmark}
+          width={cellWidths[3]}
+          onSelectHandler={onSelectHandler}
+          volume={volumeSets}
+        /> */}
         <div
           className={" flex justify-evenly"}
           style={{ width: cellWidths[3] }}
