@@ -71,6 +71,7 @@ const CELL_WIDTHS_ON_EDIT = ["5%", "15%", "20%", "40%", "20%"];
 
 type ItemProps = {
   muscleGroup: MusclePriorityType;
+  microcycles: number;
   index: number;
   onVolumeChange: (
     id: MusclePriorityType["id"],
@@ -83,15 +84,21 @@ type ItemProps = {
     muscle: MusclePriorityType,
     operator: "add" | "subtract"
   ) => void;
+  getTotalVolumeHandler: (
+    _frequencyProgression: number[],
+    _muscle: MusclePriorityType
+  ) => number[];
 };
 
 function Item({
   muscleGroup,
+  microcycles,
   index,
   onVolumeChange,
   total_sessions,
   onMesoProgressionUpdate,
   onFrequencyProgressionUpdate,
+  getTotalVolumeHandler,
 }: ItemProps) {
   const { volume, muscle } = muscleGroup;
   const { setProgressionMatrix, landmark, exercisesPerSessionSchema } = volume;
@@ -180,6 +187,8 @@ function Item({
           <EditMuscleModal onClose={onCloseModal} isOpen={isModalOpen}>
             <EditMuscleModal.Card
               muscleGroup={muscleGroup}
+              microcycles={microcycles}
+              getTotalVolumeHandler={getTotalVolumeHandler}
               totalVolumePerMesocycle={totalVolumePerMesocycle}
             />
           </EditMuscleModal>
@@ -348,6 +357,7 @@ export function MusclePriorityList({
     onReorder,
     onVolumeLandmarkChange,
     onFrequencyProgressionUpdate,
+    getTotalVolumeHandler,
   } = useMusclePriority(
     musclePriority,
     volumeLandmarkBreakpoints,
@@ -396,6 +406,7 @@ export function MusclePriorityList({
                         <Item
                           key={`${each.id}_MusclePriority`}
                           muscleGroup={each}
+                          microcycles={microcycles}
                           index={index}
                           onVolumeChange={onVolumeLandmarkChange}
                           total_sessions={total_sessions}
@@ -403,6 +414,7 @@ export function MusclePriorityList({
                           onFrequencyProgressionUpdate={
                             onFrequencyProgressionUpdate
                           }
+                          getTotalVolumeHandler={getTotalVolumeHandler}
                         />
                       </div>
                     )}

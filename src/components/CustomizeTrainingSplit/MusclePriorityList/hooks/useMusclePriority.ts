@@ -13,6 +13,7 @@ import {
   onSplitChangeUpdateMusclePriorityList,
   reorderListByVolumeBreakpoints,
 } from "~/hooks/useTrainingProgram/utils/musclePriorityListHandlers";
+import { getEndOfMesocycleVolume } from "../utils/getVolumeTotal";
 
 export default function useMusclePriority(
   muscle_priority_list: MusclePriorityType[],
@@ -27,6 +28,30 @@ export default function useMusclePriority(
   const [draggableList, setDraggableList] = useState<MusclePriorityType[]>([
     ...muscle_priority_list,
   ]);
+
+  const getTotalVolumeHandler = useCallback(
+    (_frequencyProgression: number[], _muscle: MusclePriorityType) => {
+      const { muscle, volume } = _muscle;
+      const { exercisesPerSessionSchema, landmark } = volume;
+      const matrix = getSetProgressionMatrixForMuscle(
+        _frequencyProgression,
+        exercisesPerSessionSchema,
+        microcycles
+      );
+      let newVolume: number[] = [];
+      for (let i = 0; i < _frequencyProgression.length; i++) {
+        const newTotalVolume = getEndOfMesocycleVolume(
+          muscle,
+          i + 1,
+          landmark,
+          matrix
+        );
+        newVolume.push(newTotalVolume);
+      }
+      return newVolume;
+    },
+    [microcycles]
+  );
 
   const onFrequencyProgressionUpdate = (
     muscle: MusclePriorityType,
@@ -150,5 +175,6 @@ export default function useMusclePriority(
     onVolumeLandmarkChange,
     onFrequencyProgressionChange,
     onFrequencyProgressionUpdate,
+    getTotalVolumeHandler,
   };
 }

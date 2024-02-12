@@ -320,21 +320,73 @@ export function CounterCell({
   minMaxValues,
   frequencyProgression,
 }: CounterCellProps) {
+  const [current, setCurrent] = useState<number>(value);
+
+  const onAddHandler = () => {};
+  const onSubHandler = () => {};
+
   return (
     <div
       className={cn(
-        "m-0.5 flex h-5 w-12 items-center justify-center text-white"
+        `m-0.5 flex h-5 w-12 items-center justify-center border-2 text-xs text-slate-300`
       )}
     >
-      <div className="flex w-1/3 items-center justify-center bg-red-400 hover:bg-red-600">
+      <div className="flex w-1/3 items-center justify-center  hover:bg-red-600">
         -
       </div>
-      <div className="flex w-1/3 items-center justify-center bg-white text-black">
-        {value}
-      </div>
-      <div className="flex w-1/3 items-center justify-center bg-red-400 hover:bg-red-600">
+      <div className="flex w-1/3 items-center justify-center">{current}</div>
+      <div className="flex w-1/3 items-center justify-center  hover:bg-red-600">
         +
       </div>
+    </div>
+  );
+}
+
+interface ButtonProps extends React.HTMLAttributes<HTMLButtonElement> {
+  increment: "+" | "-";
+  onIncrement: (operator: "+" | "-") => void;
+}
+function Button({ increment, onIncrement, className, ...props }: ButtonProps) {
+  return (
+    <button
+      className={cn(`flex h-full w-1/3 items-center justify-center`, className)}
+      onClick={() => onIncrement(increment)}
+    >
+      {increment}
+    </button>
+  );
+}
+
+Counter.Button = Button;
+type CounterProps = {
+  value: number;
+  minMaxValues: [number, number];
+  onIncrement: (value: number) => void;
+};
+export function Counter({ value, minMaxValues, onIncrement }: CounterProps) {
+  const [current, setCurrent] = useState<number>(value);
+
+  const onIncrementHandler = (increment: "+" | "-") => {
+    if (increment === "+") {
+      if (current + 1 > minMaxValues[1]) return;
+      setCurrent((prev) => prev + 1);
+      onIncrement(value + 1);
+    } else {
+      if (current - 1 < minMaxValues[0]) return;
+      setCurrent((prev) => prev - 1);
+      onIncrement(value - 1);
+    }
+  };
+
+  return (
+    <div
+      className={cn(
+        `m-0.5 flex h-5 w-12 items-center justify-center border-2 text-xs text-slate-300`
+      )}
+    >
+      <Counter.Button increment={"-"} onIncrement={onIncrementHandler} />
+      <div className="flex w-1/3 items-center justify-center">{current}</div>
+      <Counter.Button increment={"+"} onIncrement={onIncrementHandler} />
     </div>
   );
 }
