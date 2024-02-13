@@ -6,7 +6,7 @@ import { getSetProgressionMatrixForMuscle } from "~/hooks/useTrainingProgram/uti
 import { cn } from "~/lib/clsx";
 import { getVolumeSets } from "~/utils/musclePriorityHandlers";
 import { getEndOfMesocycleVolume } from "../utils/getVolumeTotal";
-import { Counter, CounterCell } from "./MesocycleFrequency";
+import { Counter } from "./MesocycleFrequency";
 import VolumeLandmark from "./VolumeLandmark";
 
 type EditMuscleModalProps = {
@@ -55,25 +55,52 @@ function Frequency({
   const onFrequencyChangeHandler = (value: number) => {
     onFrequencyChange(index, value);
   };
-  console.log(matrix, "matrix");
+  const onTotalExercisesChangeHandler = () => {};
+  const currentMesocycle = matrix[index];
+  const totalExercises = currentMesocycle[0].reduce(
+    (acc, cur) => acc + cur.length,
+    0
+  );
+  console.log(matrix, currentMesocycle, totalExercises, "lets see this");
   return (
     <div className="flex">
-      <div className="flex w-16 items-center justify-center text-xs text-white">
+      <div className="mr-1 flex w-12 items-center justify-center p-0.5 text-xs text-white">
         {index + 1}
       </div>
-      <div className="mr-1 flex w-16 items-center justify-center text-xs font-bold text-white">
+      <div className="mr-1 flex w-16 items-center justify-center p-0.5 text-xs font-bold text-white">
         <Counter
           value={frequency}
           minMaxValues={minMaxFrequency}
           onIncrement={onFrequencyChangeHandler}
         />
       </div>
-      <div className="flex w-16 items-center justify-center text-xs text-white">
-        {totalVolume}
+      <div className="mr-1 flex w-12 items-center justify-center p-0.5 text-xs text-white">
+        <Counter
+          value={totalExercises}
+          minMaxValues={minMaxFrequency}
+          onIncrement={onTotalExercisesChangeHandler}
+        />
+      </div>
+      <div className="flex text-xs text-white">
+        {currentMesocycle.map((each) => {
+          return <Volume sets={each} />;
+        })}
       </div>
     </div>
   );
 }
+type VolumeProps = {
+  sets: number[][];
+};
+function Volume({ sets }: VolumeProps) {
+  const totalSets = sets.flat().reduce((acc, cur) => acc + cur, 0);
+  return (
+    <div className="mr-1 flex w-10 items-center justify-center p-0.5 text-xs text-white">
+      {totalSets}
+    </div>
+  );
+}
+
 // TODO: Note.. I want this card to be horizontal like the list item, should pop up toward
 //       the top. Then blur background but highlight selected list item.
 //       Also, should be able to get a view of exercises and sets over progression.
@@ -100,15 +127,21 @@ export function Card(props: EditMuscleCardProps) {
     frequencyProgression[frequencyProgression.length - 1],
     landmark
   );
+  const microcycleArray = Array.from(
+    { length: microcycles },
+    (_, index) => index
+  );
   const onSelectHandler = () => {};
   return (
     <div className={cn(`${BG_COLOR_M7} flex h-40 w-3/4 flex-col`)}>
-      <div className="text-sm p-1 font-bold text-white">
-        {muscleGroup.muscle}
-      </div>
+      <div className="text-sm p-1 font-bold text-white">Edit Muscle</div>
 
       <div className="flex">
-        <div className="w-20">
+        <div className="w-24 indent-1 text-xs font-bold text-white">
+          {muscleGroup.muscle}
+        </div>
+
+        <div className="w-22">
           <VolumeLandmark
             landmark={landmark}
             width="100%"
@@ -116,18 +149,18 @@ export function Card(props: EditMuscleCardProps) {
             volume={volumeSets}
           />
         </div>
-        <div className="w-20">
+        {/* <div className="w-20">
           <CounterCell
             value={exercisesPerSessionSchema}
             minMaxValues={[0, 3]}
             frequencyProgression={frequencyProgression}
           />
-        </div>
+        </div> */}
 
         <div className="flex flex-col p-1">
           <div className="flex">
             <div
-              className={`mr-1 w-16 p-0.5 text-xxs text-white ${BG_COLOR_M6}`}
+              className={`mr-1 w-12 p-0.5 text-xxs text-white ${BG_COLOR_M6}`}
             >
               Mesocycle
             </div>
@@ -137,10 +170,20 @@ export function Card(props: EditMuscleCardProps) {
               Frequency
             </div>
             <div
-              className={`mr-1 w-16 p-0.5 text-xxs text-white ${BG_COLOR_M6}`}
+              className={`mr-1 w-12 p-0.5 text-xxs text-white ${BG_COLOR_M6}`}
             >
-              Total Volume
+              Exercises
             </div>
+
+            {microcycleArray.map((e) => {
+              return (
+                <div
+                  className={`mr-1 w-10 p-0.5 text-xxs text-white ${BG_COLOR_M6}`}
+                >
+                  Week {e + 1}
+                </div>
+              );
+            })}
           </div>
 
           <EditFrequencyAndVolume
