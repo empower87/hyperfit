@@ -188,7 +188,6 @@ function Item({
             <EditMuscleModal.Card
               muscleGroup={muscleGroup}
               microcycles={microcycles}
-              getTotalVolumeHandler={getTotalVolumeHandler}
               totalVolumePerMesocycle={totalVolumePerMesocycle}
             />
           </EditMuscleModal>
@@ -231,8 +230,6 @@ function Item({
             muscle={muscleGroup}
             maxFrequency={total_sessions[0] + total_sessions[1]}
             mesoProgression={frequencyProgression}
-            selectedProgressionIndex={selectedIndex}
-            onFrequencyChangeClickHandler={onFrequencyProgressionUpdate}
           />
         </div>
 

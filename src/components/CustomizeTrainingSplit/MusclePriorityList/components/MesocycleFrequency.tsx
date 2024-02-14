@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { BG_COLOR_M5, BG_COLOR_M6 } from "~/constants/themes";
 import { MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { cn } from "~/lib/clsx";
+import { Cell } from "../MusclePriorityList";
 import useEditMesocycleFrequency from "../hooks/useEditMesocycleFrequency";
 
 type CellWithCounterProps = {
@@ -110,11 +111,6 @@ type MesocycleFrequencyProps = {
   muscle: MusclePriorityType;
   maxFrequency: number;
   mesoProgression: number[];
-  selectedProgressionIndex: number | null;
-  onFrequencyChangeClickHandler: (
-    muscle: MusclePriorityType,
-    operator: "add" | "subtract"
-  ) => void;
 };
 
 const canPerformOperation = (
@@ -168,8 +164,6 @@ export default function MesocycleFrequency({
   muscle,
   maxFrequency,
   mesoProgression,
-  selectedProgressionIndex,
-  onFrequencyChangeClickHandler,
 }: MesocycleFrequencyProps) {
   const [frequencyProgression, setFrequencyProgression] = useState<number[]>([
     ...mesoProgression,
@@ -277,25 +271,24 @@ export default function MesocycleFrequency({
       <div className="flex">
         {frequencyProgression.map((meso, index) => {
           return (
-            <CounterCell
-              key={`${meso}_${index}_frequency_meso_${muscle}`}
-              value={meso}
-              minMaxValues={[0, maxFrequency]}
-              frequencyProgression={frequencyProgression}
-            />
-            // <Cell
+            // <CounterCell
             //   key={`${meso}_${index}_frequency_meso_${muscle}`}
-            //   className={`h-6 w-6 items-center justify-center hover:bg-slate-400 ${
-            //     selectedMesocycle.index !== null &&
-            //     selectedMesocycle.index === index
-            //       ? "bg-slate-400"
-            //       : "bg-inherit"
-            //   }`}
-            //   width={""}
-            //   onClick={() => onFrequencyIndexClick(index)}
-            // >
-            //   {meso}
-            // </Cell>
+            //   value={meso}
+            //   minMaxValues={[0, maxFrequency]}
+            //   frequencyProgression={frequencyProgression}
+            // />
+            <Cell
+              key={`${meso}_${index}_frequency_meso_${muscle}`}
+              className={`h-6 w-6 items-center justify-center hover:bg-slate-400 ${
+                selectedMesocycle.index !== null &&
+                selectedMesocycle.index === index
+                  ? "bg-slate-400"
+                  : "bg-inherit"
+              }`}
+              width={""}
+            >
+              {meso}
+            </Cell>
           );
         })}
       </div>
@@ -310,37 +303,7 @@ export default function MesocycleFrequency({
   );
 }
 
-type CounterCellProps = {
-  value: number;
-  minMaxValues: [number, number];
-  frequencyProgression: number[];
-};
-export function CounterCell({
-  value,
-  minMaxValues,
-  frequencyProgression,
-}: CounterCellProps) {
-  const [current, setCurrent] = useState<number>(value);
 
-  const onAddHandler = () => {};
-  const onSubHandler = () => {};
-
-  return (
-    <div
-      className={cn(
-        `m-0.5 flex h-5 w-12 items-center justify-center border-2 text-xs text-slate-300`
-      )}
-    >
-      <div className="flex w-1/3 items-center justify-center  hover:bg-red-600">
-        -
-      </div>
-      <div className="flex w-1/3 items-center justify-center">{current}</div>
-      <div className="flex w-1/3 items-center justify-center  hover:bg-red-600">
-        +
-      </div>
-    </div>
-  );
-}
 
 interface ButtonProps extends React.HTMLAttributes<HTMLButtonElement> {
   increment: "+" | "-";
@@ -349,6 +312,7 @@ interface ButtonProps extends React.HTMLAttributes<HTMLButtonElement> {
 function Button({ increment, onIncrement, className, ...props }: ButtonProps) {
   return (
     <button
+      {...props}
       className={cn(`flex h-full w-1/3 items-center justify-center`, className)}
       onClick={() => onIncrement(increment)}
     >
@@ -390,64 +354,3 @@ export function Counter({ value, minMaxValues, onIncrement }: CounterProps) {
     </div>
   );
 }
-// type MesocycleFrequencyProps = {
-//   mesoProgression: number[];
-//   total_sessions: [number, number];
-//   isEditing: boolean;
-//   onEditHandler: (isEditing: boolean) => void;
-//   width: string;
-//   onMesoProgressionUpdate: (newMesoProgression: number[]) => void;
-// };
-
-// export default function MesocycleFrequency({
-//   mesoProgression,
-//   total_sessions,
-//   isEditing,
-//   onEditHandler,
-//   width,
-//   onMesoProgressionUpdate,
-// }: MesocycleFrequencyProps) {
-//   return (
-//     <div className={" flex w-full justify-center"}>
-//       {isEditing ? (
-//         <EditMesocycleFrequency
-//           mesoProgression={mesoProgression}
-//           total_sessions={total_sessions}
-//           onEdit={onEditHandler}
-//           onMesoProgressionUpdate={onMesoProgressionUpdate}
-//         />
-//       ) : (
-//         <DefaultMesocycleFrequency
-//           mesoProgression={mesoProgression}
-//           onEdit={onEditHandler}
-//         />
-//       )}
-//     </div>
-//   );
-// }
-// export default function MesocycleFrequency({
-//   mesoProgression,
-//   total_sessions,
-//   isEditing,
-//   onEditHandler,
-//   width,
-//   onMesoProgressionUpdate,
-// }: MesocycleFrequencyProps) {
-//   return (
-//     <div className={" flex justify-center"} style={{ width: width }}>
-//       {isEditing ? (
-//         <EditMesocycleFrequency
-//           mesoProgression={mesoProgression}
-//           total_sessions={total_sessions}
-//           onEdit={onEditHandler}
-//           onMesoProgressionUpdate={onMesoProgressionUpdate}
-//         />
-//       ) : (
-//         <DefaultMesocycleFrequency
-//           mesoProgression={mesoProgression}
-//           onEdit={onEditHandler}
-//         />
-//       )}
-//     </div>
-//   );
-// }
