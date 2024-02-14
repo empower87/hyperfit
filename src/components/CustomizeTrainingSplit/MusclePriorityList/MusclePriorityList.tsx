@@ -371,7 +371,7 @@ export function MusclePriorityList({
   const onResetHandler = useCallback(() => {
     setDraggableList(musclePriority);
   }, []);
-
+  // Todo: Note, mesocycles / microcycles can easily be put into a useContext hook as they are very slow moving state like a Theme.
   return (
     <div className="">
       <MusclePriorityList.RowHeader
