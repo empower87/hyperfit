@@ -513,31 +513,41 @@ const attachMesocycleFrequencyProgression = (
     sessions = sessions - 1;
   }
 
-  switch (key) {
+  mesoProgression = getFrequencyByVolumeLandmark(
+    sessions,
+    muscle,
+    key,
+    mesocycles
+  );
+  return mesoProgression;
+};
+export const getFrequencyByVolumeLandmark = (
+  sessions: number,
+  muscle: MuscleType,
+  volume_landmark: VolumeLandmarkType,
+  mesocycles: number
+) => {
+  switch (volume_landmark) {
     case "MRV":
       const mrv = getFrequencyProgression(sessions, mesocycles);
-      mesoProgression = mrv;
-      break;
+      return mrv;
     case "MEV":
       const sessions_capped = Math.min(
         getMaxFrequencyForMEVMV(muscle, "MEV"),
         sessions
       );
       const mev = getFrequencyProgression(sessions_capped, mesocycles);
-      mesoProgression = mev;
-      break;
+      return mev;
     case "MV":
       const sessions_capped_mv = Math.min(
         getMaxFrequencyForMEVMV(muscle, "MV"),
         sessions
       );
       const mv = getFrequencyProgression(sessions_capped_mv, mesocycles);
-      mesoProgression = mv;
-      break;
+      return mv;
     default:
-      break;
+      return [];
   }
-  return mesoProgression;
 };
 
 export const onMuscleListReprioritize = (

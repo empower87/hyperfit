@@ -1,8 +1,11 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useReducer, useState } from "react";
 import { MuscleType } from "~/constants/workoutSplits";
 import { MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { VolumeLandmarkType } from "~/hooks/useTrainingProgram/reducer/trainingProgramUtils";
-import { getSetProgressionMatrixForMuscle } from "~/hooks/useTrainingProgram/utils/musclePriorityListHandlers";
+import {
+  getFrequencyByVolumeLandmark,
+  getSetProgressionMatrixForMuscle,
+} from "~/hooks/useTrainingProgram/utils/musclePriorityListHandlers";
 import { getEndOfMesocycleVolume } from "../utils/getVolumeTotal";
 
 const getTotalVolumeHandler = (
@@ -25,55 +28,152 @@ const getTotalVolumeHandler = (
   return newVolume;
 };
 
+type EditFrequencyProgression = {
+  type: "EDIT_FREQUENCY_PROGRESSION";
+  payload: { index: number; value: number; microcycles: number };
+};
+type ChangeVolumeLandmark = {
+  type: "CHANGE_VOLUME_LANDMARK";
+  payload: {
+    new_landmark: VolumeLandmarkType;
+    sessions: number;
+    microcycles: number;
+    mesocycles: number;
+  };
+};
+type ActionType = EditFrequencyProgression | ChangeVolumeLandmark;
+
+const editMuscleReducer = (state: MusclePriorityType, action: ActionType) => {
+  switch (action.type) {
+    case "EDIT_FREQUENCY_PROGRESSION":
+      const { index, value, microcycles } = action.payload;
+      const newFreqProgression = [...state.volume.frequencyProgression];
+      newFreqProgression[index] = value;
+
+      const newSetMatrix = getSetProgressionMatrixForMuscle(
+        newFreqProgression,
+        state.volume.exercisesPerSessionSchema,
+        microcycles
+      );
+
+      return {
+        ...state,
+        volume: {
+          ...state.volume,
+          frequencyProgression: newFreqProgression,
+          setProgressionMatrix: newSetMatrix,
+        },
+      };
+    case "CHANGE_VOLUME_LANDMARK":
+      const {
+        new_landmark,
+        sessions,
+        mesocycles,
+        microcycles: microcycles2,
+      } = action.payload;
+      const newFrequency = getFrequencyByVolumeLandmark(
+        sessions,
+        state.muscle,
+        new_landmark,
+        mesocycles
+      );
+      const newSetMatrix2 = getSetProgressionMatrixForMuscle(
+        newFrequency,
+        state.volume.exercisesPerSessionSchema,
+        microcycles2
+      );
+      return {
+        ...state,
+        volume: {
+          ...state.volume,
+          landmark: new_landmark,
+          frequencyProgression: newFrequency,
+          setProgressionMatrix: newSetMatrix2,
+        },
+      };
+    default:
+      return state;
+  }
+};
+
 // TODO: may need a useReducer for this as the state is so intrinsically tied.
 export default function useEditMuscle(
   _muscle: MusclePriorityType,
   microcycles: number
 ) {
-  const { volume, muscle } = _muscle;
-  const [volumeLandmark, setVolumeLandmark] = useState<VolumeLandmarkType>(
-    volume.landmark
-  );
-  const [frequencyProgression, setFrequencyProgression] = useState<number[]>([
-    ...volume.frequencyProgression,
-  ]);
-  const [setProgressionMatrix, setSetProgressionMatrix] = useState<
-    number[][][][]
-  >([...volume.setProgressionMatrix]);
+  const muscle = { ..._muscle };
+  const [{ volume }, dispatch] = useReducer(editMuscleReducer, muscle);
+  const {
+    frequencyProgression,
+    exercisesPerSessionSchema,
+    landmark,
+    setProgressionMatrix,
+  } = volume;
+  // const { volume, muscle } = _muscle;
+  // const [volumeLandmark, setVolumeLandmark] = useState<VolumeLandmarkType>(
+  //   volume.landmark
+  // );
+  // const [frequencyProgression, setFrequencyProgression] = useState<number[]>([
+  //   ...volume.frequencyProgression,
+  // ]);
+  // const [setProgressionMatrix, setSetProgressionMatrix] = useState<
+  //   number[][][][]
+  // >([...volume.setProgressionMatrix]);
   const [volumePerMicrocycle, setVolumePerMicrocycle] = useState<number[]>([]);
 
-  useEffect(() => {
-    const newSetMatrix = getSetProgressionMatrixForMuscle(
-      frequencyProgression,
-      volume.exercisesPerSessionSchema,
-      microcycles
-    );
-    setSetProgressionMatrix(newSetMatrix);
-  }, [microcycles, volume.exercisesPerSessionSchema, frequencyProgression]);
+  // useEffect(() => {
+  //   const newSetMatrix = getSetProgressionMatrixForMuscle(
+  //     frequencyProgression,
+  //     volume.exercisesPerSessionSchema,
+  //     microcycles
+  //   );
+  //   setSetProgressionMatrix(newSetMatrix);
+  // }, [microcycles, volume.exercisesPerSessionSchema, frequencyProgression]);
 
-  useEffect(() => {
-    const totalVolume = getTotalVolumeHandler(
-      frequencyProgression,
-      setProgressionMatrix,
-      muscle,
-      volume.landmark,
-      microcycles
-    );
-    setVolumePerMicrocycle(totalVolume);
-  }, [frequencyProgression, setProgressionMatrix, muscle, volume, microcycles]);
+  // useEffect(() => {
+  //   const totalVolume = getTotalVolumeHandler(
+  //     frequencyProgression,
+  //     setProgressionMatrix,
+  //     muscle.muscle,
+  //     landmark,
+  //     microcycles
+  //   );
+  //   setVolumePerMicrocycle(totalVolume);
+  // }, [frequencyProgression, setProgressionMatrix, muscle, volume, microcycles]);
 
   const updateFrequencyProgression = useCallback(
     (index: number, value: number) => {
-      const newFreqProgression = [...frequencyProgression];
-      newFreqProgression[index] = value;
-      setFrequencyProgression(newFreqProgression);
+      // const newFreqProgression = [...frequencyProgression];
+      // newFreqProgression[index] = value;
+      // setFrequencyProgression(newFreqProgression);
+      dispatch({
+        type: "EDIT_FREQUENCY_PROGRESSION",
+        payload: { index, value, microcycles },
+      });
     },
     []
   );
+  const changeVolumeLandmark = useCallback(
+    (new_landmark: VolumeLandmarkType) => {
+      const mesocycles = frequencyProgression.length;
+      const sessions = 2;
 
-  const getFrequencyProgressionRanges = (index: number): [number, number] => {
+      dispatch({
+        type: "CHANGE_VOLUME_LANDMARK",
+        payload: { new_landmark, sessions, microcycles, mesocycles },
+      });
+    },
+    [microcycles, frequencyProgression]
+  );
+
+  const getFrequencyProgressionRanges = (
+    index: number,
+    frequencyProgression: number[]
+  ): [number, number] => {
     const maxValue =
-      volume.frequencyProgression[volume.frequencyProgression.length - 1];
+      _muscle.volume.frequencyProgression[
+        _muscle.volume.frequencyProgression.length - 1
+      ];
     const prevValue = frequencyProgression[index - 1];
     const nextValue = frequencyProgression[index + 1];
 
@@ -89,9 +189,81 @@ export default function useEditMuscle(
 
   return {
     frequencyProgression,
+    landmark,
     setProgressionMatrix,
     volumePerMicrocycle,
     updateFrequencyProgression,
     getFrequencyProgressionRanges,
+    changeVolumeLandmark,
   };
 }
+// export default function useEditMuscle(
+//   _muscle: MusclePriorityType,
+//   microcycles: number
+// ) {
+
+//   const { volume, muscle } = _muscle;
+//   const [volumeLandmark, setVolumeLandmark] = useState<VolumeLandmarkType>(
+//     volume.landmark
+//   );
+//   const [frequencyProgression, setFrequencyProgression] = useState<number[]>([
+//     ...volume.frequencyProgression,
+//   ]);
+//   const [setProgressionMatrix, setSetProgressionMatrix] = useState<
+//     number[][][][]
+//   >([...volume.setProgressionMatrix]);
+//   const [volumePerMicrocycle, setVolumePerMicrocycle] = useState<number[]>([]);
+
+//   useEffect(() => {
+//     const newSetMatrix = getSetProgressionMatrixForMuscle(
+//       frequencyProgression,
+//       volume.exercisesPerSessionSchema,
+//       microcycles
+//     );
+//     setSetProgressionMatrix(newSetMatrix);
+//   }, [microcycles, volume.exercisesPerSessionSchema, frequencyProgression]);
+
+//   useEffect(() => {
+//     const totalVolume = getTotalVolumeHandler(
+//       frequencyProgression,
+//       setProgressionMatrix,
+//       muscle,
+//       volume.landmark,
+//       microcycles
+//     );
+//     setVolumePerMicrocycle(totalVolume);
+//   }, [frequencyProgression, setProgressionMatrix, muscle, volume, microcycles]);
+
+//   const updateFrequencyProgression = useCallback(
+//     (index: number, value: number) => {
+//       const newFreqProgression = [...frequencyProgression];
+//       newFreqProgression[index] = value;
+//       setFrequencyProgression(newFreqProgression);
+//     },
+//     []
+//   );
+
+//   const getFrequencyProgressionRanges = (index: number): [number, number] => {
+//     const maxValue =
+//       volume.frequencyProgression[volume.frequencyProgression.length - 1];
+//     const prevValue = frequencyProgression[index - 1];
+//     const nextValue = frequencyProgression[index + 1];
+
+//     let minMaxTuple: [number, number] = [0, maxValue];
+//     if (prevValue !== undefined) {
+//       minMaxTuple[0] = prevValue;
+//     }
+//     if (nextValue !== undefined) {
+//       minMaxTuple[1] = nextValue;
+//     }
+//     return minMaxTuple;
+//   };
+
+//   return {
+//     frequencyProgression,
+//     setProgressionMatrix,
+//     volumePerMicrocycle,
+//     updateFrequencyProgression,
+//     getFrequencyProgressionRanges,
+//   };
+// }

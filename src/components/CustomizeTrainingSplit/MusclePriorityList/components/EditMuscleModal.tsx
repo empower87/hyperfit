@@ -4,7 +4,6 @@ import { BG_COLOR_M6, BG_COLOR_M7 } from "~/constants/themes";
 import { MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { getSetProgressionMatrixForMuscle } from "~/hooks/useTrainingProgram/utils/musclePriorityListHandlers";
 import { cn } from "~/lib/clsx";
-import { getVolumeSets } from "~/utils/musclePriorityHandlers";
 import useEditMuscle from "../hooks/useEditMuscle";
 import { getEndOfMesocycleVolume } from "../utils/getVolumeTotal";
 import { Counter } from "./MesocycleFrequency";
@@ -111,17 +110,23 @@ export function Card({
   microcycles,
   totalVolumePerMesocycle,
 }: EditMuscleCardProps) {
-  const editMuscle = useEditMuscle(muscleGroup, microcycles);
+  const {
+    frequencyProgression,
+    landmark,
+    setProgressionMatrix,
+    volumePerMicrocycle,
+    updateFrequencyProgression,
+    getFrequencyProgressionRanges,
+    changeVolumeLandmark,
+  } = useEditMuscle(muscleGroup, microcycles);
 
-  const { frequencyProgression, landmark } = muscleGroup.volume;
+  // const { frequencyProgression, landmark } = muscleGroup.volume;
 
-  const volumeSets = getVolumeSets(
-    muscleGroup.muscle,
-    frequencyProgression[frequencyProgression.length - 1],
-    landmark
-  );
-
-  const onSelectHandler = () => {};
+  // const volumeSets = getVolumeSets(
+  //   muscleGroup.muscle,
+  //   frequencyProgression[frequencyProgression.length - 1],
+  //   landmark
+  // );
 
   const microcycleArray = Array.from(
     { length: microcycles },
@@ -140,8 +145,8 @@ export function Card({
           <VolumeLandmark
             landmark={landmark}
             width="100%"
-            onSelectHandler={onSelectHandler}
-            volume={volumeSets}
+            onSelectHandler={changeVolumeLandmark}
+            volume={0}
           />
         </div>
 
@@ -175,17 +180,19 @@ export function Card({
           </div>
 
           <div className="flex flex-col">
-            {editMuscle.frequencyProgression.map((frequency, index) => {
-              const minMaxValues =
-                editMuscle.getFrequencyProgressionRanges(index);
+            {frequencyProgression.map((frequency, index) => {
+              const minMaxValues = getFrequencyProgressionRanges(
+                index,
+                frequencyProgression
+              );
               return (
                 <Frequency
                   key={index}
                   index={index}
                   frequency={frequency}
                   minMaxFrequency={minMaxValues}
-                  onFrequencyChange={editMuscle.updateFrequencyProgression}
-                  matrix={editMuscle.setProgressionMatrix}
+                  onFrequencyChange={updateFrequencyProgression}
+                  matrix={setProgressionMatrix}
                 />
               );
             })}

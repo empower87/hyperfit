@@ -29,7 +29,7 @@ VolumeLandmark.Button = Button;
 type VolumeLandmarkProps = {
   landmark: VolumeLandmarkType;
   width: string;
-  onSelectHandler: (value: string) => void;
+  onSelectHandler: (value: VolumeLandmarkType) => void;
   volume: number;
 };
 export default function VolumeLandmark({
@@ -42,8 +42,9 @@ export default function VolumeLandmark({
     useState<VolumeLandmarkType>(landmark);
 
   const onSelect = (value: string) => {
-    setSelectedLandmark(value as VolumeLandmarkType);
-    onSelectHandler(value);
+    const _value = value as VolumeLandmarkType;
+    setSelectedLandmark(_value);
+    onSelectHandler(_value);
   };
   return (
     <div className={" flex justify-evenly text-xxs"} style={{ width: width }}>
