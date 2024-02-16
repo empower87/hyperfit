@@ -186,6 +186,7 @@ function Item({
         {isModalOpen ? (
           <EditMuscleModal onClose={onCloseModal} isOpen={isModalOpen}>
             <EditMuscleModal.Card
+              rank={index + 1}
               muscleGroup={muscleGroup}
               microcycles={microcycles}
               totalVolumePerMesocycle={totalVolumePerMesocycle}

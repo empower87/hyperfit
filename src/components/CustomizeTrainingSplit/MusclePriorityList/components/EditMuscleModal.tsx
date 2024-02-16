@@ -1,9 +1,10 @@
 import { ReactNode, useState } from "react";
 import ReactDOM from "react-dom";
-import { BG_COLOR_M6, BG_COLOR_M7 } from "~/constants/themes";
+import { BG_COLOR_M5, BG_COLOR_M6, BG_COLOR_M7 } from "~/constants/themes";
 import { MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { getSetProgressionMatrixForMuscle } from "~/hooks/useTrainingProgram/utils/musclePriorityListHandlers";
 import { cn } from "~/lib/clsx";
+import { getRankColor } from "~/utils/getRankColor";
 import useEditMuscle from "../hooks/useEditMuscle";
 import { getEndOfMesocycleVolume } from "../utils/getVolumeTotal";
 import { Counter } from "./MesocycleFrequency";
@@ -88,7 +89,15 @@ function Frequency({
               key={`${each}_${totalSets}_${index}_volume`}
               className="mr-1 flex w-10 items-center justify-center p-0.5 text-xs text-white"
             >
-              {totalSets}
+              {index === 0 ? (
+                <Counter
+                  value={totalSets}
+                  minMaxValues={minMaxFrequency}
+                  onIncrement={onTotalExercisesChangeHandler}
+                />
+              ) : (
+                <>{totalSets}</>
+              )}
             </div>
           );
         })}
@@ -101,11 +110,13 @@ function Frequency({
 //       the top. Then blur background but highlight selected list item.
 //       Also, should be able to get a view of exercises and sets over progression.
 type EditMuscleCardProps = {
+  rank: number;
   muscleGroup: MusclePriorityType;
   microcycles: number;
   totalVolumePerMesocycle: number[];
 };
 export function Card({
+  rank,
   muscleGroup,
   microcycles,
   totalVolumePerMesocycle,
@@ -120,25 +131,42 @@ export function Card({
     changeVolumeLandmark,
   } = useEditMuscle(muscleGroup, microcycles);
 
-  // const { frequencyProgression, landmark } = muscleGroup.volume;
-
   // const volumeSets = getVolumeSets(
   //   muscleGroup.muscle,
   //   frequencyProgression[frequencyProgression.length - 1],
   //   landmark
   // );
-
+  const bgColor = getRankColor(landmark);
   const microcycleArray = Array.from(
     { length: microcycles },
     (_, index) => index
   );
+
   return (
     <div className={cn(`${BG_COLOR_M7} flex h-40 w-3/4 flex-col`)}>
-      <div className="text-sm p-1 font-bold text-white">Edit Muscle</div>
+      <div
+        className={cn(
+          `${BG_COLOR_M6} text-sm mb-2 flex justify-between p-0.5 font-bold text-white`
+        )}
+      >
+        <div className={cn(`indent-1`)}>Edit Muscle</div>
+        <div
+          className={cn(
+            `mr-1 flex h-5 w-5 items-center justify-center hover:${BG_COLOR_M5}`
+          )}
+        >
+          x
+        </div>
+      </div>
 
       <div className="flex">
-        <div className="w-24 indent-1 text-xs font-bold text-white">
-          {muscleGroup.muscle}
+        <div
+          className={cn(
+            `${bgColor.bg} flex w-24 indent-1 text-xs font-bold text-white`
+          )}
+        >
+          <div className={cn(``)}>{rank}</div>
+          <div className={cn(``)}>{muscleGroup.muscle}</div>
         </div>
 
         <div className="w-22">

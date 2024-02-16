@@ -63,7 +63,7 @@ export default function VolumeLandmark({
         onSelect={() => onSelect("MV")}
         selectedLandmark={selectedLandmark}
       />
-      <div className="flex items-center justify-center">{volume}</div>
+      {/* <div className="flex items-center justify-center">{volume}</div> */}
     </div>
   );
 }
