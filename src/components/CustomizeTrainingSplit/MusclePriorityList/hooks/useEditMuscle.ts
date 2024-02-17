@@ -32,9 +32,14 @@ type EditFrequencyProgression = {
   type: "EDIT_FREQUENCY_PROGRESSION";
   payload: { index: number; value: number; microcycles: number };
 };
-type AddSubtractVolume = {
-  type: "ADD_SUBTRACT_VOLUME";
-  payload: { index: number; value: number; microcycles: number };
+type AdjustVolumeSets = {
+  type: "ADJUST_VOLUME_SETS";
+  payload: {
+    keySchema: [VolumeLandmarkType, number];
+    frequencyIndex: number;
+    adjust: "add" | "subtract";
+    microcycles: number;
+  };
 };
 type ChangeVolumeLandmark = {
   type: "CHANGE_VOLUME_LANDMARK";
@@ -48,7 +53,7 @@ type ChangeVolumeLandmark = {
 type ActionType =
   | EditFrequencyProgression
   | ChangeVolumeLandmark
-  | AddSubtractVolume;
+  | AdjustVolumeSets;
 
 const editMuscleReducer = (state: MusclePriorityType, action: ActionType) => {
   switch (action.type) {
@@ -98,9 +103,23 @@ const editMuscleReducer = (state: MusclePriorityType, action: ActionType) => {
           setProgressionMatrix: newSetMatrix2,
         },
       };
-    case "ADD_SUBTRACT_VOLUME":
+    case "ADJUST_VOLUME_SETS":
+      const {
+        keySchema,
+        frequencyIndex,
+        adjust,
+        microcycles: microcycles3,
+      } = action.payload;
+
+      const adjustedSetProgression = getSetProgressionMatrixForMuscle(
+        state.volume.frequencyProgression,
+        state.volume.exercisesPerSessionSchema,
+        microcycles3,
+        { keySchema, frequencyIndex, adjust }
+      );
       return {
         ...state,
+        setProgressionMatrix: adjustedSetProgression,
       };
     default:
       return state;
@@ -114,7 +133,12 @@ export default function useEditMuscle(
 ) {
   const muscle = { ..._muscle };
   const [{ volume }, dispatch] = useReducer(editMuscleReducer, muscle);
-  const { frequencyProgression, landmark, setProgressionMatrix } = volume;
+  const {
+    frequencyProgression,
+    landmark,
+    setProgressionMatrix,
+    exercisesPerSessionSchema,
+  } = volume;
   const [volumePerMicrocycle, setVolumePerMicrocycle] = useState<number[]>([]);
 
   const updateFrequencyProgression = useCallback(
@@ -125,6 +149,21 @@ export default function useEditMuscle(
       });
     },
     []
+  );
+  const adjustVolumeSets = useCallback(
+    (frequencyIndex: number, adjust: "add" | "subtract") => {
+      console.log(frequencyIndex, adjust, "CALLED YES?");
+      dispatch({
+        type: "ADJUST_VOLUME_SETS",
+        payload: {
+          keySchema: [landmark, exercisesPerSessionSchema],
+          frequencyIndex: frequencyIndex,
+          adjust: adjust,
+          microcycles: microcycles,
+        },
+      });
+    },
+    [microcycles, landmark, exercisesPerSessionSchema]
   );
 
   const changeVolumeLandmark = useCallback(
@@ -169,6 +208,7 @@ export default function useEditMuscle(
     updateFrequencyProgression,
     getFrequencyProgressionRanges,
     changeVolumeLandmark,
+    adjustVolumeSets,
   };
 }
 

@@ -1,6 +1,7 @@
 import {
   MRV_PROGRESSION_MATRIX_ONE,
   MRV_PROGRESSION_MATRIX_TWO,
+  getMatrixWithAdjustedInitialSets,
 } from "~/constants/volumeProgressionMatrices";
 import {
   MuscleType,
@@ -312,15 +313,29 @@ const getSetsForCurrentMicrocycle = (
   }
   return microcycle;
 };
+
 const getSetProgressionMatrixForMesocycle = (
   currentMesocycleIndex: number,
   exercisesPerSessionSchema: number,
-  microcycles: number
+  microcycles: number,
+  adjustMatrix?: {
+    keySchema: [VolumeLandmarkType, number];
+    frequencyIndex: number;
+    adjust: "add" | "subtract";
+  }
 ): number[][][] => {
-  const matrix =
+  const defaultMatrix =
     exercisesPerSessionSchema === 2
       ? MRV_PROGRESSION_MATRIX_TWO
       : MRV_PROGRESSION_MATRIX_ONE;
+
+  const matrix = adjustMatrix
+    ? getMatrixWithAdjustedInitialSets(
+        adjustMatrix.keySchema,
+        adjustMatrix.frequencyIndex,
+        adjustMatrix.adjust
+      )
+    : defaultMatrix;
   let prog: number[] = exercisesPerSessionSchema === 2 ? [1, 0] : [1];
 
   const initialMesocycleLayout = matrix[currentMesocycleIndex];
@@ -362,7 +377,12 @@ const getSetProgressionMatrixForMesocycle = (
 export const getSetProgressionMatrixForMuscle = (
   frequencyProgression: number[],
   exercisesPerSessionSchema: number,
-  microcycles: number
+  microcycles: number,
+  adjustMatrix?: {
+    keySchema: [VolumeLandmarkType, number];
+    frequencyIndex: number;
+    adjust: "add" | "subtract";
+  }
 ) => {
   let set_progression_matrix: number[][][][] = [];
   for (let j = 0; j < frequencyProgression.length; j++) {
@@ -371,7 +391,8 @@ export const getSetProgressionMatrixForMuscle = (
     let set_progression = getSetProgressionMatrixForMesocycle(
       mesocycle_index,
       exercisesPerSessionSchema,
-      microcycles
+      microcycles,
+      adjustMatrix
     );
     set_progression_matrix.push(set_progression);
   }

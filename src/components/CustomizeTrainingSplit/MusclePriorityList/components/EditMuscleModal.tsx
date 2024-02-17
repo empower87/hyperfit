@@ -1,12 +1,10 @@
-import { ReactNode, useState } from "react";
+import React, { ReactNode } from "react";
 import ReactDOM from "react-dom";
 import { BG_COLOR_M5, BG_COLOR_M6, BG_COLOR_M7 } from "~/constants/themes";
 import { MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
-import { getSetProgressionMatrixForMuscle } from "~/hooks/useTrainingProgram/utils/musclePriorityListHandlers";
 import { cn } from "~/lib/clsx";
 import { getRankColor } from "~/utils/getRankColor";
 import useEditMuscle from "../hooks/useEditMuscle";
-import { getEndOfMesocycleVolume } from "../utils/getVolumeTotal";
 import { Counter } from "./MesocycleFrequency";
 import VolumeLandmark from "./VolumeLandmark";
 
@@ -43,6 +41,10 @@ type FrequencyProps = {
   minMaxFrequency: [number, number];
   onFrequencyChange: (index: number, value: number) => void;
   matrix: number[][][][];
+  adjustVolumeSets: (
+    frequencyIndex: number,
+    adjust: "add" | "subtract"
+  ) => void;
 };
 function Frequency({
   index,
@@ -50,6 +52,7 @@ function Frequency({
   minMaxFrequency,
   onFrequencyChange,
   matrix,
+  adjustVolumeSets,
 }: FrequencyProps) {
   const onFrequencyChangeHandler = (value: number) => {
     onFrequencyChange(index, value);
@@ -60,6 +63,9 @@ function Frequency({
     (acc, cur) => acc + cur.length,
     0
   );
+  const quickFixHandler = (adjust: "add" | "subtract") => {
+    adjustVolumeSets(index, adjust);
+  };
   console.log(matrix, currentMesocycle, totalExercises, "lets see this");
   return (
     <div className="flex">
@@ -92,8 +98,9 @@ function Frequency({
               {index === 0 ? (
                 <Counter
                   value={totalSets}
-                  minMaxValues={minMaxFrequency}
+                  minMaxValues={[0, 15]}
                   onIncrement={onTotalExercisesChangeHandler}
+                  quickFix={quickFixHandler}
                 />
               ) : (
                 <>{totalSets}</>
@@ -129,6 +136,7 @@ export function Card({
     updateFrequencyProgression,
     getFrequencyProgressionRanges,
     changeVolumeLandmark,
+    adjustVolumeSets,
   } = useEditMuscle(muscleGroup, microcycles);
 
   // const volumeSets = getVolumeSets(
@@ -143,43 +151,45 @@ export function Card({
   );
 
   return (
-    <div className={cn(`${BG_COLOR_M7} flex h-40 w-3/4 flex-col`)}>
+    <div className={cn(`${BG_COLOR_M7} flex w-3/4 flex-col`)}>
       <div
         className={cn(
-          `${BG_COLOR_M6} text-sm mb-2 flex justify-between p-0.5 font-bold text-white`
+          `${BG_COLOR_M6} text-sm flex items-center justify-between p-0.5 font-bold text-white`
         )}
       >
         <div className={cn(`indent-1`)}>Edit Muscle</div>
-        <div
+        <button
           className={cn(
             `mr-1 flex h-5 w-5 items-center justify-center hover:${BG_COLOR_M5}`
           )}
         >
           x
-        </div>
+        </button>
       </div>
 
-      <div className="flex">
-        <div
-          className={cn(
-            `${bgColor.bg} flex w-24 indent-1 text-xs font-bold text-white`
-          )}
-        >
-          <div className={cn(``)}>{rank}</div>
-          <div className={cn(``)}>{muscleGroup.muscle}</div>
+      <div className="flex p-2">
+        <div className={cn(`mr-1 flex w-48 flex-col`)}>
+          <div
+            className={cn(
+              `${bgColor.bg} flex indent-1 text-xs font-bold text-white`
+            )}
+          >
+            <div className={cn(``)}>{rank}</div>
+            <div className={cn(``)}>{muscleGroup.muscle}</div>
+          </div>
+
+          <div className="w-20 p-1">
+            <VolumeLandmark
+              landmark={landmark}
+              width="100%"
+              onSelectHandler={changeVolumeLandmark}
+              volume={0}
+            />
+          </div>
         </div>
 
-        <div className="w-22">
-          <VolumeLandmark
-            landmark={landmark}
-            width="100%"
-            onSelectHandler={changeVolumeLandmark}
-            volume={0}
-          />
-        </div>
-
-        <div className="flex flex-col p-1">
-          <div className="flex">
+        <div className="flex flex-col">
+          {/* <div className="flex">
             <div
               className={`mr-1 w-12 p-0.5 text-xxs text-white ${BG_COLOR_M6}`}
             >
@@ -205,6 +215,51 @@ export function Card({
                 </div>
               );
             })}
+          </div> */}
+          <div className={cn(`flex`)}>
+            <Column title="Mesocycle">
+              {frequencyProgression.map((e, i) => {
+                return <li>{i + 1}</li>;
+              })}
+            </Column>
+
+            <Column title="Frequency">
+              {frequencyProgression.map((frequency, index) => {
+                const minMaxValues = getFrequencyProgressionRanges(
+                  index,
+                  frequencyProgression
+                );
+                const onFrequencyChangeHandler = (value: number) => {
+                  updateFrequencyProgression(index, value);
+                };
+                return (
+                  <Counter
+                    key={index}
+                    value={frequency}
+                    minMaxValues={minMaxValues}
+                    onIncrement={onFrequencyChangeHandler}
+                  />
+                );
+              })}
+            </Column>
+            <Column title="Exercises">
+              {frequencyProgression.map((e, i) => {
+                const currentMesocycle = setProgressionMatrix[i];
+                const totalExercises = currentMesocycle[0].reduce(
+                  (acc, cur) => acc + cur.length,
+                  0
+                );
+                const onTotalExercisesChangeHandler = () => {};
+                return (
+                  <Counter
+                    key={i}
+                    value={totalExercises}
+                    minMaxValues={[0, 3]}
+                    onIncrement={onTotalExercisesChangeHandler}
+                  />
+                );
+              })}
+            </Column>
           </div>
 
           <div className="flex flex-col">
@@ -221,6 +276,7 @@ export function Card({
                   minMaxFrequency={minMaxValues}
                   onFrequencyChange={updateFrequencyProgression}
                   matrix={setProgressionMatrix}
+                  adjustVolumeSets={adjustVolumeSets}
                 />
               );
             })}
@@ -231,103 +287,136 @@ export function Card({
   );
 }
 
-type EditFrequencyAndVolumeProps = {
-  muscle: MusclePriorityType;
-  microcycles: number;
-  frequencyProgression: number[];
-  getTotalVolumeHandler: (
-    _frequencyProgression: number[],
-    _muscle: MusclePriorityType
-  ) => number[];
-  totalVolumePerMesocycle: number[];
+type ColumnProps = {
+  title: string;
+  children: React.ReactNode;
+  // items: number[];
+  // withCounter: false;
+  // minMaxValues?: never;
+  // onIncrement?: never;
 };
-function EditFrequencyAndVolume({
-  muscle,
-  microcycles,
-  frequencyProgression,
-  getTotalVolumeHandler,
-  totalVolumePerMesocycle,
-}: EditFrequencyAndVolumeProps) {
-  const [freqProgression, setFreqProgression] = useState<number[]>([
-    ...frequencyProgression,
-  ]);
-
-  const updateFrequencyHandler = (index: number, value: number) => {
-    const newFreqProgression = [...freqProgression];
-    newFreqProgression[index] = value;
-    setFreqProgression(newFreqProgression);
-  };
-
-  const getMinMaxValues = (index: number): [number, number] => {
-    const maxValue = frequencyProgression[frequencyProgression.length - 1];
-    const prevValue = freqProgression[index - 1];
-    const nextValue = freqProgression[index + 1];
-
-    let minMaxTuple: [number, number] = [0, maxValue];
-    if (prevValue !== undefined) {
-      minMaxTuple[0] = prevValue;
-    }
-    if (nextValue !== undefined) {
-      minMaxTuple[1] = nextValue;
-    }
-    return minMaxTuple;
-  };
-
-  const getTotalVolumeHandlerz = (
-    _frequencyProgression: number[],
-    _matrix: number[][][][],
-    _muscle: MusclePriorityType,
-    _microcycles: number
-  ) => {
-    const { muscle, volume } = _muscle;
-    const { landmark } = volume;
-    // const matrix = getSetProgressionMatrixForMuscle(
-    //   _frequencyProgression,
-    //   exercisesPerSessionSchema,
-    //   _microcycles
-    // );
-    let newVolume: number[] = [];
-    for (let i = 0; i < _frequencyProgression.length; i++) {
-      const newTotalVolume = getEndOfMesocycleVolume(
-        muscle,
-        i + 1,
-        landmark,
-        _matrix
-      );
-      newVolume.push(newTotalVolume);
-    }
-    return newVolume;
-  };
-
-  const matrix = getSetProgressionMatrixForMuscle(
-    freqProgression,
-    muscle.volume.exercisesPerSessionSchema,
-    microcycles
-  );
-  const totalVolume = getTotalVolumeHandlerz(
-    freqProgression,
-    matrix,
-    muscle,
-    microcycles
-  );
+type WithCounterColumnProps = {
+  title: string;
+  items: number[];
+  withCounter: true;
+  minMaxValues: [number, number][];
+  onIncrement: (value: number) => void;
+};
+function Column({
+  title,
+  children,
+}: // items,
+// withCounter,
+// minMaxValues,
+// onIncrement,
+ColumnProps) {
   return (
-    <div className="flex flex-col">
-      {freqProgression.map((frequency, index) => {
-        const minMaxValues = getMinMaxValues(index);
-        return (
-          <Frequency
-            key={index}
-            index={index}
-            frequency={frequency}
-            minMaxFrequency={minMaxValues}
-            // totalVolume={totalVolume[index]}
-            onFrequencyChange={updateFrequencyHandler}
-            matrix={matrix}
-          />
-        );
-      })}
+    <div className="flex w-16 flex-col">
+      <div className={cn(`${BG_COLOR_M6} mr-1 p-0.5 text-xs text-white`)}>
+        {title}
+      </div>
+      <ul>{children}</ul>
     </div>
   );
 }
+// type EditFrequencyAndVolumeProps = {
+//   muscle: MusclePriorityType;
+//   microcycles: number;
+//   frequencyProgression: number[];
+//   getTotalVolumeHandler: (
+//     _frequencyProgression: number[],
+//     _muscle: MusclePriorityType
+//   ) => number[];
+//   totalVolumePerMesocycle: number[];
+// };
+// function EditFrequencyAndVolume({
+//   muscle,
+//   microcycles,
+//   frequencyProgression,
+//   getTotalVolumeHandler,
+//   totalVolumePerMesocycle,
+// }: EditFrequencyAndVolumeProps) {
+//   const [freqProgression, setFreqProgression] = useState<number[]>([
+//     ...frequencyProgression,
+//   ]);
+
+//   const updateFrequencyHandler = (index: number, value: number) => {
+//     const newFreqProgression = [...freqProgression];
+//     newFreqProgression[index] = value;
+//     setFreqProgression(newFreqProgression);
+//   };
+
+//   const getMinMaxValues = (index: number): [number, number] => {
+//     const maxValue = frequencyProgression[frequencyProgression.length - 1];
+//     const prevValue = freqProgression[index - 1];
+//     const nextValue = freqProgression[index + 1];
+
+//     let minMaxTuple: [number, number] = [0, maxValue];
+//     if (prevValue !== undefined) {
+//       minMaxTuple[0] = prevValue;
+//     }
+//     if (nextValue !== undefined) {
+//       minMaxTuple[1] = nextValue;
+//     }
+//     return minMaxTuple;
+//   };
+
+//   const getTotalVolumeHandlerz = (
+//     _frequencyProgression: number[],
+//     _matrix: number[][][][],
+//     _muscle: MusclePriorityType,
+//     _microcycles: number
+//   ) => {
+//     const { muscle, volume } = _muscle;
+//     const { landmark } = volume;
+//     // const matrix = getSetProgressionMatrixForMuscle(
+//     //   _frequencyProgression,
+//     //   exercisesPerSessionSchema,
+//     //   _microcycles
+//     // );
+//     let newVolume: number[] = [];
+//     for (let i = 0; i < _frequencyProgression.length; i++) {
+//       const newTotalVolume = getEndOfMesocycleVolume(
+//         muscle,
+//         i + 1,
+//         landmark,
+//         _matrix
+//       );
+//       newVolume.push(newTotalVolume);
+//     }
+//     return newVolume;
+//   };
+
+//   const matrix = getSetProgressionMatrixForMuscle(
+//     freqProgression,
+//     muscle.volume.exercisesPerSessionSchema,
+//     microcycles
+//   );
+//   const totalVolume = getTotalVolumeHandlerz(
+//     freqProgression,
+//     matrix,
+//     muscle,
+//     microcycles
+//   );
+//   return (
+//     <div className="flex flex-col">
+//       {freqProgression.map((frequency, index) => {
+//         const minMaxValues = getMinMaxValues(index);
+//         return (
+//           <Frequency
+//             key={index}
+//             index={index}
+//             frequency={frequency}
+//             minMaxFrequency={minMaxValues}
+//             // totalVolume={totalVolume[index]}
+//             onFrequencyChange={updateFrequencyHandler}
+//             matrix={matrix}
+
+//           />
+//         );
+//       })}
+//     </div>
+//   );
+// }
 
 EditMuscleModal.Card = Card;

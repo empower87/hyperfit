@@ -303,8 +303,6 @@ export default function MesocycleFrequency({
   );
 }
 
-
-
 interface ButtonProps extends React.HTMLAttributes<HTMLButtonElement> {
   increment: "+" | "-";
   onIncrement: (operator: "+" | "-") => void;
@@ -326,19 +324,33 @@ type CounterProps = {
   value: number;
   minMaxValues: [number, number];
   onIncrement: (value: number) => void;
+  quickFix?: (adjust: "add" | "subtract") => void;
 };
-export function Counter({ value, minMaxValues, onIncrement }: CounterProps) {
+export function Counter({
+  value,
+  minMaxValues,
+  onIncrement,
+  quickFix,
+}: CounterProps) {
   const [current, setCurrent] = useState<number>(value);
 
   const onIncrementHandler = (increment: "+" | "-") => {
     if (increment === "+") {
       if (current + 1 > minMaxValues[1]) return;
       setCurrent((prev) => prev + 1);
-      onIncrement(value + 1);
+      if (quickFix) {
+        quickFix("add");
+      } else {
+        onIncrement(value + 1);
+      }
     } else {
       if (current - 1 < minMaxValues[0]) return;
       setCurrent((prev) => prev - 1);
-      onIncrement(value - 1);
+      if (quickFix) {
+        quickFix("subtract");
+      } else {
+        onIncrement(value - 1);
+      }
     }
   };
 
