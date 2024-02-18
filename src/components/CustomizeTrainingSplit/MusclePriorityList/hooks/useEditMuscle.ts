@@ -117,9 +117,17 @@ const editMuscleReducer = (state: MusclePriorityType, action: ActionType) => {
         microcycles3,
         { keySchema, frequencyIndex, adjust }
       );
+      console.log(
+        state.volume.setProgressionMatrix,
+        adjustedSetProgression,
+        "OK THIS SHOULD BE DIFFERENT?"
+      );
       return {
         ...state,
-        setProgressionMatrix: adjustedSetProgression,
+        volume: {
+          ...state.volume,
+          setProgressionMatrix: adjustedSetProgression,
+        },
       };
     default:
       return state;

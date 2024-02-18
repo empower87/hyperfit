@@ -64,9 +64,9 @@ function Frequency({
     0
   );
   const quickFixHandler = (adjust: "add" | "subtract") => {
-    adjustVolumeSets(index, adjust);
+    adjustVolumeSets(frequency - 1, adjust);
   };
-  console.log(matrix, currentMesocycle, totalExercises, "lets see this");
+  console.log(matrix, "how do i disperse this as a column per microcycle??");
   return (
     <div className="flex">
       <div className="mr-1 flex w-12 items-center justify-center p-0.5 text-xs text-white">
@@ -262,6 +262,21 @@ export function Card({
             </Column>
           </div>
 
+          <div className="flex">
+            {microcycleArray.map((each, index) => {
+              return (
+                <Column title={`Week ${index + 1}`}>
+                  {setProgressionMatrix.map((each) => {
+                    const totalSets = each[index]
+                      .flat()
+                      .reduce((acc, cur) => acc + cur, 0);
+                    return <li>{totalSets}</li>;
+                  })}
+                </Column>
+              );
+            })}
+          </div>
+
           <div className="flex flex-col">
             {frequencyProgression.map((frequency, index) => {
               const minMaxValues = getFrequencyProgressionRanges(
@@ -420,3 +435,73 @@ ColumnProps) {
 // }
 
 EditMuscleModal.Card = Card;
+
+// |   muscle  | freq |  exercises
+// ---------------------
+// | triceps   |   4  |  2
+// | back      |   4  |  2
+// | delts s   |   4  |  2
+// | traps     |   3  |  1
+// | biceps    |   3  |  1
+// | delts r   |   3  |  1
+// | chest     |   2  |  1
+// | forearm   |   2  |  1
+// | quads     |   2  |  2
+// | hams      |   2  |  2
+
+// triceps :
+// 1. JM Press - heavy
+// 2. Overhead Extensions
+// 3. Overhead Extensions (single)
+// 4. ??
+// 5. JM Press - light
+// 6. Overhead Extensions
+
+// back :
+// 1. T-Bar Rows - heavy
+// 2. Seated Cable Row (Single, Lat-Focused)
+// 3. Lat Prayers
+// 4. Dumbbell Rows
+// 5. ??
+// 6. ??
+
+// side delts :
+// 1. BTB Lateral Raise (Cable) - heavy
+// 2. Seated Overhead Press (Dumbbell)
+// 3. Lateral Raise (Dumbbell) - heavy
+// 4. Upright Row (Cable)
+// 5. BTB Lateral Raise (Cable) - light
+// 6. Lateral Raise (Dumbbell) - light
+
+// Traps :
+// 1. Smith Machine Barbell Shrugs
+// 2. Shrug (machine)
+// 3. Dumbbell Shrugs
+
+// biceps :
+// 1. Preacher Curls (Barbell)
+// 2. Incline Curl (Dumbbell)
+// 3. Hammer Curl (Dumbbell)
+
+// rear delts :
+// 1. Reverse Fly
+// 2. Face Pull
+// 3. Cross Arm Reverse Fly (Cable)
+
+// forearms :
+// 1. ??
+// 2. ??
+
+// chest :
+// 1. Dumbbell Fly
+// 2. Incline Bench Press (Dumbbell)
+
+// quads :
+// 1. Squat
+// 2. Leg Press
+// 3. Leg Extensions
+// 4. Deadlifts
+
+// hamstrings :
+// 1. Romanian Deadlifts
+// 2. Leg Curls
