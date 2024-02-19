@@ -66,7 +66,7 @@ function Select({ volume_landmark, options, onSelect, bgColor }: SelectProps) {
 //   " w-2/12",
 // ];
 
-const CELL_WIDTHS = ["5%", "15%", "7%", "13%", "30%", "30%"];
+const CELL_WIDTHS = ["5%", "15%", "7%", "13%", "26%", "26%", "8%"];
 const CELL_WIDTHS_ON_EDIT = ["5%", "15%", "20%", "40%", "20%"];
 
 type ItemProps = {
@@ -189,7 +189,7 @@ function Item({
               rank={index + 1}
               muscleGroup={muscleGroup}
               microcycles={microcycles}
-              totalVolumePerMesocycle={totalVolumePerMesocycle}
+              onClose={onCloseModal}
             />
           </EditMuscleModal>
         ) : null}
@@ -205,12 +205,6 @@ function Item({
           {exercisesPerSessionSchema}
         </div>
 
-        {/* <VolumeLandmarkCell
-          landmark={landmark}
-          width={cellWidths[3]}
-          onSelectHandler={onSelectHandler}
-          volume={volumeSets}
-        /> */}
         <div
           className={" flex justify-evenly"}
           style={{ width: cellWidths[3] }}
@@ -238,15 +232,18 @@ function Item({
           mesocycleVolumes={totalVolumePerMesocycle}
           width={cellWidths[5]}
         />
-      </li>
-      <div className="flex">
-        <Button
-          className="text-xxs text-white"
-          onClick={() => setIsModalOpen(true)}
+        <div
+          className="flex items-center justify-center"
+          style={{ width: cellWidths[6] }}
         >
-          Edit
-        </Button>
-      </div>
+          <Button
+            className={`text-xxs text-white ${BG_COLOR_M5} p-0.5`}
+            onClick={() => setIsModalOpen(true)}
+          >
+            Edit
+          </Button>
+        </div>
+      </li>
     </>
   );
 }
@@ -330,6 +327,9 @@ function RowHeader({
             );
           })}
         </div>
+      </Cell>
+      <Cell className="text-center leading-3" width={cellWidths[6]}>
+        Edit
       </Cell>
     </div>
   );

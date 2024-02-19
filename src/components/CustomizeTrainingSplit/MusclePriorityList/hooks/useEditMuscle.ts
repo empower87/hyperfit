@@ -50,10 +50,15 @@ type ChangeVolumeLandmark = {
     mesocycles: number;
   };
 };
+type Reset = {
+  type: "RESET";
+  payload: { reset_props: MusclePriorityType };
+};
 type ActionType =
   | EditFrequencyProgression
   | ChangeVolumeLandmark
-  | AdjustVolumeSets;
+  | AdjustVolumeSets
+  | Reset;
 
 const editMuscleReducer = (state: MusclePriorityType, action: ActionType) => {
   switch (action.type) {
@@ -129,6 +134,19 @@ const editMuscleReducer = (state: MusclePriorityType, action: ActionType) => {
           setProgressionMatrix: adjustedSetProgression,
         },
       };
+    case "RESET":
+      const { reset_props } = action.payload;
+
+      return {
+        ...state,
+        volume: {
+          frequencyProgression: reset_props.volume.frequencyProgression,
+          landmark: reset_props.volume.landmark,
+          exercisesPerSessionSchema:
+            reset_props.volume.exercisesPerSessionSchema,
+          setProgressionMatrix: reset_props.volume.setProgressionMatrix,
+        },
+      };
     default:
       return state;
   }
@@ -158,9 +176,9 @@ export default function useEditMuscle(
     },
     []
   );
+
   const adjustVolumeSets = useCallback(
     (frequencyIndex: number, adjust: "add" | "subtract") => {
-      console.log(frequencyIndex, adjust, "CALLED YES?");
       dispatch({
         type: "ADJUST_VOLUME_SETS",
         payload: {
@@ -186,6 +204,10 @@ export default function useEditMuscle(
     },
     [microcycles, frequencyProgression]
   );
+
+  const onResetHandler = useCallback(() => {
+    dispatch({ type: "RESET", payload: { reset_props: muscle } });
+  }, [muscle]);
 
   const getFrequencyProgressionRanges = (
     index: number,
@@ -217,6 +239,7 @@ export default function useEditMuscle(
     getFrequencyProgressionRanges,
     changeVolumeLandmark,
     adjustVolumeSets,
+    onResetHandler,
   };
 }
 
@@ -290,3 +313,41 @@ export default function useEditMuscle(
 //     getFrequencyProgressionRanges,
 //   };
 // }
+
+// 1 - upper
+// 1. triceps    - JM Press (barbell) - heavy
+// 2. triceps    - Overhead Extensions (Cable)
+// 3. back       - Lat Prayers
+// 4. back       - T-Bar Rows
+// 5. side delts -
+// 6. traps      -
+
+// 2 - lower
+// 1. quads  - Squats
+// 2. hams   - Romanian Deadlifts
+// 3. quads  - Leg Extensions
+// 4. calves - ??
+
+// 3 - upper
+// 1. back       -
+// 2. back       - Cable Pullovers
+// 3. triceps    - Seated Pushdowns
+// 4. triceps    -
+// 5. side delts -
+// 6. traps      -
+
+// 4 - upper
+// 1. triceps    - JM Press (barbell) - light
+// 2. back       - Dumbbell Rows
+// 3. triceps    - Overhead Extensions (Cable)
+// 4. back       - Cable Pullovers / Lat Prayers
+// 5. side delts -
+// 6. traps      -
+
+// 5 - full
+// 1. deadlifts  -
+// 2. triceps    -
+// 3. back       - Seated Cable Row (Single, Lat-Focused)
+// 4. back       -
+// 5. side delts -
+// 6. traps      -

@@ -332,20 +332,18 @@ export function Counter({
   onIncrement,
   quickFix,
 }: CounterProps) {
-  const [current, setCurrent] = useState<number>(value);
-
   const onIncrementHandler = (increment: "+" | "-") => {
     if (increment === "+") {
-      if (current + 1 > minMaxValues[1]) return;
-      setCurrent((prev) => prev + 1);
+      if (value + 1 > minMaxValues[1]) return;
+
       if (quickFix) {
         quickFix("add");
       } else {
         onIncrement(value + 1);
       }
     } else {
-      if (current - 1 < minMaxValues[0]) return;
-      setCurrent((prev) => prev - 1);
+      if (value - 1 < minMaxValues[0]) return;
+
       if (quickFix) {
         quickFix("subtract");
       } else {
@@ -361,7 +359,7 @@ export function Counter({
       )}
     >
       <Counter.Button increment={"-"} onIncrement={onIncrementHandler} />
-      <div className="flex w-1/3 items-center justify-center">{current}</div>
+      <div className="flex w-1/3 items-center justify-center">{value}</div>
       <Counter.Button increment={"+"} onIncrement={onIncrementHandler} />
     </div>
   );
