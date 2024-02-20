@@ -336,7 +336,6 @@ const getSetProgressionMatrixForMesocycle = (
         adjustMatrix.adjust
       )
     : defaultMatrix;
-  console.log(matrix, defaultMatrix, adjustMatrix, "WTF YO:?");
   let prog: number[] = exercisesPerSessionSchema === 2 ? [1, 0] : [1];
 
   const initialMesocycleLayout = matrix[currentMesocycleIndex];

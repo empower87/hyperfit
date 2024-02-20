@@ -71,6 +71,7 @@ export function Card({
   );
 
   const onSaveHandler = () => {};
+  
   return (
     <div className={cn(`${BG_COLOR_M7} flex w-3/4 flex-col`)}>
       <div
@@ -247,7 +248,6 @@ function Column({ title, children, className, ...props }: LayoutProps) {
     </div>
   );
 }
-
 function Cell({ children }: { children: React.ReactNode }) {
   return (
     <li
@@ -267,7 +267,7 @@ EditMuscleModal.Card = Card;
 // ---------------------
 // | triceps   |   4  |  2
 // | back      |   4  |  2
-// | delts s   |   4  |  2
+// | delts s   |   4  |  1
 // | traps     |   3  |  1
 // | biceps    |   3  |  1
 // | delts r   |   3  |  1
@@ -280,18 +280,19 @@ EditMuscleModal.Card = Card;
 // 1. JM Press - heavy
 // 2. Overhead Extensions
 // 3. Overhead Extensions (single)
-// 4. ??
+// 4. Seated Pushdowns
 // 5. JM Press - light
 // 6. Overhead Extensions
-// 7. ??
+// 7. Overhead Extensions (single)
 
 // back :
 // 1. T-Bar Rows - heavy
 // 2. Seated Cable Row (Single, Lat-Focused)
 // 3. Lat Prayers
 // 4. Dumbbell Rows
-// 5. ??
-// 6. ??
+// 5. Pullovers (Cable)
+// 6. Lat Prayers
+// 7. Machine Row
 
 // side delts :
 // 1. BTB Lateral Raise (Cable) - heavy
@@ -317,7 +318,7 @@ EditMuscleModal.Card = Card;
 // 3. Cross Arm Reverse Fly (Cable)
 
 // forearms :
-// 1. ??
+// 1. Dumbbell Wrist Curl
 // 2. ??
 
 // chest :

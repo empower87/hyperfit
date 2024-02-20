@@ -193,6 +193,7 @@ export default function PageContent() {
           />
 
           <MesocycleExerciseLayout
+            prioritized_muscle_list={prioritized_muscle_list}
             training_block={training_block}
             microcycles={microcycles}
           />

@@ -21,6 +21,7 @@ import {
 import {
   EXERCISE_TRAINING_MODALITIES,
   ExerciseType,
+  MusclePriorityType,
   SplitType,
   TrainingDayType,
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
@@ -30,6 +31,7 @@ import { getGroupList } from "~/utils/getExercises";
 import { getRankColor } from "~/utils/getRankColor";
 import { getSessionSplitColor } from "~/utils/getSessionSplitColor";
 import { capitalizeFirstLetter } from "~/utils/uiHelpers";
+import ExercisesPreview from "./components/ExercisesPreview";
 import { getSupersetMap } from "./exerciseSelectUtils";
 import useExerciseSelection, {
   DraggableExercises,
@@ -781,11 +783,13 @@ const DURATION_TIME_CONSTRAINTS = {
 };
 
 type MesocycleExerciseLayoutProps = {
+  prioritized_muscle_list: MusclePriorityType[];
   training_block: TrainingDayType[][];
   microcycles: number;
 };
 
 export const MesocycleExerciseLayout = ({
+  prioritized_muscle_list,
   training_block,
   microcycles,
 }: MesocycleExerciseLayoutProps) => {
@@ -887,6 +891,7 @@ export const MesocycleExerciseLayout = ({
   return (
     <Section title={"Exercises"}>
       <div className="mb-2 flex text-xxs text-white">
+        <ExercisesPreview musclePriorityList={prioritized_muscle_list} />
         <div className="flex flex-col">
           <div className="text-sm mb-0.5">Workout Duration Variables</div>
 
