@@ -71,7 +71,7 @@ export function Card({
   );
 
   const onSaveHandler = () => {};
-  
+
   return (
     <div className={cn(`${BG_COLOR_M7} flex w-3/4 flex-col`)}>
       <div
