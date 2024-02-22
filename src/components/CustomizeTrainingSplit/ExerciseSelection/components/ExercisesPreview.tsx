@@ -7,7 +7,6 @@ import {
   BG_COLOR_M7,
   BG_COLOR_M8,
 } from "~/constants/themes";
-import { MuscleType } from "~/constants/workoutSplits";
 import { MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { cn } from "~/lib/clsx";
 import { getGroupList } from "~/utils/getExercises";
@@ -127,7 +126,7 @@ function Header({ children }: { children: ReactNode }) {
 }
 function Search({}) {
   return (
-    <div className={cn(`flex indent-1 text-white ${BG_COLOR_M8}`)}>
+    <div className={cn(`m-1 flex w-1/2 indent-1 text-white ${BG_COLOR_M8}`)}>
       <div className="mx-1 flex items-center justify-center">
         <SearchIcon className="fill:white text-sm" />
       </div>
@@ -147,6 +146,7 @@ function CategoryItem({ title }: { title: string }) {
     </div>
   );
 }
+
 type CategoryProps = {
   title: string;
   children: ReactNode;
@@ -163,9 +163,7 @@ function Category({ title, children }: CategoryProps) {
     </div>
   );
 }
-type FilterMenuProps = {
-  focus: MuscleType;
-};
+
 function FilterMenu({}) {
   return (
     <div className={cn(`absolute flex flex-col space-y-1 p-1 ${BG_COLOR_M7}`)}>
@@ -180,18 +178,25 @@ function FilterMenu({}) {
         <CategoryItem title="Upper Back" />
         <CategoryItem title="Upper Traps" />
       </Category>
+
+      <Category title="">
+        <CategoryItem title="Lat" />
+        <CategoryItem title="Upper Back" />
+        <CategoryItem title="Upper Traps" />
+      </Category>
     </div>
   );
 }
+
 function Filter({}) {
   const [showMenu, setShowMenu] = useState(false);
   const onClick = () => setShowMenu(true);
   return (
     <div className={cn(`relative`)}>
       <Button onClick={onClick} className="text-xxs">
-        {/* <FilterIcon /> */}
         <FilterIcon className="fill-white text-sm" />
       </Button>
+
       {showMenu ? <FilterMenu /> : null}
     </div>
   );
@@ -208,6 +213,7 @@ function List({ muscle, exercise }: ListProps) {
       <div className={cn(`mb-2 flex border-b-2 indent-1 text-xs text-white`)}>
         Exercises
       </div>
+
       <div className={cn(`flex h-60 flex-col overflow-y-auto`)}>
         {exercises.map((each) => {
           return <Item value={each.name} selected={exercise} />;
@@ -237,6 +243,7 @@ function SelectExercise({ children }: SelectExerciseProps) {
     </div>
   );
 }
+
 SelectExercise.List = List;
 SelectExercise.Header = Header;
 SelectExercise.Search = Search;
