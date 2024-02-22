@@ -1,156 +1,352 @@
 [
   {
-    "id": "0001-back-barbellrows",
+    "id": "0001-back-exercise",
     "name": "Barbell Rows",
+    "alt_names": [],
     "rank": 1,
     "group": "back",
-    "region": "upper",
+    "region": "upper-back",
     "requirements": ["barbell"],
     "variations": ["Pendlay"],
     "tips": "",
-    "movement_type": "compound"
+    "movement_type": "compound",
+    "hypertrophy_criteria": {
+      "target_function": 10,
+      "stability": 10,
+      "limiting_factor": 8,
+      "time_efficiency": 8,
+      "loadability": 5,
+      "stretch": {
+        "lengthened": 10,
+        "challenging": 10,
+        "partial_friendly": 10
+      },
+      "fatigue": 7
+    }
   },
   {
-    "id": "0002-back-seatedrows",
+    "id": "0002-back-exercise",
     "name": "Seated Rows",
+    "alt_names": [],
     "rank": 2,
     "group": "back",
-    "region": "upper",
+    "region": "upper-back",
     "requirements": ["machine"],
     "variations": [],
     "tips": "",
-    "movement_type": "compound"
+    "movement_type": "compound",
+    "hypertrophy_criteria": {
+      "target_function": 10,
+      "stability": 10,
+      "limiting_factor": 8,
+      "time_efficiency": 8,
+      "loadability": 5,
+      "stretch": {
+        "lengthened": 10,
+        "challenging": 10,
+        "partial_friendly": 10
+      },
+      "fatigue": 7
+    }
   },
   {
-    "id": "0003-back-meadowsrow",
+    "id": "0003-back-exercise",
     "name": "Meadow's Row",
+    "alt_names": [],
     "rank": 3,
     "group": "back",
-    "region": "upper",
+    "region": "upper-back",
     "requirements": ["barbell"],
     "variations": [],
     "tips": "",
-    "movement_type": "compound"
+    "movement_type": "compound",
+    "hypertrophy_criteria": {
+      "target_function": 10,
+      "stability": 6,
+      "limiting_factor": 6,
+      "time_efficiency": 2,
+      "loadability": 8,
+      "stretch": {
+        "lengthened": 9,
+        "challenging": 5,
+        "partial_friendly": 5
+      },
+      "fatigue": 7
+    }
   },
   {
-    "id": "0004-back-dumbbellrow",
+    "id": "0004-back-exercise",
     "name": "Dumbbell Row",
+    "alt_names": [],
     "rank": 4,
     "group": "back",
-    "region": "upper",
+    "region": "upper-back",
     "requirements": ["dumbbell"],
     "variations": ["chest-supported"],
     "tips": "",
-    "movement_type": "compound"
+    "movement_type": "compound",
+    "hypertrophy_criteria": {
+      "target_function": 10,
+      "stability": 10,
+      "limiting_factor": 8,
+      "time_efficiency": 8,
+      "loadability": 5,
+      "stretch": {
+        "lengthened": 10,
+        "challenging": 10,
+        "partial_friendly": 10
+      },
+      "fatigue": 7
+    }
   },
   {
-    "id": "0005-back-pullups",
+    "id": "0005-back-exercise",
     "name": "Pull Ups",
+    "alt_names": [],
     "rank": 5,
     "group": "back",
-    "region": "upper",
+    "region": "upper-back",
     "requirements": ["bar"],
     "variations": ["underhand", "wide-grip"],
     "tips": "",
-    "movement_type": "compound"
+    "movement_type": "compound",
+    "hypertrophy_criteria": {
+      "target_function": 10,
+      "stability": 10,
+      "limiting_factor": 8,
+      "time_efficiency": 8,
+      "loadability": 5,
+      "stretch": {
+        "lengthened": 10,
+        "challenging": 10,
+        "partial_friendly": 10
+      },
+      "fatigue": 7
+    }
   },
   {
-    "id": "0006-back-pulldowns",
+    "id": "0006-back-exercise",
     "name": "Pulldowns",
+    "alt_names": [],
     "rank": 6,
     "group": "back",
-    "region": "upper",
+    "region": "upper-back",
     "requirements": ["machine"],
     "variations": ["close-grip", "wide-grip", "neutral-grip"],
     "tips": "",
-    "movement_type": "compound"
+    "movement_type": "compound",
+    "hypertrophy_criteria": {
+      "target_function": 10,
+      "stability": 10,
+      "limiting_factor": 8,
+      "time_efficiency": 8,
+      "loadability": 5,
+      "stretch": {
+        "lengthened": 10,
+        "challenging": 10,
+        "partial_friendly": 10
+      },
+      "fatigue": 7
+    }
   },
   {
-    "id": "0007-back-latfocusedbarbellrows",
+    "id": "0007-back-exercise",
     "name": "Lat-Focused Barbell Rows",
+    "alt_names": [],
     "rank": 1,
     "group": "back",
     "region": "lats",
     "requirements": ["barbell"],
     "variations": [],
     "tips": "",
-    "movement_type": "compound"
+    "movement_type": "compound",
+    "hypertrophy_criteria": {
+      "target_function": 10,
+      "stability": 10,
+      "limiting_factor": 8,
+      "time_efficiency": 8,
+      "loadability": 5,
+      "stretch": {
+        "lengthened": 10,
+        "challenging": 10,
+        "partial_friendly": 10
+      },
+      "fatigue": 7
+    }
   },
   {
-    "id": "0008-back-latfocusedseatedrows",
+    "id": "0008-back-exercise",
     "name": "Lat-Focused Seated Rows",
+    "alt_names": [],
     "rank": 2,
     "group": "back",
     "region": "lats",
     "requirements": ["machine"],
     "variations": ["lat-focused"],
     "tips": "",
-    "movement_type": "compound"
+    "movement_type": "compound",
+    "hypertrophy_criteria": {
+      "target_function": 10,
+      "stability": 10,
+      "limiting_factor": 8,
+      "time_efficiency": 8,
+      "loadability": 5,
+      "stretch": {
+        "lengthened": 10,
+        "challenging": 10,
+        "partial_friendly": 10
+      },
+      "fatigue": 7
+    }
   },
   {
-    "id": "0009-back-dumbbelllatrows",
+    "id": "0009-back-exercise",
     "name": "Dumbbell Lat Rows",
+    "alt_names": [],
     "rank": 3,
     "group": "back",
     "region": "lats",
     "requirements": ["dumbbell", "bench"],
     "variations": ["chest-supported"],
     "tips": "",
-    "movement_type": "compound"
+    "movement_type": "compound",
+    "hypertrophy_criteria": {
+      "target_function": 10,
+      "stability": 10,
+      "limiting_factor": 8,
+      "time_efficiency": 8,
+      "loadability": 5,
+      "stretch": {
+        "lengthened": 10,
+        "challenging": 10,
+        "partial_friendly": 10
+      },
+      "fatigue": 7
+    }
   },
   {
-    "id": "0010-back-singlearmpulldowns",
+    "id": "0010-back-exercise",
     "name": "Single-Arm Pulldowns",
+    "alt_names": [],
     "rank": 4,
     "group": "back",
     "region": "lats",
     "requirements": ["cable"],
     "variations": [],
     "tips": "",
-    "movement_type": "compound"
+    "movement_type": "compound",
+    "hypertrophy_criteria": {
+      "target_function": 10,
+      "stability": 10,
+      "limiting_factor": 8,
+      "time_efficiency": 8,
+      "loadability": 5,
+      "stretch": {
+        "lengthened": 10,
+        "challenging": 10,
+        "partial_friendly": 10
+      },
+      "fatigue": 7
+    }
   },
   {
-    "id": "0011-back-singlearmpulldowns",
+    "id": "0011-back-exercise",
     "name": "Straight-Arm Pulldown",
+    "alt_names": [],
     "rank": 5,
     "group": "back",
     "region": "lats",
     "requirements": ["cable"],
     "variations": [],
     "tips": "",
-    "movement_type": "isolation"
+    "movement_type": "isolation",
+    "hypertrophy_criteria": {
+      "target_function": 10,
+      "stability": 10,
+      "limiting_factor": 8,
+      "time_efficiency": 8,
+      "loadability": 5,
+      "stretch": {
+        "lengthened": 10,
+        "challenging": 10,
+        "partial_friendly": 10
+      },
+      "fatigue": 7
+    }
   },
   {
-    "id": "0012-back-pullovers",
-    "name": "Pullovers",
+    "id": "0012-back-exercise",
+    "name": "Dumbbell Pullover",
+    "alt_names": [],
     "rank": 7,
     "group": "back",
     "region": "lats",
     "requirements": ["dumbbell", "bench"],
     "variations": [],
     "tips": "",
-    "movement_type": "compound"
+    "movement_type": "compound",
+    "hypertrophy_criteria": {
+      "target_function": 10,
+      "stability": 10,
+      "limiting_factor": 8,
+      "time_efficiency": 8,
+      "loadability": 5,
+      "stretch": {
+        "lengthened": 10,
+        "challenging": 10,
+        "partial_friendly": 10
+      },
+      "fatigue": 7
+    }
   },
   {
-    "id": "0013-back-cablepullovers",
-    "name": "Cable Pullovers",
+    "id": "0013-back-exercise",
+    "name": "Cable Pullover",
+    "alt_names": ["Straight-Arm Pulldown"],
     "rank": 6,
     "group": "back",
     "region": "lats",
     "requirements": ["dumbbell", "bench"],
     "variations": [],
     "tips": "",
-    "movement_type": "compound"
+    "movement_type": "compound",
+    "hypertrophy_criteria": {
+      "target_function": 10,
+      "stability": 10,
+      "limiting_factor": 8,
+      "time_efficiency": 8,
+      "loadability": 5,
+      "stretch": {
+        "lengthened": 10,
+        "challenging": 10,
+        "partial_friendly": 10
+      },
+      "fatigue": 7
+    }
   },
   {
-    "id": "0014-back-tbarrows",
+    "id": "0014-back-exercise",
     "name": "T-Bar Rows",
+    "alt_names": [],
     "rank": 8,
     "group": "back",
-    "region": "upper",
+    "region": "upper-back",
     "requirements": ["barbell"],
     "variations": [],
     "tips": "",
-    "movement_type": "compound"
+    "movement_type": "compound",
+    "hypertrophy_criteria": {
+      "target_function": 10,
+      "stability": 10,
+      "limiting_factor": 8,
+      "time_efficiency": 8,
+      "loadability": 5,
+      "stretch": {
+        "lengthened": 10,
+        "challenging": 10,
+        "partial_friendly": 10
+      },
+      "fatigue": 7
+    }
   }
 ]

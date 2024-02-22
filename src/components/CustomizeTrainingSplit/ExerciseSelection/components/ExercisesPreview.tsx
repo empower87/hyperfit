@@ -1,4 +1,6 @@
 import { ReactNode, useState } from "react";
+// import FilterIcon from "src/assets/icons/filter-svg.svg";
+import { FilterIcon, SearchIcon } from "~/assets/icons/_icons";
 import {
   BG_COLOR_M5,
   BG_COLOR_M6,
@@ -125,7 +127,12 @@ function Header({ children }: { children: ReactNode }) {
 }
 function Search({}) {
   return (
-    <div className={cn(`flex indent-1 text-white ${BG_COLOR_M8}`)}>Search</div>
+    <div className={cn(`flex indent-1 text-white ${BG_COLOR_M8}`)}>
+      <div className="mx-1 flex items-center justify-center">
+        <SearchIcon className="fill:white text-sm" />
+      </div>
+      <div className="">Search</div>
+    </div>
   );
 }
 
@@ -182,7 +189,8 @@ function Filter({}) {
   return (
     <div className={cn(`relative`)}>
       <Button onClick={onClick} className="text-xxs">
-        filter
+        {/* <FilterIcon /> */}
+        <FilterIcon className="fill-white text-sm" />
       </Button>
       {showMenu ? <FilterMenu /> : null}
     </div>
@@ -216,7 +224,7 @@ function SelectExercise({ children }: SelectExerciseProps) {
   return (
     <div className={cn(`flex flex-col ${BG_COLOR_M7} w-3/4`)}>
       <div className={cn(`flex justify-between ${BG_COLOR_M6} mb-2`)}>
-        <div className={cn(`text-sm indent-1 text-white`)}>Select Exercise</div>
+        <div className={cn(`indent-1 text-sm text-white`)}>Select Exercise</div>
         <button
           className={cn(
             `mr-1 flex h-5 w-5 items-center justify-center text-white hover:${BG_COLOR_M5}`
