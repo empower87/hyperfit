@@ -1,4 +1,4 @@
-import { ReactNode, useState } from "react";
+import { ReactNode, useCallback, useState } from "react";
 // import FilterIcon from "src/assets/icons/filter-svg.svg";
 import { FilterIcon, SearchIcon } from "~/assets/icons/_icons";
 import {
@@ -6,7 +6,9 @@ import {
   BG_COLOR_M6,
   BG_COLOR_M7,
   BG_COLOR_M8,
+  BORDER_COLOR_M5,
 } from "~/constants/themes";
+import { useOutsideClick } from "~/hooks/useOnOutsideClick";
 import { MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { cn } from "~/lib/clsx";
 import { getGroupList } from "~/utils/getExercises";
@@ -135,12 +137,19 @@ function Search({}) {
   );
 }
 
-function CategoryItem({ title }: { title: string }) {
+function CategoryItem({
+  title,
+  onClick,
+}: {
+  title: string;
+  onClick: (title: string) => void;
+}) {
   return (
     <div
       className={cn(
-        `flex items-center justify-center border p-1 text-xs text-white`
+        `flex cursor-pointer items-center justify-center border p-1 text-xs text-white`
       )}
+      onClick={() => onClick(title)}
     >
       {title}
     </div>
@@ -164,40 +173,101 @@ function Category({ title, children }: CategoryProps) {
   );
 }
 
-function FilterMenu({}) {
+type FilterMenuProps = {
+  onSelectTag: (title: string) => void;
+};
+function FilterMenu({ onSelectTag }: FilterMenuProps) {
   return (
-    <div className={cn(`absolute flex flex-col space-y-1 p-1 ${BG_COLOR_M7}`)}>
+    <div
+      className={cn(
+        `absolute right-0 flex flex-col space-y-1 p-2 ${BG_COLOR_M7} border ${BORDER_COLOR_M5}`
+      )}
+    >
       <Category title="Equipment">
-        <CategoryItem title="Dumbbell" />
-        <CategoryItem title="Barbell" />
-        <CategoryItem title="Machine" />
+        <CategoryItem onClick={onSelectTag} title="Dumbbell" />
+        <CategoryItem onClick={onSelectTag} title="Barbell" />
+        <CategoryItem onClick={onSelectTag} title="Machine" />
       </Category>
 
       <Category title="Sub-Group Focus">
-        <CategoryItem title="Lat" />
-        <CategoryItem title="Upper Back" />
-        <CategoryItem title="Upper Traps" />
+        <CategoryItem onClick={onSelectTag} title="Lat" />
+        <CategoryItem onClick={onSelectTag} title="Upper Back" />
+        <CategoryItem onClick={onSelectTag} title="Upper Traps" />
       </Category>
 
       <Category title="">
-        <CategoryItem title="Lat" />
-        <CategoryItem title="Upper Back" />
-        <CategoryItem title="Upper Traps" />
+        <CategoryItem onClick={onSelectTag} title="Lat" />
+        <CategoryItem onClick={onSelectTag} title="Upper Back" />
+        <CategoryItem onClick={onSelectTag} title="Upper Traps" />
       </Category>
     </div>
   );
 }
 
+type FilterTagProps = {
+  tag: string;
+  onRemoveTag: (tag: string) => void;
+};
+function FilterTag({ tag, onRemoveTag }: FilterTagProps) {
+  return (
+    <div
+      className={cn(
+        `m-0.5 flex h-5 items-center justify-center p-1 text-white ${BORDER_COLOR_M5} ${BG_COLOR_M6}`
+      )}
+    >
+      <div className="p-0.5">{tag}</div>
+      <button
+        className={cn(`flex items-center justify-center p-0.5`)}
+        onClick={() => onRemoveTag(tag)}
+      >
+        x
+      </button>
+    </div>
+  );
+}
+
+type FilterProps = {
+  tags: string[];
+};
 function Filter({}) {
   const [showMenu, setShowMenu] = useState(false);
   const onClick = () => setShowMenu(true);
-  return (
-    <div className={cn(`relative`)}>
-      <Button onClick={onClick} className="text-xxs">
-        <FilterIcon className="fill-white text-sm" />
-      </Button>
+  const onClose = () => setShowMenu(false);
+  const ref = useOutsideClick(onClose);
+  const [tags, setTags] = useState<string[]>([]);
 
-      {showMenu ? <FilterMenu /> : null}
+  const onSelectTagHandler = useCallback(
+    (title: string) => {
+      const findTag = tags.find((each) => each === title);
+      if (findTag) return;
+
+      setTags(() => [...tags, title]);
+    },
+    [tags]
+  );
+
+  const onRemoveTag = useCallback(
+    (tag: string) => {
+      const filterTags = tags.filter((each) => each !== tag);
+      setTags(filterTags);
+    },
+    [tags]
+  );
+
+  return (
+    <div ref={ref} className={cn(`relative flex w-1/2`)}>
+      <div className={`flex w-11/12 flex-wrap text-xxs`}>
+        {tags.map((each) => {
+          return <FilterTag tag={each} onRemoveTag={onRemoveTag} />;
+        })}
+      </div>
+      <div className={`w-1/12`}>
+        <Button onClick={onClick} className="">
+          <FilterIcon className="fill-white text-sm" />
+        </Button>
+      </div>
+
+      {showMenu ? <FilterMenu onSelectTag={onSelectTagHandler} /> : null}
     </div>
   );
 }

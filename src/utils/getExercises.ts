@@ -20,6 +20,10 @@ import {
 } from "../constants/exercises/index";
 import { getMuscleData } from "./getMuscleData";
 
+// back
+// regions: "lat" | "upper-back" | "upper-trap"
+
+// TIME EFFICIENCY: barbell
 export type Exercise = {
   id: string;
   name: string;
@@ -30,8 +34,42 @@ export type Exercise = {
   variations: string[];
   tips?: string;
   movement_type?: string;
+  hypertrophy_criteria?: {
+    target_function: number;
+    stability: number;
+    limiting_factor: number;
+    stretch: {
+      lengthened: boolean;
+      challenging: boolean;
+      partial_friendly: boolean;
+    };
+    time_efficiency: number;
+    loadability: number;
+  };
 };
-
+export type ExerciseTest = {
+  id: string;
+  name: string;
+  rank: number;
+  group: string;
+  region: string;
+  requirements: string[];
+  variations: string[];
+  tips?: string;
+  movement_type?: string;
+  hypertrophy_criteria: {
+    target_function: number;
+    stability: number;
+    limiting_factor: number;
+    stretch: {
+      lengthened: boolean;
+      challenging: boolean;
+      partial_friendly: boolean;
+    };
+    time_efficiency: number;
+    loadability: number;
+  };
+};
 export const getGroupList = (group: string): Exercise[] => {
   switch (group) {
     case "back":

@@ -70,7 +70,7 @@ export default function EditExerciseModal({
         <div className="flex h-full">
           <SideMenu
             split={split}
-            group={selectedExercise.group}
+            group={selectedExercise.muscle}
             exercise={selectedExercise}
             onSelect={selectExerciseHandler}
           />
@@ -78,7 +78,7 @@ export default function EditExerciseModal({
           <div className=" flex w-3/4 flex-col p-2">
             <div className=" h-full">
               <ExerciseDetails
-                group={selectedExercise.group}
+                group={selectedExercise.muscle}
                 selectedExercise={selectedExercise}
               />
               <EditSets

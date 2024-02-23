@@ -21,7 +21,7 @@ const TrainingProgramContext = createContext<TrainingProgramType>({
   split_sessions: INITIAL_STATE.split_sessions,
   frequency: INITIAL_STATE.frequency,
   training_program_params: INITIAL_STATE.training_program_params,
-  prioritized_muscle_list: [],
+  prioritized_muscle_list: INITIAL_STATE.muscle_priority_list,
   handleUpdateMuscleList: () => {},
   handleUpdateBreakpoint: () => {},
   handleUpdateBreakpoints: () => {},
@@ -29,8 +29,8 @@ const TrainingProgramContext = createContext<TrainingProgramType>({
   handleFrequencyChange: () => {},
   handleRearrangeTrainingWeek: () => {},
   handleChangeFrequencyProgression: () => {},
-  mrv_breakpoint: 4,
-  mev_breakpoint: 9,
+  mrv_breakpoint: INITIAL_STATE.mrv_breakpoint,
+  mev_breakpoint: INITIAL_STATE.mev_breakpoint,
 });
 
 const TrainingProgramProvider = ({ children }: { children: ReactNode }) => {

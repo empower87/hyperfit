@@ -27,7 +27,7 @@ const ExerciseDetail = ({ name, value }: ExerciseDetailProps) => {
     <div className=" flex flex-col">
       <div className={BG_COLOR_M6 + " text-xxs text-white"}>{name}</div>
 
-      <div className={" text-xxs flex justify-center text-white"}>{value}</div>
+      <div className={" flex justify-center text-xxs text-white"}>{value}</div>
     </div>
   );
 };
@@ -35,9 +35,9 @@ const ExerciseDetail = ({ name, value }: ExerciseDetailProps) => {
 const ExerciseDetailWeekOne = ({ name, value }: ExerciseDetailProps) => {
   return (
     <div className=" flex flex-col">
-      <div className={BG_COLOR_M6 + " text-xxs mr-1 text-white"}>{name}</div>
+      <div className={BG_COLOR_M6 + " mr-1 text-xxs text-white"}>{name}</div>
 
-      <div className={" text-xxs mr-1 flex justify-center text-white"}>
+      <div className={" mr-1 flex justify-center text-xxs text-white"}>
         <div className={BG_COLOR_M6 + " flex h-5 w-5 justify-center"}>-</div>
         <div className={" flex h-5 w-6 justify-center"}>{value}</div>
         <div className={BG_COLOR_M6 + " flex h-5 w-5 justify-center"}>+</div>
@@ -107,7 +107,8 @@ const MesocycleDetails = ({
   exercise,
   selectedMesocycle,
 }: MesocycleDetailsProps) => {
-  const exerciseDetails = exercise.meso_details[mesocycle - 1];
+  // const exerciseDetails = exercise.meso_details[mesocycle - 1];
+  const exerciseDetails = exercise.mesocycle_progression[mesocycle - 1];
   const isSelected = mesocycle === selectedMesocycle ? true : false;
 
   // const defaultClass = " text-white w-1/5";
