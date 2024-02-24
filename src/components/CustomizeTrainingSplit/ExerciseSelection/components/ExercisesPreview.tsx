@@ -11,9 +11,13 @@ import {
 import { useOutsideClick } from "~/hooks/useOnOutsideClick";
 import { MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { cn } from "~/lib/clsx";
-import { getGroupList } from "~/utils/getExercises";
+import { Exercise } from "~/utils/getExercises";
 import { Button } from "../../MusclePriorityList/MusclePriorityList";
 import { EditMuscleModal } from "../../MusclePriorityList/components/EditMuscleModal";
+import useSortableExercises, {
+  FilterTags,
+  FilterTagsKey,
+} from "./useSortableExercises";
 
 type ExercisesPreviewProps = {
   musclePriorityList: MusclePriorityType[];
@@ -58,7 +62,11 @@ export default function ExercisesPreview({
     <div className={cn(`mr-2 flex w-44 flex-col`)}>
       {isOpen ? (
         <EditMuscleModal isOpen={isOpen} onClose={onClose}>
-          <SelectExercise>
+          <SelectExerciseWrapper
+            muscle={musclePriorityList[selectedMuscleIndex].muscle}
+            exercise={selectedExercises[selectedExerciseIndex]?.exercise}
+          />
+          {/* <SelectExercise>
             <SelectExercise.Header>
               <SelectExercise.Search />
               <SelectExercise.Filter />
@@ -68,7 +76,7 @@ export default function ExercisesPreview({
               muscle={musclePriorityList[selectedMuscleIndex].muscle}
               exercise={selectedExercises[selectedExerciseIndex]?.exercise}
             />
-          </SelectExercise>
+          </SelectExercise> */}
         </EditMuscleModal>
       ) : null}
 
@@ -137,19 +145,16 @@ function Search({}) {
   );
 }
 
-function CategoryItem({
-  title,
-  onClick,
-}: {
+interface CategoryItemProps extends React.HTMLAttributes<HTMLDivElement> {
   title: string;
-  onClick: (title: string) => void;
-}) {
+}
+function CategoryItem({ title, ...props }: CategoryItemProps) {
   return (
     <div
+      {...props}
       className={cn(
         `flex cursor-pointer items-center justify-center border p-1 text-xs text-white`
       )}
-      onClick={() => onClick(title)}
     >
       {title}
     </div>
@@ -174,7 +179,7 @@ function Category({ title, children }: CategoryProps) {
 }
 
 type FilterMenuProps = {
-  onSelectTag: (title: string) => void;
+  onSelectTag: (key: FilterTagsKey, value: string | null) => void;
 };
 function FilterMenu({ onSelectTag }: FilterMenuProps) {
   return (
@@ -184,21 +189,44 @@ function FilterMenu({ onSelectTag }: FilterMenuProps) {
       )}
     >
       <Category title="Equipment">
-        <CategoryItem onClick={onSelectTag} title="Dumbbell" />
-        <CategoryItem onClick={onSelectTag} title="Barbell" />
-        <CategoryItem onClick={onSelectTag} title="Machine" />
+        <CategoryItem
+          onClick={() => onSelectTag("equipment", "dumbbell")}
+          title="Dumbbell"
+        />
+        <CategoryItem
+          onClick={() => onSelectTag("equipment", "barbell")}
+          title="Barbell"
+        />
+        <CategoryItem
+          onClick={() => onSelectTag("equipment", "machine")}
+          title="Machine"
+        />
       </Category>
 
       <Category title="Sub-Group Focus">
-        <CategoryItem onClick={onSelectTag} title="Lat" />
-        <CategoryItem onClick={onSelectTag} title="Upper Back" />
-        <CategoryItem onClick={onSelectTag} title="Upper Traps" />
+        <CategoryItem
+          onClick={() => onSelectTag("region", "lat")}
+          title="Lat"
+        />
+        <CategoryItem
+          onClick={() => onSelectTag("region", "upper-back")}
+          title="Upper Back"
+        />
+        <CategoryItem
+          onClick={() => onSelectTag("region", "upper-traps")}
+          title="Upper Traps"
+        />
       </Category>
 
-      <Category title="">
-        <CategoryItem onClick={onSelectTag} title="Lat" />
-        <CategoryItem onClick={onSelectTag} title="Upper Back" />
-        <CategoryItem onClick={onSelectTag} title="Upper Traps" />
+      <Category title="Movement Type">
+        <CategoryItem
+          onClick={() => onSelectTag("movement_type", "compound")}
+          title="Compound"
+        />
+        <CategoryItem
+          onClick={() => onSelectTag("movement_type", "isolation")}
+          title="Isolation"
+        />
       </Category>
     </div>
   );
@@ -227,29 +255,36 @@ function FilterTag({ tag, onRemoveTag }: FilterTagProps) {
 }
 
 type FilterProps = {
-  tags: string[];
+  tags: FilterTags;
+  onFilterTagChange: (key: FilterTagsKey, value: string | null) => void;
 };
-function Filter({}) {
+function Filter({ tags, onFilterTagChange }: FilterProps) {
   const [showMenu, setShowMenu] = useState(false);
   const onClick = () => setShowMenu(true);
   const onClose = () => setShowMenu(false);
+
   const ref = useOutsideClick(onClose);
-  const [tags, setTags] = useState<string[]>([]);
+  // const [tags, setTags] = useState<string[]>([]);
 
   const onSelectTagHandler = useCallback(
     (title: string) => {
-      const findTag = tags.find((each) => each === title);
-      if (findTag) return;
-
-      setTags(() => [...tags, title]);
+      // const findTag = tags.find((each) => each === title);
+      // if (findTag) return;
+      // setTags(() => [...tags, title]);
     },
     [tags]
   );
 
   const onRemoveTag = useCallback(
     (tag: string) => {
-      const filterTags = tags.filter((each) => each !== tag);
-      setTags(filterTags);
+      // const filterTags = tags.filter((each) => each !== tag);
+      // setTags(filterTags);
+      const tagKey = Object.keys(tags).find(
+        (key) => tags[key as FilterTagsKey] === tag
+      );
+      if (tagKey) {
+        onFilterTagChange(tagKey as FilterTagsKey, null);
+      }
     },
     [tags]
   );
@@ -257,7 +292,8 @@ function Filter({}) {
   return (
     <div ref={ref} className={cn(`relative flex w-1/2`)}>
       <div className={`flex w-11/12 flex-wrap text-xxs`}>
-        {tags.map((each) => {
+        {Object.values(tags).map((each) => {
+          if (each == null) return null;
           return <FilterTag tag={each} onRemoveTag={onRemoveTag} />;
         })}
       </div>
@@ -267,17 +303,19 @@ function Filter({}) {
         </Button>
       </div>
 
-      {showMenu ? <FilterMenu onSelectTag={onSelectTagHandler} /> : null}
+      {showMenu ? <FilterMenu onSelectTag={onFilterTagChange} /> : null}
     </div>
   );
 }
 
 type ListProps = {
-  muscle: string;
+  // muscle: string;
   exercise: string;
+  exercises: Exercise[];
 };
-function List({ muscle, exercise }: ListProps) {
-  const exercises = getGroupList(muscle);
+
+function List({ exercise, exercises }: ListProps) {
+  // const exercises = getGroupList(muscle);
   return (
     <div className={cn(`flex flex-col`)}>
       <div className={cn(`mb-2 flex border-b-2 indent-1 text-xs text-white`)}>
@@ -313,7 +351,32 @@ function SelectExercise({ children }: SelectExerciseProps) {
     </div>
   );
 }
+type SelectExerciseWrapperProps = {
+  muscle: string;
+  exercise: string;
+};
+function SelectExerciseWrapper({
+  muscle,
+  exercise,
+}: SelectExerciseWrapperProps) {
+  const { exercises, filterTags, onFilterTagChange } = useSortableExercises(
+    muscle,
+    exercise
+  );
+  return (
+    <SelectExercise>
+      <SelectExercise.Header>
+        <SelectExercise.Search />
+        <SelectExercise.Filter
+          tags={filterTags}
+          onFilterTagChange={onFilterTagChange}
+        />
+      </SelectExercise.Header>
 
+      <SelectExercise.List exercise={exercise} exercises={exercises} />
+    </SelectExercise>
+  );
+}
 SelectExercise.List = List;
 SelectExercise.Header = Header;
 SelectExercise.Search = Search;
