@@ -188,6 +188,7 @@ function FilterMenu({ onSelectTag }: FilterMenuProps) {
         `absolute right-0 flex flex-col space-y-1 p-2 ${BG_COLOR_M7} border ${BORDER_COLOR_M5}`
       )}
     >
+      <div className={cn(`mb-2 border-b-2 text-sm text-white`)}>Filters</div>
       <Category title="Equipment">
         <CategoryItem
           onClick={() => onSelectTag("equipment", "dumbbell")}

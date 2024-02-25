@@ -8,7 +8,20 @@
     "requirements": ["barbell", "bench"],
     "variations": ["wide-grip"],
     "tips": "",
-    "movement_type": "compound"
+    "movement_type": "compound",
+    "hypertrophy_criteria": {
+      "target_function": 9,
+      "stability": 5,
+      "limiting_factor": 5,
+      "time_efficiency": 5,
+      "loadability": 9,
+      "stretch": {
+        "lengthened": 10,
+        "challenging": 10,
+        "partial_friendly": 10
+      },
+      "fatigue": 7
+    }
   },
   {
     "id": "0002-chest-inclinebenchpress",
@@ -19,7 +32,20 @@
     "requirements": ["barbell", "bench"],
     "variations": ["wide-grip"],
     "tips": "",
-    "movement_type": "compound"
+    "movement_type": "compound",
+    "hypertrophy_criteria": {
+      "target_function": 9,
+      "stability": 5,
+      "limiting_factor": 5,
+      "time_efficiency": 5,
+      "loadability": 9,
+      "stretch": {
+        "lengthened": 10,
+        "challenging": 10,
+        "partial_friendly": 10
+      },
+      "fatigue": 7
+    }
   },
   {
     "id": "0003-chest-dumbbellbenchpress",
@@ -30,7 +56,20 @@
     "requirements": ["dumbbell", "bench"],
     "variations": [],
     "tips": "",
-    "movement_type": "compound"
+    "movement_type": "compound",
+    "hypertrophy_criteria": {
+      "target_function": 9,
+      "stability": 5,
+      "limiting_factor": 5,
+      "time_efficiency": 5,
+      "loadability": 9,
+      "stretch": {
+        "lengthened": 10,
+        "challenging": 10,
+        "partial_friendly": 10
+      },
+      "fatigue": 7
+    }
   },
   {
     "id": "0004-chest-inclinedumbbellbenchpress",
@@ -41,7 +80,20 @@
     "requirements": ["dumbbell", "bench"],
     "variations": [],
     "tips": "",
-    "movement_type": "compound"
+    "movement_type": "compound",
+    "hypertrophy_criteria": {
+      "target_function": 9,
+      "stability": 5,
+      "limiting_factor": 5,
+      "time_efficiency": 5,
+      "loadability": 9,
+      "stretch": {
+        "lengthened": 10,
+        "challenging": 10,
+        "partial_friendly": 10
+      },
+      "fatigue": 7
+    }
   },
   {
     "id": "0005-chest-chestpress",
@@ -52,7 +104,20 @@
     "requirements": ["machine"],
     "variations": [],
     "tips": "",
-    "movement_type": "compound"
+    "movement_type": "compound",
+    "hypertrophy_criteria": {
+      "target_function": 9,
+      "stability": 5,
+      "limiting_factor": 5,
+      "time_efficiency": 5,
+      "loadability": 9,
+      "stretch": {
+        "lengthened": 10,
+        "challenging": 10,
+        "partial_friendly": 10
+      },
+      "fatigue": 7
+    }
   },
   {
     "id": "0006-chest-dumbbellfly",
@@ -63,7 +128,20 @@
     "requirements": ["dumbbell", "bench"],
     "variations": ["incline"],
     "tips": "",
-    "movement_type": "isolation"
+    "movement_type": "isolation",
+    "hypertrophy_criteria": {
+      "target_function": 9,
+      "stability": 5,
+      "limiting_factor": 5,
+      "time_efficiency": 5,
+      "loadability": 9,
+      "stretch": {
+        "lengthened": 10,
+        "challenging": 10,
+        "partial_friendly": 10
+      },
+      "fatigue": 7
+    }
   },
   {
     "id": "0007-chest-cablefly",
@@ -74,7 +152,20 @@
     "requirements": ["cable"],
     "variations": [],
     "tips": "",
-    "movement_type": "isolation"
+    "movement_type": "isolation",
+    "hypertrophy_criteria": {
+      "target_function": 9,
+      "stability": 5,
+      "limiting_factor": 5,
+      "time_efficiency": 5,
+      "loadability": 9,
+      "stretch": {
+        "lengthened": 10,
+        "challenging": 10,
+        "partial_friendly": 10
+      },
+      "fatigue": 7
+    }
   },
   {
     "id": "0008-chest-machinefly",
@@ -85,7 +176,20 @@
     "requirements": ["machine"],
     "variations": [],
     "tips": "",
-    "movement_type": "isolation"
+    "movement_type": "isolation",
+    "hypertrophy_criteria": {
+      "target_function": 9,
+      "stability": 5,
+      "limiting_factor": 5,
+      "time_efficiency": 5,
+      "loadability": 9,
+      "stretch": {
+        "lengthened": 10,
+        "challenging": 10,
+        "partial_friendly": 10
+      },
+      "fatigue": 7
+    }
   },
   {
     "id": "0009-chest-pushups",
@@ -96,6 +200,19 @@
     "requirements": [],
     "variations": [],
     "tips": "",
-    "movement_type": "compound"
+    "movement_type": "compound",
+    "hypertrophy_criteria": {
+      "target_function": 9,
+      "stability": 5,
+      "limiting_factor": 5,
+      "time_efficiency": 5,
+      "loadability": 9,
+      "stretch": {
+        "lengthened": 10,
+        "challenging": 10,
+        "partial_friendly": 10
+      },
+      "fatigue": 7
+    }
   }
 ]

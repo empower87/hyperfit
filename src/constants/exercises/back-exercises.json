@@ -11,11 +11,11 @@
     "tips": "",
     "movement_type": "compound",
     "hypertrophy_criteria": {
-      "target_function": 10,
-      "stability": 10,
-      "limiting_factor": 8,
-      "time_efficiency": 8,
-      "loadability": 5,
+      "target_function": 9,
+      "stability": 5,
+      "limiting_factor": 5,
+      "time_efficiency": 5,
+      "loadability": 9,
       "stretch": {
         "lengthened": 10,
         "challenging": 10,

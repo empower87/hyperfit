@@ -8,7 +8,20 @@
     "requirements": ["bench", "dumbbell"],
     "variations": ["alternating"],
     "tips": "",
-    "movement_type": "isolation"
+    "movement_type": "isolation",
+    "hypertrophy_criteria": {
+      "target_function": 9,
+      "stability": 5,
+      "limiting_factor": 5,
+      "time_efficiency": 5,
+      "loadability": 9,
+      "stretch": {
+        "lengthened": 10,
+        "challenging": 10,
+        "partial_friendly": 10
+      },
+      "fatigue": 7
+    }
   },
   {
     "id": "0002-biceps-barbellcurl",
@@ -19,7 +32,20 @@
     "requirements": ["barbell"],
     "variations": [],
     "tips": "",
-    "movement_type": "isolation"
+    "movement_type": "isolation",
+    "hypertrophy_criteria": {
+      "target_function": 9,
+      "stability": 5,
+      "limiting_factor": 5,
+      "time_efficiency": 5,
+      "loadability": 9,
+      "stretch": {
+        "lengthened": 10,
+        "challenging": 10,
+        "partial_friendly": 10
+      },
+      "fatigue": 7
+    }
   },
   {
     "id": "0003-biceps-dumbbellcurl",
@@ -30,7 +56,20 @@
     "requirements": ["dumbbell"],
     "variations": ["alternating"],
     "tips": "",
-    "movement_type": "isolation"
+    "movement_type": "isolation",
+    "hypertrophy_criteria": {
+      "target_function": 9,
+      "stability": 5,
+      "limiting_factor": 5,
+      "time_efficiency": 5,
+      "loadability": 9,
+      "stretch": {
+        "lengthened": 10,
+        "challenging": 10,
+        "partial_friendly": 10
+      },
+      "fatigue": 7
+    }
   },
   {
     "id": "0004-biceps-hammercurl",
@@ -41,7 +80,20 @@
     "requirements": ["dumbbell"],
     "variations": ["alternating"],
     "tips": "",
-    "movement_type": "isolation"
+    "movement_type": "isolation",
+    "hypertrophy_criteria": {
+      "target_function": 9,
+      "stability": 5,
+      "limiting_factor": 5,
+      "time_efficiency": 5,
+      "loadability": 9,
+      "stretch": {
+        "lengthened": 10,
+        "challenging": 10,
+        "partial_friendly": 10
+      },
+      "fatigue": 7
+    }
   },
   {
     "id": "0005-biceps-cablecurl",
@@ -52,7 +104,20 @@
     "requirements": ["cable"],
     "variations": ["single-arm", "v-bar"],
     "tips": "",
-    "movement_type": "isolation"
+    "movement_type": "isolation",
+    "hypertrophy_criteria": {
+      "target_function": 9,
+      "stability": 5,
+      "limiting_factor": 5,
+      "time_efficiency": 5,
+      "loadability": 9,
+      "stretch": {
+        "lengthened": 10,
+        "challenging": 10,
+        "partial_friendly": 10
+      },
+      "fatigue": 7
+    }
   },
   {
     "id": "0006-biceps-barbellpreachercurl",
@@ -63,7 +128,20 @@
     "requirements": ["barbell", "preacher"],
     "variations": [],
     "tips": "",
-    "movement_type": "isolation"
+    "movement_type": "isolation",
+    "hypertrophy_criteria": {
+      "target_function": 9,
+      "stability": 5,
+      "limiting_factor": 5,
+      "time_efficiency": 5,
+      "loadability": 9,
+      "stretch": {
+        "lengthened": 10,
+        "challenging": 10,
+        "partial_friendly": 10
+      },
+      "fatigue": 7
+    }
   },
   {
     "id": "0007-biceps-dumbbellpreachercurl",
@@ -74,7 +152,20 @@
     "requirements": ["dumbbell", "preacher"],
     "variations": ["single-arm"],
     "tips": "",
-    "movement_type": "isolation"
+    "movement_type": "isolation",
+    "hypertrophy_criteria": {
+      "target_function": 9,
+      "stability": 5,
+      "limiting_factor": 5,
+      "time_efficiency": 5,
+      "loadability": 9,
+      "stretch": {
+        "lengthened": 10,
+        "challenging": 10,
+        "partial_friendly": 10
+      },
+      "fatigue": 7
+    }
   },
   {
     "id": "0008-biceps-barbellspidercurl",
@@ -85,7 +176,20 @@
     "requirements": ["barbell"],
     "variations": [],
     "tips": "",
-    "movement_type": "isolation"
+    "movement_type": "isolation",
+    "hypertrophy_criteria": {
+      "target_function": 9,
+      "stability": 5,
+      "limiting_factor": 5,
+      "time_efficiency": 5,
+      "loadability": 9,
+      "stretch": {
+        "lengthened": 10,
+        "challenging": 10,
+        "partial_friendly": 10
+      },
+      "fatigue": 7
+    }
   },
   {
     "id": "0009-biceps-dumbbellspidercurl",
@@ -96,7 +200,20 @@
     "requirements": ["dumbbell"],
     "variations": ["single-arm"],
     "tips": "",
-    "movement_type": "isolation"
+    "movement_type": "isolation",
+    "hypertrophy_criteria": {
+      "target_function": 9,
+      "stability": 5,
+      "limiting_factor": 5,
+      "time_efficiency": 5,
+      "loadability": 9,
+      "stretch": {
+        "lengthened": 10,
+        "challenging": 10,
+        "partial_friendly": 10
+      },
+      "fatigue": 7
+    }
   },
   {
     "id": "0010-biceps-concentrationcurl",
@@ -107,7 +224,20 @@
     "requirements": ["dumbbell", "bench"],
     "variations": [],
     "tips": "",
-    "movement_type": "isolation"
+    "movement_type": "isolation",
+    "hypertrophy_criteria": {
+      "target_function": 9,
+      "stability": 5,
+      "limiting_factor": 5,
+      "time_efficiency": 5,
+      "loadability": 9,
+      "stretch": {
+        "lengthened": 10,
+        "challenging": 10,
+        "partial_friendly": 10
+      },
+      "fatigue": 7
+    }
   },
   {
     "id": "0011-biceps-chinups",
@@ -118,7 +248,20 @@
     "requirements": ["bar"],
     "variations": [],
     "tips": "",
-    "movement_type": "compound"
+    "movement_type": "compound",
+    "hypertrophy_criteria": {
+      "target_function": 9,
+      "stability": 5,
+      "limiting_factor": 5,
+      "time_efficiency": 5,
+      "loadability": 9,
+      "stretch": {
+        "lengthened": 10,
+        "challenging": 10,
+        "partial_friendly": 10
+      },
+      "fatigue": 7
+    }
   },
   {
     "id": "0012-biceps-machinecurl",
@@ -129,7 +272,20 @@
     "requirements": ["machine"],
     "variations": [],
     "tips": "",
-    "movement_type": "isolation"
+    "movement_type": "isolation",
+    "hypertrophy_criteria": {
+      "target_function": 9,
+      "stability": 5,
+      "limiting_factor": 5,
+      "time_efficiency": 5,
+      "loadability": 9,
+      "stretch": {
+        "lengthened": 10,
+        "challenging": 10,
+        "partial_friendly": 10
+      },
+      "fatigue": 7
+    }
   },
   {
     "id": "0013-biceps-reversecurl",
@@ -140,6 +296,19 @@
     "requirements": ["barbell"],
     "variations": [],
     "tips": "",
-    "movement_type": "isolation"
+    "movement_type": "isolation",
+    "hypertrophy_criteria": {
+      "target_function": 9,
+      "stability": 5,
+      "limiting_factor": 5,
+      "time_efficiency": 5,
+      "loadability": 9,
+      "stretch": {
+        "lengthened": 10,
+        "challenging": 10,
+        "partial_friendly": 10
+      },
+      "fatigue": 7
+    }
   }
 ]
