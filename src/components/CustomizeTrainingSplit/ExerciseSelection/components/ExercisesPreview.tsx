@@ -9,7 +9,10 @@ import {
   BORDER_COLOR_M5,
 } from "~/constants/themes";
 import { useOutsideClick } from "~/hooks/useOnOutsideClick";
-import { MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
+import {
+  ExerciseType,
+  MusclePriorityType,
+} from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { cn } from "~/lib/clsx";
 import { Exercise } from "~/utils/getExercises";
 import { Button } from "../../MusclePriorityList/MusclePriorityList";
@@ -63,20 +66,9 @@ export default function ExercisesPreview({
       {isOpen ? (
         <EditMuscleModal isOpen={isOpen} onClose={onClose}>
           <SelectExerciseWrapper
-            muscle={musclePriorityList[selectedMuscleIndex].muscle}
+            muscle={musclePriorityList[selectedMuscleIndex]}
             exercise={selectedExercises[selectedExerciseIndex]?.exercise}
           />
-          {/* <SelectExercise>
-            <SelectExercise.Header>
-              <SelectExercise.Search />
-              <SelectExercise.Filter />
-            </SelectExercise.Header>
-
-            <SelectExercise.List
-              muscle={musclePriorityList[selectedMuscleIndex].muscle}
-              exercise={selectedExercises[selectedExerciseIndex]?.exercise}
-            />
-          </SelectExercise> */}
         </EditMuscleModal>
       ) : null}
 
@@ -134,7 +126,7 @@ function Item({ value, selected, className, ...props }: ItemProps) {
 function Header({ children }: { children: ReactNode }) {
   return <div className={"flex justify-between"}>{children}</div>;
 }
-function Search({}) {
+function Search() {
   return (
     <div className={cn(`m-1 flex w-1/2 indent-1 text-white ${BG_COLOR_M8}`)}>
       <div className="mx-1 flex items-center justify-center">
@@ -189,6 +181,7 @@ function FilterMenu({ onSelectTag }: FilterMenuProps) {
       )}
     >
       <div className={cn(`mb-2 border-b-2 text-sm text-white`)}>Filters</div>
+
       <Category title="Equipment">
         <CategoryItem
           onClick={() => onSelectTag("equipment", "dumbbell")}
@@ -312,26 +305,90 @@ function Filter({ tags, onFilterTagChange }: FilterProps) {
 type ListProps = {
   // muscle: string;
   exercise: string;
+  allExercises: ExerciseType[];
   exercises: Exercise[];
+  onSort: (key: string) => void;
 };
 
-function List({ exercise, exercises }: ListProps) {
-  // const exercises = getGroupList(muscle);
+function List({ exercise, allExercises, exercises, onSort }: ListProps) {
   return (
     <div className={cn(`flex flex-col`)}>
       <div className={cn(`mb-2 flex border-b-2 indent-1 text-xs text-white`)}>
-        Exercises
+        <div className={`w-6/12`}>Exercises</div>
+        <div
+          onClick={() => onSort("limiting_factor")}
+          className={`w-2/12 cursor-pointer hover:${BG_COLOR_M6}`}
+        >
+          Lim. Factor
+        </div>
+        <div
+          onClick={() => onSort("loadability")}
+          className={`w-1/12 cursor-pointer hover:${BG_COLOR_M6}`}
+        >
+          Load
+        </div>
+        <div
+          onClick={() => onSort("stability")}
+          className={`w-1/12 cursor-pointer hover:${BG_COLOR_M6}`}
+        >
+          Stable
+        </div>
+        <div
+          onClick={() => onSort("target_function")}
+          className={`w-1/12 cursor-pointer hover:${BG_COLOR_M6}`}
+        >
+          Target
+        </div>
+        <div
+          onClick={() => onSort("time_efficiency")}
+          className={`w-1/12 cursor-pointer hover:${BG_COLOR_M6}`}
+        >
+          Time Eff.
+        </div>
       </div>
 
       <div className={cn(`flex h-60 flex-col overflow-y-auto`)}>
         {exercises.map((each) => {
-          return <Item value={each.name} selected={exercise} />;
+          let isSelected = false;
+          const foundExercise = allExercises.find(
+            (e) => e.exercise === each.name
+          );
+          if (foundExercise) isSelected = true;
+          return <ListItem exercise={each} selected={isSelected} />;
         })}
       </div>
     </div>
   );
 }
-
+type ListItemProps = {
+  exercise: Exercise;
+  selected: boolean;
+};
+function ListItem({ exercise, selected }: ListItemProps) {
+  return (
+    <div
+      className={cn(
+        `flex p-1 indent-1 text-xs text-slate-400 ${BG_COLOR_M6} cursor-pointer hover:${BG_COLOR_M5}`,
+        { [`${BG_COLOR_M5}`]: selected }
+      )}
+    >
+      <div className={"w-6/12"}>{exercise.name}</div>
+      <div className={"w-2/12"}>
+        {exercise.hypertrophy_criteria?.limiting_factor}
+      </div>
+      <div className={"w-1/12"}>
+        {exercise.hypertrophy_criteria?.loadability}
+      </div>
+      <div className={"w-1/12"}>{exercise.hypertrophy_criteria?.stability}</div>
+      <div className={"w-1/12"}>
+        {exercise.hypertrophy_criteria?.target_function}
+      </div>
+      <div className={"w-1/12"}>
+        {exercise.hypertrophy_criteria?.time_efficiency}
+      </div>
+    </div>
+  );
+}
 type SelectExerciseProps = {
   children: ReactNode;
 };
@@ -353,17 +410,20 @@ function SelectExercise({ children }: SelectExerciseProps) {
   );
 }
 type SelectExerciseWrapperProps = {
-  muscle: string;
+  muscle: MusclePriorityType;
   exercise: string;
 };
 function SelectExerciseWrapper({
   muscle,
   exercise,
 }: SelectExerciseWrapperProps) {
-  const { exercises, filterTags, onFilterTagChange } = useSortableExercises(
-    muscle,
-    exercise
-  );
+  const {
+    exercises,
+    allExercises,
+    filterTags,
+    onFilterTagChange,
+    onSortHandler,
+  } = useSortableExercises(muscle, exercise);
   return (
     <SelectExercise>
       <SelectExercise.Header>
@@ -374,7 +434,12 @@ function SelectExerciseWrapper({
         />
       </SelectExercise.Header>
 
-      <SelectExercise.List exercise={exercise} exercises={exercises} />
+      <SelectExercise.List
+        exercise={exercise}
+        allExercises={allExercises}
+        exercises={exercises}
+        onSort={onSortHandler}
+      />
     </SelectExercise>
   );
 }

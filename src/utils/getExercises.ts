@@ -34,7 +34,7 @@ export type Exercise = {
   variations: string[];
   tips?: string;
   movement_type?: string;
-  hypertrophy_criteria?: {
+  hypertrophy_criteria: {
     target_function: number;
     stability: number;
     limiting_factor: number;
@@ -57,7 +57,7 @@ export type ExerciseTest = {
   variations: string[];
   tips?: string;
   movement_type?: string;
-  hypertrophy_criteria: {
+  hypertrophy_criteria?: {
     target_function: number;
     stability: number;
     limiting_factor: number;

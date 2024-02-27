@@ -243,111 +243,51 @@ export default function useEditMuscle(
   };
 }
 
-// export default function useEditMuscle(
-//   _muscle: MusclePriorityType,
-//   microcycles: number
-// ) {
-
-//   const { volume, muscle } = _muscle;
-//   const [volumeLandmark, setVolumeLandmark] = useState<VolumeLandmarkType>(
-//     volume.landmark
-//   );
-//   const [frequencyProgression, setFrequencyProgression] = useState<number[]>([
-//     ...volume.frequencyProgression,
-//   ]);
-//   const [setProgressionMatrix, setSetProgressionMatrix] = useState<
-//     number[][][][]
-//   >([...volume.setProgressionMatrix]);
-//   const [volumePerMicrocycle, setVolumePerMicrocycle] = useState<number[]>([]);
-
-//   useEffect(() => {
-//     const newSetMatrix = getSetProgressionMatrixForMuscle(
-//       frequencyProgression,
-//       volume.exercisesPerSessionSchema,
-//       microcycles
-//     );
-//     setSetProgressionMatrix(newSetMatrix);
-//   }, [microcycles, volume.exercisesPerSessionSchema, frequencyProgression]);
-
-//   useEffect(() => {
-//     const totalVolume = getTotalVolumeHandler(
-//       frequencyProgression,
-//       setProgressionMatrix,
-//       muscle,
-//       volume.landmark,
-//       microcycles
-//     );
-//     setVolumePerMicrocycle(totalVolume);
-//   }, [frequencyProgression, setProgressionMatrix, muscle, volume, microcycles]);
-
-//   const updateFrequencyProgression = useCallback(
-//     (index: number, value: number) => {
-//       const newFreqProgression = [...frequencyProgression];
-//       newFreqProgression[index] = value;
-//       setFrequencyProgression(newFreqProgression);
-//     },
-//     []
-//   );
-
-//   const getFrequencyProgressionRanges = (index: number): [number, number] => {
-//     const maxValue =
-//       volume.frequencyProgression[volume.frequencyProgression.length - 1];
-//     const prevValue = frequencyProgression[index - 1];
-//     const nextValue = frequencyProgression[index + 1];
-
-//     let minMaxTuple: [number, number] = [0, maxValue];
-//     if (prevValue !== undefined) {
-//       minMaxTuple[0] = prevValue;
-//     }
-//     if (nextValue !== undefined) {
-//       minMaxTuple[1] = nextValue;
-//     }
-//     return minMaxTuple;
-//   };
-
-//   return {
-//     frequencyProgression,
-//     setProgressionMatrix,
-//     volumePerMicrocycle,
-//     updateFrequencyProgression,
-//     getFrequencyProgressionRanges,
-//   };
-// }
-
 // 1 - upper
 // 1. triceps    - JM Press (barbell) - heavy
 // 2. triceps    - Overhead Extensions (Cable)
 // 3. back       - Lat Prayers
 // 4. back       - T-Bar Rows
-// 5. side delts -
-// 6. traps      -
+// 5. side delts - Lateral Raise (Cable)
+// 6. rear delts - Rear Delt Cable Crossover (single)
+// 7. biceps     - Preacher Curl
+// 8. chest      - Incline Bench Press (dumbbell)
 
 // 2 - lower
-// 1. quads  - Squats
-// 2. hams   - Romanian Deadlifts
-// 3. quads  - Leg Extensions
-// 4. calves - ??
+// 1. quads      - Squats
+// 2. hams       - Romanian Deadlifts
+// 3. quads      - Leg Extensions
+// 4. calves     - ??
+// 5. traps      - Shrug (Barbell)
+// 6. forearms   - Reverse Curl
+// 7. rear delts - Face Pull
 
 // 3 - upper
-// 1. back       -
+// 1. back       - Dumbbell Rows
 // 2. back       - Cable Pullovers
 // 3. triceps    - Seated Pushdowns
-// 4. triceps    -
-// 5. side delts -
-// 6. traps      -
+// 4. triceps    - Overhead Triceps Extensions (Single)
+// 5. side delts - BTB Lateral Raise (Cable)
+// 6. traps      - Shrug (Dumbbell, Single)
+// 7. chest      - Close-Grip Bench Press
+// 8. biceps     - Hammer Curl
 
 // 4 - upper
 // 1. triceps    - JM Press (barbell) - light
-// 2. back       - Dumbbell Rows
+// 2. back       - Lat Prayers
 // 3. triceps    - Overhead Extensions (Cable)
-// 4. back       - Cable Pullovers / Lat Prayers
-// 5. side delts -
-// 6. traps      -
+// 4. back       - T-Bar Rows
+// 5. side delts - Seated Overhead Press (Dumbbell)
+// 6. biceps     - Incline Curl (Dumbbell)
+// 7. traps      - Shrug (Machine)
+// 8. forearms   - Wrist Curls (Dumbbell)
 
 // 5 - full
-// 1. deadlifts  -
-// 2. triceps    -
+// 1. quads      - Deadlifts
+// 2. triceps    - Overhead Triceps Extensions (Single)
 // 3. back       - Seated Cable Row (Single, Lat-Focused)
-// 4. back       -
-// 5. side delts -
-// 6. traps      -
+// 4. side delts - BTB Lateral Raise (Cable)
+// 5. rear delts - Rear Delt Cable Crossover (single)
+// 6. quads      - Leg Press
+// 7. calves     - Calf Raises on Leg Press
+// 8. hams       - Leg Curls

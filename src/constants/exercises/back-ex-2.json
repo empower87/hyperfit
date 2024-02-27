@@ -36,17 +36,17 @@
     "tips": "",
     "movement_type": "compound",
     "hypertrophy_criteria": {
-      "target_function": 8,
-      "stability": 7,
-      "limiting_factor": 9,
-      "time_efficiency": 10,
-      "loadability": 9,
+      "target_function": 10,
+      "stability": 10,
+      "limiting_factor": 8,
+      "time_efficiency": 8,
+      "loadability": 5,
       "stretch": {
         "lengthened": 10,
         "challenging": 10,
         "partial_friendly": 10
       },
-      "fatigue": 5
+      "fatigue": 7
     }
   },
   {
@@ -87,8 +87,8 @@
     "movement_type": "compound",
     "hypertrophy_criteria": {
       "target_function": 10,
-      "stability": 7,
-      "limiting_factor": 7,
+      "stability": 10,
+      "limiting_factor": 8,
       "time_efficiency": 8,
       "loadability": 5,
       "stretch": {
@@ -96,7 +96,7 @@
         "challenging": 10,
         "partial_friendly": 10
       },
-      "fatigue": 8
+      "fatigue": 7
     }
   },
   {
@@ -111,11 +111,11 @@
     "tips": "",
     "movement_type": "compound",
     "hypertrophy_criteria": {
-      "target_function": 9,
-      "stability": 6,
+      "target_function": 10,
+      "stability": 10,
       "limiting_factor": 8,
       "time_efficiency": 8,
-      "loadability": 2,
+      "loadability": 5,
       "stretch": {
         "lengthened": 10,
         "challenging": 10,
@@ -136,11 +136,11 @@
     "tips": "",
     "movement_type": "compound",
     "hypertrophy_criteria": {
-      "target_function": 9,
-      "stability": 8,
+      "target_function": 10,
+      "stability": 10,
       "limiting_factor": 8,
       "time_efficiency": 8,
-      "loadability": 8,
+      "loadability": 5,
       "stretch": {
         "lengthened": 10,
         "challenging": 10,
@@ -151,7 +151,7 @@
   },
   {
     "id": "0007-back-exercise",
-    "name": "Close-Grip Barbell Row",
+    "name": "Lat-Focused Barbell Rows",
     "alt_names": [],
     "rank": 1,
     "group": "back",
@@ -161,17 +161,17 @@
     "tips": "",
     "movement_type": "compound",
     "hypertrophy_criteria": {
-      "target_function": 7,
-      "stability": 5,
-      "limiting_factor": 6,
-      "time_efficiency": 5,
-      "loadability": 8,
+      "target_function": 10,
+      "stability": 10,
+      "limiting_factor": 8,
+      "time_efficiency": 8,
+      "loadability": 5,
       "stretch": {
         "lengthened": 10,
         "challenging": 10,
         "partial_friendly": 10
       },
-      "fatigue": 9
+      "fatigue": 7
     }
   },
   {
@@ -186,42 +186,42 @@
     "tips": "",
     "movement_type": "compound",
     "hypertrophy_criteria": {
-      "target_function": 8,
-      "stability": 7,
-      "limiting_factor": 7,
+      "target_function": 10,
+      "stability": 10,
+      "limiting_factor": 8,
       "time_efficiency": 8,
-      "loadability": 9,
+      "loadability": 5,
       "stretch": {
         "lengthened": 10,
         "challenging": 10,
         "partial_friendly": 10
       },
-      "fatigue": 6
+      "fatigue": 7
     }
   },
   {
     "id": "0009-back-exercise",
-    "name": "Chest-Supported Dumbbell Row",
+    "name": "Dumbbell Lat Rows",
     "alt_names": [],
     "rank": 3,
     "group": "back",
-    "region": "upper-back",
+    "region": "lats",
     "requirements": ["dumbbell", "bench"],
     "variations": ["chest-supported"],
     "tips": "",
     "movement_type": "compound",
     "hypertrophy_criteria": {
-      "target_function": 9,
-      "stability": 9,
-      "limiting_factor": 9,
-      "time_efficiency": 7,
-      "loadability": 7,
+      "target_function": 10,
+      "stability": 10,
+      "limiting_factor": 8,
+      "time_efficiency": 8,
+      "loadability": 5,
       "stretch": {
         "lengthened": 10,
         "challenging": 10,
         "partial_friendly": 10
       },
-      "fatigue": 8
+      "fatigue": 7
     }
   },
   {
@@ -236,23 +236,23 @@
     "tips": "",
     "movement_type": "compound",
     "hypertrophy_criteria": {
-      "target_function": 8,
-      "stability": 8,
+      "target_function": 10,
+      "stability": 10,
       "limiting_factor": 8,
-      "time_efficiency": 5,
-      "loadability": 8,
+      "time_efficiency": 8,
+      "loadability": 5,
       "stretch": {
         "lengthened": 10,
         "challenging": 10,
         "partial_friendly": 10
       },
-      "fatigue": 5
+      "fatigue": 7
     }
   },
   {
     "id": "0011-back-exercise",
-    "name": "Straight-Arm Pulldown",
-    "alt_names": [],
+    "name": "Cable Pullover",
+    "alt_names": ["Straight-Arm Pulldown", "Lat Prayer"],
     "rank": 5,
     "group": "back",
     "region": "lats",
@@ -287,31 +287,6 @@
     "movement_type": "compound",
     "hypertrophy_criteria": {
       "target_function": 10,
-      "stability": 7,
-      "limiting_factor": 9,
-      "time_efficiency": 8,
-      "loadability": 7,
-      "stretch": {
-        "lengthened": 10,
-        "challenging": 10,
-        "partial_friendly": 10
-      },
-      "fatigue": 8
-    }
-  },
-  {
-    "id": "0013-back-exercise",
-    "name": "Cable Pullover",
-    "alt_names": ["Straight-Arm Pulldown"],
-    "rank": 6,
-    "group": "back",
-    "region": "lats",
-    "requirements": ["dumbbell", "bench"],
-    "variations": [],
-    "tips": "",
-    "movement_type": "compound",
-    "hypertrophy_criteria": {
-      "target_function": 10,
       "stability": 10,
       "limiting_factor": 8,
       "time_efficiency": 8,
@@ -325,7 +300,7 @@
     }
   },
   {
-    "id": "0014-back-exercise",
+    "id": "0013-back-exercise",
     "name": "T-Bar Rows",
     "alt_names": [],
     "rank": 8,
@@ -336,17 +311,17 @@
     "tips": "",
     "movement_type": "compound",
     "hypertrophy_criteria": {
-      "target_function": 8,
-      "stability": 6,
-      "limiting_factor": 6,
-      "time_efficiency": 6,
-      "loadability": 5,
+      "target_function": 10,
+      "stability": 5,
+      "limiting_factor": 5,
+      "time_efficiency": 8,
+      "loadability": 4,
       "stretch": {
         "lengthened": 10,
         "challenging": 10,
         "partial_friendly": 10
       },
-      "fatigue": 8
+      "fatigue": 7
     }
   }
 ]
