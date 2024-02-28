@@ -56,7 +56,11 @@ const sortExercisesByCriteria = (exercises: Exercise[], key: KeyKey) => {
       a.hypertrophy_criteria[key] < b.hypertrophy_criteria[key]
     ) {
       return 1;
-    } else if (a.hypertrophy_criteria[key] > b.hypertrophy_criteria[key]) {
+    } else if (
+      a.hypertrophy_criteria &&
+      b.hypertrophy_criteria &&
+      a.hypertrophy_criteria[key] > b.hypertrophy_criteria[key]
+    ) {
       return -1;
     }
     return 0;

@@ -24,30 +24,11 @@ import { getMuscleData } from "./getMuscleData";
 // regions: "lat" | "upper-back" | "upper-trap"
 
 // TIME EFFICIENCY: barbell
+
+// CRITERION    |          0          |    1        |    2     |        3         |       4          |        5        |
+//==================================================================================================================
+// STABILITY:   | bosu ball bent rows | barbell row | pull-ups | seated cable row | chest-sup db row | iso-lateral row
 export type Exercise = {
-  id: string;
-  name: string;
-  rank: number;
-  group: string;
-  region: string;
-  requirements: string[];
-  variations: string[];
-  tips?: string;
-  movement_type?: string;
-  hypertrophy_criteria: {
-    target_function: number;
-    stability: number;
-    limiting_factor: number;
-    stretch: {
-      lengthened: boolean;
-      challenging: boolean;
-      partial_friendly: boolean;
-    };
-    time_efficiency: number;
-    loadability: number;
-  };
-};
-export type ExerciseTest = {
   id: string;
   name: string;
   rank: number;
@@ -62,14 +43,15 @@ export type ExerciseTest = {
     stability: number;
     limiting_factor: number;
     stretch: {
-      lengthened: boolean;
-      challenging: boolean;
-      partial_friendly: boolean;
+      lengthened: number;
+      challenging: number;
+      partial_friendly: number;
     };
     time_efficiency: number;
     loadability: number;
   };
 };
+
 export const getGroupList = (group: string): Exercise[] => {
   switch (group) {
     case "back":
