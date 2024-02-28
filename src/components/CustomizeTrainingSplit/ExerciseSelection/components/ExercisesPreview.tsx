@@ -307,19 +307,31 @@ type ListProps = {
   exercise: string;
   allExercises: ExerciseType[];
   exercises: Exercise[];
-  onSort: (key: string) => void;
+  onSort: (key: string, secondKey?: "lengthened" | "challenging") => void;
 };
 
 function List({ exercise, allExercises, exercises, onSort }: ListProps) {
   return (
     <div className={cn(`flex flex-col`)}>
       <div className={cn(`mb-2 flex border-b-2 indent-1 text-xs text-white`)}>
-        <div className={`w-6/12`}>Exercises</div>
+        <div className={`w-5/12`}>Exercises</div>
+        <div
+          onClick={() => onSort("stretch", "lengthened")}
+          className={`w-1/12`}
+        >
+          Length
+        </div>
+        <div
+          onClick={() => onSort("stretch", "challenging")}
+          className={`w-1/12`}
+        >
+          Chall.
+        </div>
         <div
           onClick={() => onSort("limiting_factor")}
-          className={`w-2/12 cursor-pointer hover:${BG_COLOR_M6}`}
+          className={`w-1/12 cursor-pointer hover:${BG_COLOR_M6}`}
         >
-          Lim. Factor
+          Limit
         </div>
         <div
           onClick={() => onSort("loadability")}
@@ -343,7 +355,7 @@ function List({ exercise, allExercises, exercises, onSort }: ListProps) {
           onClick={() => onSort("time_efficiency")}
           className={`w-1/12 cursor-pointer hover:${BG_COLOR_M6}`}
         >
-          Time Eff.
+          Time
         </div>
       </div>
 
@@ -372,8 +384,14 @@ function ListItem({ exercise, selected }: ListItemProps) {
         { [`${BG_COLOR_M5}`]: selected }
       )}
     >
-      <div className={"w-6/12"}>{exercise.name}</div>
-      <div className={"w-2/12"}>
+      <div className={"w-5/12"}>{exercise.name}</div>
+      <div className={"w-1/12"}>
+        {exercise.hypertrophy_criteria?.stretch.lengthened}
+      </div>
+      <div className={"w-1/12"}>
+        {exercise.hypertrophy_criteria?.stretch.challenging}
+      </div>
+      <div className={"w-1/12"}>
         {exercise.hypertrophy_criteria?.limiting_factor}
       </div>
       <div className={"w-1/12"}>
@@ -389,6 +407,7 @@ function ListItem({ exercise, selected }: ListItemProps) {
     </div>
   );
 }
+
 type SelectExerciseProps = {
   children: ReactNode;
 };
@@ -409,6 +428,7 @@ function SelectExercise({ children }: SelectExerciseProps) {
     </div>
   );
 }
+
 type SelectExerciseWrapperProps = {
   muscle: MusclePriorityType;
   exercise: string;

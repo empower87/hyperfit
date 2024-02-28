@@ -48,20 +48,28 @@ const filterExercisesByTags = (
 };
 
 type KeyKey = keyof Exercise["hypertrophy_criteria"];
-const sortExercisesByCriteria = (exercises: Exercise[], key: KeyKey) => {
+const sortExercisesByCriteria = (
+  exercises: Exercise[],
+  key: KeyKey,
+  secondKey?: "lengthened" | "challenging"
+) => {
   const sorted = exercises.sort((a, b) => {
-    if (
-      a.hypertrophy_criteria &&
-      b.hypertrophy_criteria &&
-      a.hypertrophy_criteria[key] < b.hypertrophy_criteria[key]
-    ) {
-      return 1;
-    } else if (
-      a.hypertrophy_criteria &&
-      b.hypertrophy_criteria &&
-      a.hypertrophy_criteria[key] > b.hypertrophy_criteria[key]
-    ) {
-      return -1;
+    if (!a.hypertrophy_criteria || !b.hypertrophy_criteria) return 0;
+    if (secondKey) {
+      if (
+        a.hypertrophy_criteria["stretch"][secondKey] <
+        b.hypertrophy_criteria["stretch"][secondKey]
+      )
+        return 1;
+      else if (
+        a.hypertrophy_criteria["stretch"][secondKey] >
+        b.hypertrophy_criteria["stretch"][secondKey]
+      )
+        return -1;
+    } else {
+      if (a.hypertrophy_criteria[key] < b.hypertrophy_criteria[key]) return 1;
+      else if (a.hypertrophy_criteria[key] > b.hypertrophy_criteria[key])
+        return -1;
     }
     return 0;
   });
@@ -90,14 +98,18 @@ export default function useSortableExercises(
   );
 
   const onSortHandler = useCallback(
-    (key: string) => {
+    (key: string, secondKey?: "lengthened" | "challenging") => {
       const keykey = key as KeyKey;
       if (keykey === sortKey) {
         setSortKey(null);
       } else {
         setSortKey(keykey);
       }
-      const sorted = sortExercisesByCriteria(visibleExercises, keykey);
+      const sorted = sortExercisesByCriteria(
+        visibleExercises,
+        keykey,
+        secondKey
+      );
       setVisibleExercises(sorted);
     },
     [visibleExercises]

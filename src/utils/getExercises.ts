@@ -25,9 +25,16 @@ import { getMuscleData } from "./getMuscleData";
 
 // TIME EFFICIENCY: barbell
 
-// CRITERION    |          0          |    1        |    2     |        3         |       4          |        5        |
-//==================================================================================================================
-// STABILITY:   | bosu ball bent rows | barbell row | pull-ups | seated cable row | chest-sup db row | iso-lateral row
+// CRITERION    |          0           |    1        |    2     |        3         |       4          |        5        |
+//=====================================================================================================================
+// STABILITY:   | bosu ball bent rows  | barbell row | pull-ups | seated cable row | chest-sup db row | iso-lateral row
+// LOADABILITY: | pull-up (bodyweight) | dumbbell    | cable    |    barbell       |                  |                 
+// TARGETED:    |                      |             |          |                  |                  |
+//=====================================================================================================================
+// CHALLENGING: | seated cable row     | cbl pullovr | pulldown |   db pullover    |                  |                 
+// LENGTHENED:  | 
+// PARTIALS  :  |       false          |   true      |          |                  |                  |
+// FATIGUE:     |     standing         |  lat raise  | iso stf  | most back stuff  |   bench press    |  barbell squats
 export type Exercise = {
   id: string;
   name: string;

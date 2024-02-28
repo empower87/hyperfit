@@ -17,11 +17,11 @@
       "time_efficiency": 5,
       "loadability": 3,
       "stretch": {
-        "lengthened": 10,
-        "challenging": 10,
-        "partial_friendly": 10
+        "lengthened": 4,
+        "challenging": 2,
+        "partial_friendly": 1
       },
-      "fatigue": 7
+      "fatigue": 4
     }
   },
   {
@@ -42,11 +42,11 @@
       "time_efficiency": 10,
       "loadability": 2,
       "stretch": {
-        "lengthened": 10,
-        "challenging": 10,
-        "partial_friendly": 10
+        "lengthened": 4,
+        "challenging": 2,
+        "partial_friendly": 1
       },
-      "fatigue": 5
+      "fatigue": 2
     }
   },
   {
@@ -67,11 +67,11 @@
       "time_efficiency": 2,
       "loadability": 2,
       "stretch": {
-        "lengthened": 9,
-        "challenging": 5,
-        "partial_friendly": 5
+        "lengthened": 5,
+        "challenging": 2,
+        "partial_friendly": 1
       },
-      "fatigue": 7
+      "fatigue": 3
     }
   },
   {
@@ -92,11 +92,11 @@
       "time_efficiency": 8,
       "loadability": 1,
       "stretch": {
-        "lengthened": 10,
-        "challenging": 10,
-        "partial_friendly": 10
+        "lengthened": 4,
+        "challenging": 2,
+        "partial_friendly": 1
       },
-      "fatigue": 8
+      "fatigue": 4
     }
   },
   {
@@ -117,11 +117,11 @@
       "time_efficiency": 8,
       "loadability": 0,
       "stretch": {
-        "lengthened": 10,
-        "challenging": 10,
-        "partial_friendly": 10
+        "lengthened": 4,
+        "challenging": 1,
+        "partial_friendly": 1
       },
-      "fatigue": 7
+      "fatigue": 3
     }
   },
   {
@@ -132,7 +132,7 @@
     "group": "back",
     "region": "upper-back",
     "requirements": ["machine"],
-    "variations": ["close-grip", "wide-grip", "neutral-grip"],
+    "variations": ["close-grip", "wide-grip", "neutral-grip", "underhand"],
     "tips": "",
     "movement_type": "compound",
     "hypertrophy_criteria": {
@@ -142,11 +142,11 @@
       "time_efficiency": 8,
       "loadability": 2,
       "stretch": {
-        "lengthened": 10,
-        "challenging": 10,
-        "partial_friendly": 10
+        "lengthened": 4,
+        "challenging": 2,
+        "partial_friendly": 1
       },
-      "fatigue": 7
+      "fatigue": 3
     }
   },
   {
@@ -167,11 +167,11 @@
       "time_efficiency": 5,
       "loadability": 3,
       "stretch": {
-        "lengthened": 10,
-        "challenging": 10,
-        "partial_friendly": 10
+        "lengthened": 4,
+        "challenging": 2,
+        "partial_friendly": 1
       },
-      "fatigue": 9
+      "fatigue": 4
     }
   },
   {
@@ -192,11 +192,11 @@
       "time_efficiency": 8,
       "loadability": 2,
       "stretch": {
-        "lengthened": 10,
-        "challenging": 10,
-        "partial_friendly": 10
+        "lengthened": 3,
+        "challenging": 2,
+        "partial_friendly": 1
       },
-      "fatigue": 6
+      "fatigue": 2
     }
   },
   {
@@ -217,11 +217,11 @@
       "time_efficiency": 7,
       "loadability": 1,
       "stretch": {
-        "lengthened": 10,
-        "challenging": 10,
-        "partial_friendly": 10
+        "lengthened": 5,
+        "challenging": 3,
+        "partial_friendly": 1
       },
-      "fatigue": 8
+      "fatigue": 3
     }
   },
   {
@@ -242,11 +242,11 @@
       "time_efficiency": 5,
       "loadability": 2,
       "stretch": {
-        "lengthened": 10,
-        "challenging": 10,
-        "partial_friendly": 10
+        "lengthened": 4,
+        "challenging": 3,
+        "partial_friendly": 1
       },
-      "fatigue": 5
+      "fatigue": 2
     }
   },
   {
@@ -267,11 +267,11 @@
       "time_efficiency": 8,
       "loadability": 1,
       "stretch": {
-        "lengthened": 10,
-        "challenging": 10,
-        "partial_friendly": 10
+        "lengthened": 5,
+        "challenging": 5,
+        "partial_friendly": 1
       },
-      "fatigue": 8
+      "fatigue": 3
     }
   },
   {
@@ -284,7 +284,7 @@
     "requirements": ["dumbbell", "bench"],
     "variations": [],
     "tips": "",
-    "movement_type": "compound",
+    "movement_type": "isolation",
     "hypertrophy_criteria": {
       "target_function": 10,
       "stability": 2,
@@ -292,11 +292,11 @@
       "time_efficiency": 8,
       "loadability": 2,
       "stretch": {
-        "lengthened": 10,
-        "challenging": 10,
-        "partial_friendly": 10
+        "lengthened": 5,
+        "challenging": 4,
+        "partial_friendly": 1
       },
-      "fatigue": 7
+      "fatigue": 2
     }
   },
   {
@@ -306,7 +306,7 @@
     "rank": 8,
     "group": "back",
     "region": "upper-back",
-    "requirements": ["barbell"],
+    "requirements": ["machine"],
     "variations": [],
     "tips": "",
     "movement_type": "compound",
@@ -317,11 +317,86 @@
       "time_efficiency": 6,
       "loadability": 2,
       "stretch": {
-        "lengthened": 10,
-        "challenging": 10,
-        "partial_friendly": 10
+        "lengthened": 5,
+        "challenging": 5,
+        "partial_friendly": 1
       },
-      "fatigue": 8
+      "fatigue": 4
+    }
+  },
+  {
+    "id": "0014-back-exercise",
+    "name": "Chest-Supported T-Bar Row",
+    "alt_names": [],
+    "rank": 8,
+    "group": "back",
+    "region": "upper-back",
+    "requirements": ["machine"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "compound",
+    "hypertrophy_criteria": {
+      "target_function": 8,
+      "stability": 3,
+      "limiting_factor": 9,
+      "time_efficiency": 6,
+      "loadability": 2,
+      "stretch": {
+        "lengthened": 5,
+        "challenging": 5,
+        "partial_friendly": 1
+      },
+      "fatigue": 3
+    }
+  },
+  {
+    "id": "0015-back-exercise",
+    "name": "Iso-Lateral Row",
+    "alt_names": [],
+    "rank": 8,
+    "group": "back",
+    "region": "upper-back",
+    "requirements": ["machine"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "compound",
+    "hypertrophy_criteria": {
+      "target_function": 4,
+      "stability": 5,
+      "limiting_factor": 5,
+      "time_efficiency": 5,
+      "loadability": 4,
+      "stretch": {
+        "lengthened": 4,
+        "challenging": 3,
+        "partial_friendly": 1
+      },
+      "fatigue": 3
+    }
+  },
+  {
+    "id": "0016-back-exercise",
+    "name": "Incline Cable Pullover",
+    "alt_names": [],
+    "rank": 21,
+    "group": "back",
+    "region": "lats",
+    "requirements": ["cable", "bench"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "isolation",
+    "hypertrophy_criteria": {
+      "target_function": 5,
+      "stability": 5,
+      "limiting_factor": 4,
+      "time_efficiency": 2,
+      "loadability": 4,
+      "stretch": {
+        "lengthened": 5,
+        "challenging": 4,
+        "partial_friendly": 1
+      },
+      "fatigue": 2
     }
   }
 ]

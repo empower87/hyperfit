@@ -1,8 +1,8 @@
 [
   {
-    "id": "0001-biceps-dumbbellcurl",
+    "id": "0001-biceps-exercise",
     "name": "Incline Dumbbell Curl",
-    "rank": 1,
+    "rank": 21,
     "group": "biceps",
     "region": "long-head",
     "requirements": ["bench", "dumbbell"],
@@ -11,20 +11,20 @@
     "movement_type": "isolation",
     "hypertrophy_criteria": {
       "target_function": 9,
-      "stability": 5,
-      "limiting_factor": 5,
-      "time_efficiency": 5,
-      "loadability": 9,
+      "stability": 9,
+      "limiting_factor": 9,
+      "time_efficiency": 8,
+      "loadability": 8,
       "stretch": {
-        "lengthened": 10,
-        "challenging": 10,
-        "partial_friendly": 10
+        "lengthened": 9,
+        "challenging": 5,
+        "partial_friendly": 8
       },
-      "fatigue": 7
+      "fatigue": 4
     }
   },
   {
-    "id": "0002-biceps-barbellcurl",
+    "id": "0002-biceps-exercise",
     "name": "Barbell Curl",
     "rank": 2,
     "group": "biceps",
@@ -48,7 +48,7 @@
     }
   },
   {
-    "id": "0003-biceps-dumbbellcurl",
+    "id": "0003-biceps-exercise",
     "name": "Dumbbell Curl",
     "rank": 3,
     "group": "biceps",
@@ -72,7 +72,7 @@
     }
   },
   {
-    "id": "0004-biceps-hammercurl",
+    "id": "0004-biceps-exercise",
     "name": "Hammer Curl",
     "rank": 4,
     "group": "biceps",
@@ -96,7 +96,7 @@
     }
   },
   {
-    "id": "0005-biceps-cablecurl",
+    "id": "0005-biceps-exercise",
     "name": "Cable Curl",
     "rank": 5,
     "group": "biceps",
@@ -120,7 +120,7 @@
     }
   },
   {
-    "id": "0006-biceps-barbellpreachercurl",
+    "id": "0006-biceps-exercise",
     "name": "Barbell Preacher Curl",
     "rank": 6,
     "group": "biceps",
@@ -144,7 +144,7 @@
     }
   },
   {
-    "id": "0007-biceps-dumbbellpreachercurl",
+    "id": "0007-biceps-exercise",
     "name": "Dumbbell Preacher Curl",
     "rank": 7,
     "group": "biceps",
@@ -168,7 +168,7 @@
     }
   },
   {
-    "id": "0008-biceps-barbellspidercurl",
+    "id": "0008-biceps-exercise",
     "name": "Barbell Spider Curl",
     "rank": 8,
     "group": "biceps",
@@ -192,7 +192,7 @@
     }
   },
   {
-    "id": "0009-biceps-dumbbellspidercurl",
+    "id": "0009-biceps-exercise",
     "name": "Dumbbell Spider Curl",
     "rank": 9,
     "group": "biceps",
@@ -216,7 +216,7 @@
     }
   },
   {
-    "id": "0010-biceps-concentrationcurl",
+    "id": "0010-biceps-exercise",
     "name": "Concentration Curl",
     "rank": 10,
     "group": "biceps",
@@ -240,7 +240,7 @@
     }
   },
   {
-    "id": "0011-biceps-chinups",
+    "id": "0011-biceps-exercise",
     "name": "Chin Ups",
     "rank": 11,
     "group": "biceps",
@@ -264,7 +264,7 @@
     }
   },
   {
-    "id": "0012-biceps-machinecurl",
+    "id": "0012-biceps-exercise",
     "name": "Machine Curl",
     "rank": 12,
     "group": "biceps",
@@ -288,7 +288,7 @@
     }
   },
   {
-    "id": "0013-biceps-reversecurl",
+    "id": "0013-biceps-exercise",
     "name": "Reverse Curl",
     "rank": 13,
     "group": "biceps",
@@ -309,6 +309,30 @@
         "partial_friendly": 10
       },
       "fatigue": 7
+    }
+  },
+  {
+    "id": "0014-biceps-exercise",
+    "name": "Seated Behind-The-Back Cable Curl",
+    "rank": 21,
+    "group": "biceps",
+    "region": "long-head",
+    "requirements": ["cable", "bench"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "isolation",
+    "hypertrophy_criteria": {
+      "target_function": 9,
+      "stability": 9,
+      "limiting_factor": 9,
+      "time_efficiency": 5,
+      "loadability": 8,
+      "stretch": {
+        "lengthened": 10,
+        "challenging": 10,
+        "partial_friendly": 10
+      },
+      "fatigue": 6
     }
   }
 ]
