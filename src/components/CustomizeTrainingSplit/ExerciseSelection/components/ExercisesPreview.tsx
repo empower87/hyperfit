@@ -258,7 +258,6 @@ function Filter({ tags, onFilterTagChange }: FilterProps) {
   const onClose = () => setShowMenu(false);
 
   const ref = useOutsideClick(onClose);
-  // const [tags, setTags] = useState<string[]>([]);
 
   const onSelectTagHandler = useCallback(
     (title: string) => {
@@ -271,8 +270,6 @@ function Filter({ tags, onFilterTagChange }: FilterProps) {
 
   const onRemoveTag = useCallback(
     (tag: string) => {
-      // const filterTags = tags.filter((each) => each !== tag);
-      // setTags(filterTags);
       const tagKey = Object.keys(tags).find(
         (key) => tags[key as FilterTagsKey] === tag
       );
@@ -291,6 +288,7 @@ function Filter({ tags, onFilterTagChange }: FilterProps) {
           return <FilterTag tag={each} onRemoveTag={onRemoveTag} />;
         })}
       </div>
+
       <div className={`w-1/12`}>
         <Button onClick={onClick} className="">
           <FilterIcon className="fill-white text-sm" />
@@ -303,27 +301,39 @@ function Filter({ tags, onFilterTagChange }: FilterProps) {
 }
 
 type ListProps = {
-  // muscle: string;
   exercise: string;
   allExercises: ExerciseType[];
+  weightedExercises: { id: string; total: number }[];
   exercises: Exercise[];
   onSort: (key: string, secondKey?: "lengthened" | "challenging") => void;
 };
 
-function List({ exercise, allExercises, exercises, onSort }: ListProps) {
+function List({
+  exercise,
+  allExercises,
+  weightedExercises,
+  exercises,
+  onSort,
+}: ListProps) {
   return (
     <div className={cn(`flex flex-col`)}>
       <div className={cn(`mb-2 flex border-b-2 indent-1 text-xs text-white`)}>
-        <div className={`w-5/12`}>Exercises</div>
+        <div className={`w-4/12`}>Exercises</div>
         <div
           onClick={() => onSort("stretch", "lengthened")}
-          className={`w-1/12`}
+          className={`w-1/12 cursor-pointer hover:${BG_COLOR_M6}`}
+        >
+          Ranked
+        </div>
+        <div
+          onClick={() => onSort("stretch", "lengthened")}
+          className={`w-1/12 cursor-pointer hover:${BG_COLOR_M6}`}
         >
           Length
         </div>
         <div
           onClick={() => onSort("stretch", "challenging")}
-          className={`w-1/12`}
+          className={`w-1/12 cursor-pointer hover:${BG_COLOR_M6}`}
         >
           Chall.
         </div>
@@ -365,8 +375,15 @@ function List({ exercise, allExercises, exercises, onSort }: ListProps) {
           const foundExercise = allExercises.find(
             (e) => e.exercise === each.name
           );
+          const total = weightedExercises.filter((ea) => ea.id === each.id);
           if (foundExercise) isSelected = true;
-          return <ListItem exercise={each} selected={isSelected} />;
+          return (
+            <ListItem
+              exercise={each}
+              selected={isSelected}
+              total={total[0].total}
+            />
+          );
         })}
       </div>
     </div>
@@ -375,8 +392,9 @@ function List({ exercise, allExercises, exercises, onSort }: ListProps) {
 type ListItemProps = {
   exercise: Exercise;
   selected: boolean;
+  total: number;
 };
-function ListItem({ exercise, selected }: ListItemProps) {
+function ListItem({ exercise, selected, total }: ListItemProps) {
   return (
     <div
       className={cn(
@@ -384,7 +402,8 @@ function ListItem({ exercise, selected }: ListItemProps) {
         { [`${BG_COLOR_M5}`]: selected }
       )}
     >
-      <div className={"w-5/12"}>{exercise.name}</div>
+      <div className={"w-4/12"}>{exercise.name}</div>
+      <div className={"w-1/12"}>{total}</div>
       <div className={"w-1/12"}>
         {exercise.hypertrophy_criteria?.stretch.lengthened}
       </div>
@@ -440,6 +459,7 @@ function SelectExerciseWrapper({
   const {
     exercises,
     allExercises,
+    weightedExercises,
     filterTags,
     onFilterTagChange,
     onSortHandler,
@@ -457,6 +477,7 @@ function SelectExerciseWrapper({
       <SelectExercise.List
         exercise={exercise}
         allExercises={allExercises}
+        weightedExercises={weightedExercises}
         exercises={exercises}
         onSort={onSortHandler}
       />
