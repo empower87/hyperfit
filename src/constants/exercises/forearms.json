@@ -8,7 +8,20 @@
     "requirements": ["barbell"],
     "variations": [],
     "tips": "",
-    "movement_type": "isolation"
+    "movement_type": "isolation",
+    "hypertrophy_criteria": {
+      "target_function": 0,
+      "stability": 0,
+      "limiting_factor": 0,
+      "time_efficiency": 0,
+      "loadability": 0,
+      "stretch": {
+        "lengthened": 0,
+        "challenging": 0,
+        "partial_friendly": 0
+      },
+      "fatigue": 0
+    }
   },
   {
     "id": "0002-forearms-dumbbellwristcurl",
@@ -19,6 +32,19 @@
     "requirements": ["dumbbell"],
     "variations": [],
     "tips": "",
-    "movement_type": "isolation"
+    "movement_type": "isolation",
+    "hypertrophy_criteria": {
+      "target_function": 0,
+      "stability": 0,
+      "limiting_factor": 0,
+      "time_efficiency": 0,
+      "loadability": 0,
+      "stretch": {
+        "lengthened": 0,
+        "challenging": 0,
+        "partial_friendly": 0
+      },
+      "fatigue": 0
+    }
   }
 ]

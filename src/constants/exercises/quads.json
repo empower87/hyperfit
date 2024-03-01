@@ -8,7 +8,20 @@
     "requirements": ["rack", "barbell"],
     "variations": [],
     "tips": "",
-    "movement_type": "compound"
+    "movement_type": "compound",
+    "hypertrophy_criteria": {
+      "target_function": 0,
+      "stability": 0,
+      "limiting_factor": 0,
+      "time_efficiency": 0,
+      "loadability": 0,
+      "stretch": {
+        "lengthened": 0,
+        "challenging": 0,
+        "partial_friendly": 0
+      },
+      "fatigue": 0
+    }
   },
   {
     "id": "0002-quads-frontsquats",
@@ -19,7 +32,20 @@
     "requirements": ["barbell"],
     "variations": [],
     "tips": "",
-    "movement_type": "compound"
+    "movement_type": "compound",
+    "hypertrophy_criteria": {
+      "target_function": 0,
+      "stability": 0,
+      "limiting_factor": 0,
+      "time_efficiency": 0,
+      "loadability": 0,
+      "stretch": {
+        "lengthened": 0,
+        "challenging": 0,
+        "partial_friendly": 0
+      },
+      "fatigue": 0
+    }
   },
   {
     "id": "0003-quads-legpress",
@@ -30,7 +56,20 @@
     "requirements": ["machine"],
     "variations": ["single-leg"],
     "tips": "",
-    "movement_type": "compound"
+    "movement_type": "compound",
+    "hypertrophy_criteria": {
+      "target_function": 0,
+      "stability": 0,
+      "limiting_factor": 0,
+      "time_efficiency": 0,
+      "loadability": 0,
+      "stretch": {
+        "lengthened": 0,
+        "challenging": 0,
+        "partial_friendly": 0
+      },
+      "fatigue": 0
+    }
   },
   {
     "id": "0004-quads-bulgariansplitsquat",
@@ -41,7 +80,20 @@
     "requirements": ["dumbbell", "bench"],
     "variations": [],
     "tips": "",
-    "movement_type": "compound"
+    "movement_type": "compound",
+    "hypertrophy_criteria": {
+      "target_function": 0,
+      "stability": 0,
+      "limiting_factor": 0,
+      "time_efficiency": 0,
+      "loadability": 0,
+      "stretch": {
+        "lengthened": 0,
+        "challenging": 0,
+        "partial_friendly": 0
+      },
+      "fatigue": 0
+    }
   },
   {
     "id": "0005-quads-lunges",
@@ -52,7 +104,20 @@
     "requirements": ["barbell", "dumbbell"],
     "variations": ["barbell", "dumbbell"],
     "tips": "",
-    "movement_type": "compound"
+    "movement_type": "compound",
+    "hypertrophy_criteria": {
+      "target_function": 0,
+      "stability": 0,
+      "limiting_factor": 0,
+      "time_efficiency": 0,
+      "loadability": 0,
+      "stretch": {
+        "lengthened": 0,
+        "challenging": 0,
+        "partial_friendly": 0
+      },
+      "fatigue": 0
+    }
   },
   {
     "id": "0006-quads-legextensions",
@@ -63,6 +128,19 @@
     "requirements": ["machine"],
     "variations": ["single-leg"],
     "tips": "",
-    "movement_type": "compound"
+    "movement_type": "compound",
+    "hypertrophy_criteria": {
+      "target_function": 0,
+      "stability": 0,
+      "limiting_factor": 0,
+      "time_efficiency": 0,
+      "loadability": 0,
+      "stretch": {
+        "lengthened": 0,
+        "challenging": 0,
+        "partial_friendly": 0
+      },
+      "fatigue": 0
+    }
   }
 ]

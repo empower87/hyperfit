@@ -8,7 +8,20 @@
     "requirements": ["cable"],
     "variations": ["single-arm"],
     "tips": "",
-    "movement_type": "isolation"
+    "movement_type": "isolation",
+    "hypertrophy_criteria": {
+      "target_function": 0,
+      "stability": 0,
+      "limiting_factor": 0,
+      "time_efficiency": 0,
+      "loadability": 0,
+      "stretch": {
+        "lengthened": 0,
+        "challenging": 0,
+        "partial_friendly": 0
+      },
+      "fatigue": 0
+    }
   },
   {
     "id": "0002-deltsrear-machinereversefly",
@@ -19,7 +32,20 @@
     "requirements": ["machine"],
     "variations": [],
     "tips": "",
-    "movement_type": "isolation"
+    "movement_type": "isolation",
+    "hypertrophy_criteria": {
+      "target_function": 0,
+      "stability": 0,
+      "limiting_factor": 0,
+      "time_efficiency": 0,
+      "loadability": 0,
+      "stretch": {
+        "lengthened": 0,
+        "challenging": 0,
+        "partial_friendly": 0
+      },
+      "fatigue": 0
+    }
   },
   {
     "id": "0003-deltsrear-dumbbellreversefly",
@@ -30,7 +56,20 @@
     "requirements": ["dumbbell"],
     "variations": ["chest-supported"],
     "tips": "",
-    "movement_type": "isolation"
+    "movement_type": "isolation",
+    "hypertrophy_criteria": {
+      "target_function": 0,
+      "stability": 0,
+      "limiting_factor": 0,
+      "time_efficiency": 0,
+      "loadability": 0,
+      "stretch": {
+        "lengthened": 0,
+        "challenging": 0,
+        "partial_friendly": 0
+      },
+      "fatigue": 0
+    }
   },
   {
     "id": "0004-deltsrear-inclinedumbbellrow",
@@ -41,7 +80,20 @@
     "requirements": ["dumbbell", "bench"],
     "variations": [],
     "tips": "",
-    "movement_type": "compound"
+    "movement_type": "compound",
+    "hypertrophy_criteria": {
+      "target_function": 0,
+      "stability": 0,
+      "limiting_factor": 0,
+      "time_efficiency": 0,
+      "loadability": 0,
+      "stretch": {
+        "lengthened": 0,
+        "challenging": 0,
+        "partial_friendly": 0
+      },
+      "fatigue": 0
+    }
   },
   {
     "id": "0005-deltsrear-barbellhighrow",
@@ -52,7 +104,20 @@
     "requirements": ["barbell"],
     "variations": ["chest-supported"],
     "tips": "",
-    "movement_type": "compound"
+    "movement_type": "compound",
+    "hypertrophy_criteria": {
+      "target_function": 0,
+      "stability": 0,
+      "limiting_factor": 0,
+      "time_efficiency": 0,
+      "loadability": 0,
+      "stretch": {
+        "lengthened": 0,
+        "challenging": 0,
+        "partial_friendly": 0
+      },
+      "fatigue": 0
+    }
   },
   {
     "id": "0006-deltsrear-facepulls",
@@ -63,6 +128,19 @@
     "requirements": ["cable"],
     "variations": [],
     "tips": "",
-    "movement_type": "isolation"
+    "movement_type": "isolation",
+    "hypertrophy_criteria": {
+      "target_function": 0,
+      "stability": 0,
+      "limiting_factor": 0,
+      "time_efficiency": 0,
+      "loadability": 0,
+      "stretch": {
+        "lengthened": 0,
+        "challenging": 0,
+        "partial_friendly": 0
+      },
+      "fatigue": 0
+    }
   }
 ]

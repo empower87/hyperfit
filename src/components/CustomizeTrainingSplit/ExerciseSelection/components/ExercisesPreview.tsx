@@ -303,24 +303,17 @@ function Filter({ tags, onFilterTagChange }: FilterProps) {
 type ListProps = {
   exercise: string;
   allExercises: ExerciseType[];
-  weightedExercises: { id: string; total: number }[];
   exercises: Exercise[];
   onSort: (key: string, secondKey?: "lengthened" | "challenging") => void;
 };
 
-function List({
-  exercise,
-  allExercises,
-  weightedExercises,
-  exercises,
-  onSort,
-}: ListProps) {
+function List({ exercise, allExercises, exercises, onSort }: ListProps) {
   return (
     <div className={cn(`flex flex-col`)}>
       <div className={cn(`mb-2 flex border-b-2 indent-1 text-xs text-white`)}>
         <div className={`w-4/12`}>Exercises</div>
         <div
-          onClick={() => onSort("stretch", "lengthened")}
+          onClick={() => onSort("rank")}
           className={`w-1/12 cursor-pointer hover:${BG_COLOR_M6}`}
         >
           Ranked
@@ -375,26 +368,31 @@ function List({
           const foundExercise = allExercises.find(
             (e) => e.exercise === each.name
           );
-          const total = weightedExercises.filter((ea) => ea.id === each.id);
+
           if (foundExercise) isSelected = true;
-          return (
-            <ListItem
-              exercise={each}
-              selected={isSelected}
-              total={total[0].total}
-            />
-          );
+          return <ListItem exercise={each} selected={isSelected} />;
         })}
       </div>
+    </div>
+  );
+}
+
+type ItemTagProps = {
+  name: string;
+  selected: string;
+};
+function ItemTag({ name, selected }: ItemTagProps) {
+  return (
+    <div className={cn(`flex items-center justify-center border text-xxs`)}>
+      {name}
     </div>
   );
 }
 type ListItemProps = {
   exercise: Exercise;
   selected: boolean;
-  total: number;
 };
-function ListItem({ exercise, selected, total }: ListItemProps) {
+function ListItem({ exercise, selected }: ListItemProps) {
   return (
     <div
       className={cn(
@@ -402,8 +400,13 @@ function ListItem({ exercise, selected, total }: ListItemProps) {
         { [`${BG_COLOR_M5}`]: selected }
       )}
     >
-      <div className={"w-4/12"}>{exercise.name}</div>
-      <div className={"w-1/12"}>{total}</div>
+      <div className={"flex w-4/12 flex-col"}>
+        <div className={``}>{exercise.name}</div>
+        <div className={`flex space-x-1`}>
+          <ItemTag name={exercise.movement_type} selected={""} />
+        </div>
+      </div>
+      <div className={"w-1/12"}>{exercise.rank}</div>
       <div className={"w-1/12"}>
         {exercise.hypertrophy_criteria?.stretch.lengthened}
       </div>
@@ -459,7 +462,6 @@ function SelectExerciseWrapper({
   const {
     exercises,
     allExercises,
-    weightedExercises,
     filterTags,
     onFilterTagChange,
     onSortHandler,
@@ -477,7 +479,6 @@ function SelectExerciseWrapper({
       <SelectExercise.List
         exercise={exercise}
         allExercises={allExercises}
-        weightedExercises={weightedExercises}
         exercises={exercises}
         onSort={onSortHandler}
       />

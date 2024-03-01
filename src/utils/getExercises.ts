@@ -28,11 +28,11 @@ import { getMuscleData } from "./getMuscleData";
 // CRITERION    |          0           |    1        |    2     |        3         |       4          |        5        |
 //=====================================================================================================================
 // STABILITY:   | bosu ball bent rows  | barbell row | pull-ups | seated cable row | chest-sup db row | iso-lateral row
-// LOADABILITY: | pull-up (bodyweight) | dumbbell    | cable    |    barbell       |                  |                 
+// LOADABILITY: | pull-up (bodyweight) | dumbbell    | cable    |    barbell       |                  |
 // TARGETED:    |                      |             |          |                  |                  |
 //=====================================================================================================================
-// CHALLENGING: | seated cable row     | cbl pullovr | pulldown |   db pullover    |                  |                 
-// LENGTHENED:  | 
+// CHALLENGING: | seated cable row     | cbl pullovr | pulldown |   db pullover    |                  |
+// LENGTHENED:  |
 // PARTIALS  :  |       false          |   true      |          |                  |                  |
 // FATIGUE:     |     standing         |  lat raise  | iso stf  | most back stuff  |   bench press    |  barbell squats
 export type Exercise = {
@@ -44,8 +44,8 @@ export type Exercise = {
   requirements: string[];
   variations: string[];
   tips?: string;
-  movement_type?: string;
-  hypertrophy_criteria?: {
+  movement_type: string;
+  hypertrophy_criteria: {
     target_function: number;
     stability: number;
     limiting_factor: number;
@@ -56,42 +56,106 @@ export type Exercise = {
     };
     time_efficiency: number;
     loadability: number;
+    fatigue: number;
   };
+};
+export type HypertrophyCriteriaKey = keyof Exercise["hypertrophy_criteria"];
+
+const CRITERIA_WEIGHTS = {
+  stretch: {
+    lengthened: 1.9,
+    challenging: 1.9,
+    partial_friendly: 1.1,
+  },
+  target_function: 1.7,
+  stability: 1.6,
+  limiting_factor: 1.5,
+  fatigue: 1.3,
+  time_efficiency: 1.2,
+  loadability: 1.1,
+} as const;
+
+const getWeightedCriteriaTotal = (exercise: Exercise) => {
+  const hypertrophy_criteria = exercise.hypertrophy_criteria;
+  let total = 0;
+
+  for (const criteria in hypertrophy_criteria) {
+    let key = criteria as HypertrophyCriteriaKey;
+    if (key === "stretch") {
+      total =
+        total +
+        hypertrophy_criteria["stretch"]["lengthened"] *
+          CRITERIA_WEIGHTS["stretch"]["lengthened"];
+      total =
+        total +
+        hypertrophy_criteria["stretch"]["challenging"] *
+          CRITERIA_WEIGHTS["stretch"]["challenging"];
+      total =
+        total +
+        hypertrophy_criteria["stretch"]["partial_friendly"] *
+          CRITERIA_WEIGHTS["stretch"]["partial_friendly"];
+    } else {
+      total += hypertrophy_criteria[key] * CRITERIA_WEIGHTS[key];
+    }
+  }
+
+  return Math.round(total);
 };
 
 export const getGroupList = (group: string): Exercise[] => {
+  let exercises: Exercise[] = [];
   switch (group) {
     case "back":
-      return BACK_EXERCISES;
+      exercises = BACK_EXERCISES;
+      break;
     case "delts_side":
-      return DELTS_SIDE_EXERCISES;
+      exercises = DELTS_SIDE_EXERCISES;
+      break;
     case "delts_front":
-      return DELTS_FRONT_EXERCISES;
+      exercises = DELTS_FRONT_EXERCISES;
+      break;
     case "delts_rear":
-      return DELTS_REAR_EXERCISES;
+      exercises = DELTS_REAR_EXERCISES;
+      break;
     case "chest":
-      return CHEST_EXERCISES;
+      exercises = CHEST_EXERCISES;
+      break;
     case "triceps":
-      return TRICEPS_EXERCISES;
+      exercises = TRICEPS_EXERCISES;
+      break;
     case "biceps":
-      return BICEPS_EXERCISES;
+      exercises = BICEPS_EXERCISES;
+      break;
     case "forearms":
-      return FOREARMS_EXERCISES;
+      exercises = FOREARMS_EXERCISES;
+      break;
     case "traps":
-      return TRAPS_EXERCISES;
+      exercises = TRAPS_EXERCISES;
+      break;
     case "quads":
-      return QUADS_EXERCISES;
+      exercises = QUADS_EXERCISES;
+      break;
     case "hamstrings":
-      return HAMSTRINGS_EXERCISES;
+      exercises = HAMSTRINGS_EXERCISES;
+      break;
     case "glutes":
-      return GLUTES_EXERCISES;
+      exercises = GLUTES_EXERCISES;
+      break;
     case "calves":
-      return CALVES_EXERCISES;
+      exercises = CALVES_EXERCISES;
+      break;
     case "abs":
-      return ABS_EXERCISES;
+      exercises = ABS_EXERCISES;
+      break;
     default:
-      return BACK_EXERCISES;
+      exercises = BACK_EXERCISES;
   }
+
+  const rankedExercises = exercises.map((each) => ({
+    ...each,
+    rank: getWeightedCriteriaTotal(each),
+  }));
+  return rankedExercises.sort((a, b) => b.rank - a.rank);
 };
 
 const INITIAL_EXERCISE: ExerciseType = {
