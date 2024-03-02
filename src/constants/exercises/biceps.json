@@ -8,19 +8,21 @@
     "requirements": ["bench", "dumbbell"],
     "variations": ["alternating"],
     "tips": "",
+    "limbs_involved": "bilateral",
+    "muscles_recruited_type": "isolation",
     "movement_type": "isolation",
     "hypertrophy_criteria": {
-      "target_function": 9,
-      "stability": 9,
-      "limiting_factor": 9,
-      "time_efficiency": 8,
-      "loadability": 8,
+      "target_function": 5,
+      "stability": 3,
+      "limiting_factor": 4,
+      "time_efficiency": 4,
+      "loadability": 2,
       "stretch": {
-        "lengthened": 9,
-        "challenging": 5,
-        "partial_friendly": 8
+        "lengthened": 4,
+        "challenging": 1,
+        "partial_friendly": 1
       },
-      "fatigue": 4
+      "fatigue": 2
     }
   },
   {
@@ -32,10 +34,12 @@
     "requirements": ["barbell"],
     "variations": [],
     "tips": "",
+    "limbs_involved": "bilateral",
+    "muscles_recruited_type": "isolation",
     "movement_type": "isolation",
     "hypertrophy_criteria": {
       "target_function": 9,
-      "stability": 5,
+      "stability": 2,
       "limiting_factor": 5,
       "time_efficiency": 5,
       "loadability": 9,
@@ -56,10 +60,12 @@
     "requirements": ["dumbbell"],
     "variations": ["alternating"],
     "tips": "",
+    "limbs_involved": "bilateral",
+    "muscles_recruited_type": "isolation",
     "movement_type": "isolation",
     "hypertrophy_criteria": {
       "target_function": 9,
-      "stability": 5,
+      "stability": 1,
       "limiting_factor": 5,
       "time_efficiency": 5,
       "loadability": 9,
@@ -80,10 +86,12 @@
     "requirements": ["dumbbell"],
     "variations": ["alternating"],
     "tips": "",
+    "limbs_involved": "bilateral",
+    "muscles_recruited_type": "isolation",
     "movement_type": "isolation",
     "hypertrophy_criteria": {
       "target_function": 9,
-      "stability": 5,
+      "stability": 1,
       "limiting_factor": 5,
       "time_efficiency": 5,
       "loadability": 9,
@@ -104,10 +112,12 @@
     "requirements": ["cable"],
     "variations": ["single-arm", "v-bar"],
     "tips": "",
+    "limbs_involved": "bilateral",
+    "muscles_recruited_type": "isolation",
     "movement_type": "isolation",
     "hypertrophy_criteria": {
       "target_function": 9,
-      "stability": 5,
+      "stability": 2,
       "limiting_factor": 5,
       "time_efficiency": 5,
       "loadability": 9,
@@ -122,49 +132,53 @@
   {
     "id": "0006-biceps-exercise",
     "name": "Barbell Preacher Curl",
-    "rank": 6,
+    "rank": 21,
     "group": "biceps",
     "region": "short-head",
     "requirements": ["barbell", "preacher"],
     "variations": [],
     "tips": "",
+    "limbs_involved": "bilateral",
+    "muscles_recruited_type": "isolation",
     "movement_type": "isolation",
     "hypertrophy_criteria": {
-      "target_function": 9,
+      "target_function": 4,
       "stability": 5,
       "limiting_factor": 5,
-      "time_efficiency": 5,
-      "loadability": 9,
+      "time_efficiency": 4,
+      "loadability": 5,
       "stretch": {
-        "lengthened": 10,
-        "challenging": 10,
-        "partial_friendly": 10
+        "lengthened": 2,
+        "challenging": 4,
+        "partial_friendly": 1
       },
-      "fatigue": 7
+      "fatigue": 3
     }
   },
   {
     "id": "0007-biceps-exercise",
     "name": "Dumbbell Preacher Curl",
-    "rank": 7,
+    "rank": 21,
     "group": "biceps",
     "region": "short-head",
     "requirements": ["dumbbell", "preacher"],
     "variations": ["single-arm"],
     "tips": "",
+    "limbs_involved": "bilateral",
+    "muscles_recruited_type": "isolation",
     "movement_type": "isolation",
     "hypertrophy_criteria": {
-      "target_function": 9,
+      "target_function": 5,
       "stability": 5,
       "limiting_factor": 5,
-      "time_efficiency": 5,
-      "loadability": 9,
+      "time_efficiency": 4,
+      "loadability": 2,
       "stretch": {
-        "lengthened": 10,
-        "challenging": 10,
-        "partial_friendly": 10
+        "lengthened": 3,
+        "challenging": 4,
+        "partial_friendly": 1
       },
-      "fatigue": 7
+      "fatigue": 3
     }
   },
   {
@@ -176,6 +190,8 @@
     "requirements": ["barbell"],
     "variations": [],
     "tips": "",
+    "limbs_involved": "bilateral",
+    "muscles_recruited_type": "isolation",
     "movement_type": "isolation",
     "hypertrophy_criteria": {
       "target_function": 9,
@@ -200,6 +216,8 @@
     "requirements": ["dumbbell"],
     "variations": ["single-arm"],
     "tips": "",
+    "limbs_involved": "bilateral",
+    "muscles_recruited_type": "isolation",
     "movement_type": "isolation",
     "hypertrophy_criteria": {
       "target_function": 9,
@@ -224,6 +242,8 @@
     "requirements": ["dumbbell", "bench"],
     "variations": [],
     "tips": "",
+    "limbs_involved": "unilateral",
+    "muscles_recruited_type": "isolation",
     "movement_type": "isolation",
     "hypertrophy_criteria": {
       "target_function": 9,
@@ -248,10 +268,12 @@
     "requirements": ["bar"],
     "variations": [],
     "tips": "",
+    "limbs_involved": "bilateral",
+    "muscles_recruited_type": "compound",
     "movement_type": "compound",
     "hypertrophy_criteria": {
       "target_function": 9,
-      "stability": 5,
+      "stability": 2,
       "limiting_factor": 5,
       "time_efficiency": 5,
       "loadability": 9,
@@ -272,6 +294,8 @@
     "requirements": ["machine"],
     "variations": [],
     "tips": "",
+    "limbs_involved": "bilateral",
+    "muscles_recruited_type": "isolation",
     "movement_type": "isolation",
     "hypertrophy_criteria": {
       "target_function": 9,
@@ -296,10 +320,12 @@
     "requirements": ["barbell"],
     "variations": [],
     "tips": "",
+    "limbs_involved": "bilateral",
+    "muscles_recruited_type": "isolation",
     "movement_type": "isolation",
     "hypertrophy_criteria": {
       "target_function": 9,
-      "stability": 5,
+      "stability": 2,
       "limiting_factor": 5,
       "time_efficiency": 5,
       "loadability": 9,
@@ -320,19 +346,47 @@
     "requirements": ["cable", "bench"],
     "variations": [],
     "tips": "",
+    "limbs_involved": "bilateral",
+    "muscles_recruited_type": "isolation",
     "movement_type": "isolation",
     "hypertrophy_criteria": {
-      "target_function": 9,
-      "stability": 9,
-      "limiting_factor": 9,
-      "time_efficiency": 5,
-      "loadability": 8,
+      "target_function": 5,
+      "stability": 5,
+      "limiting_factor": 5,
+      "time_efficiency": 2,
+      "loadability": 4,
       "stretch": {
-        "lengthened": 10,
-        "challenging": 10,
-        "partial_friendly": 10
+        "lengthened": 5,
+        "challenging": 5,
+        "partial_friendly": 1
       },
-      "fatigue": 6
+      "fatigue": 3
+    }
+  },
+  {
+    "id": "0014-biceps-exercise",
+    "name": "Single-Arm Behind-The-Back Cable Curl",
+    "rank": 21,
+    "group": "biceps",
+    "region": "long-head",
+    "requirements": ["cable"],
+    "variations": [],
+    "tips": "",
+    "limbs_involved": "unilateral",
+    "muscles_recruited_type": "isolation",
+    "movement_type": "isolation",
+    "hypertrophy_criteria": {
+      "target_function": 5,
+      "stability": 2,
+      "limiting_factor": 5,
+      "time_efficiency": 1,
+      "loadability": 4,
+      "stretch": {
+        "lengthened": 5,
+        "challenging": 5,
+        "partial_friendly": 1
+      },
+      "fatigue": 2
     }
   }
 ]

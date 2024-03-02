@@ -35,6 +35,16 @@ import { getMuscleData } from "./getMuscleData";
 // LENGTHENED:  |
 // PARTIALS  :  |       false          |   true      |          |                  |                  |
 // FATIGUE:     |     standing         |  lat raise  | iso stf  | most back stuff  |   bench press    |  barbell squats
+
+// STABILITY:
+// stability 5 = range of motion locked in and body locked in: IE: Smith Machine JM Press
+// stability 4 = body locked in: IE JM Press
+// stability 3 = body locked in, but movement itself isn't stable: IE: Dumbbell Bench Press
+// stability 2 = Free body but movement itself is stable: IE: Standing Overhead Extensions EZ-Bar
+// stability 1 = Free body and movement instability: IE: Standing Overhead Extensions Dumbbells
+// stability 0 = above on a bosu ball..
+// NOTE: DONE AS OF 3/2/2024 - BACK | BICEPS | CHEST | DELTS_FRONT | DELTS_REAR | DELTS_SIDE |
+
 export type Exercise = {
   id: string;
   name: string;
@@ -44,6 +54,7 @@ export type Exercise = {
   requirements: string[];
   variations: string[];
   tips?: string;
+  limbs_involved?: string;
   movement_type: string;
   hypertrophy_criteria: {
     target_function: number;

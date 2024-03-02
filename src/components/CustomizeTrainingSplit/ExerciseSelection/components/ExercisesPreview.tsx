@@ -199,16 +199,12 @@ function FilterMenu({ onSelectTag }: FilterMenuProps) {
 
       <Category title="Sub-Group Focus">
         <CategoryItem
-          onClick={() => onSelectTag("region", "lat")}
-          title="Lat"
+          onClick={() => onSelectTag("region", "lats")}
+          title="Lats"
         />
         <CategoryItem
           onClick={() => onSelectTag("region", "upper-back")}
           title="Upper Back"
-        />
-        <CategoryItem
-          onClick={() => onSelectTag("region", "upper-traps")}
-          title="Upper Traps"
         />
       </Category>
 
@@ -259,15 +255,6 @@ function Filter({ tags, onFilterTagChange }: FilterProps) {
 
   const ref = useOutsideClick(onClose);
 
-  const onSelectTagHandler = useCallback(
-    (title: string) => {
-      // const findTag = tags.find((each) => each === title);
-      // if (findTag) return;
-      // setTags(() => [...tags, title]);
-    },
-    [tags]
-  );
-
   const onRemoveTag = useCallback(
     (tag: string) => {
       const tagKey = Object.keys(tags).find(
@@ -308,55 +295,81 @@ type ListProps = {
 };
 
 function List({ exercise, allExercises, exercises, onSort }: ListProps) {
+  const [sortedByIndicator, setSortedByIndicator] = useState<string | null>(
+    null
+  );
+  const onClickHandler = (
+    key: string,
+    secondKey?: "lengthened" | "challenging"
+  ) => {
+    onSort(key, secondKey);
+    setSortedByIndicator(secondKey ? secondKey : key);
+  };
   return (
     <div className={cn(`flex flex-col`)}>
       <div className={cn(`mb-2 flex border-b-2 indent-1 text-xs text-white`)}>
         <div className={`w-4/12`}>Exercises</div>
         <div
-          onClick={() => onSort("rank")}
-          className={`w-1/12 cursor-pointer hover:${BG_COLOR_M6}`}
+          onClick={() => onClickHandler("rank")}
+          className={cn(`w-1/12 cursor-pointer hover:${BG_COLOR_M6}`, {
+            [`${BG_COLOR_M5}`]: sortedByIndicator === "rank",
+          })}
         >
           Ranked
         </div>
         <div
-          onClick={() => onSort("stretch", "lengthened")}
-          className={`w-1/12 cursor-pointer hover:${BG_COLOR_M6}`}
+          onClick={() => onClickHandler("stretch", "lengthened")}
+          className={cn(`w-1/12 cursor-pointer hover:${BG_COLOR_M6}`, {
+            [`${BG_COLOR_M5}`]: sortedByIndicator === "lengthened",
+          })}
         >
           Length
         </div>
         <div
-          onClick={() => onSort("stretch", "challenging")}
-          className={`w-1/12 cursor-pointer hover:${BG_COLOR_M6}`}
+          onClick={() => onClickHandler("stretch", "challenging")}
+          className={cn(`w-1/12 cursor-pointer hover:${BG_COLOR_M6}`, {
+            [`${BG_COLOR_M5}`]: sortedByIndicator === "challenging",
+          })}
         >
           Chall.
         </div>
         <div
-          onClick={() => onSort("limiting_factor")}
-          className={`w-1/12 cursor-pointer hover:${BG_COLOR_M6}`}
+          onClick={() => onClickHandler("limiting_factor")}
+          className={cn(`w-1/12 cursor-pointer hover:${BG_COLOR_M6}`, {
+            [`${BG_COLOR_M5}`]: sortedByIndicator === "limiting_factor",
+          })}
         >
           Limit
         </div>
         <div
-          onClick={() => onSort("loadability")}
-          className={`w-1/12 cursor-pointer hover:${BG_COLOR_M6}`}
+          onClick={() => onClickHandler("loadability")}
+          className={cn(`w-1/12 cursor-pointer hover:${BG_COLOR_M6}`, {
+            [`${BG_COLOR_M5}`]: sortedByIndicator === "loadability",
+          })}
         >
           Load
         </div>
         <div
-          onClick={() => onSort("stability")}
-          className={`w-1/12 cursor-pointer hover:${BG_COLOR_M6}`}
+          onClick={() => onClickHandler("stability")}
+          className={cn(`w-1/12 cursor-pointer hover:${BG_COLOR_M6}`, {
+            [`${BG_COLOR_M5}`]: sortedByIndicator === "stability",
+          })}
         >
           Stable
         </div>
         <div
-          onClick={() => onSort("target_function")}
-          className={`w-1/12 cursor-pointer hover:${BG_COLOR_M6}`}
+          onClick={() => onClickHandler("target_function")}
+          className={cn(`w-1/12 cursor-pointer hover:${BG_COLOR_M6}`, {
+            [`${BG_COLOR_M5}`]: sortedByIndicator === "target_function",
+          })}
         >
           Target
         </div>
         <div
-          onClick={() => onSort("time_efficiency")}
-          className={`w-1/12 cursor-pointer hover:${BG_COLOR_M6}`}
+          onClick={() => onClickHandler("time_efficiency")}
+          className={cn(`w-1/12 cursor-pointer hover:${BG_COLOR_M6}`, {
+            [`${BG_COLOR_M5}`]: sortedByIndicator === "time_efficiency",
+          })}
         >
           Time
         </div>
@@ -404,6 +417,9 @@ function ListItem({ exercise, selected }: ListItemProps) {
         <div className={``}>{exercise.name}</div>
         <div className={`flex space-x-1`}>
           <ItemTag name={exercise.movement_type} selected={""} />
+          {exercise.limbs_involved ? (
+            <ItemTag name={exercise.limbs_involved} selected={""} />
+          ) : null}
         </div>
       </div>
       <div className={"w-1/12"}>{exercise.rank}</div>
