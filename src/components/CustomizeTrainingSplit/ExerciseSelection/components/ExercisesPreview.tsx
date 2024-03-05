@@ -64,7 +64,7 @@ export default function ExercisesPreview({
         <EditMuscleModal isOpen={isOpen} onClose={onClose}>
           <SelectExerciseWrapper
             muscle={musclePriorityList[selectedMuscleIndex]}
-            exercise={selectedExercises[selectedExerciseIndex]?.exercise}
+            exercise={selectedExercises[selectedExerciseIndex]?.id}
           />
         </EditMuscleModal>
       ) : null}
@@ -285,24 +285,11 @@ function Filter({ tags, onFilterTagChange }: FilterProps) {
 }
 
 type ListProps = {
-  // exercise: string;
-  // allExercises: ExerciseType[];
-  // exercises: Exercise[];
-  // selectedExerciseId: string;
   onSort: (key: string, secondKey?: "lengthened" | "challenging") => void;
-  // onSelect: (id: string) => void;
   children: ReactNode;
 };
 
-function List({
-  // exercise,
-  // allExercises,
-  // exercises,
-  // selectedExerciseId,
-  onSort,
-  // onSelect,
-  children,
-}: ListProps) {
+function List({ onSort, children }: ListProps) {
   const [sortedByIndicator, setSortedByIndicator] = useState<string | null>(
     null
   );
@@ -419,12 +406,14 @@ function ItemTag({ name, selected }: ItemTagProps) {
 }
 type ListItemProps = {
   exercise: Exercise;
+  initialExerciseId: string;
   selected: boolean;
   selectedExerciseId: string;
   onSelect: (id: string) => void;
 };
 function ListItem({
   exercise,
+  initialExerciseId,
   selected,
   selectedExerciseId,
   onSelect,
@@ -434,11 +423,20 @@ function ListItem({
       onClick={() => onSelect(exercise.id)}
       className={cn(
         `flex p-1 indent-1 text-xs text-slate-400 ${BG_COLOR_M6} cursor-pointer hover:${BG_COLOR_M5}`,
-        { [`${BG_COLOR_M5}`]: selected || exercise.id === selectedExerciseId }
+        {
+          [`${BG_COLOR_M5}`]:
+            initialExerciseId === exercise.id ||
+            exercise.id === selectedExerciseId,
+        }
       )}
     >
       <div className={"flex w-4/12 flex-col"}>
-        <div className={``}>{exercise.name}</div>
+        <div className={`mr-2 flex`}>
+          <div>{exercise.name}</div>
+          {selected ? (
+            <div className={`text-xxs font-bold text-white `}>Selected</div>
+          ) : null}
+        </div>
         <div className={`flex space-x-1`}>
           <ItemTag name={exercise.movement_type} selected={""} />
           {exercise.limbs_involved ? (
@@ -446,6 +444,7 @@ function ListItem({
           ) : null}
         </div>
       </div>
+
       <div className={"w-1/12"}>{exercise.rank}</div>
       <div className={"w-1/12"}>
         {exercise.hypertrophy_criteria?.stretch.lengthened}
@@ -509,7 +508,6 @@ function SelectExerciseWrapper({
     onSaveExerciseHandler,
     onSelectExerciseHandler,
   } = useSortableExercises(muscle, exercise);
-  const onSaveHandler = () => {};
   return (
     <SelectExercise>
       <SelectExercise.Header>
@@ -527,10 +525,13 @@ function SelectExerciseWrapper({
             (e) => e.exercise === each.name
           );
 
-          if (foundExercise) isSelected = true;
+          if (foundExercise) {
+            isSelected = true;
+          }
           return (
-            <ListItem
+            <SelectExercise.ListItem
               exercise={each}
+              initialExerciseId={exercise}
               selected={isSelected}
               selectedExerciseId={selectedExerciseId}
               onSelect={onSelectExerciseHandler}
@@ -538,6 +539,7 @@ function SelectExerciseWrapper({
           );
         })}
       </SelectExercise.List>
+
       {/* <SelectExercise.List
         exercise={exercise}
         selectedExerciseId={selectedExerciseId}
@@ -549,7 +551,7 @@ function SelectExerciseWrapper({
 
       <div className={`flex items-center justify-end p-2`}>
         <Button
-          onClick={onSaveHandler}
+          onClick={onSaveExerciseHandler}
           className={cn(`bg-rose-400 px-2 text-xs text-white`)}
         >
           Save
@@ -559,6 +561,7 @@ function SelectExerciseWrapper({
   );
 }
 SelectExercise.List = List;
+SelectExercise.ListItem = ListItem;
 SelectExercise.Header = Header;
 SelectExercise.Search = Search;
 SelectExercise.Filter = Filter;
