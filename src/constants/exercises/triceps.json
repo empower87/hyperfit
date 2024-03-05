@@ -1,7 +1,7 @@
 [
   {
-    "id": "0001-triceps-pushdowns",
-    "name": "Pushdowns",
+    "id": "0001-triceps-exercise",
+    "name": "Pushdown",
     "rank": 1,
     "group": "triceps",
     "region": "lateral-head",
@@ -11,7 +11,7 @@
     "movement_type": "isolation",
     "hypertrophy_criteria": {
       "target_function": 9,
-      "stability": 5,
+      "stability": 2,
       "limiting_factor": 5,
       "time_efficiency": 5,
       "loadability": 9,
@@ -24,8 +24,8 @@
     }
   },
   {
-    "id": "0002-triceps-overheadcabletricepsextensions",
-    "name": "Overhead Cable Triceps Extensions",
+    "id": "0002-triceps-exercise",
+    "name": "Overhead Cable Triceps Extension",
     "rank": 2,
     "group": "triceps",
     "region": "long-head",
@@ -35,7 +35,7 @@
     "movement_type": "isolation",
     "hypertrophy_criteria": {
       "target_function": 9,
-      "stability": 5,
+      "stability": 2,
       "limiting_factor": 5,
       "time_efficiency": 5,
       "loadability": 9,
@@ -48,7 +48,7 @@
     }
   },
   {
-    "id": "0003-triceps-jmpress",
+    "id": "0003-triceps-exercise",
     "name": "JM Press",
     "rank": 3,
     "group": "triceps",
@@ -59,7 +59,7 @@
     "movement_type": "compound",
     "hypertrophy_criteria": {
       "target_function": 9,
-      "stability": 5,
+      "stability": 4,
       "limiting_factor": 5,
       "time_efficiency": 5,
       "loadability": 9,
@@ -72,8 +72,8 @@
     }
   },
   {
-    "id": "0004-triceps-dips",
-    "name": "Dips",
+    "id": "0004-triceps-exercise",
+    "name": "Dip",
     "rank": 4,
     "group": "triceps",
     "region": "lateral-head",
@@ -83,7 +83,7 @@
     "movement_type": "compound",
     "hypertrophy_criteria": {
       "target_function": 9,
-      "stability": 5,
+      "stability": 2,
       "limiting_factor": 5,
       "time_efficiency": 5,
       "loadability": 9,
@@ -96,8 +96,8 @@
     }
   },
   {
-    "id": "0005-triceps-dumbbelltricepsextensions",
-    "name": "Dumbbell Triceps Extensions",
+    "id": "0005-triceps-exercise",
+    "name": "Dumbbell Triceps Extension",
     "rank": 5,
     "group": "triceps",
     "region": "long-head",
@@ -107,7 +107,7 @@
     "movement_type": "isolation",
     "hypertrophy_criteria": {
       "target_function": 9,
-      "stability": 5,
+      "stability": 3,
       "limiting_factor": 5,
       "time_efficiency": 5,
       "loadability": 9,
@@ -120,7 +120,7 @@
     }
   },
   {
-    "id": "0006-triceps-machinedips",
+    "id": "0006-triceps-exercise",
     "name": "Machine Dips",
     "rank": 6,
     "group": "triceps",
@@ -144,7 +144,7 @@
     }
   },
   {
-    "id": "0007-triceps-closegripbenchpress",
+    "id": "0007-triceps-exercise",
     "name": "Close-Grip Bench Press",
     "rank": 7,
     "group": "triceps",
@@ -155,7 +155,7 @@
     "movement_type": "compound",
     "hypertrophy_criteria": {
       "target_function": 9,
-      "stability": 5,
+      "stability": 4,
       "limiting_factor": 5,
       "time_efficiency": 5,
       "loadability": 9,
@@ -168,8 +168,8 @@
     }
   },
   {
-    "id": "0008-triceps-benchdips",
-    "name": "Bench Dips",
+    "id": "0008-triceps-exercise",
+    "name": "Bench Dip",
     "rank": 8,
     "group": "triceps",
     "region": "medial-head",
@@ -179,7 +179,7 @@
     "movement_type": "compound",
     "hypertrophy_criteria": {
       "target_function": 9,
-      "stability": 5,
+      "stability": 3,
       "limiting_factor": 5,
       "time_efficiency": 5,
       "loadability": 9,
@@ -192,8 +192,8 @@
     }
   },
   {
-    "id": "0009-triceps-trianglepushups",
-    "name": "Triangle Pushups",
+    "id": "0009-triceps-exercise",
+    "name": "Triangle Pushup",
     "rank": 9,
     "group": "triceps",
     "region": "medial-head",
@@ -203,7 +203,7 @@
     "movement_type": "compound",
     "hypertrophy_criteria": {
       "target_function": 9,
-      "stability": 5,
+      "stability": 1,
       "limiting_factor": 5,
       "time_efficiency": 5,
       "loadability": 9,
@@ -216,8 +216,8 @@
     }
   },
   {
-    "id": "0010-triceps-skullcrushers",
-    "name": "Skullcrushers",
+    "id": "0010-triceps-exercise",
+    "name": "Skullcrusher",
     "rank": 10,
     "group": "triceps",
     "region": "lateral-head",
@@ -227,7 +227,7 @@
     "movement_type": "isolation",
     "hypertrophy_criteria": {
       "target_function": 9,
-      "stability": 5,
+      "stability": 4,
       "limiting_factor": 5,
       "time_efficiency": 5,
       "loadability": 9,

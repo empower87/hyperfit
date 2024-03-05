@@ -11,9 +11,9 @@
     "movement_type": "compound",
     "hypertrophy_criteria": {
       "target_function": 0,
-      "stability": 0,
+      "stability": 4,
       "limiting_factor": 0,
-      "time_efficiency": 0,
+      "time_efficiency": 1,
       "loadability": 0,
       "stretch": {
         "lengthened": 0,
@@ -35,7 +35,7 @@
     "movement_type": "compound",
     "hypertrophy_criteria": {
       "target_function": 0,
-      "stability": 0,
+      "stability": 4,
       "limiting_factor": 0,
       "time_efficiency": 0,
       "loadability": 0,
@@ -59,7 +59,7 @@
     "movement_type": "isolation",
     "hypertrophy_criteria": {
       "target_function": 0,
-      "stability": 0,
+      "stability": 3,
       "limiting_factor": 0,
       "time_efficiency": 0,
       "loadability": 0,
@@ -83,7 +83,7 @@
     "movement_type": "compound",
     "hypertrophy_criteria": {
       "target_function": 0,
-      "stability": 0,
+      "stability": 3,
       "limiting_factor": 0,
       "time_efficiency": 0,
       "loadability": 0,

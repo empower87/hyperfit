@@ -9,10 +9,7 @@ import {
   BORDER_COLOR_M5,
 } from "~/constants/themes";
 import { useOutsideClick } from "~/hooks/useOnOutsideClick";
-import {
-  ExerciseType,
-  MusclePriorityType,
-} from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
+import { MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { cn } from "~/lib/clsx";
 import { Exercise } from "~/utils/getExercises";
 import { Button } from "../../MusclePriorityList/MusclePriorityList";
@@ -288,13 +285,24 @@ function Filter({ tags, onFilterTagChange }: FilterProps) {
 }
 
 type ListProps = {
-  exercise: string;
-  allExercises: ExerciseType[];
-  exercises: Exercise[];
+  // exercise: string;
+  // allExercises: ExerciseType[];
+  // exercises: Exercise[];
+  // selectedExerciseId: string;
   onSort: (key: string, secondKey?: "lengthened" | "challenging") => void;
+  // onSelect: (id: string) => void;
+  children: ReactNode;
 };
 
-function List({ exercise, allExercises, exercises, onSort }: ListProps) {
+function List({
+  // exercise,
+  // allExercises,
+  // exercises,
+  // selectedExerciseId,
+  onSort,
+  // onSelect,
+  children,
+}: ListProps) {
   const [sortedByIndicator, setSortedByIndicator] = useState<string | null>(
     null
   );
@@ -306,7 +314,7 @@ function List({ exercise, allExercises, exercises, onSort }: ListProps) {
     setSortedByIndicator(secondKey ? secondKey : key);
   };
   return (
-    <div className={cn(`flex flex-col`)}>
+    <div className={cn(`flex flex-col p-2`)}>
       <div className={cn(`mb-2 flex border-b-2 indent-1 text-xs text-white`)}>
         <div className={`w-4/12`}>Exercises</div>
         <div
@@ -376,15 +384,23 @@ function List({ exercise, allExercises, exercises, onSort }: ListProps) {
       </div>
 
       <div className={cn(`flex h-60 flex-col overflow-y-auto`)}>
-        {exercises.map((each) => {
+        {children}
+        {/* {exercises.map((each) => {
           let isSelected = false;
           const foundExercise = allExercises.find(
             (e) => e.exercise === each.name
           );
 
           if (foundExercise) isSelected = true;
-          return <ListItem exercise={each} selected={isSelected} />;
-        })}
+          return (
+            <ListItem
+              exercise={each}
+              selected={isSelected}
+              selectedExerciseId={selectedExerciseId}
+              onSelect={onSelect}
+            />
+          );
+        })} */}
       </div>
     </div>
   );
@@ -404,13 +420,21 @@ function ItemTag({ name, selected }: ItemTagProps) {
 type ListItemProps = {
   exercise: Exercise;
   selected: boolean;
+  selectedExerciseId: string;
+  onSelect: (id: string) => void;
 };
-function ListItem({ exercise, selected }: ListItemProps) {
+function ListItem({
+  exercise,
+  selected,
+  selectedExerciseId,
+  onSelect,
+}: ListItemProps) {
   return (
     <div
+      onClick={() => onSelect(exercise.id)}
       className={cn(
         `flex p-1 indent-1 text-xs text-slate-400 ${BG_COLOR_M6} cursor-pointer hover:${BG_COLOR_M5}`,
-        { [`${BG_COLOR_M5}`]: selected }
+        { [`${BG_COLOR_M5}`]: selected || exercise.id === selectedExerciseId }
       )}
     >
       <div className={"flex w-4/12 flex-col"}>
@@ -478,10 +502,14 @@ function SelectExerciseWrapper({
   const {
     exercises,
     allExercises,
+    selectedExerciseId,
     filterTags,
     onFilterTagChange,
     onSortHandler,
+    onSaveExerciseHandler,
+    onSelectExerciseHandler,
   } = useSortableExercises(muscle, exercise);
+  const onSaveHandler = () => {};
   return (
     <SelectExercise>
       <SelectExercise.Header>
@@ -492,12 +520,41 @@ function SelectExerciseWrapper({
         />
       </SelectExercise.Header>
 
-      <SelectExercise.List
+      <SelectExercise.List onSort={onSortHandler}>
+        {exercises.map((each) => {
+          let isSelected = false;
+          const foundExercise = allExercises.find(
+            (e) => e.exercise === each.name
+          );
+
+          if (foundExercise) isSelected = true;
+          return (
+            <ListItem
+              exercise={each}
+              selected={isSelected}
+              selectedExerciseId={selectedExerciseId}
+              onSelect={onSelectExerciseHandler}
+            />
+          );
+        })}
+      </SelectExercise.List>
+      {/* <SelectExercise.List
         exercise={exercise}
+        selectedExerciseId={selectedExerciseId}
         allExercises={allExercises}
         exercises={exercises}
         onSort={onSortHandler}
-      />
+        onSelect={onSelectExerciseHandler}
+      /> */}
+
+      <div className={`flex items-center justify-end p-2`}>
+        <Button
+          onClick={onSaveHandler}
+          className={cn(`bg-rose-400 px-2 text-xs text-white`)}
+        >
+          Save
+        </Button>
+      </div>
     </SelectExercise>
   );
 }

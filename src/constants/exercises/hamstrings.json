@@ -1,7 +1,7 @@
 [
   {
-    "id": "0001-hamstrings-romaniandeadlifts",
-    "name": "Romanian Deadlifts",
+    "id": "0001-hamstrings-exercise",
+    "name": "Romanian Deadlift",
     "rank": 1,
     "group": "hamstrings",
     "region": "",
@@ -11,7 +11,7 @@
     "movement_type": "compound",
     "hypertrophy_criteria": {
       "target_function": 0,
-      "stability": 0,
+      "stability": 2,
       "limiting_factor": 0,
       "time_efficiency": 0,
       "loadability": 0,
@@ -24,8 +24,8 @@
     }
   },
   {
-    "id": "0002-hamstrings-stiffleggeddeadlifts",
-    "name": "Stiff-Legged Deadlifts",
+    "id": "0002-hamstrings-exercise",
+    "name": "Stiff-Legged Deadlift",
     "rank": 2,
     "group": "hamstrings",
     "region": "",
@@ -35,7 +35,7 @@
     "movement_type": "compound",
     "hypertrophy_criteria": {
       "target_function": 0,
-      "stability": 0,
+      "stability": 2,
       "limiting_factor": 0,
       "time_efficiency": 0,
       "loadability": 0,
@@ -48,8 +48,8 @@
     }
   },
   {
-    "id": "0003-hamstrings-legcurls",
-    "name": "Seated Leg Curls",
+    "id": "0003-hamstrings-exercise",
+    "name": "Seated Leg Curl",
     "rank": 3,
     "group": "hamstrings",
     "region": "",
@@ -59,7 +59,7 @@
     "movement_type": "isolation",
     "hypertrophy_criteria": {
       "target_function": 0,
-      "stability": 0,
+      "stability": 5,
       "limiting_factor": 0,
       "time_efficiency": 0,
       "loadability": 0,
@@ -72,8 +72,8 @@
     }
   },
   {
-    "id": "0004-hamstrings-legcurls",
-    "name": "Lying Leg Curls",
+    "id": "0004-hamstrings-exercise",
+    "name": "Lying Leg Curl",
     "rank": 4,
     "group": "hamstrings",
     "region": "",
@@ -83,7 +83,7 @@
     "movement_type": "isolation",
     "hypertrophy_criteria": {
       "target_function": 0,
-      "stability": 0,
+      "stability": 5,
       "limiting_factor": 0,
       "time_efficiency": 0,
       "loadability": 0,
@@ -96,8 +96,8 @@
     }
   },
   {
-    "id": "0005-hamstrings-glutehamstringraises",
-    "name": "Glute-Hamstring Raises",
+    "id": "0005-hamstrings-exercise",
+    "name": "Glute-Hamstring Raise",
     "rank": 5,
     "group": "hamstrings",
     "region": "",
@@ -107,7 +107,7 @@
     "movement_type": "compound",
     "hypertrophy_criteria": {
       "target_function": 0,
-      "stability": 0,
+      "stability": 3,
       "limiting_factor": 0,
       "time_efficiency": 0,
       "loadability": 0,

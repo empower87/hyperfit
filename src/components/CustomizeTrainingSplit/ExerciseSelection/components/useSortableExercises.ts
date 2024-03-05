@@ -127,6 +127,7 @@ export default function useSortableExercises(
   const allExercises = [...muscle.exercises].flat();
 
   const [visibleExercises, setVisibleExercises] = useState<Exercise[]>([]);
+  const [selectedExerciseId, setSelectedExerciseId] = useState<string>("");
   const [filterTags, setFilterTags] = useState<FilterTags>({
     ...INITIAL_FILTER_TAGS,
   });
@@ -158,11 +159,28 @@ export default function useSortableExercises(
     [visibleExercises]
   );
 
+  const onSelectExerciseHandler = useCallback(
+    (id: string) => {
+      console.log(id);
+      if (selectedExerciseId === id) {
+        setSelectedExerciseId("");
+      } else {
+        setSelectedExerciseId(id);
+      }
+    },
+    [selectedExerciseId]
+  );
+
+  const onSaveExerciseHandler = useCallback(() => {}, []);
+
   return {
     exercises: visibleExercises,
     allExercises,
+    selectedExerciseId,
     filterTags,
     onFilterTagChange,
     onSortHandler,
+    onSaveExerciseHandler,
+    onSelectExerciseHandler,
   };
 }

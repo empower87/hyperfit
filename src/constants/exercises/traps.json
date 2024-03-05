@@ -1,6 +1,6 @@
 [
   {
-    "id": "0001-traps-barbellshrug",
+    "id": "0001-traps-exercise",
     "name": "Barbell Shrug",
     "rank": 1,
     "group": "traps",
@@ -11,7 +11,7 @@
     "movement_type": "isolation",
     "hypertrophy_criteria": {
       "target_function": 0,
-      "stability": 0,
+      "stability": 2,
       "limiting_factor": 0,
       "time_efficiency": 0,
       "loadability": 0,
@@ -24,7 +24,7 @@
     }
   },
   {
-    "id": "0002-traps-dumbellshrug",
+    "id": "0002-traps-exercise",
     "name": "Dumbbell Shrug",
     "rank": 2,
     "group": "traps",
@@ -35,7 +35,7 @@
     "movement_type": "isolation",
     "hypertrophy_criteria": {
       "target_function": 0,
-      "stability": 0,
+      "stability": 2,
       "limiting_factor": 0,
       "time_efficiency": 0,
       "loadability": 0,
@@ -48,7 +48,31 @@
     }
   },
   {
-    "id": "0003-traps-machineshrug",
+    "id": "0003-traps-exercise",
+    "name": "Seated Dumbbell Shrug",
+    "rank": 2,
+    "group": "traps",
+    "region": "upper",
+    "requirements": ["dumbbell", "bench"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "isolation",
+    "hypertrophy_criteria": {
+      "target_function": 0,
+      "stability": 4,
+      "limiting_factor": 0,
+      "time_efficiency": 0,
+      "loadability": 0,
+      "stretch": {
+        "lengthened": 0,
+        "challenging": 0,
+        "partial_friendly": 0
+      },
+      "fatigue": 0
+    }
+  },
+  {
+    "id": "0004-traps-exercise",
     "name": "Machine Shrug",
     "rank": 3,
     "group": "traps",
@@ -59,7 +83,7 @@
     "movement_type": "isolation",
     "hypertrophy_criteria": {
       "target_function": 0,
-      "stability": 0,
+      "stability": 4,
       "limiting_factor": 0,
       "time_efficiency": 0,
       "loadability": 0,
@@ -72,18 +96,18 @@
     }
   },
   {
-    "id": "0004-traps-yraises",
-    "name": "Y-Raises",
+    "id": "0005-traps-exercise",
+    "name": "Y-Raise",
     "rank": 4,
     "group": "traps",
     "region": "middle",
-    "requirements": ["dumbbell"],
+    "requirements": ["dumbbell", "bench"],
     "variations": ["prone"],
     "tips": "",
     "movement_type": "compound",
     "hypertrophy_criteria": {
       "target_function": 0,
-      "stability": 0,
+      "stability": 4,
       "limiting_factor": 0,
       "time_efficiency": 0,
       "loadability": 0,

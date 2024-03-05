@@ -43,7 +43,7 @@ import { getMuscleData } from "./getMuscleData";
 // stability 2 = Free body but movement itself is stable: IE: Standing Overhead Extensions EZ-Bar
 // stability 1 = Free body and movement instability: IE: Standing Overhead Extensions Dumbbells
 // stability 0 = above on a bosu ball..
-// NOTE: DONE AS OF 3/2/2024 - BACK | BICEPS | CHEST | DELTS_FRONT | DELTS_REAR | DELTS_SIDE |
+// NOTE: DONE AS OF 3/2/2024
 
 export type Exercise = {
   id: string;

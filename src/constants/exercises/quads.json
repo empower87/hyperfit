@@ -1,7 +1,7 @@
 [
   {
-    "id": "0001-quads-squats",
-    "name": "Barbell Squats",
+    "id": "0001-quads-exercise",
+    "name": "Barbell Squat",
     "rank": 1,
     "group": "quads",
     "region": "",
@@ -11,7 +11,7 @@
     "movement_type": "compound",
     "hypertrophy_criteria": {
       "target_function": 0,
-      "stability": 0,
+      "stability": 2,
       "limiting_factor": 0,
       "time_efficiency": 0,
       "loadability": 0,
@@ -24,8 +24,8 @@
     }
   },
   {
-    "id": "0002-quads-frontsquats",
-    "name": "Front Squats",
+    "id": "0002-quads-exercise",
+    "name": "Front Squat",
     "rank": 2,
     "group": "quads",
     "region": "",
@@ -35,7 +35,7 @@
     "movement_type": "compound",
     "hypertrophy_criteria": {
       "target_function": 0,
-      "stability": 0,
+      "stability": 1,
       "limiting_factor": 0,
       "time_efficiency": 0,
       "loadability": 0,
@@ -48,7 +48,7 @@
     }
   },
   {
-    "id": "0003-quads-legpress",
+    "id": "0003-quads-exercise",
     "name": "Leg Press",
     "rank": 3,
     "group": "quads",
@@ -59,7 +59,7 @@
     "movement_type": "compound",
     "hypertrophy_criteria": {
       "target_function": 0,
-      "stability": 0,
+      "stability": 5,
       "limiting_factor": 0,
       "time_efficiency": 0,
       "loadability": 0,
@@ -72,7 +72,7 @@
     }
   },
   {
-    "id": "0004-quads-bulgariansplitsquat",
+    "id": "0004-quads-exercise",
     "name": "Bulgarian Split Squat",
     "rank": 4,
     "group": "quads",
@@ -83,7 +83,7 @@
     "movement_type": "compound",
     "hypertrophy_criteria": {
       "target_function": 0,
-      "stability": 0,
+      "stability": 1,
       "limiting_factor": 0,
       "time_efficiency": 0,
       "loadability": 0,
@@ -96,8 +96,8 @@
     }
   },
   {
-    "id": "0005-quads-lunges",
-    "name": "Lunges",
+    "id": "0005-quads-exercise",
+    "name": "Lunge",
     "rank": 5,
     "group": "quads",
     "region": "",
@@ -107,7 +107,7 @@
     "movement_type": "compound",
     "hypertrophy_criteria": {
       "target_function": 0,
-      "stability": 0,
+      "stability": 1,
       "limiting_factor": 0,
       "time_efficiency": 0,
       "loadability": 0,
@@ -120,8 +120,8 @@
     }
   },
   {
-    "id": "0006-quads-legextensions",
-    "name": "Leg Extensions",
+    "id": "0006-quads-exercise",
+    "name": "Leg Extension",
     "rank": 6,
     "group": "quads",
     "region": "",
@@ -131,7 +131,7 @@
     "movement_type": "compound",
     "hypertrophy_criteria": {
       "target_function": 0,
-      "stability": 0,
+      "stability": 5,
       "limiting_factor": 0,
       "time_efficiency": 0,
       "loadability": 0,
