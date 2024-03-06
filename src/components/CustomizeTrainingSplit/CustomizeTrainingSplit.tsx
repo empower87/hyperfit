@@ -196,6 +196,7 @@ export default function PageContent() {
             prioritized_muscle_list={prioritized_muscle_list}
             training_block={training_block}
             microcycles={microcycles}
+            updateMusclePriorityList={handleUpdateMuscleList}
           />
         </div>
       </Section>

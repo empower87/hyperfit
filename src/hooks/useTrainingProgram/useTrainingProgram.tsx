@@ -164,5 +164,6 @@ function useTrainingProgram() {
 export {
   TrainingProgramProvider,
   useTrainingProgram,
-  useTrainingProgramContext,
+  useTrainingProgramContext
 };
+

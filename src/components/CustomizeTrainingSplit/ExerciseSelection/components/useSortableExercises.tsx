@@ -1,4 +1,11 @@
-import { useCallback, useEffect, useState } from "react";
+import {
+  ReactNode,
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { Exercise, getGroupList } from "~/utils/getExercises";
 
@@ -78,50 +85,48 @@ const sortExercisesByCriteria = (
   return sorted;
 };
 
-// const CRITERIA_WEIGHTS = {
-//   stretch: {
-//     lengthened: 1.9,
-//     challenging: 1.9,
-//     partial_friendly: 1.1,
-//   },
-//   target_function: 1.7,
-//   stability: 1.6,
-//   limiting_factor: 1.5,
-//   fatigue: 1.3,
-//   time_efficiency: 1.2,
-//   loadability: 1.1,
-// } as const;
+type ExerciseSearchFiltersType = ReturnType<typeof useExerciseSearchFilters>;
 
-// const getWeightedCriteriaTotal = (exercise: Exercise) => {
-//   const hypertrophy_criteria = exercise.hypertrophy_criteria;
-//   let total = 0;
+const ExerciseSearchFiltersContext = createContext<ExerciseSearchFiltersType>({
+  exercises: [],
+  exerciseId: "",
+  allExercises: [],
+  selectedExerciseId: "",
+  filterTags: INITIAL_FILTER_TAGS,
+  onFilterTagChange: () => {},
+  onSortHandler: () => {},
+  onSaveExerciseHandler: () => {},
+  onSelectExerciseHandler: () => {},
+});
 
-//   for (const criteria in hypertrophy_criteria) {
-//     let key = criteria as KeyKey;
-//     if (key === "stretch") {
-//       total =
-//         total +
-//         hypertrophy_criteria["stretch"]["lengthened"] *
-//           CRITERIA_WEIGHTS["stretch"]["lengthened"];
-//       total =
-//         total +
-//         hypertrophy_criteria["stretch"]["challenging"] *
-//           CRITERIA_WEIGHTS["stretch"]["challenging"];
-//       total =
-//         total +
-//         hypertrophy_criteria["stretch"]["partial_friendly"] *
-//           CRITERIA_WEIGHTS["stretch"]["partial_friendly"];
-//     } else {
-//       total += hypertrophy_criteria[key] * CRITERIA_WEIGHTS[key];
-//     }
-//   }
+type ExerciseSearchFiltersProviderProps = {
+  muscle: MusclePriorityType;
+  exerciseId: string;
+  onExerciseChange: (updated_muscle: MusclePriorityType) => void;
+  children: ReactNode;
+};
+const ExerciseSearchFiltersProvider = ({
+  muscle,
+  exerciseId,
+  onExerciseChange,
+  children,
+}: ExerciseSearchFiltersProviderProps) => {
+  const values = useExerciseSearchFilters(muscle, exerciseId, onExerciseChange);
+  return (
+    <ExerciseSearchFiltersContext.Provider value={values}>
+      {children}
+    </ExerciseSearchFiltersContext.Provider>
+  );
+};
 
-//   return Math.round(total);
-// };
+const useExerciseSearchFiltersContext = () => {
+  return useContext(ExerciseSearchFiltersContext);
+};
 
-export default function useSortableExercises(
+function useExerciseSearchFilters(
   muscle: MusclePriorityType,
-  exercise: string
+  exerciseId: string,
+  onExerciseChange: (updated_muscle: MusclePriorityType) => void
 ) {
   const exercises = getGroupList(muscle.muscle);
   const allExercises = [...muscle.exercises].flat();
@@ -171,10 +176,17 @@ export default function useSortableExercises(
     [selectedExerciseId]
   );
 
-  const onSaveExerciseHandler = useCallback(() => {}, []);
+  const onSaveExerciseHandler = useCallback(() => {
+    const index = allExercises.findIndex((each) => each.id === exerciseId);
+    const new_muscle = {
+      ...muscle,
+      exercises: [...muscle.exercises],
+    };
+  }, []);
 
   return {
     exercises: visibleExercises,
+    exerciseId,
     allExercises,
     selectedExerciseId,
     filterTags,
@@ -184,3 +196,4 @@ export default function useSortableExercises(
     onSelectExerciseHandler,
   };
 }
+export { ExerciseSearchFiltersProvider, useExerciseSearchFiltersContext };

@@ -70,7 +70,7 @@ function Prompt({ splitOptions, isOpen, onClose }: PromptProps) {
               <li
                 key={`${each}_${index}`}
                 className={cn(
-                  `${BG_COLOR_M6} text-sm flex cursor-pointer text-white hover:${BG_COLOR_M5}`
+                  `${BG_COLOR_M6} flex cursor-pointer text-sm text-white hover:${BG_COLOR_M5}`
                 )}
                 onClick={() => onClose(splitOptions.id, each)}
               >
@@ -440,7 +440,7 @@ function DroppableDay({
         <div
           className={
             getSessionSplitColor(split).bg +
-            " text-sm indent-1 font-bold text-white"
+            " indent-1 text-sm font-bold text-white"
           }
         >
           {split}
@@ -786,12 +786,14 @@ type MesocycleExerciseLayoutProps = {
   prioritized_muscle_list: MusclePriorityType[];
   training_block: TrainingDayType[][];
   microcycles: number;
+  updateMusclePriorityList: (musclePriorityList: MusclePriorityType[]) => void;
 };
 
 export const MesocycleExerciseLayout = ({
   prioritized_muscle_list,
   training_block,
   microcycles,
+  updateMusclePriorityList,
 }: MesocycleExerciseLayoutProps) => {
   // const lastMesocycle = training_block.length;
   const [selectedMesocycle, setSelectedMesocycle] = useState(``);
@@ -891,9 +893,12 @@ export const MesocycleExerciseLayout = ({
   return (
     <Section title={"Exercises"}>
       <div className="mb-2 flex text-xxs text-white">
-        <ExercisesPreview musclePriorityList={prioritized_muscle_list} />
+        <ExercisesPreview
+          musclePriorityList={prioritized_muscle_list}
+          onExerciseChange={updateMusclePriorityList}
+        />
         <div className="flex flex-col">
-          <div className="text-sm mb-0.5">Workout Duration Variables</div>
+          <div className="mb-0.5 text-sm">Workout Duration Variables</div>
 
           <TimeIncrementFrame
             title="warmup"
