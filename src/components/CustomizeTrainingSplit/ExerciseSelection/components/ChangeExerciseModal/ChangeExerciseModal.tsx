@@ -379,12 +379,12 @@ function SelectExercise() {
       </SelectExercise.List>
 
       <div className={`flex items-center justify-end p-2`}>
-        <Button
-          onClick={onSaveExerciseHandler}
+        <button
+          onClick={() => onSaveExerciseHandler()}
           className={cn(`bg-rose-400 px-2 text-xs text-white`)}
         >
-          Save
-        </Button>
+          Saved
+        </button>
       </div>
     </SelectExercise.Layout>
   );

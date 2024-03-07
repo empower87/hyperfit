@@ -1,5 +1,4 @@
-import { useState } from "react";
-// import FilterIcon from "src/assets/icons/filter-svg.svg";
+import { useCallback, useState } from "react";
 import { BG_COLOR_M5, BG_COLOR_M6 } from "~/constants/themes";
 import { MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { cn } from "~/lib/clsx";
@@ -31,12 +30,16 @@ export default function ExercisesPreview({
     }
   };
 
-  const onExerciseChangeHandler = (updated_muscle: MusclePriorityType) => {
-    const new_list = [...musclePriorityList];
-    const index = new_list.findIndex((each) => each.id === updated_muscle.id);
-    new_list[index] = updated_muscle;
-    onExerciseChange(new_list);
-  };
+  const onExerciseChangeHandler = useCallback(
+    (updated_muscle: MusclePriorityType) => {
+      const new_list = [...musclePriorityList];
+      const index = new_list.findIndex((each) => each.id === updated_muscle.id);
+      new_list[index] = updated_muscle;
+      console.log(new_list, musclePriorityList, "LETS SEE THIS CHANGE");
+      onExerciseChange(new_list);
+    },
+    [musclePriorityList, onExerciseChange]
+  );
 
   const onClose = () => {
     setIsOpen(false);
@@ -68,6 +71,7 @@ export default function ExercisesPreview({
           );
         })}
       </div>
+
       <div className={cn(`space-y-1 overflow-y-auto`)}>
         {selectedExercises.map((each, index) => {
           return (

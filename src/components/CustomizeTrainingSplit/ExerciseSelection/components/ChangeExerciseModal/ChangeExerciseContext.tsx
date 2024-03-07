@@ -166,7 +166,6 @@ function useChangeExercise(
 
   const onSelectExerciseHandler = useCallback(
     (id: string) => {
-      console.log(id);
       if (selectedExerciseId === id) {
         setSelectedExerciseId("");
       } else {
@@ -198,9 +197,9 @@ function useChangeExercise(
       ...muscle,
       exercises: new_exercises,
     };
-
+    console.log("I CLICKED YOU WTF", new_muscle);
     onExerciseChange(new_muscle);
-  }, [visibleExercises]);
+  }, [visibleExercises, exerciseId, muscle, onExerciseChange]);
 
   return {
     exercises: visibleExercises,
