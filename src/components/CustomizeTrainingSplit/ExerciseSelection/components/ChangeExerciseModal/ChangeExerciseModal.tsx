@@ -356,6 +356,7 @@ function SelectExercise() {
   const { exercises, allExercises, onSaveExerciseHandler } =
     useChangeExerciseContext();
 
+  console.log(exercises, "YO WTF???");
   return (
     <SelectExercise.Layout>
       <SelectExercise.Header>

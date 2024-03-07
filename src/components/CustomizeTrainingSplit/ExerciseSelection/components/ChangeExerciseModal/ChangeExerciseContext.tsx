@@ -128,7 +128,6 @@ function useChangeExercise(
   exerciseId: string,
   onExerciseChange: (updated_muscle: MusclePriorityType) => void
 ) {
-  const exercises = getGroupList(muscle.muscle);
   const allExercises = [...muscle.exercises].flat();
 
   const [visibleExercises, setVisibleExercises] = useState<Exercise[]>([]);
@@ -138,9 +137,10 @@ function useChangeExercise(
   });
 
   useEffect(() => {
+    const exercises = getGroupList(muscle.muscle);
     const filteredExercises = filterExercisesByTags([...exercises], filterTags);
     setVisibleExercises(filteredExercises);
-  }, [filterTags]);
+  }, [filterTags, muscle]);
 
   const onFilterTagChange = useCallback(
     (key: FilterTagsKey, value: string | null) => {
@@ -177,12 +177,30 @@ function useChangeExercise(
   );
 
   const onSaveExerciseHandler = useCallback(() => {
-    const index = allExercises.findIndex((each) => each.id === exerciseId);
+    const new_exercises = [...muscle.exercises];
+    const new_exercise = visibleExercises.find(
+      (each) => each.id === selectedExerciseId
+    );
+    if (!new_exercise) return;
+
+    for (let i = 0; i < new_exercises.length; i++) {
+      for (let j = 0; j < new_exercises[i].length; j++) {
+        if (new_exercises[i][j].id === exerciseId) {
+          new_exercises[i][j] = {
+            ...new_exercises[i][j],
+            id: selectedExerciseId,
+            exercise: new_exercise.name,
+          };
+        }
+      }
+    }
     const new_muscle = {
       ...muscle,
-      exercises: [...muscle.exercises],
+      exercises: new_exercises,
     };
-  }, []);
+
+    onExerciseChange(new_muscle);
+  }, [visibleExercises]);
 
   return {
     exercises: visibleExercises,

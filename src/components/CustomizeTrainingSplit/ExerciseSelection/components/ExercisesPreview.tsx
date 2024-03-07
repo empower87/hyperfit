@@ -4,8 +4,8 @@ import { BG_COLOR_M5, BG_COLOR_M6 } from "~/constants/themes";
 import { MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { cn } from "~/lib/clsx";
 import { EditMuscleModal } from "../../MusclePriorityList/components/EditMuscleModal";
+import { ChangeExerciseProvider } from "./ChangeExerciseModal/ChangeExerciseContext";
 import SelectExercise from "./ChangeExerciseModal/ChangeExerciseModal";
-import { ExerciseSearchFiltersProvider } from "./useSortableExercises";
 
 type ExercisesPreviewProps = {
   musclePriorityList: MusclePriorityType[];
@@ -32,7 +32,10 @@ export default function ExercisesPreview({
   };
 
   const onExerciseChangeHandler = (updated_muscle: MusclePriorityType) => {
-    onExerciseChange(musclePriorityList);
+    const new_list = [...musclePriorityList];
+    const index = new_list.findIndex((each) => each.id === updated_muscle.id);
+    new_list[index] = updated_muscle;
+    onExerciseChange(new_list);
   };
 
   const onClose = () => {
@@ -43,13 +46,13 @@ export default function ExercisesPreview({
     <div className={cn(`mr-2 flex w-44 flex-col`)}>
       {isOpen ? (
         <EditMuscleModal isOpen={isOpen} onClose={onClose}>
-          <ExerciseSearchFiltersProvider
+          <ChangeExerciseProvider
             muscle={musclePriorityList[selectedMuscleIndex]}
             exerciseId={selectedExercises[selectedExerciseIndex]?.id}
             onExerciseChange={onExerciseChangeHandler}
           >
             <SelectExercise />
-          </ExerciseSearchFiltersProvider>
+          </ChangeExerciseProvider>
         </EditMuscleModal>
       ) : null}
 
