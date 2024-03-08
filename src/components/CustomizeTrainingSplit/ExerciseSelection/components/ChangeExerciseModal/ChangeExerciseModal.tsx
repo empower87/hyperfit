@@ -160,7 +160,13 @@ function Filter() {
       <div className={`flex w-11/12 flex-wrap text-xxs`}>
         {Object.values(filterTags).map((each) => {
           if (each == null) return null;
-          return <FilterTag tag={each} onRemoveTag={onRemoveTag} />;
+          return (
+            <FilterTag
+              key={`${each}_tag`}
+              tag={each}
+              onRemoveTag={onRemoveTag}
+            />
+          );
         })}
       </div>
 
@@ -356,7 +362,6 @@ function SelectExercise() {
   const { exercises, allExercises, onSaveExerciseHandler } =
     useChangeExerciseContext();
 
-  console.log(exercises, "YO WTF???");
   return (
     <SelectExercise.Layout>
       <SelectExercise.Header>
@@ -374,7 +379,13 @@ function SelectExercise() {
           if (foundExercise) {
             isSelected = true;
           }
-          return <SelectExercise.Item exercise={each} selected={isSelected} />;
+          return (
+            <SelectExercise.Item
+              key={`${each.id}_changeExerciseItem`}
+              exercise={each}
+              selected={isSelected}
+            />
+          );
         })}
       </SelectExercise.List>
 
@@ -383,7 +394,7 @@ function SelectExercise() {
           onClick={() => onSaveExerciseHandler()}
           className={cn(`bg-rose-400 px-2 text-xs text-white`)}
         >
-          Saved
+          Save
         </button>
       </div>
     </SelectExercise.Layout>

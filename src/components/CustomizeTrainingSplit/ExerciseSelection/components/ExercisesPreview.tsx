@@ -1,24 +1,19 @@
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { BG_COLOR_M5, BG_COLOR_M6 } from "~/constants/themes";
-import { MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
+import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
 import { cn } from "~/lib/clsx";
 import { EditMuscleModal } from "../../MusclePriorityList/components/EditMuscleModal";
 import { ChangeExerciseProvider } from "./ChangeExerciseModal/ChangeExerciseContext";
 import SelectExercise from "./ChangeExerciseModal/ChangeExerciseModal";
 
-type ExercisesPreviewProps = {
-  musclePriorityList: MusclePriorityType[];
-  onExerciseChange: (items: MusclePriorityType[]) => void;
-};
-export default function ExercisesPreview({
-  musclePriorityList,
-  onExerciseChange,
-}: ExercisesPreviewProps) {
+export default function ExercisesPreview() {
+  const { prioritized_muscle_list, handleUpdateMuscle } =
+    useTrainingProgramContext();
   const [selectedMuscleIndex, setSelectedMuscleIndex] = useState<number>(0);
   const [selectedExerciseIndex, setSelectedExerciseIndex] = useState<number>(0);
   const [isOpen, setIsOpen] = useState(false);
   const selectedExercises =
-    musclePriorityList[selectedMuscleIndex].exercises.flat();
+    prioritized_muscle_list[selectedMuscleIndex].exercises.flat();
 
   const onSelectHandler = (type: "muscle" | "exercise", index: number) => {
     if (type === "muscle") {
@@ -30,29 +25,18 @@ export default function ExercisesPreview({
     }
   };
 
-  const onExerciseChangeHandler = useCallback(
-    (updated_muscle: MusclePriorityType) => {
-      const new_list = [...musclePriorityList];
-      const index = new_list.findIndex((each) => each.id === updated_muscle.id);
-      new_list[index] = updated_muscle;
-      console.log(new_list, musclePriorityList, "LETS SEE THIS CHANGE");
-      onExerciseChange(new_list);
-    },
-    [musclePriorityList, onExerciseChange]
-  );
-
   const onClose = () => {
     setIsOpen(false);
   };
 
   return (
-    <div className={cn(`mr-2 flex w-44 flex-col`)}>
+    <div className={cn(`mr-2 flex w-1/2 flex-col`)}>
       {isOpen ? (
         <EditMuscleModal isOpen={isOpen} onClose={onClose}>
           <ChangeExerciseProvider
-            muscle={musclePriorityList[selectedMuscleIndex]}
+            muscle={prioritized_muscle_list[selectedMuscleIndex]}
             exerciseId={selectedExercises[selectedExerciseIndex]?.id}
-            onExerciseChange={onExerciseChangeHandler}
+            onExerciseChange={handleUpdateMuscle}
           >
             <SelectExercise />
           </ChangeExerciseProvider>
@@ -60,12 +44,12 @@ export default function ExercisesPreview({
       ) : null}
 
       <div className={cn(`mb-2 flex space-x-1 overflow-x-auto border-b-2`)}>
-        {musclePriorityList.map((each, index) => {
+        {prioritized_muscle_list.map((each, index) => {
           return (
             <Item
               key={`${each}_${index}`}
               value={each.muscle}
-              selected={musclePriorityList[selectedMuscleIndex].muscle}
+              selected={prioritized_muscle_list[selectedMuscleIndex].muscle}
               onClick={() => onSelectHandler("muscle", index)}
             />
           );

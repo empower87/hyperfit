@@ -1,6 +1,7 @@
 import { ReactNode, useState } from "react";
 import { BG_COLOR_M6, BG_COLOR_M8 } from "~/constants/themes";
 import { SplitSessionsNameType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
+import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
 
 const OPTIONS = [0, 1, 2, 3, 4, 5, 6, 7];
 const SPLITS = {
@@ -59,7 +60,7 @@ function SelectFrequency({
 
   return (
     <div className="flex h-6">
-      <p className="text-xs w-4/5 p-1 leading-3 text-slate-300">{title}</p>
+      <p className="w-4/5 p-1 text-xs leading-3 text-slate-300">{title}</p>
       <div className=" flex w-1/5">
         <Select
           selectedOption={selectedOption}
@@ -117,17 +118,10 @@ function SelectLayout({
   );
 }
 
-type SelectFrequencySplitProps = {
-  onFrequencyChange: (first: number, second: number) => void;
-  onSplitChange: (type: SplitSessionsNameType) => void;
-  currentSplit: SplitSessionsNameType;
-};
+export default function SelectFrequencySplit() {
+  const { handleFrequencyChange, handleUpdateSplitSessions, split_sessions } =
+    useTrainingProgramContext();
 
-export default function SelectFrequencySplit({
-  onFrequencyChange,
-  onSplitChange,
-  currentSplit,
-}: SelectFrequencySplitProps) {
   const [totalSessionsPerWeek, setTotalSessionsPerWeek] = useState<number>(3);
   const [totalDoubleSessionsPerWeek, setTotalDoubleSessionsPerWeek] =
     useState<number>(0);
@@ -147,8 +141,8 @@ export default function SelectFrequencySplit({
   };
 
   const onButtonClick = () => {
-    onFrequencyChange(totalSessionsPerWeek, totalDoubleSessionsPerWeek);
-    onSplitChange(selectedSplitType);
+    handleFrequencyChange(totalSessionsPerWeek, totalDoubleSessionsPerWeek);
+    handleUpdateSplitSessions(selectedSplitType);
   };
 
   return (
@@ -171,14 +165,17 @@ export default function SelectFrequencySplit({
         </SelectLayout>
 
         <SelectLayout title="Split">
-          <SelectSplit selectedOption={currentSplit} onSelect={onSelectSplit} />
+          <SelectSplit
+            selectedOption={split_sessions.split}
+            onSelect={onSelectSplit}
+          />
         </SelectLayout>
       </div>
 
       <div className="flex h-1/3 items-center justify-center">
         <button
           className={
-            BG_COLOR_M6 + " text-xs p-1 font-bold text-white hover:bg-slate-500"
+            BG_COLOR_M6 + " p-1 text-xs font-bold text-white hover:bg-slate-500"
           }
           style={{ height: "80%", width: "95%" }}
           onClick={() => onButtonClick()}

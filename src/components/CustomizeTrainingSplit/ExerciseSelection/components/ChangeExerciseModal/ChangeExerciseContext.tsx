@@ -197,7 +197,7 @@ function useChangeExercise(
       ...muscle,
       exercises: new_exercises,
     };
-    console.log("I CLICKED YOU WTF", new_muscle);
+
     onExerciseChange(new_muscle);
   }, [visibleExercises, exerciseId, muscle, onExerciseChange]);
 

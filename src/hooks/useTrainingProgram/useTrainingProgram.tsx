@@ -23,6 +23,7 @@ const TrainingProgramContext = createContext<TrainingProgramType>({
   training_program_params: INITIAL_STATE.training_program_params,
   prioritized_muscle_list: INITIAL_STATE.muscle_priority_list,
   handleUpdateMuscleList: () => {},
+  handleUpdateMuscle: () => {},
   handleUpdateBreakpoint: () => {},
   handleUpdateBreakpoints: () => {},
   handleUpdateSplitSessions: () => {},
@@ -73,6 +74,19 @@ function useTrainingProgram() {
       dispatch({
         type: "UPDATE_MUSCLE_PRIORITY_LIST",
         payload: { priority_list: items },
+      });
+    },
+    [muscle_priority_list]
+  );
+
+  const handleUpdateMuscle = useCallback(
+    (updated_muscle: MusclePriorityType) => {
+      const new_list = [...muscle_priority_list];
+      const index = new_list.findIndex((each) => each.id === updated_muscle.id);
+      new_list[index] = updated_muscle;
+      dispatch({
+        type: "UPDATE_MUSCLE_PRIORITY_LIST",
+        payload: { priority_list: new_list },
       });
     },
     [muscle_priority_list]
@@ -150,6 +164,7 @@ function useTrainingProgram() {
     training_program_params,
     prioritized_muscle_list: muscle_priority_list,
     handleUpdateMuscleList,
+    handleUpdateMuscle,
     handleUpdateBreakpoint,
     handleUpdateBreakpoints,
     handleUpdateSplitSessions,
@@ -164,6 +179,5 @@ function useTrainingProgram() {
 export {
   TrainingProgramProvider,
   useTrainingProgram,
-  useTrainingProgramContext
+  useTrainingProgramContext,
 };
-

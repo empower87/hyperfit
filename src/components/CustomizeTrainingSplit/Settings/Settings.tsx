@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { BG_COLOR_M5, BG_COLOR_M6 } from "~/constants/themes";
+import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
 
 type VolumeSettingFrameProps = {
   title: string;
@@ -28,7 +29,7 @@ function VolumeSettingFrame({
 
   return (
     <div className={BG_COLOR_M6 + " mb-1 flex justify-between"}>
-      <div className=" text-xxs p-1 indent-1 text-white">{title}</div>
+      <div className=" p-1 indent-1 text-xxs text-white">{title}</div>
       <div className=" flex">
         <button
           className={
@@ -39,7 +40,7 @@ function VolumeSettingFrame({
         >
           -
         </button>
-        <div className=" text-xxs flex h-6 w-6 items-center justify-center text-white">
+        <div className=" flex h-6 w-6 items-center justify-center text-xxs text-white">
           {currentBreakpoint}
         </div>
         <button
@@ -64,22 +65,20 @@ type ListVolumeSettingsProps = {
     value: number
   ) => void;
 };
-export function ListVolumeSettings({
-  mrvBreakpoint,
-  mevBreakpoint,
-  onBreakpointChange,
-}: ListVolumeSettingsProps) {
+export function ListVolumeSettings() {
+  const { mrv_breakpoint, mev_breakpoint, handleUpdateBreakpoint } =
+    useTrainingProgramContext();
   return (
     <div>
       <VolumeSettingFrame
         title="MRV -"
-        breakpoint={mrvBreakpoint}
-        onChange={onBreakpointChange}
+        breakpoint={mrv_breakpoint}
+        onChange={handleUpdateBreakpoint}
       />
       <VolumeSettingFrame
         title="MEV -"
-        breakpoint={mevBreakpoint}
-        onChange={onBreakpointChange}
+        breakpoint={mev_breakpoint}
+        onChange={handleUpdateBreakpoint}
       />
     </div>
   );

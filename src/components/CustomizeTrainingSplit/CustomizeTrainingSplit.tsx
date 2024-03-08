@@ -1,209 +1,45 @@
-import { MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
-import { useTrainingProgram } from "~/hooks/useTrainingProgram/useTrainingProgram";
+import { TrainingProgramProvider } from "~/hooks/useTrainingProgram/useTrainingProgram";
 import Section from "../Layout/Section";
 import TrainingBlock from "../Macrocycle/TrainingBlock/TrainingBlock";
-import { MesocycleExerciseLayout } from "./ExerciseSelection/ExerciseSelection";
+import ExerciseOverview from "./ExerciseSelection/ExerciseSelection";
 import { MusclePriorityList } from "./MusclePriorityList/MusclePriorityList";
 import SelectFrequencySplit from "./Settings/SelectFrequencySplit";
 import { ListVolumeSettings } from "./Settings/Settings";
 import WeekOverview from "./WeekOverview/WeekOverview";
 
-// type CustomizeTrainingSplitProps = {
-//   setTrainingBlock: Dispatch<SetStateAction<TrainingDayType[][]>>;
-// };
-
-// export default function CustomizeTrainingSplit({
-//   setTrainingBlock,
-// }: CustomizeTrainingSplitProps) {
-//   // const {
-//   //   training_week,
-//   //   training_block,
-//   //   split_sessions,
-//   //   frequency,
-//   //   mrv_breakpoint,
-//   //   mev_breakpoint,
-//   //   prioritized_muscle_list,
-//   //   handleUpdateMuscleList,
-//   //   handleFrequencyChange,
-//   //   handleUpdateSplitSessions,
-//   //   handleUpdateBreakpoint,
-//   // } = useTrainingProgram();
-//   /// added for test
-//   const [entireVolume, setEntireVolume] = useState<number>(0);
-//   const [splitVolume, setSplitVolume] = useState<
-//     { session: string; sets: number }[]
-//   >([]);
-
-//   useEffect(() => {
-//     setTrainingBlock(training_block);
-//   }, [training_block]);
-
-//   useEffect(() => {
-//     let splits = [];
-//     let count = 0;
-//     for (let i = 0; i < prioritized_muscle_list.length; i++) {
-//       const totalVolume = getEndOfMesocycleVolume(
-//         prioritized_muscle_list[i].muscle,
-//         prioritized_muscle_list[i].volume.frequencyProgression[2],
-//         prioritized_muscle_list[i].volume_landmark
-//       );
-//       count = count + totalVolume;
-//     }
-//     let total = frequency[0] + frequency[1];
-//     let setsPerDay = Math.round(count / total);
-
-//     for (let j = 0; j < total; j++) {
-//       splits.push({ session: `Session ${j + 1}`, sets: setsPerDay });
-//     }
-
-//     setEntireVolume(count);
-//     setSplitVolume(splits);
-//   }, [prioritized_muscle_list]);
-
-//   const onVolumeChange = () => {};
-//   const updateMesoProgression = () => {};
-
-//   return (
-//     <div>
-//       <div className=" flex w-full">
-//         <SelectFrequencySplit
-//           onFrequencyChange={handleFrequencyChange}
-//           onSplitChange={handleUpdateSplitSessions}
-//           currentSplit={split_sessions.split}
-//         />
-//       </div>
-
-//       <div className=" mb-2 flex">
-//         <div className=" w-1/4 pr-2">
-//           <ListVolumeSettings
-//             mrvBreakpoint={mrv_breakpoint}
-//             mevBreakpoint={mev_breakpoint}
-//             onBreakpointChange={handleUpdateBreakpoint}
-//           />
-//           <WeekVolumeDetails
-//             entireVolume={entireVolume}
-//             splitVolume={splitVolume}
-//           />
-//           {/* <SplitOverview onSplitChange={handleUpdateSplitSessions} /> */}
-//         </div>
-
-//         <MusclePriorityList
-//           musclePriority={prioritized_muscle_list}
-//           onVolumeChange={onVolumeChange}
-//           total_sessions={frequency}
-//           onMesoProgressionUpdate={updateMesoProgression}
-//           onPriorityChange={handleUpdateMuscleList}
-//         />
-//       </div>
-
-//       <WeekOverview
-//         split_sessions={split_sessions}
-//         training_week={training_week}
-//         list={prioritized_muscle_list}
-//         total_sessions={frequency}
-//       />
-
-//       {/* {training_block.length ? (
-//         <div>
-//           <WeekSessions
-//             training_week={training_block[training_block.length - 1]}
-//           />
-//         </div>
-//       ) : null} */}
-//       {training_block.length ? (
-//         <MesocycleExerciseLayout training_block={training_block} />
-//       ) : null}
-//     </div>
-//   );
-// }
-
 export default function PageContent() {
-  const {
-    training_week,
-    training_block,
-    split_sessions,
-    frequency,
-    training_program_params,
-    mrv_breakpoint,
-    mev_breakpoint,
-    prioritized_muscle_list,
-    handleUpdateMuscleList,
-    handleFrequencyChange,
-    handleUpdateSplitSessions,
-    handleUpdateBreakpoint,
-    handleUpdateBreakpoints,
-    handleRearrangeTrainingWeek,
-    handleChangeFrequencyProgression,
-  } = useTrainingProgram();
-
-  const onPrioritySaveHandler = (
-    new_list: MusclePriorityType[],
-    breakpoints: [number, number]
-  ) => {
-    handleUpdateMuscleList(new_list);
-    handleUpdateBreakpoints(breakpoints);
-  };
-
-  const { microcycles, mesocycles } = training_program_params;
-  const onVolumeChange = () => {};
-  const updateMesoProgression = () => {};
-
   return (
-    <div
-      className="flex h-full w-full flex-col overflow-y-scroll"
-      style={{ height: "97%", width: "98%" }}
-    >
-      <Section title="Customize Training Split">
-        <div className="">
-          <div className="flex w-full">
-            <SelectFrequencySplit
-              onFrequencyChange={handleFrequencyChange}
-              onSplitChange={handleUpdateSplitSessions}
-              currentSplit={split_sessions.split}
-            />
-          </div>
-
-          <div className="mb-2 flex flex-col">
-            <div className="w-1/4 pr-2">
-              <ListVolumeSettings
-                mrvBreakpoint={mrv_breakpoint}
-                mevBreakpoint={mev_breakpoint}
-                onBreakpointChange={handleUpdateBreakpoint}
-              />
+    <div className="flex h-full w-full flex-col overflow-y-scroll">
+      <TrainingProgramProvider>
+        <Section title="Customize Training Split">
+          <div className="">
+            <div className="flex w-full">
+              <SelectFrequencySplit />
             </div>
 
-            <MusclePriorityList
-              musclePriority={prioritized_muscle_list}
-              splitSessions={split_sessions}
-              mesocycles={mesocycles}
-              microcycles={microcycles}
-              volumeLandmarkBreakpoints={[mrv_breakpoint, mev_breakpoint]}
-              onVolumeChange={onVolumeChange}
-              total_sessions={frequency}
-              onMesoProgressionUpdate={updateMesoProgression}
-              onPrioritySave={onPrioritySaveHandler}
-              // onFrequencyProgressionChange={handleChangeFrequencyProgression}
-            />
+            <div className="mb-2 flex flex-col">
+              <div className="w-1/4 pr-2">
+                <ListVolumeSettings />
+              </div>
+
+              <MusclePriorityList />
+            </div>
+
+            <WeekOverview>
+              <WeekOverview.Split />
+              <WeekOverview.Week />
+            </WeekOverview>
+
+            <ExerciseOverview>
+              <ExerciseOverview.ExercisePreview />
+            </ExerciseOverview>
           </div>
+        </Section>
 
-          <WeekOverview
-            split_sessions={split_sessions}
-            training_week={training_week}
-            onSplitReorder={handleRearrangeTrainingWeek}
-          />
-
-          <MesocycleExerciseLayout
-            prioritized_muscle_list={prioritized_muscle_list}
-            training_block={training_block}
-            microcycles={microcycles}
-            updateMusclePriorityList={handleUpdateMuscleList}
-          />
-        </div>
-      </Section>
-
-      <Section title="Training Block">
-        <TrainingBlock training_block={training_block} />
-      </Section>
+        <Section title="Training Block">
+          <TrainingBlock />
+        </Section>
+      </TrainingProgramProvider>
     </div>
   );
 }

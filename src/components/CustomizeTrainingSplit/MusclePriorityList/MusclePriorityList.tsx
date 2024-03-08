@@ -9,10 +9,10 @@ import { DragDropContext, Draggable } from "react-beautiful-dnd";
 import { BG_COLOR_M5, BG_COLOR_M6, BORDER_COLOR_M8 } from "~/constants/themes";
 import {
   MusclePriorityType,
-  SplitSessionsType,
   VOLUME_BG_COLORS,
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { VolumeLandmarkType } from "~/hooks/useTrainingProgram/reducer/trainingProgramUtils";
+import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
 import { cn } from "~/lib/clsx";
 import StrictModeDroppable from "~/lib/react-beautiful-dnd/StrictModeDroppable";
 import { getVolumeSets } from "~/utils/musclePriorityHandlers";
@@ -57,64 +57,29 @@ function Select({ volume_landmark, options, onSelect, bgColor }: SelectProps) {
   );
 }
 
-// const CELL_WIDTHS = [" w-1/12", " w-2/12", " w-2/12", " w-4/12", " w-3/12"];
-// const CELL_WIDTHS_ON_EDIT = [
-//   " w-1/12",
-//   " w-1/12",
-//   " w-2/12",
-//   " w-6/12",
-//   " w-2/12",
-// ];
-
 const CELL_WIDTHS = ["5%", "15%", "7%", "13%", "26%", "26%", "8%"];
-const CELL_WIDTHS_ON_EDIT = ["5%", "15%", "20%", "40%", "20%"];
 
 type ItemProps = {
   muscleGroup: MusclePriorityType;
-  microcycles: number;
   index: number;
   onVolumeChange: (
     id: MusclePriorityType["id"],
     volume_landmark: VolumeLandmarkType
   ) => void;
-  // onVolumeChange: (index: number, newVolume: VolumeLandmarkType) => void;
-  total_sessions: [number, number];
-  onMesoProgressionUpdate: (id: string, newMesoProgression: number[]) => void;
-  onFrequencyProgressionUpdate: (
-    muscle: MusclePriorityType,
-    operator: "add" | "subtract"
-  ) => void;
-  getTotalVolumeHandler: (
-    _frequencyProgression: number[],
-    _muscle: MusclePriorityType
-  ) => number[];
 };
-
-function Item({
-  muscleGroup,
-  microcycles,
-  index,
-  onVolumeChange,
-  total_sessions,
-  onMesoProgressionUpdate,
-  onFrequencyProgressionUpdate,
-  getTotalVolumeHandler,
-}: ItemProps) {
+function Item({ muscleGroup, index, onVolumeChange }: ItemProps) {
+  const { training_program_params, frequency } = useTrainingProgramContext();
+  const { microcycles } = training_program_params;
   const { volume, muscle } = muscleGroup;
   const { setProgressionMatrix, landmark, exercisesPerSessionSchema } = volume;
+
   const [totalVolumePerMesocycle, setTotalVolumePerMesocycle] = useState<
     number[]
   >([]);
-  const [cellWidths, setCellWidths] = useState<string[]>([...CELL_WIDTHS]);
-  const [isEditing, setIsEditing] = useState<boolean>(false);
   const [frequencyProgression, setFrequencyProgression] = useState<number[]>(
     []
   );
-  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-
-  useEffect(() => {
-    setFrequencyProgression(muscleGroup.volume.frequencyProgression);
-  }, [muscleGroup]);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   const volumeSets = getVolumeSets(
     muscle,
@@ -122,6 +87,10 @@ function Item({
     landmark
   );
   const bgColor = VOLUME_BG_COLORS[landmark];
+
+  useEffect(() => {
+    setFrequencyProgression(muscleGroup.volume.frequencyProgression);
+  }, [muscleGroup]);
 
   useEffect(() => {
     const totalVolume: number[] = [];
@@ -144,38 +113,6 @@ function Item({
     [index]
   );
 
-  const changeCellWidthsHandler = (isEditing: boolean) => {
-    if (isEditing) {
-      setCellWidths([...CELL_WIDTHS_ON_EDIT]);
-    } else {
-      setCellWidths([...CELL_WIDTHS]);
-    }
-  };
-
-  const onEditHandler = (isEditing: boolean) => {
-    setIsEditing(isEditing);
-    changeCellWidthsHandler(isEditing);
-  };
-
-  const onFrequencyChangeClickHandler = (type: "add" | "subtract") => {
-    onFrequencyProgressionUpdate(muscleGroup, type);
-  };
-
-  const onFrequencyIndexClick = useCallback(
-    (index: number) => {
-      if (selectedIndex == index) {
-        setSelectedIndex(null);
-      } else {
-        setSelectedIndex(index);
-      }
-    },
-    [selectedIndex]
-  );
-
-  const onResetFrequency = () => {};
-
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-
   const onCloseModal = () => {
     setIsModalOpen(false);
   };
@@ -193,21 +130,24 @@ function Item({
             />
           </EditMuscleModal>
         ) : null}
-        <div className={" indent-1"} style={{ width: cellWidths[0] }}>
+        <div className={" indent-1"} style={{ width: CELL_WIDTHS[0] }}>
           {index + 1}
         </div>
 
-        <div className={" indent-1"} style={{ width: cellWidths[1] }}>
+        <div className={" indent-1"} style={{ width: CELL_WIDTHS[1] }}>
           {muscle}
         </div>
 
-        <div className={"flex justify-center"} style={{ width: cellWidths[2] }}>
+        <div
+          className={"flex justify-center"}
+          style={{ width: CELL_WIDTHS[2] }}
+        >
           {exercisesPerSessionSchema}
         </div>
 
         <div
           className={" flex justify-evenly"}
-          style={{ width: cellWidths[3] }}
+          style={{ width: CELL_WIDTHS[3] }}
         >
           <Select
             volume_landmark={landmark}
@@ -218,23 +158,23 @@ function Item({
           <div className=" ">{volumeSets}</div>
         </div>
         <div
-          style={{ width: cellWidths[4] }}
+          style={{ width: CELL_WIDTHS[4] }}
           className="flex items-center justify-center"
         >
           <MesocycleFrequency
             muscle={muscleGroup}
-            maxFrequency={total_sessions[0] + total_sessions[1]}
+            maxFrequency={frequency[0] + frequency[1]}
             mesoProgression={frequencyProgression}
           />
         </div>
 
         <MesocycleVolumes
           mesocycleVolumes={totalVolumePerMesocycle}
-          width={cellWidths[5]}
+          width={CELL_WIDTHS[5]}
         />
         <div
           className="flex items-center justify-center"
-          style={{ width: cellWidths[6] }}
+          style={{ width: CELL_WIDTHS[6] }}
         >
           <Button
             className={`text-xxs text-white ${BG_COLOR_M5} p-0.5`}
@@ -247,22 +187,6 @@ function Item({
     </>
   );
 }
-
-type MusclePriorityListProps = {
-  musclePriority: MusclePriorityType[];
-  splitSessions: SplitSessionsType;
-  mesocycles: number;
-  microcycles: number;
-  volumeLandmarkBreakpoints: [number, number];
-  onVolumeChange: (index: number, newVolume: VolumeLandmarkType) => void;
-  total_sessions: [number, number];
-  onMesoProgressionUpdate: (id: string, newMesoProgression: number[]) => void;
-
-  onPrioritySave: (
-    new_list: MusclePriorityType[],
-    breakpoints: [number, number]
-  ) => void;
-};
 
 interface CellProps extends HTMLAttributes<HTMLDivElement> {
   children: ReactNode;
@@ -282,23 +206,19 @@ export function Cell({ children, width, className, ...props }: CellProps) {
     </div>
   );
 }
-function RowHeader({
-  cellWidths,
-  mesocycles,
-}: {
-  cellWidths: string[];
-  mesocycles: number;
-}) {
+function RowHeader() {
+  const { training_program_params } = useTrainingProgramContext();
+  const { mesocycles } = training_program_params;
   const mesocycleArray = Array.from(Array(mesocycles).keys());
   return (
     <div className={" mb-1 flex w-full text-xxs text-white"}>
-      <Cell width={cellWidths[0]}>Rank</Cell>
-      <Cell width={cellWidths[1]}>Group</Cell>
-      <Cell className="text-center leading-3" width={cellWidths[2]}>
+      <Cell width={CELL_WIDTHS[0]}>Rank</Cell>
+      <Cell width={CELL_WIDTHS[1]}>Group</Cell>
+      <Cell className="text-center leading-3" width={CELL_WIDTHS[2]}>
         Exercises Per Session
       </Cell>
-      <Cell width={cellWidths[3]}>Volume Landmark</Cell>
-      <Cell className="flex-col items-center" width={cellWidths[4]}>
+      <Cell width={CELL_WIDTHS[3]}>Volume Landmark</Cell>
+      <Cell className="flex-col items-center" width={CELL_WIDTHS[4]}>
         Frequency Per Mesocycle
         <div className={`${BORDER_COLOR_M8} flex w-full border-t`}>
           {mesocycleArray.map((meso) => {
@@ -313,7 +233,7 @@ function RowHeader({
           })}
         </div>
       </Cell>
-      <Cell className="flex-col items-center" width={cellWidths[5]}>
+      <Cell className="flex-col items-center" width={CELL_WIDTHS[5]}>
         Total Volume Per Mesocycle
         <div className={`${BORDER_COLOR_M8} flex w-full border-t`}>
           {mesocycleArray.map((meso) => {
@@ -328,7 +248,7 @@ function RowHeader({
           })}
         </div>
       </Cell>
-      <Cell className="text-center leading-3" width={cellWidths[6]}>
+      <Cell className="text-center leading-3" width={CELL_WIDTHS[6]}>
         Edit
       </Cell>
     </div>
@@ -337,17 +257,17 @@ function RowHeader({
 
 MusclePriorityList.RowHeader = RowHeader;
 
-export function MusclePriorityList({
-  musclePriority,
-  splitSessions,
-  mesocycles,
-  microcycles,
-  volumeLandmarkBreakpoints,
-  onVolumeChange,
-  total_sessions,
-  onMesoProgressionUpdate,
-  onPrioritySave,
-}: MusclePriorityListProps) {
+export function MusclePriorityList() {
+  const {
+    prioritized_muscle_list,
+    split_sessions,
+    training_program_params,
+    mrv_breakpoint,
+    mev_breakpoint,
+    handleUpdateMuscleList,
+    handleUpdateBreakpoints,
+  } = useTrainingProgramContext();
+  const { mesocycles, microcycles } = training_program_params;
   const {
     draggableList,
     volumeBreakpoints,
@@ -355,30 +275,26 @@ export function MusclePriorityList({
     onReorder,
     onVolumeLandmarkChange,
     onFrequencyProgressionUpdate,
-    getTotalVolumeHandler,
   } = useMusclePriority(
-    musclePriority,
-    volumeLandmarkBreakpoints,
-    splitSessions,
+    prioritized_muscle_list,
+    [mrv_breakpoint, mev_breakpoint],
+    split_sessions,
     mesocycles,
     microcycles
   );
-  const [cellWidths, setCellWidths] = useState<string[]>([...CELL_WIDTHS]);
-
   const onSaveHandler = useCallback(() => {
-    onPrioritySave(draggableList, volumeBreakpoints);
+    handleUpdateMuscleList(draggableList);
+    handleUpdateBreakpoints(volumeBreakpoints);
   }, [draggableList, volumeBreakpoints]);
 
   const onResetHandler = useCallback(() => {
-    setDraggableList(musclePriority);
+    setDraggableList(prioritized_muscle_list);
   }, []);
-  // Todo: Note, mesocycles / microcycles can easily be put into a useContext hook as they are very slow moving state like a Theme.
+
   return (
     <div className="">
-      <MusclePriorityList.RowHeader
-        cellWidths={cellWidths}
-        mesocycles={mesocycles}
-      />
+      <MusclePriorityList.RowHeader />
+
       <DragDropContext onDragEnd={onReorder}>
         <StrictModeDroppable droppableId="droppable">
           {(provided, snapshot) => (
@@ -404,15 +320,8 @@ export function MusclePriorityList({
                         <Item
                           key={`${each.id}_MusclePriority`}
                           muscleGroup={each}
-                          microcycles={microcycles}
                           index={index}
                           onVolumeChange={onVolumeLandmarkChange}
-                          total_sessions={total_sessions}
-                          onMesoProgressionUpdate={onMesoProgressionUpdate}
-                          onFrequencyProgressionUpdate={
-                            onFrequencyProgressionUpdate
-                          }
-                          getTotalVolumeHandler={getTotalVolumeHandler}
                         />
                       </div>
                     )}

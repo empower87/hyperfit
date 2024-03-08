@@ -21,10 +21,10 @@ import {
 import {
   EXERCISE_TRAINING_MODALITIES,
   ExerciseType,
-  MusclePriorityType,
   SplitType,
   TrainingDayType,
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
+import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
 import { cn } from "~/lib/clsx";
 import StrictModeDroppable from "~/lib/react-beautiful-dnd/StrictModeDroppable";
 import { getGroupList } from "~/utils/getExercises";
@@ -584,7 +584,6 @@ function Title({ title, selected, onClick }: TitleProps) {
 
 type WeekSessionsProps = {
   mesocycle_index: number;
-  microcycles: number;
   selectedMesocycle: string;
   training_week: TrainingDayType[];
   onTitleClick: (title: string) => void;
@@ -593,16 +592,14 @@ type WeekSessionsProps = {
     currentMicrocycleIndex: number
   ) => number;
 };
-export default function WeekSessions({
+function WeekSessions({
   mesocycle_index,
-  microcycles,
   selectedMesocycle,
   training_week,
   onTitleClick,
   sessionDurationCalculator,
 }: WeekSessionsProps) {
   const title = `Mesocycle ${mesocycle_index}`;
-
   const {
     draggableExercises,
     onSplitChange,
@@ -634,10 +631,7 @@ export default function WeekSessions({
             selected={selectedMesocycle}
             onClick={onTitleClick}
           />
-          <SelectMicrocycleList
-            microcycles={microcycles}
-            onWeekClick={selectWeekIndexHandler}
-          />
+          <SelectMicrocycleList onWeekClick={selectWeekIndexHandler} />
 
           {modalOptions && isModalPrompted ? (
             <Prompt
@@ -681,14 +675,12 @@ export default function WeekSessions({
 }
 
 type SelectMicrocycleListProps = {
-  microcycles: number;
   onWeekClick: (week: string) => void;
 };
 
-const SelectMicrocycleList = ({
-  microcycles,
-  onWeekClick,
-}: SelectMicrocycleListProps) => {
+const SelectMicrocycleList = ({ onWeekClick }: SelectMicrocycleListProps) => {
+  const { training_program_params } = useTrainingProgramContext();
+  const { microcycles } = training_program_params;
   const list = Array.from(Array(microcycles), (e, i) => `Week ${i + 1}`);
   const selectedClasses = `${BG_COLOR_M5} text-white font-bold`;
   const [selectedWeek, setSelectedWeek] = useState<string>("Week 1");
@@ -782,20 +774,13 @@ const DURATION_TIME_CONSTRAINTS = {
   },
 };
 
-type MesocycleExerciseLayoutProps = {
-  prioritized_muscle_list: MusclePriorityType[];
-  training_block: TrainingDayType[][];
-  microcycles: number;
-  updateMusclePriorityList: (musclePriorityList: MusclePriorityType[]) => void;
-};
-
-export const MesocycleExerciseLayout = ({
-  prioritized_muscle_list,
-  training_block,
-  microcycles,
-  updateMusclePriorityList,
-}: MesocycleExerciseLayoutProps) => {
-  // const lastMesocycle = training_block.length;
+ExerciseOverview.ExercisePreview = ExercisesPreview;
+export default function ExerciseOverview({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  const { training_block } = useTrainingProgramContext();
   const [selectedMesocycle, setSelectedMesocycle] = useState(``);
   const [durationTimeConstants, setDurationTimeConstants] =
     useState<DurationTimeConstants>({ ...DURATION_TIME_CONSTRAINTS });
@@ -893,10 +878,7 @@ export const MesocycleExerciseLayout = ({
   return (
     <Section title={"Exercises"}>
       <div className="mb-2 flex text-xxs text-white">
-        <ExercisesPreview
-          musclePriorityList={prioritized_muscle_list}
-          onExerciseChange={updateMusclePriorityList}
-        />
+        {children}
         <div className="flex flex-col">
           <div className="mb-0.5 text-sm">Workout Duration Variables</div>
 
@@ -928,7 +910,6 @@ export const MesocycleExerciseLayout = ({
           <WeekSessions
             key={`${each[index].day}_training_block_meso_${index}`}
             mesocycle_index={index + 1}
-            microcycles={microcycles}
             training_week={each}
             selectedMesocycle={selectedMesocycle}
             onTitleClick={onTitleClick}
@@ -938,7 +919,7 @@ export const MesocycleExerciseLayout = ({
       })}
     </Section>
   );
-};
+}
 
 type TimeIncrementFrameProps = {
   title: DurationTimeConstantsKeys;

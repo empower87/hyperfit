@@ -1,21 +1,16 @@
-import { useCallback, useEffect, useState } from "react";
+import { ReactNode, useCallback, useEffect, useState } from "react";
 import { DragDropContext, Draggable, DropResult } from "react-beautiful-dnd";
 import Section from "~/components/Layout/Section";
 import { BG_COLOR_M6, BG_COLOR_M7, BORDER_COLOR_M7 } from "~/constants/themes";
 import {
   DayType,
   SessionType,
-  SplitSessionsType,
   SplitType,
   TrainingDayType,
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
+import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
 import StrictModeDroppable from "~/lib/react-beautiful-dnd/StrictModeDroppable";
 import { getSessionSplitColor } from "~/utils/getSessionSplitColor";
-
-type TrainingSplitProps = {
-  training_week: TrainingDayType[];
-  onSplitReorder: (week: TrainingDayType[]) => void;
-};
 
 const DAYS: DayType[] = [
   "Sunday",
@@ -36,10 +31,9 @@ const getIndexOfDay = (droppableId: string) => {
   return index;
 };
 
-export function TrainingWeek({
-  training_week,
-  onSplitReorder,
-}: TrainingSplitProps) {
+export function TrainingWeek() {
+  const { training_week, handleRearrangeTrainingWeek } =
+    useTrainingProgramContext();
   const [draggableWeek, setDraggableWeek] = useState<TrainingDayType[]>([]);
 
   useEffect(() => {
@@ -86,7 +80,7 @@ export function TrainingWeek({
     //   );
     //   return { ...each, sessions: sessions };
     // });
-    onSplitReorder(draggableWeek);
+    handleRearrangeTrainingWeek(draggableWeek);
   };
 
   const onResetHandler = () => {
@@ -106,7 +100,7 @@ export function TrainingWeek({
   };
 
   return (
-    <>
+    <div className={BG_COLOR_M6 + " w-full p-2"}>
       <div className=" mb-1 flex overflow-x-auto">
         <DragDropContext onDragEnd={onDragEnd}>
           {draggableWeek.map((each, index) => {
@@ -138,7 +132,7 @@ export function TrainingWeek({
           Save
         </button>
       </div>
-    </>
+    </div>
   );
 }
 
@@ -288,29 +282,17 @@ function SelectSession({ session, splits, onSelect }: SelectSessionProps) {
   );
 }
 
-type WeekOverviewProps = {
-  split_sessions: SplitSessionsType;
-  training_week: TrainingDayType[];
-  onSplitReorder: (week: TrainingDayType[]) => void;
-};
-
-export default function WeekOverview({
-  split_sessions,
-  training_week,
-  onSplitReorder,
-}: WeekOverviewProps) {
+function Split() {
+  const { split_sessions } = useTrainingProgramContext();
   return (
-    <Section title="Week Overview">
-      <div className="text-sm mb-2 flex text-white">
-        Split: {split_sessions.split}
-      </div>
-
-      <div className={BG_COLOR_M6 + " w-full p-2"}>
-        <TrainingWeek
-          training_week={training_week}
-          onSplitReorder={onSplitReorder}
-        />
-      </div>
-    </Section>
+    <div className="mb-2 flex text-sm text-white">
+      Split: {split_sessions.split}
+    </div>
   );
+}
+
+WeekOverview.Split = Split;
+WeekOverview.Week = TrainingWeek;
+export default function WeekOverview({ children }: { children: ReactNode }) {
+  return <Section title="Week Overview">{children}</Section>;
 }
