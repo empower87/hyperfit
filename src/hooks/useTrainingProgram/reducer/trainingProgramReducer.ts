@@ -211,6 +211,10 @@ type UpdateMusclePriorityListAction = {
   type: "UPDATE_MUSCLE_PRIORITY_LIST";
   payload: { priority_list: MusclePriorityType[] };
 };
+type UpdateExercisesByMuscleAction = {
+  type: "UPDATE_EXERCISES_BY_MUSCLE";
+  payload: { updated_muscle: MusclePriorityType };
+};
 type UpdateSplitSessionsAction = {
   type: "UPDATE_SPLIT_SESSIONS";
   payload: { split: SplitSessionsNameType };
@@ -248,7 +252,8 @@ type Action =
   | GetTrainingBlockAction
   | RearrangeTrainingWeekAction
   | AdjustFrequencyProgression
-  | UpdateBreakpointsAction;
+  | UpdateBreakpointsAction
+  | UpdateExercisesByMuscleAction;
 
 const INITIAL_MRV_BREAKPOINT = 4;
 const INITIAL_MEV_BREAKPOINT = 9;
@@ -375,6 +380,7 @@ export default function weeklySessionSplitReducer(
       };
     case "UPDATE_MUSCLE_PRIORITY_LIST":
       const new_list = action.payload.priority_list;
+
       const reordered_list = onReorderUpdateMusclePriorityList(
         new_list,
         breakpoints
@@ -395,6 +401,18 @@ export default function weeklySessionSplitReducer(
         ...state,
         muscle_priority_list: updated_list,
         split_sessions: update_split_sessions,
+      };
+    case "UPDATE_EXERCISES_BY_MUSCLE":
+      const new_muscle = action.payload.updated_muscle;
+      const new_muscle_list = structuredClone(muscle_priority_list);
+      const index = new_muscle_list.findIndex(
+        (each) => each.id === new_muscle.id
+      );
+      new_muscle_list[index] = new_muscle;
+
+      return {
+        ...state,
+        muscle_priority_list: new_muscle_list,
       };
     case "ADJUST_FREQUENCY_PROGRESSION":
       const tuple = action.payload.update_frequency_tuple;

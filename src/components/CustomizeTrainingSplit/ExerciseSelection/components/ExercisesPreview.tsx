@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BG_COLOR_M5, BG_COLOR_M6 } from "~/constants/themes";
+import { ExerciseType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
 import { cn } from "~/lib/clsx";
 import { EditMuscleModal } from "../../MusclePriorityList/components/EditMuscleModal";
@@ -7,13 +8,19 @@ import { ChangeExerciseProvider } from "./ChangeExerciseModal/ChangeExerciseCont
 import SelectExercise from "./ChangeExerciseModal/ChangeExerciseModal";
 
 export default function ExercisesPreview() {
-  const { prioritized_muscle_list, handleUpdateMuscle } =
-    useTrainingProgramContext();
+  const { prioritized_muscle_list } = useTrainingProgramContext();
   const [selectedMuscleIndex, setSelectedMuscleIndex] = useState<number>(0);
   const [selectedExerciseIndex, setSelectedExerciseIndex] = useState<number>(0);
   const [isOpen, setIsOpen] = useState(false);
-  const selectedExercises =
-    prioritized_muscle_list[selectedMuscleIndex].exercises.flat();
+  const [selectedExercises, setSelectedExercises] = useState<ExerciseType[]>(
+    []
+  );
+
+  useEffect(() => {
+    const selectedExercises =
+      prioritized_muscle_list[selectedMuscleIndex].exercises.flat();
+    setSelectedExercises(selectedExercises);
+  }, [selectedMuscleIndex, prioritized_muscle_list]);
 
   const onSelectHandler = (type: "muscle" | "exercise", index: number) => {
     if (type === "muscle") {
@@ -36,7 +43,6 @@ export default function ExercisesPreview() {
           <ChangeExerciseProvider
             muscle={prioritized_muscle_list[selectedMuscleIndex]}
             exerciseId={selectedExercises[selectedExerciseIndex]?.id}
-            onExerciseChange={handleUpdateMuscle}
           >
             <SelectExercise />
           </ChangeExerciseProvider>

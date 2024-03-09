@@ -81,12 +81,14 @@ function useTrainingProgram() {
 
   const handleUpdateMuscle = useCallback(
     (updated_muscle: MusclePriorityType) => {
-      const new_list = [...muscle_priority_list];
-      const index = new_list.findIndex((each) => each.id === updated_muscle.id);
-      new_list[index] = updated_muscle;
+      // const new_list = structuredClone(muscle_priority_list);
+      // const index = new_list.findIndex((each) => each.id === updated_muscle.id);
+      // const nyoo = updated_muscle;
+      // new_list[index] = nyoo;
+      // console.log(updated_muscle, nyoo, new_list, "OK THIS DIFF??");
       dispatch({
-        type: "UPDATE_MUSCLE_PRIORITY_LIST",
-        payload: { priority_list: new_list },
+        type: "UPDATE_EXERCISES_BY_MUSCLE",
+        payload: { updated_muscle: updated_muscle },
       });
     },
     [muscle_priority_list]

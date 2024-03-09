@@ -7,6 +7,7 @@ import {
   useState,
 } from "react";
 import { MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
+import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
 import { Exercise, getGroupList } from "~/utils/getExercises";
 
 type EquipmentType = "barbell" | "dumbbell" | "machine" | "cable";
@@ -102,16 +103,14 @@ const ChangeExerciseContext = createContext<ChangeExerciseContextType>({
 type ChangeExerciseProviderProps = {
   muscle: MusclePriorityType;
   exerciseId: string;
-  onExerciseChange: (updated_muscle: MusclePriorityType) => void;
   children: ReactNode;
 };
 const ChangeExerciseProvider = ({
   muscle,
   exerciseId,
-  onExerciseChange,
   children,
 }: ChangeExerciseProviderProps) => {
-  const values = useChangeExercise(muscle, exerciseId, onExerciseChange);
+  const values = useChangeExercise(muscle, exerciseId);
   return (
     <ChangeExerciseContext.Provider value={values}>
       {children}
@@ -123,11 +122,8 @@ const useChangeExerciseContext = () => {
   return useContext(ChangeExerciseContext);
 };
 
-function useChangeExercise(
-  muscle: MusclePriorityType,
-  exerciseId: string,
-  onExerciseChange: (updated_muscle: MusclePriorityType) => void
-) {
+function useChangeExercise(muscle: MusclePriorityType, exerciseId: string) {
+  const { handleUpdateMuscle } = useTrainingProgramContext();
   const allExercises = [...muscle.exercises].flat();
 
   const [visibleExercises, setVisibleExercises] = useState<Exercise[]>([]);
@@ -197,9 +193,8 @@ function useChangeExercise(
       ...muscle,
       exercises: new_exercises,
     };
-
-    onExerciseChange(new_muscle);
-  }, [visibleExercises, exerciseId, muscle, onExerciseChange]);
+    handleUpdateMuscle(new_muscle);
+  }, [visibleExercises, exerciseId, muscle.exercises, selectedExerciseId]);
 
   return {
     exercises: visibleExercises,

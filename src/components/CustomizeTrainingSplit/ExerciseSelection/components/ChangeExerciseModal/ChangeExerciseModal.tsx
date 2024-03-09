@@ -391,7 +391,10 @@ function SelectExercise() {
 
       <div className={`flex items-center justify-end p-2`}>
         <button
-          onClick={() => onSaveExerciseHandler()}
+          onClick={() => {
+            console.log("CLICKED????");
+            onSaveExerciseHandler();
+          }}
           className={cn(`bg-rose-400 px-2 text-xs text-white`)}
         >
           Save
