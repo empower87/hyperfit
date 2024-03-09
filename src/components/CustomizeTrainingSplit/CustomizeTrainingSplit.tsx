@@ -1,9 +1,9 @@
 import { TrainingProgramProvider } from "~/hooks/useTrainingProgram/useTrainingProgram";
-import Section from "../Layout/Section";
+import { SectionXL as Section } from "../Layout/Sections";
 import TrainingBlock from "../Macrocycle/TrainingBlock/TrainingBlock";
 import ExerciseOverview from "./ExerciseSelection/ExerciseSelection";
 import { MusclePriorityList } from "./MusclePriorityList/MusclePriorityList";
-import SelectFrequencySplit from "./Settings/SelectFrequencySplit";
+import ProgramConfig from "./ProgramConfig/ProgramConfig";
 import { ListVolumeSettings } from "./Settings/Settings";
 import WeekOverview from "./WeekOverview/WeekOverview";
 
@@ -11,12 +11,12 @@ export default function PageContent() {
   return (
     <div className="flex h-full w-full flex-col overflow-y-scroll">
       <TrainingProgramProvider>
-        <Section title="Customize Training Split">
-          <div className="">
-            <div className="flex w-full">
-              <SelectFrequencySplit />
-            </div>
+        <Section title="Configure Training Program">
+          <ProgramConfig />
+        </Section>
 
+        <Section title="Customize Training Program">
+          <div className="">
             <div className="mb-2 flex flex-col">
               <div className="w-1/4 pr-2">
                 <ListVolumeSettings />
@@ -36,7 +36,7 @@ export default function PageContent() {
           </div>
         </Section>
 
-        <Section title="Training Block">
+        <Section title="Training Block Overview">
           <TrainingBlock />
         </Section>
       </TrainingProgramProvider>

@@ -205,7 +205,7 @@ export type State = {
 
 type UpdateFrequencyAction = {
   type: "UPDATE_FREQUENCY";
-  payload: { frequency: [number, number] };
+  payload: { frequency: [number, number]; split?: SplitSessionsNameType };
 };
 type UpdateMusclePriorityListAction = {
   type: "UPDATE_MUSCLE_PRIORITY_LIST";
@@ -355,6 +355,7 @@ export default function weeklySessionSplitReducer(
   switch (action.type) {
     case "UPDATE_FREQUENCY":
       const new_freq = action.payload.frequency;
+      const new_split = action.payload?.split ?? split_sessions.split;
 
       const reordered_list_freq =
         onReorderUpdateMusclePriorityList(muscle_priority_list);
@@ -362,7 +363,7 @@ export default function weeklySessionSplitReducer(
       const update_split_sessions_freq = getSplitFromWeights(
         new_freq,
         reordered_list_freq,
-        split_sessions.split
+        new_split
       );
 
       const updated_list_freq = onSplitChangeUpdateMusclePriorityList(

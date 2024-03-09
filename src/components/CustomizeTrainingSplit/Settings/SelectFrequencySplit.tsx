@@ -1,4 +1,5 @@
-import { ReactNode, useState } from "react";
+import { ReactNode, useCallback, useState } from "react";
+import { SectionM as Section } from "~/components/Layout/Sections";
 import { BG_COLOR_M6, BG_COLOR_M8 } from "~/constants/themes";
 import { SplitSessionsNameType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
@@ -119,8 +120,7 @@ function SelectLayout({
 }
 
 export default function SelectFrequencySplit() {
-  const { handleFrequencyChange, handleUpdateSplitSessions, split_sessions } =
-    useTrainingProgramContext();
+  const { handleFrequencyChange, split_sessions } = useTrainingProgramContext();
 
   const [totalSessionsPerWeek, setTotalSessionsPerWeek] = useState<number>(3);
   const [totalDoubleSessionsPerWeek, setTotalDoubleSessionsPerWeek] =
@@ -136,19 +136,20 @@ export default function SelectFrequencySplit() {
     }
   };
 
-  const onSelectSplit = (type: SplitSessionsNameType) => {
+  const onSelectSplit = (type: SplitSessionsNameType) =>
     setSelectedSplitType(type);
-  };
 
-  const onButtonClick = () => {
-    handleFrequencyChange(totalSessionsPerWeek, totalDoubleSessionsPerWeek);
-    handleUpdateSplitSessions(selectedSplitType);
-  };
+  const onButtonClick = useCallback(() => {
+    handleFrequencyChange(
+      [totalSessionsPerWeek, totalDoubleSessionsPerWeek],
+      selectedSplitType
+    );
+  }, [totalSessionsPerWeek, totalDoubleSessionsPerWeek, selectedSplitType]);
 
   return (
     <div className=" mb-2 flex w-full flex-col">
       <div className=" flex">
-        <SelectLayout title="Frequency">
+        <Section title="Frequency">
           <SelectFrequency
             title="Weekly Sessions: "
             options={[...OPTIONS].slice(3)}
@@ -162,14 +163,14 @@ export default function SelectFrequencySplit() {
             selectedOption={totalDoubleSessionsPerWeek}
             onChange={handleSelectChange}
           />
-        </SelectLayout>
+        </Section>
 
-        <SelectLayout title="Split">
+        <Section title="Split">
           <SelectSplit
             selectedOption={split_sessions.split}
             onSelect={onSelectSplit}
           />
-        </SelectLayout>
+        </Section>
       </div>
 
       <div className="flex h-1/3 items-center justify-center">

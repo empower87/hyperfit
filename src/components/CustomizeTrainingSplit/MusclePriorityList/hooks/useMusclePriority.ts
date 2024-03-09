@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { DropResult } from "react-beautiful-dnd";
 import { getMusclesMaxFrequency } from "~/constants/workoutSplits";
 import {
@@ -28,6 +28,10 @@ export default function useMusclePriority(
   const [draggableList, setDraggableList] = useState<MusclePriorityType[]>([
     ...muscle_priority_list,
   ]);
+
+  useEffect(() => {
+    setDraggableList([...muscle_priority_list]);
+  }, [muscle_priority_list]);
 
   const getTotalVolumeHandler = useCallback(
     (_frequencyProgression: number[], _muscle: MusclePriorityType) => {

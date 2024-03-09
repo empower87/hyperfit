@@ -1,6 +1,6 @@
 import { ReactNode, useCallback, useEffect, useState } from "react";
 import { DragDropContext, Draggable, DropResult } from "react-beautiful-dnd";
-import Section from "~/components/Layout/Section";
+import { SectionXL as Section } from "~/components/Layout/Sections";
 import { BG_COLOR_M6, BG_COLOR_M7, BORDER_COLOR_M7 } from "~/constants/themes";
 import {
   DayType,
@@ -293,6 +293,11 @@ function Split() {
 
 WeekOverview.Split = Split;
 WeekOverview.Week = TrainingWeek;
+
 export default function WeekOverview({ children }: { children: ReactNode }) {
-  return <Section title="Week Overview">{children}</Section>;
+  return (
+    <Section title="Week Overview">
+      <div>{children}</div>
+    </Section>
+  );
 }

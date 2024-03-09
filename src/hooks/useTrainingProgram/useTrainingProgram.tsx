@@ -62,12 +62,15 @@ function useTrainingProgram() {
     dispatch,
   ] = useReducer(weeklySessionSplitReducer, INITIAL_STATE);
 
-  const handleFrequencyChange = (first: number, second: number) => {
-    dispatch({
-      type: "UPDATE_FREQUENCY",
-      payload: { frequency: [first, second] },
-    });
-  };
+  const handleFrequencyChange = useCallback(
+    (value: [number, number], split?: SplitSessionsNameType) => {
+      dispatch({
+        type: "UPDATE_FREQUENCY",
+        payload: { frequency: value, split: split },
+      });
+    },
+    []
+  );
 
   const handleUpdateMuscleList = useCallback(
     (items: MusclePriorityType[]) => {
@@ -81,11 +84,6 @@ function useTrainingProgram() {
 
   const handleUpdateMuscle = useCallback(
     (updated_muscle: MusclePriorityType) => {
-      // const new_list = structuredClone(muscle_priority_list);
-      // const index = new_list.findIndex((each) => each.id === updated_muscle.id);
-      // const nyoo = updated_muscle;
-      // new_list[index] = nyoo;
-      // console.log(updated_muscle, nyoo, new_list, "OK THIS DIFF??");
       dispatch({
         type: "UPDATE_EXERCISES_BY_MUSCLE",
         payload: { updated_muscle: updated_muscle },
@@ -103,6 +101,7 @@ function useTrainingProgram() {
     },
     []
   );
+
   const handleUpdateBreakpoints = useCallback((value: [number, number]) => {
     dispatch({
       type: "UPDATE_VOLUME_BREAKPOINTS",
