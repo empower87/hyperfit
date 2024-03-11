@@ -131,13 +131,6 @@ export function getSplitFromWeights(
       pushSessions = pushSessions + ppl_sessions.push;
       lowerSessions = lowerSessions + ppl_sessions.legs;
 
-      console.log(
-        pullSessions,
-        pushSessions,
-        lowerSessions,
-        ppl_sessions,
-        "PPL TEST"
-      );
       return {
         split: "PPL",
         sessions: {

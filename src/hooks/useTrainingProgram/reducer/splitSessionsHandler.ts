@@ -8,6 +8,7 @@ import {
   PPLULSessionsType,
   SessionType,
   SplitSessionsType,
+  SplitType,
   TrainingDayType,
   ULSessionsType,
 } from "./trainingProgramReducer";
@@ -532,4 +533,45 @@ export const distributeSplitAcrossWeek = (
     // return week;
   }
   return week;
+};
+
+const getPotentialSplits = (splitType: SplitType) => {
+  switch (splitType) {
+    case "arms":
+      return ["BRO", "CUS"];
+    case "back":
+      return ["BRO", "CUS"];
+    case "chest":
+      return ["BRO", "CUS"];
+    case "legs":
+      return ["PPL", "PPLUL", "BRO", "CUS"];
+    case "shoulders":
+      return ["BRO", "CUS"];
+    case "push":
+      return ["PPL", "PPLUL", "OPT", "CUS"];
+    case "pull":
+      return ["PPL", "PPLUL", "OPT", "CUS"];
+    case "upper":
+      return ["UL", "OPT", "PPLUL", "CUS"];
+    case "lower":
+      return ["UL", "OPT", "PPLUL", "CUS"];
+    case "full":
+      return ["FB", "OPT", "CUS"];
+    default:
+      return [];
+  }
+};
+
+export const determineSplitHandler = (splitType: SplitType[]) => {
+  let splits: string[] = [];
+
+  for (let i = 0; i < splitType.length; i++) {
+    const potential = getPotentialSplits(splitType[i]);
+    if (i === 0) {
+      splits = potential;
+    } else {
+      splits = splits.filter((split) => potential.includes(split));
+    }
+  }
+  return splits;
 };

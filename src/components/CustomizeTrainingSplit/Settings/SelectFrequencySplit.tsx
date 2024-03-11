@@ -60,7 +60,7 @@ function SelectFrequency({
   };
 
   return (
-    <div className="flex h-6">
+    <div className="flex h-6 w-64">
       <p className="w-4/5 p-1 text-xs leading-3 text-slate-300">{title}</p>
       <div className=" flex w-1/5">
         <Select

@@ -6,7 +6,10 @@ import {
   onSplitChangeUpdateMusclePriorityList,
 } from "../utils/musclePriorityListHandlers";
 import { getSplitFromWeights } from "./getSplitFromPriorityWeighting";
-import { distributeSplitAcrossWeek } from "./splitSessionsHandler";
+import {
+  determineSplitHandler,
+  distributeSplitAcrossWeek,
+} from "./splitSessionsHandler";
 import { VolumeLandmarkType, addMesoProgression } from "./trainingProgramUtils";
 
 export type DayType =
@@ -487,6 +490,21 @@ export default function weeklySessionSplitReducer(
     case "REARRANGE_TRAINING_WEEK":
       const rearranged_week = action.payload.rearranged_week;
 
+      const splits = rearranged_week
+        .map((each) => {
+          const sessions = each.sessions.map((ea) => ea.split);
+          const noOffSessions = sessions.filter(
+            (each) => each !== ("off" as SplitType)
+          );
+          return noOffSessions;
+        })
+        .flat();
+
+      const getSplit = determineSplitHandler(splits);
+      const split_change = getSplit.includes(split_sessions.split);
+
+      // const updated_split_sessions: SplitSessionsType = { ...split_sessions, split: split_change ? split_sessions.split : getSplit[0] as SplitSessionsNameType };
+
       const filteredWeek = rearranged_week.map((each) => {
         const sessions = each.sessions.filter(
           (ea) => ea.split !== ("off" as SplitType)
@@ -498,7 +516,19 @@ export default function weeklySessionSplitReducer(
         };
       });
 
-      return { ...state, training_week: filteredWeek };
+      const training_blocked = buildMesocyclesTEST(
+        muscle_priority_list,
+        split_sessions,
+        filteredWeek,
+        mesocycles
+      );
+
+      return {
+        ...state,
+        training_week: filteredWeek,
+        training_block: training_blocked,
+        // split_sessions: split_sessions,
+      };
     case "GET_TRAINING_BLOCK":
       const l = state.muscle_priority_list;
       const s = state.split_sessions;

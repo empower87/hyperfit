@@ -216,7 +216,7 @@ function SessionItem({ session, index, onSplitChange }: SessionItemProps) {
   const onSelectChange = (newSplit: SplitType | "off") => {
     onSplitChange(newSplit, session.id);
   };
-  const SESSIONS_TEST: (SplitType | "off")[] = [
+  const SPLIT_NAMES: (SplitType | "off")[] = [
     "upper",
     "lower",
     "full",
@@ -241,7 +241,7 @@ function SessionItem({ session, index, onSplitChange }: SessionItemProps) {
       </div>
       <SelectSession
         session={session.split}
-        splits={SESSIONS_TEST}
+        splits={SPLIT_NAMES}
         onSelect={onSelectChange}
       />
     </li>
@@ -271,7 +271,7 @@ function SelectSession({ session, splits, onSelect }: SelectSessionProps) {
         return (
           <option
             key={`${split}_${index}`}
-            // selected={split === session ? true : false}
+            selected={split === session}
             value={split}
           >
             {split}
@@ -295,9 +295,5 @@ WeekOverview.Split = Split;
 WeekOverview.Week = TrainingWeek;
 
 export default function WeekOverview({ children }: { children: ReactNode }) {
-  return (
-    <Section title="Week Overview">
-      <div>{children}</div>
-    </Section>
-  );
+  return <Section title="Week Overview">{children}</Section>;
 }

@@ -573,7 +573,10 @@ function Title({ title, selected, onClick }: TitleProps) {
     <div
       className={cn(
         `w-full cursor-pointer p-0.5 ${BG_COLOR_M7} hover:${BG_COLOR_M6}`,
-        { [`${BG_COLOR_M6} mb-1`]: isSelected }
+        {
+          [`${BG_COLOR_M6} text-m mb-1 text-white`]: isSelected,
+          [`${BG_COLOR_M7} text-sm text-slate-400`]: !isSelected,
+        }
       )}
       onClick={() => onClick(title)}
     >
@@ -618,7 +621,6 @@ function WeekSessions({
 
   const selectWeekIndexHandler = (week: string) => {
     const weekNumber = week.split(" ")[1];
-    console.log(week, weekNumber, "err?");
     setSelectedMicrocycleIndex(parseInt(weekNumber) - 1);
   };
 
@@ -710,18 +712,6 @@ const SelectMicrocycleList = ({ onWeekClick }: SelectMicrocycleListProps) => {
     </ul>
   );
 };
-
-// type DurationTimeConstraint = {
-//   value: number;
-//   min: number;
-//   max: number;
-//   increment: number;
-// };
-// type DurationTimeConstants = {
-//   warmup: DurationTimeConstraint;
-//   rest: DurationTimeConstraint;
-//   rep: DurationTimeConstraint;
-// };
 
 type DurationTimeConstants = typeof DURATION_TIME_CONSTRAINTS;
 type DurationTimeConstantsKeys = keyof DurationTimeConstants;
