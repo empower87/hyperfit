@@ -1,9 +1,13 @@
-import SelectFrequencySplit from "../Settings/SelectFrequencySplit";
+import { ReactNode } from "react";
+import Frequency from "./Frequency";
+import Periodization from "./Periodization";
+import Split from "./Split";
 
-export default function ProgramConfig() {
+ProgramConfig.Frequency = Frequency;
+ProgramConfig.Split = Split;
+ProgramConfig.Periodization = Periodization;
+export default function ProgramConfig({ children }: { children: ReactNode }) {
   return (
-    <div className="flex w-full">
-      <SelectFrequencySplit />
-    </div>
+    <div className="mb-5 flex w-full justify-center space-x-2">{children}</div>
   );
 }

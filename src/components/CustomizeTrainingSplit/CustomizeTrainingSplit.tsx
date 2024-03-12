@@ -4,31 +4,34 @@ import TrainingBlock from "../Macrocycle/TrainingBlock/TrainingBlock";
 import ExerciseOverview from "./ExerciseSelection/ExerciseSelection";
 import { MusclePriorityList } from "./MusclePriorityList/MusclePriorityList";
 import ProgramConfig from "./ProgramConfig/ProgramConfig";
-import { ListVolumeSettings } from "./Settings/Settings";
-import WeekOverview from "./WeekOverview/WeekOverview";
+import SplitOverview from "./SplitOverview/SplitOverview";
 
 export default function PageContent() {
   return (
-    <div className="flex h-full w-full flex-col overflow-y-scroll">
+    <div className="m-auto flex h-full max-w-[1200px] flex-col overflow-y-scroll pt-5">
       <TrainingProgramProvider>
-        <Section title="Configure Training Program">
-          <ProgramConfig />
-        </Section>
-
         <Section title="Customize Training Program">
           <div className="">
+            <ProgramConfig>
+              <ProgramConfig.Frequency />
+              <ProgramConfig.Periodization />
+              <ProgramConfig.Split />
+            </ProgramConfig>
+
             <div className="mb-2 flex flex-col">
-              <div className="w-1/4 pr-2">
+              {/* <div className="w-1/4 pr-2">
                 <ListVolumeSettings />
-              </div>
+              </div> */}
 
               <MusclePriorityList />
             </div>
 
-            <WeekOverview>
-              <WeekOverview.Split />
-              <WeekOverview.Week />
-            </WeekOverview>
+            <div className={`mb-5 flex items-center justify-center`}>
+              <SplitOverview>
+                <SplitOverview.Split />
+                <SplitOverview.Week />
+              </SplitOverview>
+            </div>
 
             <ExerciseOverview>
               <ExerciseOverview.ExercisePreview />

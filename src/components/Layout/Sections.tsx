@@ -1,5 +1,9 @@
 import { ReactNode } from "react";
-import { BG_COLOR_M6, BORDER_COLOR_M6 } from "~/constants/themes";
+import {
+  BG_COLOR_M6,
+  BORDER_COLOR_M5,
+  BORDER_COLOR_M6,
+} from "~/constants/themes";
 import { cn } from "~/lib/clsx";
 
 type SectionProps = {
@@ -24,6 +28,17 @@ export function SectionM({ title, children }: SectionProps) {
         <h3 className=" text-m indent-1 text-white">{title}</h3>
       </div>
       {children}
+    </div>
+  );
+}
+
+export function CardS({ title, children }: SectionProps) {
+  return (
+    <div className={cn(`flex flex-col ${BG_COLOR_M6} rounded-md p-1.5`)}>
+      <div className={cn(`flex items-center ${BORDER_COLOR_M5} border-b`)}>
+        <h3 className={`indent-1 text-lg text-white`}>{title}</h3>
+      </div>
+      <div className={`pt-2`}>{children}</div>
     </div>
   );
 }

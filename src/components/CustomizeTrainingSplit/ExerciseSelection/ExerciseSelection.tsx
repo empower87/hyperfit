@@ -9,7 +9,7 @@ import {
 } from "react";
 import { DragDropContext, Draggable } from "react-beautiful-dnd";
 import ReactDOM from "react-dom";
-import { SectionXL as Section } from "~/components/Layout/Sections";
+import { SectionM as Section } from "~/components/Layout/Sections";
 import {
   BG_COLOR_M5,
   BG_COLOR_M6,

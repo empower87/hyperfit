@@ -1,6 +1,6 @@
 import { ReactNode, useCallback, useEffect, useState } from "react";
 import { DragDropContext, Draggable, DropResult } from "react-beautiful-dnd";
-import { SectionXL as Section } from "~/components/Layout/Sections";
+import { CardS } from "~/components/Layout/Sections";
 import { BG_COLOR_M6, BG_COLOR_M7, BORDER_COLOR_M7 } from "~/constants/themes";
 import {
   DayType,
@@ -100,7 +100,7 @@ export function TrainingWeek() {
   };
 
   return (
-    <div className={BG_COLOR_M6 + " w-full p-2"}>
+    <div className={BG_COLOR_M6 + " p-2"}>
       <div className=" mb-1 flex overflow-x-auto">
         <DragDropContext onDragEnd={onDragEnd}>
           {draggableWeek.map((each, index) => {
@@ -291,9 +291,13 @@ function Split() {
   );
 }
 
-WeekOverview.Split = Split;
-WeekOverview.Week = TrainingWeek;
+SplitOverview.Split = Split;
+SplitOverview.Week = TrainingWeek;
 
-export default function WeekOverview({ children }: { children: ReactNode }) {
-  return <Section title="Week Overview">{children}</Section>;
+export default function SplitOverview({ children }: { children: ReactNode }) {
+  return (
+    <CardS title="Split Overview">
+      <div className={``}>{children}</div>
+    </CardS>
+  );
 }
