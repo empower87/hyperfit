@@ -1,11 +1,8 @@
 import { type NextPage } from "next";
-import { useState } from "react";
 import PageContent from "~/components/CustomizeTrainingSplit/CustomizeTrainingSplit";
 import { BG_COLOR_M6, BG_COLOR_M7, BG_COLOR_M8 } from "~/constants/themes";
-import { TrainingDayType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 
 const Home: NextPage = () => {
-  const [trainingBlock, setTrainingBlock] = useState<TrainingDayType[][]>([]);
   return (
     <div
       id="modal-body"
@@ -20,35 +17,12 @@ const Home: NextPage = () => {
       </div>
 
       <div className="flex h-full w-full pt-8">
-        <div className={BG_COLOR_M6 + " flex h-full w-1/5 flex-col"}>
-          {/* <PromptCardLayout title="Frequency">
-            <FrequencySelectPrompts onClick={handleFrequencyChange} />
-          </PromptCardLayout>
-
-          <PrioritySectionLayout>
-            <PrioritizeFocus
-              musclePriority={prioritized_muscle_list}
-              updateMusclePriority={handleUpdateMuscleList}
-            />
-          </PrioritySectionLayout> */}
-        </div>
+        <div className={BG_COLOR_M6 + " flex h-full w-2/12 flex-col"}></div>
 
         <div
           id="edit-modal"
-          className="relative flex h-full w-4/5 items-center justify-center"
+          className="relative flex h-full w-10/12 items-center justify-center"
         >
-          {/* <div
-            className="flex h-full w-full flex-col overflow-y-scroll"
-            style={{ height: "97%", width: "98%" }}
-          >
-            <Section title="Customize Training Split">
-              <CustomizeTrainingSplit setTrainingBlock={setTrainingBlock} />
-            </Section>
-
-            <Section title="Training Block">
-              <TrainingBlock training_block={trainingBlock} />
-            </Section>
-          </div> */}
           <PageContent />
         </div>
       </div>

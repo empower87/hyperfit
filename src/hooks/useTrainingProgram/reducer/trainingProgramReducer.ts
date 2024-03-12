@@ -1,5 +1,5 @@
 import { MuscleType } from "~/constants/workoutSplits";
-import { buildMesocyclesTEST } from "../utils/buildTrainingBlockHandlers";
+import { buildTrainingBlockHandler } from "../utils/buildTrainingBlockHandlers";
 import {
   MUSCLE_PRIORITY_LIST,
   onReorderUpdateMusclePriorityList,
@@ -9,6 +9,7 @@ import { getSplitFromWeights } from "./getSplitFromPriorityWeighting";
 import {
   determineSplitHandler,
   distributeSplitAcrossWeek,
+  redistributeSessionsIntoNewSplit,
 } from "./splitSessionsHandler";
 import { VolumeLandmarkType, addMesoProgression } from "./trainingProgramUtils";
 
@@ -469,13 +470,8 @@ export default function weeklySessionSplitReducer(
         frequency,
         split_sessions
       );
-      // const updated_training_week = distributeExercisesAmongSplit(
-      //   state.muscle_priority_list,
-      //   state.split_sessions,
-      //   new_training_week
-      // );
 
-      const get_training_block = buildMesocyclesTEST(
+      const get_training_block = buildTrainingBlockHandler(
         muscle_priority_list,
         split_sessions,
         new_training_week,
@@ -503,7 +499,16 @@ export default function weeklySessionSplitReducer(
       const getSplit = determineSplitHandler(splits);
       const split_change = getSplit.includes(split_sessions.split);
 
-      // const updated_split_sessions: SplitSessionsType = { ...split_sessions, split: split_change ? split_sessions.split : getSplit[0] as SplitSessionsNameType };
+      const new_sessions = redistributeSessionsIntoNewSplit(
+        getSplit[0] as SplitSessionsNameType,
+        splits
+      );
+
+      console.log(
+        splits,
+        new_sessions,
+        "what this look like? lets just have a looksie"
+      );
 
       const filteredWeek = rearranged_week.map((each) => {
         const sessions = each.sessions.filter(
@@ -516,9 +521,16 @@ export default function weeklySessionSplitReducer(
         };
       });
 
-      const training_blocked = buildMesocyclesTEST(
+      const update_muscle_list = onSplitChangeUpdateMusclePriorityList(
         muscle_priority_list,
-        split_sessions,
+        new_sessions,
+        mesocycles,
+        microcycles
+      );
+
+      const rebuild_training_block = buildTrainingBlockHandler(
+        update_muscle_list,
+        new_sessions,
         filteredWeek,
         mesocycles
       );
@@ -526,8 +538,9 @@ export default function weeklySessionSplitReducer(
       return {
         ...state,
         training_week: filteredWeek,
-        training_block: training_blocked,
-        // split_sessions: split_sessions,
+        training_block: rebuild_training_block,
+        split_sessions: new_sessions,
+        muscle_priority_list: update_muscle_list,
       };
     case "GET_TRAINING_BLOCK":
       const l = state.muscle_priority_list;
@@ -535,7 +548,7 @@ export default function weeklySessionSplitReducer(
       const w = state.training_week;
       const m = state.training_program_params.mesocycles;
 
-      const training_block = buildMesocyclesTEST(l, s, w, m);
+      const training_block = buildTrainingBlockHandler(l, s, w, m);
 
       return {
         ...state,

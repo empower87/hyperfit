@@ -7,6 +7,7 @@ import {
   PPLSessionsType,
   PPLULSessionsType,
   SessionType,
+  SplitSessionsNameType,
   SplitSessionsType,
   SplitType,
   TrainingDayType,
@@ -535,7 +536,7 @@ export const distributeSplitAcrossWeek = (
   return week;
 };
 
-const getPotentialSplits = (splitType: SplitType) => {
+const getPotentialSplits = (splitType: SplitType): SplitSessionsNameType[] => {
   switch (splitType) {
     case "arms":
       return ["BRO", "CUS"];
@@ -563,7 +564,7 @@ const getPotentialSplits = (splitType: SplitType) => {
 };
 
 export const determineSplitHandler = (splitType: SplitType[]) => {
-  let splits: string[] = [];
+  let splits: SplitSessionsNameType[] = [];
 
   for (let i = 0; i < splitType.length; i++) {
     const potential = getPotentialSplits(splitType[i]);
@@ -574,4 +575,106 @@ export const determineSplitHandler = (splitType: SplitType[]) => {
     }
   }
   return splits;
+};
+
+export const redistributeSessionsIntoNewSplit = (
+  split: SplitSessionsNameType,
+  splits: SplitType[]
+): SplitSessionsType => {
+  switch (split) {
+    case "BRO":
+      const BRO_SPLIT: BROSessionsType["sessions"] = {
+        arms: 0,
+        shoulders: 0,
+        back: 0,
+        chest: 0,
+        legs: 0,
+      };
+
+      for (let i = 0; i < splits.length; i++) {
+        const key = splits[i];
+        BRO_SPLIT[key as keyof typeof BRO_SPLIT] =
+          BRO_SPLIT[key as keyof typeof BRO_SPLIT] + 1;
+      }
+      return { split: "BRO", sessions: BRO_SPLIT };
+    case "PPL":
+      const PPL_SPLIT: PPLSessionsType["sessions"] = {
+        push: 0,
+        pull: 0,
+        legs: 0,
+      };
+      for (let i = 0; i < splits.length; i++) {
+        const key = splits[i];
+        PPL_SPLIT[key as keyof typeof PPL_SPLIT] =
+          PPL_SPLIT[key as keyof typeof PPL_SPLIT] + 1;
+      }
+      return { split: "PPL", sessions: PPL_SPLIT };
+    case "PPLUL":
+      const PPLUL_SPLIT: PPLULSessionsType["sessions"] = {
+        push: 0,
+        pull: 0,
+        legs: 0,
+        upper: 0,
+        lower: 0,
+      };
+      for (let i = 0; i < splits.length; i++) {
+        const key = splits[i];
+        PPLUL_SPLIT[key as keyof typeof PPLUL_SPLIT] =
+          PPLUL_SPLIT[key as keyof typeof PPLUL_SPLIT] + 1;
+      }
+      return { split: "PPLUL", sessions: PPLUL_SPLIT };
+    case "UL":
+      const UL_SPLIT: ULSessionsType["sessions"] = {
+        upper: 0,
+        lower: 0,
+      };
+      for (let i = 0; i < splits.length; i++) {
+        const key = splits[i];
+        UL_SPLIT[key as keyof typeof UL_SPLIT] =
+          UL_SPLIT[key as keyof typeof UL_SPLIT] + 1;
+      }
+      return { split: "UL", sessions: UL_SPLIT };
+    case "FB":
+      const FB_SPLIT: FBSessionsType["sessions"] = {
+        full: 0,
+      };
+      for (let i = 0; i < splits.length; i++) {
+        const key = splits[i];
+        FB_SPLIT[key as keyof typeof FB_SPLIT] =
+          FB_SPLIT[key as keyof typeof FB_SPLIT] + 1;
+      }
+      return { split: "FB", sessions: FB_SPLIT };
+    case "OPT":
+      const OPT_SPLIT: OPTSessionsType["sessions"] = {
+        upper: 0,
+        lower: 0,
+        push: 0,
+        pull: 0,
+        full: 0,
+      };
+      for (let i = 0; i < splits.length; i++) {
+        const key = splits[i];
+        OPT_SPLIT[key as keyof typeof OPT_SPLIT] =
+          OPT_SPLIT[key as keyof typeof OPT_SPLIT] + 1;
+      }
+      return { split: "OPT", sessions: OPT_SPLIT };
+    default:
+      const CUS_SPLIT = {
+        upper: 0,
+        lower: 0,
+        push: 0,
+        pull: 0,
+        legs: 0,
+        full: 0,
+        back: 0,
+        chest: 0,
+        arms: 0,
+        shoulders: 0,
+      };
+      for (let i = 0; i < splits.length; i++) {
+        const key = splits[i] as keyof typeof CUS_SPLIT;
+        CUS_SPLIT[key] = CUS_SPLIT[key] + 1;
+      }
+      return { split: "CUS", sessions: CUS_SPLIT };
+  }
 };

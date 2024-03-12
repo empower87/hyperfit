@@ -181,7 +181,7 @@ const distributeExercisesAmongSplit = (
   return training_week;
 };
 
-export const buildMesocyclesTEST = (
+export const buildTrainingBlockHandler = (
   muscle_priority_list: MusclePriorityType[],
   split_sessions: SplitSessionsType,
   training_week: TrainingDayType[],

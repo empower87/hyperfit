@@ -829,8 +829,10 @@ export default function ExerciseOverview({
   const sessionDurationCalculator = useCallback(
     (exercises: ExerciseType[], currentMicrocycleIndex: number) => {
       const { warmup, rest, rep, superset } = durationTimeConstants;
+
       const totalExercises = exercises.length;
       const restTime = totalExercises * rest.value;
+
       let totalRepTime = 0;
       let totalRestTime = 0;
 
