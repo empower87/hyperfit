@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { CardS as Card } from "~/components/Layout/Sections";
 import { BG_COLOR_M5, BG_COLOR_M6 } from "~/constants/themes";
 import { ExerciseType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
@@ -37,45 +38,47 @@ export default function ExercisesPreview() {
   };
 
   return (
-    <div className={cn(`mr-2 flex w-1/2 flex-col`)}>
-      {isOpen ? (
-        <EditMuscleModal isOpen={isOpen} onClose={onClose}>
-          <ChangeExerciseProvider
-            muscle={prioritized_muscle_list[selectedMuscleIndex]}
-            exerciseId={selectedExercises[selectedExerciseIndex]?.id}
-          >
-            <SelectExercise />
-          </ChangeExerciseProvider>
-        </EditMuscleModal>
-      ) : null}
+    <Card title="Exercise Overview">
+      <div className={cn(`mr-2 flex w-80 flex-col`)}>
+        {isOpen ? (
+          <EditMuscleModal isOpen={isOpen} onClose={onClose}>
+            <ChangeExerciseProvider
+              muscle={prioritized_muscle_list[selectedMuscleIndex]}
+              exerciseId={selectedExercises[selectedExerciseIndex]?.id}
+            >
+              <SelectExercise />
+            </ChangeExerciseProvider>
+          </EditMuscleModal>
+        ) : null}
 
-      <div className={cn(`mb-2 flex space-x-1 overflow-x-auto border-b-2`)}>
-        {prioritized_muscle_list.map((each, index) => {
-          return (
-            <Item
-              key={`${each}_${index}`}
-              value={each.muscle}
-              selected={prioritized_muscle_list[selectedMuscleIndex].muscle}
-              onClick={() => onSelectHandler("muscle", index)}
-            />
-          );
-        })}
-      </div>
+        <div className={cn(`mb-2 flex space-x-1 overflow-x-auto border-b-2`)}>
+          {prioritized_muscle_list.map((each, index) => {
+            return (
+              <Item
+                key={`${each}_${index}`}
+                value={each.muscle}
+                selected={prioritized_muscle_list[selectedMuscleIndex].muscle}
+                onClick={() => onSelectHandler("muscle", index)}
+              />
+            );
+          })}
+        </div>
 
-      <div className={cn(`space-y-1 overflow-y-auto`)}>
-        {selectedExercises.map((each, index) => {
-          return (
-            <Item
-              key={`${each.id}`}
-              value={each.exercise}
-              selected={selectedExercises[selectedExerciseIndex]?.exercise}
-              onClick={() => onSelectHandler("exercise", index)}
-              className="text-xxs"
-            />
-          );
-        })}
+        <div className={cn(`space-y-1 overflow-y-auto`)}>
+          {selectedExercises.map((each, index) => {
+            return (
+              <Item
+                key={`${each.id}`}
+                value={each.exercise}
+                selected={selectedExercises[selectedExerciseIndex]?.exercise}
+                onClick={() => onSelectHandler("exercise", index)}
+                className="text-xxs"
+              />
+            );
+          })}
+        </div>
       </div>
-    </div>
+    </Card>
   );
 }
 

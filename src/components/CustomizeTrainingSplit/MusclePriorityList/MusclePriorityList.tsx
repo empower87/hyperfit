@@ -6,7 +6,7 @@ import {
   useState,
 } from "react";
 import { DragDropContext, Draggable } from "react-beautiful-dnd";
-import { SectionM as Section } from "~/components/Layout/Sections";
+import { SectionH2 as Section } from "~/components/Layout/Sections";
 import { BG_COLOR_M5, BG_COLOR_M6, BORDER_COLOR_M8 } from "~/constants/themes";
 import {
   MusclePriorityType,
@@ -293,7 +293,7 @@ export function MusclePriorityList() {
   }, []);
 
   return (
-    <Section title="Prioritize Muscles">
+    <Section title="PRIORITIZE MUSCLES">
       <MusclePriorityList.RowHeader />
 
       <DragDropContext onDragEnd={onReorder}>

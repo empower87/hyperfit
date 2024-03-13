@@ -9,7 +9,10 @@ import {
 } from "react";
 import { DragDropContext, Draggable } from "react-beautiful-dnd";
 import ReactDOM from "react-dom";
-import { SectionM as Section } from "~/components/Layout/Sections";
+import {
+  CardS as Card,
+  SectionH2 as Section,
+} from "~/components/Layout/Sections";
 import {
   BG_COLOR_M5,
   BG_COLOR_M6,
@@ -32,6 +35,7 @@ import { getRankColor } from "~/utils/getRankColor";
 import { getSessionSplitColor } from "~/utils/getSessionSplitColor";
 import { capitalizeFirstLetter } from "~/utils/uiHelpers";
 import ExercisesPreview from "./components/ExercisesPreview";
+import MesocycleToggle from "./components/MesocycleToggle";
 import { getSupersetMap } from "./exerciseSelectUtils";
 import useExerciseSelection, {
   DraggableExercises,
@@ -585,6 +589,37 @@ function Title({ title, selected, onClick }: TitleProps) {
   );
 }
 
+function SessionsWithExercises() {
+  const { training_block, training_program_params } =
+    useTrainingProgramContext();
+  const { microcycles, mesocycles } = training_program_params;
+  const mesocycleTitles = Array.from(
+    Array(mesocycles),
+    (e, i) => `Mesocycle ${i + 1}`
+  );
+  const microcycleTitles = Array.from(
+    Array(microcycles),
+    (e, i) => `Week ${i + 1}`
+  );
+
+  const [selectedMicrocycleIndex, setSelectedMicrocycleIndex] =
+    useState<number>(0);
+  const [selectedMesocycleIndex, setSelectedMesocycleIndex] =
+    useState<number>(0);
+
+  return (
+    <div>
+      <MesocycleToggle
+        mesocycles={mesocycleTitles}
+        microcycles={microcycleTitles}
+      />
+      {/* {training_block[selectedMesocycleIndex].map(each => {
+        return <WeekSessions />
+      })} */}
+    </div>
+  );
+}
+
 type WeekSessionsProps = {
   mesocycle_index: number;
   selectedMesocycle: string;
@@ -868,33 +903,35 @@ export default function ExerciseOverview({
   );
 
   return (
-    <Section title={"Exercises"}>
-      <div className="mb-2 flex text-xxs text-white">
+    <Section title={"EXERCISES"}>
+      <div className="mb-2 flex justify-center space-x-2 text-xxs text-white">
         {children}
-        <div className="flex flex-col">
-          <div className="mb-0.5 text-sm">Workout Duration Variables</div>
+        <Card title="Settings">
+          <div className="flex w-80 flex-col">
+            <div className="mb-0.5 text-sm">Workout Duration Variables</div>
 
-          <TimeIncrementFrame
-            title="warmup"
-            constraints={durationTimeConstants.warmup}
-            onTimeChange={onTimeChange}
-          />
-          <TimeIncrementFrame
-            title="rest"
-            constraints={durationTimeConstants.rest}
-            onTimeChange={onTimeChange}
-          />
-          <TimeIncrementFrame
-            title="superset"
-            constraints={durationTimeConstants.superset}
-            onTimeChange={onTimeChange}
-          />
-          <TimeIncrementFrame
-            title="rep"
-            constraints={durationTimeConstants.rep}
-            onTimeChange={onTimeChange}
-          />
-        </div>
+            <TimeIncrementFrame
+              title="warmup"
+              constraints={durationTimeConstants.warmup}
+              onTimeChange={onTimeChange}
+            />
+            <TimeIncrementFrame
+              title="rest"
+              constraints={durationTimeConstants.rest}
+              onTimeChange={onTimeChange}
+            />
+            <TimeIncrementFrame
+              title="superset"
+              constraints={durationTimeConstants.superset}
+              onTimeChange={onTimeChange}
+            />
+            <TimeIncrementFrame
+              title="rep"
+              constraints={durationTimeConstants.rep}
+              onTimeChange={onTimeChange}
+            />
+          </div>
+        </Card>
       </div>
 
       {training_block.map((each, index) => {

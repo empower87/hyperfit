@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import {
   BG_COLOR_M6,
+  BG_COLOR_M8,
   BORDER_COLOR_M5,
   BORDER_COLOR_M6,
 } from "~/constants/themes";
@@ -26,6 +27,21 @@ export function SectionM({ title, children }: SectionProps) {
     <div className={"m-1 flex flex-col"}>
       <div className={cn(`mb-2 ${BG_COLOR_M6}`)}>
         <h3 className=" text-m indent-1 text-white">{title}</h3>
+      </div>
+      {children}
+    </div>
+  );
+}
+
+export function SectionH2({ title, children }: SectionProps) {
+  return (
+    <div className={"m-1 flex flex-col"}>
+      <div className={cn(`relative my-6 ${BORDER_COLOR_M6} border-b-2`)}>
+        <h3
+          className={`${BG_COLOR_M8} absolute bottom-[-15px] left-[45%] px-5 py-1 text-sm text-white`}
+        >
+          {title}
+        </h3>
       </div>
       {children}
     </div>
