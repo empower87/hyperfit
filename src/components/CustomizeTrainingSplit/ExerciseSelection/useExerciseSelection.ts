@@ -35,14 +35,16 @@ export default function useExerciseSelection(
 
   useEffect(() => {
     const cloned_week = structuredClone(training_week);
-    const draggableExercises: DraggableExercises[] = cloned_week.map((each) => {
-      const sessions = each.sessions.map((e, i) => ({
-        ...e,
-        id: `${each.day}_${i}_${mesocycle_index}`,
-        exercises: e.exercises.flat(),
-      }));
-      return { ...each, sessions: sessions };
-    });
+    const draggableExercises: DraggableExercises[] = cloned_week?.map(
+      (each) => {
+        const sessions = each.sessions.map((e, i) => ({
+          ...e,
+          id: `${each.day}_${i}_${mesocycle_index}`,
+          exercises: e.exercises.flat(),
+        }));
+        return { ...each, sessions: sessions };
+      }
+    );
     setDraggableExercises(draggableExercises);
   }, [training_week]);
 

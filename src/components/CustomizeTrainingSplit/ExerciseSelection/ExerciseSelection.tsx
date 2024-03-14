@@ -527,8 +527,8 @@ function DayLayout({
   const { day, sessions } = session;
 
   return (
-    <div className={BG_COLOR_M6 + " mr-1"}>
-      <div className={BORDER_COLOR_M8 + " mb-1 border-b-2"}>
+    <div className={BG_COLOR_M6 + " rounded-md"}>
+      <div className={BORDER_COLOR_M8 + " mb-1 border-b-2 p-1"}>
         <h3 className=" indent-1 text-white">{day}</h3>
       </div>
 
@@ -589,7 +589,15 @@ function Title({ title, selected, onClick }: TitleProps) {
   );
 }
 
-function SessionsWithExercises() {
+type SessionsWithExercisesProps = {
+  sessionDurationCalculator: (
+    exercises: ExerciseType[],
+    currentMicrocycleIndex: number
+  ) => number;
+};
+function SessionsWithExercises({
+  sessionDurationCalculator,
+}: SessionsWithExercisesProps) {
   const { training_block, training_program_params } =
     useTrainingProgramContext();
   const { microcycles, mesocycles } = training_program_params;
@@ -607,24 +615,40 @@ function SessionsWithExercises() {
   const [selectedMesocycleIndex, setSelectedMesocycleIndex] =
     useState<number>(0);
 
+  const onClickHandler = (value: string) => {
+    const type = value.split(" ");
+    const valueAsNumber = parseInt(type[1]) - 1;
+    if (type[0] === "Mesocycle") {
+      setSelectedMesocycleIndex(valueAsNumber);
+    } else {
+      setSelectedMicrocycleIndex(valueAsNumber);
+    }
+  };
+
   return (
-    <div>
+    <div className={`flex w-full flex-col items-center`}>
       <MesocycleToggle
         mesocycles={mesocycleTitles}
         microcycles={microcycleTitles}
+        selectedMesocycleIndex={selectedMesocycleIndex}
+        selectedMicrocycleIndex={selectedMicrocycleIndex}
+        onClickHandler={onClickHandler}
       />
-      {/* {training_block[selectedMesocycleIndex].map(each => {
-        return <WeekSessions />
-      })} */}
+
+      <WeekSessions
+        mesocycle_index={selectedMesocycleIndex}
+        selectedMicrocycleIndex={selectedMicrocycleIndex}
+        training_week={training_block[selectedMesocycleIndex]}
+        sessionDurationCalculator={sessionDurationCalculator}
+      />
     </div>
   );
 }
 
 type WeekSessionsProps = {
   mesocycle_index: number;
-  selectedMesocycle: string;
+  selectedMicrocycleIndex: number;
   training_week: TrainingDayType[];
-  onTitleClick: (title: string) => void;
   sessionDurationCalculator: (
     exercises: ExerciseType[],
     currentMicrocycleIndex: number
@@ -632,12 +656,10 @@ type WeekSessionsProps = {
 };
 function WeekSessions({
   mesocycle_index,
-  selectedMesocycle,
+  selectedMicrocycleIndex,
   training_week,
-  onTitleClick,
   sessionDurationCalculator,
 }: WeekSessionsProps) {
-  const title = `Mesocycle ${mesocycle_index}`;
   const {
     draggableExercises,
     onSplitChange,
@@ -648,65 +670,38 @@ function WeekSessions({
 
   const [isModalPrompted, setIsModalPrompted] = useState<boolean>(false);
 
-  const [selectedMicrocycleIndex, setSelectedMicrocycleIndex] =
-    useState<number>(0);
-
   // NOTE: a lot of logic missing here to determine if an exercise CAN move to another split
-  //       as well as if it can should it change the split type?
-
-  const selectWeekIndexHandler = (week: string) => {
-    const weekNumber = week.split(" ")[1];
-    setSelectedMicrocycleIndex(parseInt(weekNumber) - 1);
-  };
+  //       as well as if it can should it change the split type??
 
   return (
     <div className={" my-1 flex flex-col"}>
-      {title === selectedMesocycle ? (
-        <>
-          <Title
-            title={title}
-            selected={selectedMesocycle}
-            onClick={onTitleClick}
-          />
-          <SelectMicrocycleList onWeekClick={selectWeekIndexHandler} />
-
-          {modalOptions && isModalPrompted ? (
-            <Prompt
-              splitOptions={modalOptions}
-              isOpen={isModalPrompted}
-              onClose={onSplitChange}
-            />
-          ) : null}
-
-          <div className="flex">
-            <DragDropContext onDragEnd={onDragEnd}>
-              {draggableExercises.map((each, index) => {
-                // NOTE: to not display days w/o any sessions
-                const hasSessions = each.sessions.find(
-                  (ea) => ea.exercises.length
-                );
-                if (!hasSessions) return null;
-                return (
-                  <DayLayout
-                    key={`${each.day}_${mesocycle_index}_draggableExercisesObject_${index}`}
-                    session={each}
-                    mesocycleIndex={mesocycle_index}
-                    sessionDurationCalculator={sessionDurationCalculator}
-                    selectedMicrocycleIndex={selectedMicrocycleIndex}
-                    onSupersetUpdate={onSupersetUpdate}
-                  />
-                );
-              })}
-            </DragDropContext>
-          </div>
-        </>
-      ) : (
-        <Title
-          title={title}
-          selected={selectedMesocycle}
-          onClick={onTitleClick}
+      {modalOptions && isModalPrompted ? (
+        <Prompt
+          splitOptions={modalOptions}
+          isOpen={isModalPrompted}
+          onClose={onSplitChange}
         />
-      )}
+      ) : null}
+
+      <div className="flex space-x-1">
+        <DragDropContext onDragEnd={onDragEnd}>
+          {draggableExercises?.map((each, index) => {
+            // NOTE: to not display days w/o any sessions
+            const hasSessions = each.sessions.find((ea) => ea.exercises.length);
+            if (!hasSessions) return null;
+            return (
+              <DayLayout
+                key={`${each.day}_${mesocycle_index}_draggableExercisesObject_${index}`}
+                session={each}
+                mesocycleIndex={mesocycle_index}
+                sessionDurationCalculator={sessionDurationCalculator}
+                selectedMicrocycleIndex={selectedMicrocycleIndex}
+                onSupersetUpdate={onSupersetUpdate}
+              />
+            );
+          })}
+        </DragDropContext>
+      </div>
     </div>
   );
 }
@@ -934,7 +929,11 @@ export default function ExerciseOverview({
         </Card>
       </div>
 
-      {training_block.map((each, index) => {
+      <SessionsWithExercises
+        sessionDurationCalculator={sessionDurationCalculator}
+      />
+
+      {/* {training_block.map((each, index) => {
         return (
           <WeekSessions
             key={`${each[index].day}_training_block_meso_${index}`}
@@ -945,7 +944,7 @@ export default function ExerciseOverview({
             sessionDurationCalculator={sessionDurationCalculator}
           />
         );
-      })}
+      })} */}
     </Section>
   );
 }
