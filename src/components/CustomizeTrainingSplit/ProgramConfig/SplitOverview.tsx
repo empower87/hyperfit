@@ -11,6 +11,7 @@ import {
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
 import StrictModeDroppable from "~/lib/react-beautiful-dnd/StrictModeDroppable";
 import { getSessionSplitColor } from "~/utils/getSessionSplitColor";
+import SplitSelect from "./SplitSelect";
 
 const DAYS: DayType[] = [
   "Sunday",
@@ -117,21 +118,6 @@ export function TrainingWeek() {
           })}
         </DragDropContext>
       </div>
-
-      <div className=" flex justify-start p-1">
-        <button
-          className=" mr-1 bg-slate-500 p-1 text-xs text-slate-700"
-          onClick={onResetHandler}
-        >
-          Reset
-        </button>
-        <button
-          className="bg-rose-400 p-1 text-xs font-bold text-white"
-          onClick={onSaveHandler}
-        >
-          Save
-        </button>
-      </div>
     </div>
   );
 }
@@ -152,6 +138,7 @@ const DroppableDay = ({
     split: "off",
     exercises: [],
   };
+
   const sesh = sessions;
   if (!sesh.length) {
     sesh.push(offDay as unknown as SessionType);
@@ -216,6 +203,7 @@ function SessionItem({ session, index, onSplitChange }: SessionItemProps) {
   const onSelectChange = (newSplit: SplitType | "off") => {
     onSplitChange(newSplit, session.id);
   };
+
   const SPLIT_NAMES: (SplitType | "off")[] = [
     "upper",
     "lower",
@@ -239,6 +227,7 @@ function SessionItem({ session, index, onSplitChange }: SessionItemProps) {
       <div className=" flex w-1/6 justify-center text-xxs text-white">
         {/* {session.session > 0 ? session.session : ""} */}
       </div>
+
       <SelectSession
         session={session.split}
         splits={SPLIT_NAMES}
@@ -283,10 +272,10 @@ function SelectSession({ session, splits, onSelect }: SelectSessionProps) {
 }
 
 function Split() {
-  const { split_sessions } = useTrainingProgramContext();
   return (
-    <div className="mb-2 flex text-sm text-white">
-      Split: {split_sessions.split}
+    <div className="mb-2 flex items-center space-x-2 text-sm text-white">
+      <div className={`text-xs`}>Split: </div>
+      <SplitSelect />
     </div>
   );
 }

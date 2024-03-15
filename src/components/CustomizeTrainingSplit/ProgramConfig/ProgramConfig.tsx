@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 import Frequency from "./Frequency";
 import Periodization from "./Periodization";
-import Split from "./Split";
+import Split from "./SplitSelect";
 
 ProgramConfig.Frequency = Frequency;
 ProgramConfig.Split = Split;

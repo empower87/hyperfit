@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { CardS } from "~/components/Layout/Sections";
 import { Select } from "~/components/Layout/Select";
 import { SplitSessionsNameType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
@@ -42,7 +41,7 @@ function SelectSplit({ selectedOption, onSelect }: SelectSplitProps) {
   );
 }
 
-export default function Split() {
+export default function SplitSelect() {
   const { handleFrequencyChange, split_sessions } = useTrainingProgramContext();
   const [selectedSplitType, setSelectedSplitType] =
     useState<SplitSessionsNameType>("OPT");
@@ -51,11 +50,11 @@ export default function Split() {
     setSelectedSplitType(type);
 
   return (
-    <CardS title="Split">
+    <div className={``}>
       <SelectSplit
         selectedOption={split_sessions.split}
         onSelect={onSelectSplit}
       />
-    </CardS>
+    </div>
   );
 }

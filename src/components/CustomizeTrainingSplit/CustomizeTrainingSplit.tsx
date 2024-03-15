@@ -4,7 +4,7 @@ import TrainingBlock from "../Macrocycle/TrainingBlock/TrainingBlock";
 import ExerciseOverview from "./ExerciseSelection/ExerciseSelection";
 import { MusclePriorityList } from "./MusclePriorityList/MusclePriorityList";
 import ProgramConfig from "./ProgramConfig/ProgramConfig";
-import SplitOverview from "./SplitOverview/SplitOverview";
+import SplitOverview from "./ProgramConfig/SplitOverview";
 
 export default function PageContent() {
   return (
@@ -13,10 +13,9 @@ export default function PageContent() {
         <Section title="Customize Training Program">
           <div className="">
             <ProgramConfig>
-              {/* <ProgramConfig.Frequency /> */}
               <ProgramConfig.Periodization />
-              {/* <ProgramConfig.Split /> */}
-              <div className={`flex items-center justify-center`}>
+
+              <div className={`flex justify-center`}>
                 <SplitOverview>
                   <SplitOverview.Split />
                   <SplitOverview.Week />
@@ -25,9 +24,11 @@ export default function PageContent() {
             </ProgramConfig>
 
             <div className="mb-2 flex flex-col">
-              {/* <div className="w-1/4 pr-2">
-                <ListVolumeSettings />
-              </div> */}
+              {/* 
+                <div className="w-1/4 pr-2">
+                  <ListVolumeSettings />
+                </div> 
+              */}
 
               <MusclePriorityList />
             </div>
