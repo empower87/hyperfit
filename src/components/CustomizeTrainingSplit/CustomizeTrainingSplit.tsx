@@ -13,9 +13,15 @@ export default function PageContent() {
         <Section title="Customize Training Program">
           <div className="">
             <ProgramConfig>
-              <ProgramConfig.Frequency />
+              {/* <ProgramConfig.Frequency /> */}
               <ProgramConfig.Periodization />
-              <ProgramConfig.Split />
+              {/* <ProgramConfig.Split /> */}
+              <div className={`flex items-center justify-center`}>
+                <SplitOverview>
+                  <SplitOverview.Split />
+                  <SplitOverview.Week />
+                </SplitOverview>
+              </div>
             </ProgramConfig>
 
             <div className="mb-2 flex flex-col">
@@ -24,13 +30,6 @@ export default function PageContent() {
               </div> */}
 
               <MusclePriorityList />
-            </div>
-
-            <div className={`mb-5 flex items-center justify-center`}>
-              <SplitOverview>
-                <SplitOverview.Split />
-                <SplitOverview.Week />
-              </SplitOverview>
             </div>
 
             <ExerciseOverview>

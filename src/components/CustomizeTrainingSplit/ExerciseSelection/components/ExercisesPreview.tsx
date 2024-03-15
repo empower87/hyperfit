@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { CardS as Card } from "~/components/Layout/Sections";
+import Modal from "~/components/Modals/Modal";
 import { BG_COLOR_M5, BG_COLOR_M6 } from "~/constants/themes";
 import { ExerciseType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
 import { cn } from "~/lib/clsx";
-import { EditMuscleModal } from "../../MusclePriorityList/components/EditMuscleModal";
 import { ChangeExerciseProvider } from "./ChangeExerciseModal/ChangeExerciseContext";
 import SelectExercise from "./ChangeExerciseModal/ChangeExerciseModal";
 
@@ -33,23 +33,21 @@ export default function ExercisesPreview() {
     }
   };
 
-  const onClose = () => {
+  const onClose = useCallback(() => {
     setIsOpen(false);
-  };
+  }, [isOpen]);
 
   return (
-    <Card title="Exercise Overview">
+    <Card title="OVERVIEW">
       <div className={cn(`mr-2 flex w-80 flex-col`)}>
-        {isOpen ? (
-          <EditMuscleModal isOpen={isOpen} onClose={onClose}>
-            <ChangeExerciseProvider
-              muscle={prioritized_muscle_list[selectedMuscleIndex]}
-              exerciseId={selectedExercises[selectedExerciseIndex]?.id}
-            >
-              <SelectExercise />
-            </ChangeExerciseProvider>
-          </EditMuscleModal>
-        ) : null}
+        <Modal isOpen={isOpen} onClose={onClose}>
+          <ChangeExerciseProvider
+            muscle={prioritized_muscle_list[selectedMuscleIndex]}
+            exerciseId={selectedExercises[selectedExerciseIndex]?.id}
+          >
+            <SelectExercise />
+          </ChangeExerciseProvider>
+        </Modal>
 
         <div className={cn(`mb-2 flex space-x-1 overflow-x-auto border-b-2`)}>
           {prioritized_muscle_list.map((each, index) => {

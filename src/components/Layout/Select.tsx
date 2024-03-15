@@ -16,7 +16,7 @@ export function Select<T extends string | number>({
   return (
     <select
       className={cn(
-        `h-full w-full bg-inherit text-white ${BORDER_COLOR_M5} rounded border text-sm`
+        `h-full w-full bg-inherit text-white ${BORDER_COLOR_M5} rounded border text-xs`
       )}
       onChange={onSelect}
     >
@@ -43,7 +43,7 @@ export function SelectLabel({
   children: ReactNode;
 }) {
   return (
-    <div className="flex w-60 justify-between p-1">
+    <div className="flex w-60 justify-between p-0.5">
       <p className="text-xs leading-3 text-slate-400">{label}</p>
       <div className="flex w-10">{children}</div>
     </div>

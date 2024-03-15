@@ -296,7 +296,7 @@ SplitOverview.Week = TrainingWeek;
 
 export default function SplitOverview({ children }: { children: ReactNode }) {
   return (
-    <CardS title="Split Overview">
+    <CardS title="WORKOUT SPLIT">
       <div className={``}>{children}</div>
     </CardS>
   );

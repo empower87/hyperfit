@@ -1,6 +1,7 @@
 import { CardS as Card } from "~/components/Layout/Sections";
 import { Select, SelectLabel } from "~/components/Layout/Select";
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
+import Frequency from "./Frequency";
 
 const MACROCYCLES = [];
 const MESOCYCLES = [1, 2, 3, 4];
@@ -8,6 +9,15 @@ const MICROCYCLES = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 const TRAINING_BLOCKS = [1, 2, 3, 4];
 
 export default function Periodization() {
+  return (
+    <Card title="PERIODIZATION">
+      <Frequency />
+      <OtherParams />
+    </Card>
+  );
+}
+
+const OtherParams = () => {
   const { training_program_params } = useTrainingProgramContext();
   const { macrocycles, mesocycles, microcycles, blocks } =
     training_program_params;
@@ -16,7 +26,8 @@ export default function Periodization() {
     console.log(event.target.value);
   };
   return (
-    <Card title="Periodization">
+    <div className={`p-1`}>
+      <div className={`pb-1 text-xs text-white`}>Other</div>
       <SelectLabel label="Training Blocks (1-4 mesocycles) ">
         <Select
           selectedOption={blocks}
@@ -40,6 +51,6 @@ export default function Periodization() {
           onSelect={onSelectHandler}
         />
       </SelectLabel>
-    </Card>
+    </div>
   );
-}
+};

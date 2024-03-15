@@ -51,8 +51,10 @@ export function SectionH2({ title, children }: SectionProps) {
 export function CardS({ title, children }: SectionProps) {
   return (
     <div className={cn(`flex flex-col ${BG_COLOR_M6} rounded-md p-1.5`)}>
-      <div className={cn(`flex items-center ${BORDER_COLOR_M5} border-b`)}>
-        <h3 className={`indent-1 text-lg text-white`}>{title}</h3>
+      <div
+        className={cn(`flex items-center ${BORDER_COLOR_M5} border-b pb-0.5`)}
+      >
+        <h3 className={`indent-1 text-xs font-bold text-white`}>{title}</h3>
       </div>
       <div className={`pt-2`}>{children}</div>
     </div>

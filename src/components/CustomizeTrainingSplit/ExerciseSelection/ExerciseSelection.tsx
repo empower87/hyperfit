@@ -36,6 +36,11 @@ import { getSessionSplitColor } from "~/utils/getSessionSplitColor";
 import { capitalizeFirstLetter } from "~/utils/uiHelpers";
 import ExercisesPreview from "./components/ExercisesPreview";
 import MesocycleToggle from "./components/MesocycleToggle";
+import SessionDurationVariables from "./components/Settings/SessionDuration/SessionDurationVariables";
+import {
+  SessionDurationVariablesProvider,
+  useSessionDurationVariablesContext,
+} from "./components/Settings/SessionDuration/sessionDurationVariablesContext";
 import { getSupersetMap } from "./exerciseSelectUtils";
 import useExerciseSelection, {
   DraggableExercises,
@@ -408,10 +413,6 @@ type DroppableDayProps = {
   mesocycleIndex: number;
   exercises: ExerciseType[];
   selectedMicrocycleIndex: number;
-  sessionDurationCalculator: (
-    exercises: ExerciseType[],
-    currentMicrocycleIndex: number
-  ) => number;
   onSupersetUpdate: (
     _exercise: ExerciseType,
     exercise: ExerciseType,
@@ -425,18 +426,18 @@ function DroppableDay({
   mesocycleIndex,
   exercises,
   selectedMicrocycleIndex,
-  sessionDurationCalculator,
   onSupersetUpdate,
 }: DroppableDayProps) {
   const [totalDuration, setTotalDuration] = useState(0);
-
+  const { sessionDurationCalculator, durationTimeConstants } =
+    useSessionDurationVariablesContext();
   useEffect(() => {
     const totalDuration = sessionDurationCalculator(
       exercises,
       selectedMicrocycleIndex
     );
     setTotalDuration(totalDuration);
-  }, [selectedMicrocycleIndex, exercises]);
+  }, [selectedMicrocycleIndex, exercises, durationTimeConstants]);
 
   return (
     <li className="">
@@ -495,8 +496,8 @@ function DroppableDay({
       </StrictModeDroppable>
 
       <div className=" mt-1 flex w-full flex-col">
-        <div className=" text-xxs text-white">Total Est. Duration</div>
-        <div className=" text-xxs text-white">{totalDuration}min</div>
+        <div className=" indent-1 text-xxs text-white">Total Est. Duration</div>
+        <div className=" indent-1 text-xxs text-white">{totalDuration}min</div>
       </div>
     </li>
   );
@@ -505,10 +506,6 @@ function DroppableDay({
 type DayLayoutProps = {
   session: DraggableExercises;
   mesocycleIndex: number;
-  sessionDurationCalculator: (
-    exercises: ExerciseType[],
-    currentMicrocycleIndex: number
-  ) => number;
   selectedMicrocycleIndex: number;
   onSupersetUpdate: (
     _exercise: ExerciseType,
@@ -520,7 +517,6 @@ type DayLayoutProps = {
 function DayLayout({
   session,
   mesocycleIndex,
-  sessionDurationCalculator,
   selectedMicrocycleIndex,
   onSupersetUpdate,
 }: DayLayoutProps) {
@@ -552,7 +548,6 @@ function DayLayout({
                   droppableId={each.id}
                   exercises={each.exercises}
                   selectedMicrocycleIndex={selectedMicrocycleIndex}
-                  sessionDurationCalculator={sessionDurationCalculator}
                   onSupersetUpdate={onSupersetUpdate}
                 />
               );
@@ -589,15 +584,7 @@ function Title({ title, selected, onClick }: TitleProps) {
   );
 }
 
-type SessionsWithExercisesProps = {
-  sessionDurationCalculator: (
-    exercises: ExerciseType[],
-    currentMicrocycleIndex: number
-  ) => number;
-};
-function SessionsWithExercises({
-  sessionDurationCalculator,
-}: SessionsWithExercisesProps) {
+function SessionsWithExercises() {
   const { training_block, training_program_params } =
     useTrainingProgramContext();
   const { microcycles, mesocycles } = training_program_params;
@@ -634,12 +621,10 @@ function SessionsWithExercises({
         selectedMicrocycleIndex={selectedMicrocycleIndex}
         onClickHandler={onClickHandler}
       />
-
       <WeekSessions
         mesocycle_index={selectedMesocycleIndex}
         selectedMicrocycleIndex={selectedMicrocycleIndex}
         training_week={training_block[selectedMesocycleIndex]}
-        sessionDurationCalculator={sessionDurationCalculator}
       />
     </div>
   );
@@ -649,16 +634,12 @@ type WeekSessionsProps = {
   mesocycle_index: number;
   selectedMicrocycleIndex: number;
   training_week: TrainingDayType[];
-  sessionDurationCalculator: (
-    exercises: ExerciseType[],
-    currentMicrocycleIndex: number
-  ) => number;
 };
+
 function WeekSessions({
   mesocycle_index,
   selectedMicrocycleIndex,
   training_week,
-  sessionDurationCalculator,
 }: WeekSessionsProps) {
   const {
     draggableExercises,
@@ -694,7 +675,6 @@ function WeekSessions({
                 key={`${each.day}_${mesocycle_index}_draggableExercisesObject_${index}`}
                 session={each}
                 mesocycleIndex={mesocycle_index}
-                sessionDurationCalculator={sessionDurationCalculator}
                 selectedMicrocycleIndex={selectedMicrocycleIndex}
                 onSupersetUpdate={onSupersetUpdate}
               />
@@ -705,43 +685,6 @@ function WeekSessions({
     </div>
   );
 }
-
-type SelectMicrocycleListProps = {
-  onWeekClick: (week: string) => void;
-};
-
-const SelectMicrocycleList = ({ onWeekClick }: SelectMicrocycleListProps) => {
-  const { training_program_params } = useTrainingProgramContext();
-  const { microcycles } = training_program_params;
-  const list = Array.from(Array(microcycles), (e, i) => `Week ${i + 1}`);
-  const selectedClasses = `${BG_COLOR_M5} text-white font-bold`;
-  const [selectedWeek, setSelectedWeek] = useState<string>("Week 1");
-
-  const onClickHandler = (week: string) => {
-    setSelectedWeek(week);
-    onWeekClick(week);
-  };
-  return (
-    <ul className={cn(`mb-1 flex w-full`)}>
-      {list.map((week, i) => {
-        return (
-          <li
-            key={`${week}_weeks_${i}`}
-            className={cn(
-              `text-xs hover:${BG_COLOR_M5} mr-1 cursor-pointer p-1 text-slate-400`,
-              {
-                [selectedClasses]: selectedWeek === week,
-              }
-            )}
-            onClick={() => onClickHandler(week)}
-          >
-            {week}
-          </li>
-        );
-      })}
-    </ul>
-  );
-};
 
 type DurationTimeConstants = typeof DURATION_TIME_CONSTRAINTS;
 type DurationTimeConstantsKeys = keyof DurationTimeConstants;
@@ -800,151 +743,18 @@ export default function ExerciseOverview({
 }: {
   children: ReactNode;
 }) {
-  const { training_block } = useTrainingProgramContext();
-  const [selectedMesocycle, setSelectedMesocycle] = useState(``);
-  const [durationTimeConstants, setDurationTimeConstants] =
-    useState<DurationTimeConstants>({ ...DURATION_TIME_CONSTRAINTS });
-
-  useEffect(() => {
-    const lastMesocycle = training_block.length;
-    setSelectedMesocycle(`Mesocycle ${lastMesocycle}`);
-  }, [training_block]);
-
-  const onTitleClick = useCallback(
-    (title: string) => {
-      if (title === selectedMesocycle) return;
-      setSelectedMesocycle(title);
-    },
-    [selectedMesocycle]
-  );
-
-  const onTimeChange = useCallback(
-    (key: DurationTimeConstantsKeys, time: number) => {
-      const newDurationTimeConstants = {
-        ...durationTimeConstants,
-        [key]: { ...durationTimeConstants[key], value: time },
-      };
-      setDurationTimeConstants(newDurationTimeConstants);
-    },
-    []
-  );
-
-  const exerciseModalityRepCalculator = (
-    modality: ExerciseType["trainingModality"],
-    sets: number,
-    reps: number,
-    repTime: DurationTimeConstraint
-  ) => {
-    switch (modality) {
-      case "myoreps":
-        const followingSets = sets - 1;
-        const MYOREP_MULTIPLIER_CONSTANT = 0.41;
-        const followingReps = Math.round(reps * MYOREP_MULTIPLIER_CONSTANT);
-        const initialRepTotal = reps * repTime.value;
-        const followingRepsTotal =
-          followingReps * followingSets * repTime.value;
-        const totalRepDuration = initialRepTotal + followingRepsTotal;
-        return totalRepDuration;
-      case "eccentric":
-        const ECCENTRIC_MULTIPLIER_CONSTANT = 6;
-        return sets * (reps * ECCENTRIC_MULTIPLIER_CONSTANT);
-      case "lengthened partials":
-        const lengthenedPartialRepTime = Math.round(repTime.value / 2);
-        return sets * reps * lengthenedPartialRepTime;
-      default:
-        return sets * reps * repTime.value;
-    }
-  };
-
-  const sessionDurationCalculator = useCallback(
-    (exercises: ExerciseType[], currentMicrocycleIndex: number) => {
-      const { warmup, rest, rep, superset } = durationTimeConstants;
-
-      const totalExercises = exercises.length;
-      const restTime = totalExercises * rest.value;
-
-      let totalRepTime = 0;
-      let totalRestTime = 0;
-
-      for (let i = 0; i < exercises.length; i++) {
-        const exercise = exercises[i].mesocycle_progression;
-        const modality = exercises[i].trainingModality;
-        const { sets, reps } = exercise[currentMicrocycleIndex];
-
-        const repTime = exerciseModalityRepCalculator(
-          modality,
-          sets,
-          reps,
-          rep
-        );
-
-        let restTime = 0;
-        if (exercises[i].trainingModality === "superset") {
-          restTime = Math.round(superset.value / 2) * sets;
-        } else {
-          restTime = sets * rest.value;
-        }
-        totalRestTime += restTime;
-        totalRepTime += repTime;
-      }
-
-      const totalTimeInMinutes = Math.round(
-        (warmup.value + restTime + totalRepTime + totalRestTime) / 60
-      );
-
-      return totalTimeInMinutes;
-    },
-    [durationTimeConstants]
-  );
-
   return (
     <Section title={"EXERCISES"}>
-      <div className="mb-2 flex justify-center space-x-2 text-xxs text-white">
-        {children}
-        <Card title="Settings">
-          <div className="flex w-80 flex-col">
-            <div className="mb-0.5 text-sm">Workout Duration Variables</div>
+      <SessionDurationVariablesProvider>
+        <div className="mb-2 flex justify-center space-x-2 text-xxs text-white">
+          {children}
+          <Card title="SETTINGS">
+            <SessionDurationVariables />
+          </Card>
+        </div>
 
-            <TimeIncrementFrame
-              title="warmup"
-              constraints={durationTimeConstants.warmup}
-              onTimeChange={onTimeChange}
-            />
-            <TimeIncrementFrame
-              title="rest"
-              constraints={durationTimeConstants.rest}
-              onTimeChange={onTimeChange}
-            />
-            <TimeIncrementFrame
-              title="superset"
-              constraints={durationTimeConstants.superset}
-              onTimeChange={onTimeChange}
-            />
-            <TimeIncrementFrame
-              title="rep"
-              constraints={durationTimeConstants.rep}
-              onTimeChange={onTimeChange}
-            />
-          </div>
-        </Card>
-      </div>
-
-      <SessionsWithExercises
-        sessionDurationCalculator={sessionDurationCalculator}
-      />
-
-      {/* {training_block.map((each, index) => {
-        return (
-          <WeekSessions
-            key={`${each[index].day}_training_block_meso_${index}`}
-            mesocycle_index={index + 1}
-            training_week={each}
-            selectedMesocycle={selectedMesocycle}
-            onTitleClick={onTitleClick}
-            sessionDurationCalculator={sessionDurationCalculator}
-          />
-        );
-      })} */}
+        <SessionsWithExercises />
+      </SessionDurationVariablesProvider>
     </Section>
   );
 }

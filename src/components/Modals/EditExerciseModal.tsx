@@ -176,21 +176,6 @@ type ItemProps = {
   onClick: (value: string) => void;
 };
 
-const HorizontalItem = ({ value, selectedValue, onClick }: ItemProps) => {
-  const isSelected = value === selectedValue ? true : false;
-  const selectedBG = isSelected ? BG_COLOR_M5 : BG_COLOR_M6;
-  const selectedText = isSelected ? "text-white" : "text-slate-400";
-  const hover = HOVER_COLOR_M5;
-  return (
-    <li
-      className={selectedBG + " mr-1 cursor-pointer " + hover}
-      onClick={() => onClick(value)}
-    >
-      <p className={selectedText + " p-1 text-sm"}>{value}</p>
-    </li>
-  );
-};
-
 const VerticalItem = ({ value, selectedValue, onClick }: ItemProps) => {
   const isSelected = value === selectedValue ? true : false;
   const selectedBG = isSelected ? BG_COLOR_M5 : BG_COLOR_M6;

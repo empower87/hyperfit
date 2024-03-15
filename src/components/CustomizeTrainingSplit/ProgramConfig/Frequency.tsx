@@ -1,5 +1,4 @@
 import { useCallback, useState } from "react";
-import { CardS } from "~/components/Layout/Sections";
 import { Select, SelectLabel } from "~/components/Layout/Select";
 import { SplitSessionsNameType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
@@ -99,7 +98,8 @@ export default function Frequency() {
   }, [totalSessionsPerWeek, totalDoubleSessionsPerWeek, selectedSplitType]);
 
   return (
-    <CardS title="Frequency">
+    <div className={`flex flex-col p-1`}>
+      <div className={`pb-1 text-xs text-white`}>Frequency</div>
       <SelectFrequency
         title="Weekly Sessions: "
         options={[...OPTIONS].slice(3)}
@@ -113,6 +113,6 @@ export default function Frequency() {
         selectedOption={totalDoubleSessionsPerWeek}
         onChange={handleSelectChange}
       />
-    </CardS>
+    </div>
   );
 }
