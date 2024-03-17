@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { BORDER_COLOR_M5 } from "~/constants/themes";
+import { BG_COLOR_M6, BORDER_COLOR_M5 } from "~/constants/themes";
 import { cn } from "~/lib/clsx";
 
 type SelectProps<T> = {
@@ -24,6 +24,7 @@ export function Select<T extends string | number>({
         return (
           <option
             key={`${each}_${index}_select`}
+            className={`${BG_COLOR_M6}`}
             value={each}
             selected={each === selectedOption}
           >

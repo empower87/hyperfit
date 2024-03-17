@@ -1,5 +1,6 @@
 import { ReactNode, useCallback, useEffect, useState } from "react";
 import { DragDropContext, Draggable, DropResult } from "react-beautiful-dnd";
+import { PlusIcon } from "~/assets/icons/_icons";
 import { CardS } from "~/components/Layout/Sections";
 import {
   BG_COLOR_M5,
@@ -17,6 +18,7 @@ import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainin
 import { cn } from "~/lib/clsx";
 import StrictModeDroppable from "~/lib/react-beautiful-dnd/StrictModeDroppable";
 import { getSessionSplitColor } from "~/utils/getSessionSplitColor";
+import { Button } from "../MusclePriorityList/MusclePriorityList";
 import SplitSelect from "./SplitSelect";
 
 const DAYS: DayType[] = [
@@ -195,16 +197,10 @@ const DroppableDay = ({
             </ul>
           )}
         </StrictModeDroppable>
-        <div className={`flex justify-center p-1`}>
-          <button
-            className={`${BG_COLOR_M6} items-center justify-center text-white`}
-          >
-            <div
-              className={`flex h-5 w-5 items-center justify-center font-bold text-white `}
-            >
-              +
-            </div>
-          </button>
+        <div className={`flex justify-center`}>
+          <Button className={`${BG_COLOR_M6}`} onClick={() => {}}>
+            <PlusIcon className={`fill-white`} />
+          </Button>
         </div>
       </div>
     </div>
@@ -289,7 +285,7 @@ function SelectSession({ session, splits, onSelect }: SelectSessionProps) {
 
 function Split() {
   return (
-    <div className="mb-2 flex items-center space-x-2 text-sm text-white">
+    <div className="flex items-center space-x-2 p-2 text-sm text-white">
       <div className={`text-xs`}>Split: </div>
       <SplitSelect />
     </div>
@@ -300,9 +296,5 @@ SplitOverview.Split = Split;
 SplitOverview.Week = TrainingWeek;
 
 export default function SplitOverview({ children }: { children: ReactNode }) {
-  return (
-    <CardS title="WORKOUT SPLIT">
-      <div className={``}>{children}</div>
-    </CardS>
-  );
+  return <CardS title="WORKOUT SPLIT">{children}</CardS>;
 }
