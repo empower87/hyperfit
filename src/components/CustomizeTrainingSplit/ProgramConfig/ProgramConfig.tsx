@@ -11,3 +11,7 @@ export default function ProgramConfig({ children }: { children: ReactNode }) {
     <div className="mb-5 flex w-full justify-center space-x-2">{children}</div>
   );
 }
+
+function useProgramConfig() {
+  return {};
+}

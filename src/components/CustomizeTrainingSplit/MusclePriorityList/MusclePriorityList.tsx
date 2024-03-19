@@ -6,7 +6,10 @@ import {
   useState,
 } from "react";
 import { DragDropContext, Draggable } from "react-beautiful-dnd";
-import { SectionH2 as Section } from "~/components/Layout/Sections";
+import {
+  CardS as Card,
+  SectionH2 as Section,
+} from "~/components/Layout/Sections";
 import { BG_COLOR_M5, BG_COLOR_M6, BORDER_COLOR_M8 } from "~/constants/themes";
 import {
   MusclePriorityType,
@@ -372,5 +375,108 @@ export function Button({
     >
       {children}
     </button>
+  );
+}
+
+function CellA({
+  value,
+  className,
+}: {
+  value: string | number;
+  className: string;
+}) {
+  return (
+    <div className={cn(`flex items-center justify-center p-0.5`, className)}>
+      {value}
+    </div>
+  );
+}
+
+export function MiniMusclePriorityList() {
+  const {
+    prioritized_muscle_list,
+    split_sessions,
+    training_program_params,
+    mrv_breakpoint,
+    mev_breakpoint,
+    handleUpdateMuscleList,
+    handleUpdateBreakpoints,
+  } = useTrainingProgramContext();
+  const { mesocycles, microcycles } = training_program_params;
+  const {
+    draggableList,
+    volumeBreakpoints,
+    setDraggableList,
+    onReorder,
+    onVolumeLandmarkChange,
+    onFrequencyProgressionUpdate,
+  } = useMusclePriority(
+    prioritized_muscle_list,
+    [mrv_breakpoint, mev_breakpoint],
+    split_sessions,
+    mesocycles,
+    microcycles
+  );
+  const onSaveHandler = useCallback(() => {
+    handleUpdateMuscleList(draggableList);
+    handleUpdateBreakpoints(volumeBreakpoints);
+  }, [draggableList, volumeBreakpoints]);
+
+  const onResetHandler = useCallback(() => {
+    setDraggableList(prioritized_muscle_list);
+  }, []);
+
+  const colors = VOLUME_BG_COLORS;
+
+  return (
+    <Card title="PRIORITY">
+      <DragDropContext onDragEnd={onReorder}>
+        <StrictModeDroppable droppableId="droppable">
+          {(provided, snapshot) => (
+            <ul
+              id="droppable"
+              className=" flex w-full flex-col space-y-0.5"
+              {...provided.droppableProps}
+              ref={provided.innerRef}
+            >
+              {draggableList.map((each, index) => {
+                return (
+                  <Draggable
+                    key={`${each.id}_draggable`}
+                    draggableId={each.id}
+                    index={index}
+                  >
+                    {(provided, snapshot) => (
+                      <div
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                      >
+                        <div
+                          className={`flex ${
+                            colors[each.volume_landmark]
+                          } w-52 rounded-sm text-xxs text-white`}
+                        >
+                          <CellA value={index + 1} className="w-5" />
+                          <CellA
+                            value={each.muscle}
+                            className="w-20 justify-start indent-1"
+                          />
+                          <CellA
+                            value={each.volume.landmark}
+                            className="w-10"
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </Draggable>
+                );
+              })}
+              {provided.placeholder}
+            </ul>
+          )}
+        </StrictModeDroppable>
+      </DragDropContext>
+    </Card>
   );
 }

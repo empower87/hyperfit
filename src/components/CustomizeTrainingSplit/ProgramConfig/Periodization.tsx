@@ -11,23 +11,25 @@ const TRAINING_BLOCKS = [1, 2, 3, 4];
 export default function Periodization() {
   return (
     <Card title="PERIODIZATION">
-      <Frequency />
-      <OtherParams />
+      <div className={`flex space-x-1`}>
+        <Frequency />
+        <OtherParams />
+      </div>
     </Card>
   );
 }
 
 const OtherParams = () => {
   const { training_program_params } = useTrainingProgramContext();
-  const { macrocycles, mesocycles, microcycles, blocks } =
-    training_program_params;
+  const { mesocycles, microcycles, blocks } = training_program_params;
 
   const onSelectHandler = (event: React.ChangeEvent<HTMLSelectElement>) => {
     console.log(event.target.value);
   };
   return (
     <div className={`p-1`}>
-      <div className={`pb-1 text-xs text-white`}>Other</div>
+      <div className={`pb-1 text-xs text-white`}>Macrocycle</div>
+
       <SelectLabel label="Training Blocks (1-4 mesocycles) ">
         <Select
           selectedOption={blocks}

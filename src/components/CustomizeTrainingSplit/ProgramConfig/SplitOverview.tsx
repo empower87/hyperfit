@@ -108,7 +108,7 @@ export function TrainingWeek() {
   };
 
   return (
-    <div className={BG_COLOR_M6 + " p-2"}>
+    <div className={BG_COLOR_M6 + " p-1"}>
       <div className=" mb-1 flex space-x-1 overflow-x-auto">
         <DragDropContext onDragEnd={onDragEnd}>
           {draggableWeek.map((each, index) => {
@@ -285,7 +285,7 @@ function SelectSession({ session, splits, onSelect }: SelectSessionProps) {
 
 function Split() {
   return (
-    <div className="flex items-center space-x-2 p-2 text-sm text-white">
+    <div className="flex items-center space-x-2 p-1 text-sm text-white">
       <div className={`text-xs`}>Split: </div>
       <SplitSelect />
     </div>

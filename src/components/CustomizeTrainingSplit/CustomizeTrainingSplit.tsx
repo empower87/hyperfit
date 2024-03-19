@@ -1,12 +1,18 @@
+import { BG_COLOR_M6 } from "~/constants/themes";
 import { VOLUME_BG_COLORS } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import {
   TrainingProgramProvider,
   useTrainingProgramContext,
 } from "~/hooks/useTrainingProgram/useTrainingProgram";
-import { SectionXL as Section } from "../Layout/Sections";
+import { cn } from "~/lib/clsx";
+import { CardS, SectionXL as Section } from "../Layout/Sections";
 import TrainingBlock from "../Macrocycle/TrainingBlock/TrainingBlock";
 import ExerciseOverview from "./ExerciseSelection/ExerciseSelection";
-import { MusclePriorityList } from "./MusclePriorityList/MusclePriorityList";
+import MuscleEditor from "./ExerciseSelection/components/ExerciseEditor/MuscleEditor";
+import {
+  Button,
+  MiniMusclePriorityList,
+} from "./MusclePriorityList/MusclePriorityList";
 import ProgramConfig from "./ProgramConfig/ProgramConfig";
 import SplitOverview from "./ProgramConfig/SplitOverview";
 
@@ -17,13 +23,17 @@ export default function PageContent() {
         <Section title="Customize Training Program">
           <div className="">
             <ProgramConfig>
-              {/* <ProgramConfig.Periodization /> */}
-              <TempMuscleList />
-              <div className={`flex justify-center`}>
+              {/* <TempMuscleList /> */}
+              <MiniMusclePriorityList />
+              <div className={`flex flex-col justify-center space-y-1`}>
+                <ProgramConfig.Periodization />
+
                 <SplitOverview>
                   <SplitOverview.Split />
                   <SplitOverview.Week />
                 </SplitOverview>
+
+                <Buttons />
               </div>
             </ProgramConfig>
 
@@ -33,8 +43,8 @@ export default function PageContent() {
                   <ListVolumeSettings />
                 </div> 
               */}
-
-              <MusclePriorityList />
+              <MuscleEditor />
+              {/* <MusclePriorityList /> */}
             </div>
 
             <ExerciseOverview>
@@ -51,22 +61,63 @@ export default function PageContent() {
   );
 }
 
+function Cell({
+  value,
+  className,
+}: {
+  value: string | number;
+  className: string;
+}) {
+  return (
+    <div className={cn(`flex items-center justify-center p-0.5`, className)}>
+      {value}
+    </div>
+  );
+}
+
 function TempMuscleList() {
   const { prioritized_muscle_list } = useTrainingProgramContext();
   const colors = VOLUME_BG_COLORS;
   return (
-    <div className={`flex flex-col space-y-1`}>
-      {prioritized_muscle_list.map((each, index) => {
-        return (
-          <div
-            className={`flex ${
-              colors[each.volume_landmark]
-            } p-0.5 text-xs text-white`}
-          >
-            {index + 1} - {each.muscle}
-          </div>
-        );
-      })}
+    <CardS title="PRIORITY">
+      <div className={`flex w-60 flex-col space-y-0.5`}>
+        {prioritized_muscle_list.map((each, index) => {
+          return (
+            <div
+              className={`flex ${
+                colors[each.volume_landmark]
+              } rounded-sm text-xxs text-white`}
+            >
+              <Cell value={index + 1} className="w-5" />
+              <Cell
+                value={each.muscle}
+                className="w-20 justify-start indent-1"
+              />
+              <Cell value={each.volume.landmark} className="w-10" />
+            </div>
+          );
+        })}
+      </div>
+    </CardS>
+  );
+}
+
+function Buttons() {
+  return (
+    <div className={`flex justify-end space-x-1`}>
+      <Button
+        onClick={() => {}}
+        className={`flex rounded text-white ${BG_COLOR_M6}`}
+      >
+        Reset
+      </Button>
+
+      <Button
+        onClick={() => {}}
+        className={`flex rounded bg-rose-400 px-2 text-white`}
+      >
+        Save Changes
+      </Button>
     </div>
   );
 }
