@@ -2,6 +2,7 @@ import { useCallback, useState } from "react";
 import { Select, SelectLabel } from "~/components/Layout/Select";
 import { SplitSessionsNameType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
+import { useProgramConfigContext } from "./hooks/useProgramConfig";
 
 const OPTIONS = [0, 1, 2, 3, 4, 5, 6, 7];
 const SPLITS = {
@@ -70,12 +71,22 @@ function SelectSplit({ selectedOption, onSelect }: SelectSplitProps) {
   );
 }
 
-export default function Frequency() {
+type FrequencyProps = {
+  _totalSessionsPerWeek: number;
+  _totalDoubleSessionsPerWeek: number;
+};
+export default function Frequency({
+  _totalSessionsPerWeek,
+  _totalDoubleSessionsPerWeek,
+}: FrequencyProps) {
   const { handleFrequencyChange, split_sessions } = useTrainingProgramContext();
+  const { frequency } = useProgramConfigContext();
 
-  const [totalSessionsPerWeek, setTotalSessionsPerWeek] = useState<number>(3);
+  const [totalSessionsPerWeek, setTotalSessionsPerWeek] = useState<number>(
+    frequency[0]
+  );
   const [totalDoubleSessionsPerWeek, setTotalDoubleSessionsPerWeek] =
-    useState<number>(0);
+    useState<number>(_totalDoubleSessionsPerWeek);
   const [selectedSplitType, setSelectedSplitType] =
     useState<SplitSessionsNameType>("OPT");
 

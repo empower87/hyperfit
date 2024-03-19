@@ -11,6 +11,7 @@ import weeklySessionSplitReducer, {
   MusclePriorityType,
   SplitSessionsNameType,
   TrainingDayType,
+  TrainingProgramParamsType,
 } from "./reducer/trainingProgramReducer";
 
 type TrainingProgramType = ReturnType<typeof useTrainingProgram>;
@@ -30,6 +31,7 @@ const TrainingProgramContext = createContext<TrainingProgramType>({
   handleFrequencyChange: () => {},
   handleRearrangeTrainingWeek: () => {},
   handleChangeFrequencyProgression: () => {},
+  handleOnProgramConfigChange: () => {},
   mrv_breakpoint: INITIAL_STATE.mrv_breakpoint,
   mev_breakpoint: INITIAL_STATE.mev_breakpoint,
 });
@@ -135,6 +137,26 @@ function useTrainingProgram() {
     });
   };
 
+  const handleOnProgramConfigChange = useCallback(
+    (
+      _frequency: [number, number],
+      _split: SplitSessionsNameType,
+      _muscle_priority_list: MusclePriorityType[],
+      _params: TrainingProgramParamsType
+    ) => {
+      dispatch({
+        type: "UPDATE_PROGRAM_CONFIG",
+        payload: {
+          frequency: _frequency,
+          split: _split,
+          muscle_priority_list: _muscle_priority_list,
+          training_program_config: _params,
+        },
+      });
+    },
+    []
+  );
+
   useEffect(() => {
     dispatch({ type: "UPDATE_SPLIT_SESSIONS", payload: { split: "OPT" } });
     // dispatch({ type: "UPDATE_TRAINING_WEEK" });
@@ -172,6 +194,7 @@ function useTrainingProgram() {
     handleFrequencyChange,
     handleRearrangeTrainingWeek,
     handleChangeFrequencyProgression,
+    handleOnProgramConfigChange,
     mrv_breakpoint,
     mev_breakpoint,
   };

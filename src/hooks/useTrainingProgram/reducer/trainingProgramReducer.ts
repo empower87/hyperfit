@@ -206,7 +206,15 @@ export type State = {
   mrv_breakpoint: number;
   mev_breakpoint: number;
 };
-
+type UpdateProgramConfigAction = {
+  type: "UPDATE_PROGRAM_CONFIG";
+  payload: {
+    frequency: [number, number];
+    split: SplitSessionsNameType;
+    muscle_priority_list: MusclePriorityType[];
+    training_program_config: TrainingProgramParamsType;
+  };
+};
 type UpdateFrequencyAction = {
   type: "UPDATE_FREQUENCY";
   payload: { frequency: [number, number]; split?: SplitSessionsNameType };
@@ -248,6 +256,7 @@ type AdjustFrequencyProgression = {
   };
 };
 type Action =
+  | UpdateProgramConfigAction
   | UpdateFrequencyAction
   | UpdateMusclePriorityListAction
   | UpdateSplitSessionsAction
@@ -357,6 +366,27 @@ export default function weeklySessionSplitReducer(
   ];
 
   switch (action.type) {
+    case "UPDATE_PROGRAM_CONFIG":
+      const fr = action.payload.frequency;
+      const sp = action.payload.split;
+      const li = action.payload.muscle_priority_list;
+      const params = action.payload.training_program_config;
+
+      const re = onReorderUpdateMusclePriorityList(li, breakpoints);
+
+      const up_sp = getSplitFromWeights(fr, re, sp);
+      const re_up_li = onSplitChangeUpdateMusclePriorityList(
+        re,
+        up_sp,
+        params.mesocycles,
+        params.microcycles
+      );
+      return {
+        ...state,
+        frequency: fr,
+        muscle_priority_list: re_up_li,
+        split_sessions: up_sp,
+      };
     case "UPDATE_FREQUENCY":
       const new_freq = action.payload.frequency;
       const new_split = action.payload?.split ?? split_sessions.split;

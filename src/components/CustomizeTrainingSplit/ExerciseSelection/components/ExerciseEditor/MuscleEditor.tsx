@@ -35,25 +35,27 @@ function Muscle({ muscle, rank }: MuscleProps) {
   const bgColor = getRankColor(muscle.volume.landmark);
   return (
     <div className={`flex ${BG_COLOR_M6} rounded`}>
-      <div className={`flex w-52 flex-col`}>
+      <div className={`flex w-32 flex-col`}>
         <div className={`${bgColor.bg} flex space-x-1 p-1 text-sm text-white`}>
           <div className={`w-6`}>{rank}</div>
           <div>{muscle.muscle}</div>
         </div>
       </div>
-      <Exercises exercises={muscle.exercises} />
+      <Exercises muscle={muscle} />
     </div>
   );
 }
 
 type ExercisesProps = {
-  exercises: ExerciseType[][];
+  muscle: MusclePriorityType;
 };
-function Exercises({ exercises }: ExercisesProps) {
+function Exercises({ muscle }: ExercisesProps) {
   const { training_program_params } = useTrainingProgramContext();
   const { mesocycles } = training_program_params;
   const mesocyclesArray = Array.from(Array(mesocycles), (e, i) => i);
-  const [selectedMesocycleIndex, setSelectedMesocycleIndex] = useState(0);
+  const [selectedMesocycleIndex, setSelectedMesocycleIndex] = useState(
+    mesocycles - 1
+  );
 
   const onTitleClick = (index: number) => {
     setSelectedMesocycleIndex(index);
@@ -78,10 +80,11 @@ function Exercises({ exercises }: ExercisesProps) {
       <div className={`flex flex-col `}>
         <ListHeader />
         <ul className={`space-y-1 px-2 py-1 ${BG_COLOR_M7}`}>
-          {exercises.map((each, index) => {
+          {muscle.exercises.map((each, index) => {
             return (
               <SessionItem
                 exercises={each}
+                setProgressionMatrix={muscle.volume.setProgressionMatrix}
                 dayIndex={index + 1}
                 selectedMesocycleIndex={selectedMesocycleIndex}
               />
@@ -95,14 +98,18 @@ function Exercises({ exercises }: ExercisesProps) {
 }
 type SessionItemProps = {
   exercises: ExerciseType[];
+  setProgressionMatrix: number[][][][];
   dayIndex: number;
   selectedMesocycleIndex: number;
 };
 function SessionItem({
   exercises,
+  setProgressionMatrix,
   dayIndex,
   selectedMesocycleIndex,
 }: SessionItemProps) {
+  const matrix = setProgressionMatrix[selectedMesocycleIndex];
+  console.log(matrix, exercises, "What We LOOKING AT HERE??");
   return (
     <div className={`flex rounded ${BG_COLOR_M6}`}>
       <div className={`w-10 p-0.5 text-xs text-white `}>Day {dayIndex}</div>
@@ -112,6 +119,8 @@ function SessionItem({
             <ExerciseItem
               exercise={each}
               index={index + 1}
+              dayIndex={dayIndex}
+              setProgressionMatrix={matrix}
               selectedMesocycleIndex={selectedMesocycleIndex}
             />
           );
@@ -150,11 +159,15 @@ function ListHeader() {
 type ExerciseItemProps = {
   exercise: ExerciseType;
   index: number;
+  dayIndex: number;
+  setProgressionMatrix: number[][][];
   selectedMesocycleIndex: number;
 };
 function ExerciseItem({
   exercise,
   index,
+  dayIndex,
+  setProgressionMatrix,
   selectedMesocycleIndex,
 }: ExerciseItemProps) {
   const { training_program_params } = useTrainingProgramContext();
@@ -163,11 +176,18 @@ function ExerciseItem({
 
   return (
     <li className={`flex p-0.5 text-xxs text-white ${BG_COLOR_M5}`}>
-      <div className={`w-4`}>{index}</div>
-      <div className={` w-36`}>{exercise.exercise}</div>
+      <div className={`flex w-3 items-center justify-center`}>{index}</div>
+      <div className={`flex w-36 items-center text-ellipsis indent-1`}>
+        {exercise.exercise}
+      </div>
       <div className={`flex`}>
-        {microcyclesArray.map((each) => {
-          return <div className={`w-4`}>{each}</div>;
+        {setProgressionMatrix.map((each, i) => {
+          const session = each[dayIndex - 1];
+          let sets = 0;
+          if (session) {
+            sets = session[index - 1];
+          }
+          return <div className={`w-4`}>{sets}</div>;
         })}
       </div>
     </li>
