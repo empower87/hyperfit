@@ -15,6 +15,7 @@ import {
 } from "./MusclePriorityList/MusclePriorityList";
 import ProgramConfig from "./ProgramConfig/ProgramConfig";
 import SplitOverview from "./ProgramConfig/SplitOverview";
+import { useProgramConfigContext } from "./ProgramConfig/hooks/useProgramConfig";
 
 export default function PageContent() {
   return (
@@ -103,6 +104,8 @@ function TempMuscleList() {
 }
 
 function Buttons() {
+  const { onSaveConfig } = useProgramConfigContext();
+
   return (
     <div className={`flex justify-end space-x-1`}>
       <Button
@@ -113,7 +116,7 @@ function Buttons() {
       </Button>
 
       <Button
-        onClick={() => {}}
+        onClick={() => onSaveConfig()}
         className={`flex rounded bg-rose-400 px-2 text-white`}
       >
         Save Changes

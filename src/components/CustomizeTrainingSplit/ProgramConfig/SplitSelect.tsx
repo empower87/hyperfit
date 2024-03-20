@@ -1,7 +1,6 @@
-import { useState } from "react";
 import { Select } from "~/components/Layout/Select";
 import { SplitSessionsNameType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
-import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
+import { useProgramConfigContext } from "./hooks/useProgramConfig";
 
 type SelectSplitProps = {
   selectedOption: SplitSessionsNameType;
@@ -42,19 +41,11 @@ function SelectSplit({ selectedOption, onSelect }: SelectSplitProps) {
 }
 
 export default function SplitSelect() {
-  const { handleFrequencyChange, split_sessions } = useTrainingProgramContext();
-  const [selectedSplitType, setSelectedSplitType] =
-    useState<SplitSessionsNameType>("OPT");
-
-  const onSelectSplit = (type: SplitSessionsNameType) =>
-    setSelectedSplitType(type);
+  const { split, onSplitChange } = useProgramConfigContext();
 
   return (
     <div className={``}>
-      <SelectSplit
-        selectedOption={split_sessions.split}
-        onSelect={onSelectSplit}
-      />
+      <SelectSplit selectedOption={split} onSelect={onSplitChange} />
     </div>
   );
 }

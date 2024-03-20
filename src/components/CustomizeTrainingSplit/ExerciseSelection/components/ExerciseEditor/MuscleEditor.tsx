@@ -77,7 +77,24 @@ function Exercises({ muscle }: ExercisesProps) {
           );
         })}
       </div>
-      <div className={`flex flex-col `}>
+      <div className={`flex max-w-[1000px] space-x-1 overflow-x-auto`}>
+        {muscle.exercises.map((each, index) => {
+          return (
+            <div className={`flex flex-col `}>
+              <ListHeader />
+              <ul className={`space-y-1 px-2 py-1 ${BG_COLOR_M7}`}>
+                <SessionItem
+                  exercises={each}
+                  setProgressionMatrix={muscle.volume.setProgressionMatrix}
+                  dayIndex={index + 1}
+                  selectedMesocycleIndex={selectedMesocycleIndex}
+                />
+              </ul>
+            </div>
+          );
+        })}
+      </div>
+      {/* <div className={`flex flex-col `}>
         <ListHeader />
         <ul className={`space-y-1 px-2 py-1 ${BG_COLOR_M7}`}>
           {muscle.exercises.map((each, index) => {
@@ -91,7 +108,7 @@ function Exercises({ muscle }: ExercisesProps) {
             );
           })}
         </ul>
-      </div>
+      </div> */}
       <Totals />
     </div>
   );

@@ -372,6 +372,7 @@ export default function weeklySessionSplitReducer(
       const li = action.payload.muscle_priority_list;
       const params = action.payload.training_program_config;
 
+      console.log(fr, sp, "WHAT THIS?");
       const re = onReorderUpdateMusclePriorityList(li, breakpoints);
 
       const up_sp = getSplitFromWeights(fr, re, sp);

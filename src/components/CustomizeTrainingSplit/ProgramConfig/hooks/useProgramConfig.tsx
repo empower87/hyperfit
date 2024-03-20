@@ -8,6 +8,7 @@ import {
 import {
   INITIAL_STATE,
   MusclePriorityType,
+  SplitSessionsNameType,
   SplitSessionsType,
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
@@ -23,6 +24,9 @@ function useProgramConfig() {
   const [list, setList] = useState<MusclePriorityType[]>([
     ...prioritized_muscle_list,
   ]);
+  const [split, setSplit] = useState<SplitSessionsNameType>(
+    split_sessions.split
+  );
   const [splitSessions, setSplitSessions] = useState<SplitSessionsType>({
     ...split_sessions,
   });
@@ -31,16 +35,27 @@ function useProgramConfig() {
   });
   const [freq, setFreq] = useState<[number, number]>([...frequency]);
 
+  const onFrequencyChange = useCallback((values: [number, number]) => {
+    setFreq(values);
+  }, []);
+
+  const onSplitChange = useCallback((split: SplitSessionsNameType) => {
+    setSplit(split);
+  }, []);
+
   const onSaveConfig = useCallback(() => {
-    handleOnProgramConfigChange(freq, splitSessions.split, list, programParams);
-  }, [freq, splitSessions, list, programParams]);
+    handleOnProgramConfigChange(freq, split, list, programParams);
+  }, [freq, split, list, programParams]);
 
   return {
     muscle_priority_list: list,
     split_sessions: splitSessions,
     training_program_params: programParams,
     frequency: freq,
+    split,
     onSaveConfig,
+    onSplitChange,
+    onFrequencyChange,
   };
 }
 
@@ -51,7 +66,10 @@ const ProgramConfigContext = createContext<ProgramConfigType>({
   split_sessions: INITIAL_STATE.split_sessions,
   training_program_params: INITIAL_STATE.training_program_params,
   frequency: INITIAL_STATE.frequency,
+  split: "OPT",
   onSaveConfig: () => {},
+  onSplitChange: () => {},
+  onFrequencyChange: () => {},
 });
 
 const ProgramConfigProvider = ({ children }: { children: ReactNode }) => {
