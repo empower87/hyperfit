@@ -664,7 +664,7 @@ function WeekSessions({
         />
       ) : null}
 
-      <div className="flex space-x-1">
+      <div className="flex max-w-[900px] space-x-1">
         <DragDropContext onDragEnd={onDragEnd}>
           {draggableExercises?.map((each, index) => {
             // NOTE: to not display days w/o any sessions

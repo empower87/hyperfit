@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { EditMuscleModal } from "~/components/CustomizeTrainingSplit/MusclePriorityList/components/EditMuscleModal";
 import { SectionH2 } from "~/components/Layout/Sections";
 import {
   BG_COLOR_M5,
@@ -12,12 +13,15 @@ import {
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
 import { cn } from "~/lib/clsx";
+import getMuscleTitleForUI from "~/utils/getMuscleTitleForUI";
 import { getRankColor } from "~/utils/getRankColor";
+import HeaderScrollNav from "./components/HeaderScrollNav";
 
 export default function MuscleEditor() {
   const { prioritized_muscle_list } = useTrainingProgramContext();
   return (
     <SectionH2 title="MUSCLE EDITOR">
+      <HeaderScrollNav />
       <div className={`space-y-1`}>
         {prioritized_muscle_list.map((each, index) => {
           return <Muscle muscle={each} rank={index + 1} />;
@@ -32,20 +36,44 @@ type MuscleProps = {
   rank: number;
 };
 function Muscle({ muscle, rank }: MuscleProps) {
+  const { training_program_params } = useTrainingProgramContext();
   const bgColor = getRankColor(muscle.volume.landmark);
+  const title = getMuscleTitleForUI(muscle.muscle);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const onCloseModal = () => setIsModalOpen(false);
+  const onOpenModal = () => setIsModalOpen(true);
+
   return (
     <div className={`flex ${BG_COLOR_M6} rounded`}>
-      <div className={`flex w-32 flex-col`}>
-        <div className={`${bgColor.bg} flex space-x-1 p-1 text-sm text-white`}>
-          <div className={`w-6`}>{rank}</div>
-          <div>{muscle.muscle}</div>
+      <div className={`flex w-28 flex-col`}>
+        <div
+          onClick={onOpenModal}
+          className={`${bgColor.bg} flex cursor-pointer p-1 text-sm text-white`}
+        >
+          <div className={`flex w-3 items-center justify-center text-xxs`}>
+            {rank}
+          </div>
+          <div className={`flex w-full items-center indent-1`}>{title}</div>
         </div>
       </div>
+      {isModalOpen ? (
+        <EditMuscleModal onClose={onCloseModal} isOpen={isModalOpen}>
+          <EditMuscleModal.Card
+            rank={rank}
+            muscleGroup={muscle}
+            microcycles={training_program_params.microcycles}
+            onClose={onCloseModal}
+          />
+        </EditMuscleModal>
+      ) : null}
       <Exercises muscle={muscle} />
     </div>
   );
 }
 
+// TODO: create a blank session card to add a day to list and select exercises to fill it.
+//       However if the selected mesocycle is less than the last mesocycle, this button
+//       should automatically add the last mesocycles session.
 type ExercisesProps = {
   muscle: MusclePriorityType;
 };
@@ -77,12 +105,13 @@ function Exercises({ muscle }: ExercisesProps) {
           );
         })}
       </div>
-      <div className={`flex max-w-[1000px] space-x-1 overflow-x-auto`}>
+
+      <div className={`flex max-w-[660px] space-x-1 overflow-x-auto`}>
         {muscle.exercises.map((each, index) => {
           return (
             <div className={`flex flex-col `}>
               <ListHeader />
-              <ul className={`space-y-1 px-2 py-1 ${BG_COLOR_M7}`}>
+              <ul className={`space-y-1 p-1 ${BG_COLOR_M7}`}>
                 <SessionItem
                   exercises={each}
                   setProgressionMatrix={muscle.volume.setProgressionMatrix}
@@ -94,21 +123,7 @@ function Exercises({ muscle }: ExercisesProps) {
           );
         })}
       </div>
-      {/* <div className={`flex flex-col `}>
-        <ListHeader />
-        <ul className={`space-y-1 px-2 py-1 ${BG_COLOR_M7}`}>
-          {muscle.exercises.map((each, index) => {
-            return (
-              <SessionItem
-                exercises={each}
-                setProgressionMatrix={muscle.volume.setProgressionMatrix}
-                dayIndex={index + 1}
-                selectedMesocycleIndex={selectedMesocycleIndex}
-              />
-            );
-          })}
-        </ul>
-      </div> */}
+
       <Totals />
     </div>
   );
@@ -126,9 +141,8 @@ function SessionItem({
   selectedMesocycleIndex,
 }: SessionItemProps) {
   const matrix = setProgressionMatrix[selectedMesocycleIndex];
-  console.log(matrix, exercises, "What We LOOKING AT HERE??");
   return (
-    <div className={`flex rounded ${BG_COLOR_M6}`}>
+    <div className={`flex flex-col rounded ${BG_COLOR_M6}`}>
       <div className={`w-10 p-0.5 text-xs text-white `}>Day {dayIndex}</div>
       <div className={`flex flex-col space-y-1 p-1`}>
         {exercises.map((each, index) => {
@@ -156,7 +170,7 @@ function ListHeader() {
       className={`flex p-0.5 text-xs text-slate-300 ${BG_COLOR_M7} border-b ${BORDER_COLOR_M6}`}
     >
       <div className={`w-10`}>Days</div>
-      <div className={`flex w-40 justify-between`}>
+      <div className={`flex w-32 justify-between`}>
         <div>Exercise</div>
         <div>Weeks</div>
       </div>
@@ -173,6 +187,10 @@ function ListHeader() {
   );
 }
 
+// TODO: Create a button for week 1 of each item to add or subtract sets, of which will
+//       increment preceding sets.
+//       To coincide with this button should be another button that will allow the user
+//       to increment sets over a mesocycle given an algorithm to do so.
 type ExerciseItemProps = {
   exercise: ExerciseType;
   index: number;
@@ -187,14 +205,10 @@ function ExerciseItem({
   setProgressionMatrix,
   selectedMesocycleIndex,
 }: ExerciseItemProps) {
-  const { training_program_params } = useTrainingProgramContext();
-  const { microcycles } = training_program_params;
-  const microcyclesArray = Array.from(Array(microcycles), (e, i) => i);
-
   return (
     <li className={`flex p-0.5 text-xxs text-white ${BG_COLOR_M5}`}>
       <div className={`flex w-3 items-center justify-center`}>{index}</div>
-      <div className={`flex w-36 items-center text-ellipsis indent-1`}>
+      <div className={` flex w-32 items-center truncate indent-1`}>
         {exercise.exercise}
       </div>
       <div className={`flex`}>
@@ -204,7 +218,7 @@ function ExerciseItem({
           if (session) {
             sets = session[index - 1];
           }
-          return <div className={`w-4`}>{sets}</div>;
+          return <div className={`flex w-4 justify-center`}>{sets}</div>;
         })}
       </div>
     </li>
