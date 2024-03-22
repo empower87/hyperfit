@@ -24,19 +24,19 @@ export default function Modal({ isOpen, onClose, children }: ModalProps) {
         modalElement.close();
       }
     }
-  }, [isModalOpen]);
+  }, [isModalOpen, modalRef.current]);
 
   const handleOnClose = (e: React.MouseEvent<HTMLDialogElement>) => {
     if (e.target === e.currentTarget) {
-      onClose();
       setIsModalOpen(false);
+      onClose();
     }
   };
 
   return (
     <dialog
       ref={modalRef}
-      className={`flex w-auto justify-center bg-inherit p-0`}
+      className={`m-auto justify-center bg-inherit p-0`}
       onClick={(e) => handleOnClose(e)}
     >
       {children}

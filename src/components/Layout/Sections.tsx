@@ -13,7 +13,7 @@ type SectionProps = {
 };
 export function SectionXL({ title, children }: SectionProps) {
   return (
-    <div className="mb-6 p-2">
+    <div className="m-auto mb-6 w-5/6 p-2">
       <div className={BORDER_COLOR_M6 + " mb-4 border-b-2"}>
         <h1 className="p-1 indent-1 text-lg text-white">{title}</h1>
       </div>

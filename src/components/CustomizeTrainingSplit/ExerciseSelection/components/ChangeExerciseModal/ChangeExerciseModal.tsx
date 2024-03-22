@@ -183,7 +183,7 @@ function Filter() {
 
 function Layout({ children }: { children: ReactNode }) {
   return (
-    <div className={cn(`flex flex-col ${BG_COLOR_M7} w-3/5`)}>
+    <div className={cn(`flex flex-col ${BG_COLOR_M7} w-[900px]`)}>
       <div className={cn(`flex justify-between ${BG_COLOR_M6} mb-2`)}>
         <div className={cn(`indent-1 text-sm text-white`)}>Select Exercise</div>
         <button

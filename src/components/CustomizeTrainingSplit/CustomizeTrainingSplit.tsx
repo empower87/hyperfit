@@ -19,7 +19,7 @@ import { useProgramConfigContext } from "./ProgramConfig/hooks/useProgramConfig"
 
 export default function PageContent() {
   return (
-    <div className="m-auto flex h-full max-w-[1200px] flex-col overflow-y-scroll pt-5">
+    <div className="m-auto box-border min-h-full max-w-[1200px] px-3 py-10">
       <TrainingProgramProvider>
         <Section title="Customize Training Program">
           <div className="">

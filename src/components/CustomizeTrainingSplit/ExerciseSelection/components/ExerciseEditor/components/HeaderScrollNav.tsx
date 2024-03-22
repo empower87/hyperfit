@@ -11,7 +11,9 @@ export default function HeaderScrollNav() {
       {prioritized_muscle_list.map((each) => {
         const muscle = getMuscleTitleForUI(each.muscle);
         return (
-          <button className={`p-0.5 text-xxs text-white `}>{muscle}</button>
+          <a href={`#${each.id}`} className={`p-0.5 text-xxs text-white `}>
+            {muscle}
+          </a>
         );
       })}
     </div>
