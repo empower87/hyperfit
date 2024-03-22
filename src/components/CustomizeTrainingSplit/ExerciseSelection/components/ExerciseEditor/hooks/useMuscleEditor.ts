@@ -13,10 +13,14 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
     mesocycles - 1
   );
   const [totalVolume, setTotalVolume] = useState(0);
+  const [frequencyProgression, setFrequencyProgression] = useState<number[]>(
+    []
+  );
   const [mesocyclesArray, setMesocyclesArray] = useState<number[]>([]);
 
   useEffect(() => {
     setMuscleGroup({ ...muscle });
+    setFrequencyProgression([...muscle.volume.frequencyProgression]);
   }, [muscle]);
 
   useEffect(() => {
@@ -75,6 +79,7 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
     setProgressionMatrix: matrix,
     totalVolume,
     selectedMesocycleIndex,
+    frequencyProgression,
     onSelectMesocycle,
     mesocyclesArray,
     onOperationHandler,

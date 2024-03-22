@@ -1,4 +1,4 @@
-import { ReactNode, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { SectionH2 } from "~/components/Layout/Sections";
 import Modal from "~/components/Modals/Modal";
 import {
@@ -27,11 +27,17 @@ import {
 
 export default function MuscleEditor() {
   const { prioritized_muscle_list } = useTrainingProgramContext();
+  const [list, setList] = useState<MusclePriorityType[]>([]);
+
+  useEffect(() => {
+    setList([...prioritized_muscle_list]);
+  }, [prioritized_muscle_list]);
+
   return (
     <SectionH2 title="MUSCLE EDITOR">
       <HeaderScrollNav />
       <div className={`space-y-2`}>
-        {prioritized_muscle_list.map((each, index) => {
+        {list.map((each, index) => {
           return (
             <MuscleEditorProvider muscle={each}>
               <Muscle muscle={each} rank={index + 1} />
@@ -50,6 +56,7 @@ type MuscleProps = {
 function Muscle({ muscle, rank }: MuscleProps) {
   const {
     selectedMesocycleIndex,
+    frequencyProgression,
     onSelectMesocycle,
     totalVolume,
     mesocyclesArray,
@@ -89,9 +96,17 @@ function Muscle({ muscle, rank }: MuscleProps) {
 
       <BottomBar>
         <BottomBar.Section title="Frequency">
-          <div className={`flex justify-center space-x-1`}>
-            {muscle.volume.frequencyProgression.map((each) => {
-              return <div className={`text-xs text-white`}>{each}</div>;
+          <div className={`flex justify-center space-x-1 p-0.5`}>
+            {frequencyProgression.map((each, index) => {
+              return (
+                <div
+                  className={cn(`p-0.5 text-xxs text-white`, {
+                    ["border"]: selectedMesocycleIndex === index,
+                  })}
+                >
+                  {each}
+                </div>
+              );
             })}
           </div>
         </BottomBar.Section>
@@ -106,13 +121,25 @@ function Muscle({ muscle, rank }: MuscleProps) {
 // TODO: create a blank session card to add a day to list and select exercises to fill it.
 //       However if the selected mesocycle is less than the last mesocycle, this button
 //       should automatically add the last mesocycles session.
+
 type ExercisesProps = {
   muscle: MusclePriorityType;
 };
 function Exercises({ muscle }: ExercisesProps) {
+  const { selectedMesocycleIndex } = useMuscleEditorContext();
+
+  const totalExercisesByMeso =
+    muscle.volume.setProgressionMatrix[selectedMesocycleIndex][0]?.length;
+  const exercises = muscle.exercises;
+  const exercisesByMeso = exercises.slice(0, totalExercisesByMeso);
+
+  const totalSessions = exercisesByMeso.length;
+  const remaining = totalSessions < 5 ? 5 - totalSessions : 0;
+  const addButtonDivs = Array.from(Array(remaining), (e, i) => i);
+
   return (
     <div className={`flex space-x-1 overflow-x-auto`}>
-      {muscle.exercises.map((each, index) => {
+      {exercisesByMeso.map((each, index) => {
         return (
           <div className={`flex flex-col `}>
             <ListHeader />
@@ -122,7 +149,9 @@ function Exercises({ muscle }: ExercisesProps) {
           </div>
         );
       })}
-      <AddDayItem onClick={() => {}} />
+      {addButtonDivs.map(() => {
+        return <AddDayItem onClick={() => {}} />;
+      })}
     </div>
   );
 }
@@ -169,7 +198,7 @@ function ListHeader() {
       <div className={`flex`}>
         {microcyclesArray.map((each) => {
           return (
-            <div className={`flex w-4 items-center justify-center`}>
+            <div className={`flex w-3 items-center justify-center`}>
               {each + 1}
             </div>
           );
@@ -181,7 +210,9 @@ function ListHeader() {
 
 function AddDayItem({ onClick }: AddItemProps) {
   return (
-    <div className={`flex items-center justify-center p-2 ${BG_COLOR_M7}`}>
+    <div
+      className={` flex w-56 items-center justify-center p-2 ${BG_COLOR_M7}`}
+    >
       <Button operation="+" onClick={onClick} />
     </div>
   );
@@ -226,7 +257,7 @@ function ExerciseItem({ exercise, index, dayIndex }: ExerciseItemProps) {
       <div className={`flex w-3 items-center justify-center`}>{index}</div>
       <div
         onClick={onOpen}
-        className={` flex w-32 items-center truncate indent-1`}
+        className={`flex w-32 items-center truncate indent-1`}
       >
         {exercise.exercise}
       </div>
