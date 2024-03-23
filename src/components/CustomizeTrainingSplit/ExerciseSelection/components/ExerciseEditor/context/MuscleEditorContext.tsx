@@ -1,16 +1,22 @@
 import { ReactNode, createContext, useContext } from "react";
-import { MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
+import {
+  INITIAL_STATE,
+  MusclePriorityType,
+} from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import useMuscleEditor from "../hooks/useMuscleEditor";
 
 type MuscleEditorType = ReturnType<typeof useMuscleEditor>;
 
 const MuscleEditorContext = createContext<MuscleEditorType>({
+  muscleGroup: { ...INITIAL_STATE }.muscle_priority_list[0],
   setProgressionMatrix: [],
   totalVolume: 0,
   selectedMesocycleIndex: 0,
+  frequencyProgression: [],
   onSelectMesocycle: () => {},
   mesocyclesArray: [],
   onOperationHandler: () => {},
+  onAddTrainingDay: () => {},
 });
 
 const MuscleEditorProvider = ({

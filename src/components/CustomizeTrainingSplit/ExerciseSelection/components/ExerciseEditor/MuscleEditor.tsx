@@ -56,7 +56,7 @@ type MuscleProps = {
 function Muscle({ muscle, rank }: MuscleProps) {
   const {
     selectedMesocycleIndex,
-    frequencyProgression,
+    muscleGroup,
     onSelectMesocycle,
     totalVolume,
     mesocyclesArray,
@@ -97,7 +97,7 @@ function Muscle({ muscle, rank }: MuscleProps) {
       <BottomBar>
         <BottomBar.Section title="Frequency">
           <div className={`flex justify-center space-x-1 p-0.5`}>
-            {frequencyProgression.map((each, index) => {
+            {muscleGroup.volume.frequencyProgression.map((each, index) => {
               return (
                 <div
                   className={cn(`p-0.5 text-xxs text-white`, {
@@ -126,31 +126,47 @@ type ExercisesProps = {
   muscle: MusclePriorityType;
 };
 function Exercises({ muscle }: ExercisesProps) {
-  const { selectedMesocycleIndex } = useMuscleEditorContext();
+  const { selectedMesocycleIndex, muscleGroup, onAddTrainingDay } =
+    useMuscleEditorContext();
 
-  const totalExercisesByMeso =
-    muscle.volume.setProgressionMatrix[selectedMesocycleIndex][0]?.length;
-  const exercises = muscle.exercises;
-  const exercisesByMeso = exercises.slice(0, totalExercisesByMeso);
+  const [exercisesByMeso, setExercisesByMeso] = useState<ExerciseType[][]>([]);
+
+  useEffect(() => {
+    const totalExercisesByMeso =
+      muscleGroup.volume.setProgressionMatrix[selectedMesocycleIndex][0]
+        ?.length;
+    const exercises = muscle.exercises;
+    const exercisesByMeso = exercises.slice(0, totalExercisesByMeso);
+    setExercisesByMeso(exercisesByMeso);
+  }, [selectedMesocycleIndex, muscleGroup]);
 
   const totalSessions = exercisesByMeso.length;
   const remaining = totalSessions < 5 ? 5 - totalSessions : 0;
   const addButtonDivs = Array.from(Array(remaining), (e, i) => i);
 
+  const exerciseIndices = Array.from(
+    Array(exercisesByMeso.flat().length),
+    (e, i) => i + 1
+  );
   return (
     <div className={`flex space-x-1 overflow-x-auto`}>
       {exercisesByMeso.map((each, index) => {
+        const indices = exerciseIndices.splice(0, each.length);
         return (
           <div className={`flex flex-col `}>
             <ListHeader />
             <ul className={`space-y-1 p-1 ${BG_COLOR_M7}`}>
-              <SessionItem exercises={each} dayIndex={index + 1} />
+              <SessionItem
+                exercises={each}
+                indices={indices}
+                dayIndex={index + 1}
+              />
             </ul>
           </div>
         );
       })}
       {addButtonDivs.map(() => {
-        return <AddDayItem onClick={() => {}} />;
+        return <AddDayItem onClick={() => onAddTrainingDay()} />;
       })}
     </div>
   );
@@ -158,9 +174,10 @@ function Exercises({ muscle }: ExercisesProps) {
 
 type SessionItemProps = {
   exercises: ExerciseType[];
+  indices: number[];
   dayIndex: number;
 };
-function SessionItem({ exercises, dayIndex }: SessionItemProps) {
+function SessionItem({ exercises, indices, dayIndex }: SessionItemProps) {
   return (
     <div className={`flex flex-col rounded ${BG_COLOR_M6}`}>
       <div className={`w-10 p-0.5 text-xs text-white `}>Day {dayIndex}</div>
@@ -170,6 +187,7 @@ function SessionItem({ exercises, dayIndex }: SessionItemProps) {
             <ExerciseItem
               exercise={each}
               index={index + 1}
+              exerciseIndex={indices[index]}
               dayIndex={dayIndex}
             />
           );
@@ -235,26 +253,28 @@ function AddExerciseItem({ onClick }: AddItemProps) {
 type ExerciseItemProps = {
   exercise: ExerciseType;
   index: number;
+  exerciseIndex: number;
   dayIndex: number;
 };
-function ExerciseItem({ exercise, index, dayIndex }: ExerciseItemProps) {
-  const { prioritized_muscle_list } = useTrainingProgramContext();
-  const { selectedMesocycleIndex, setProgressionMatrix, onOperationHandler } =
+function ExerciseItem({
+  exercise,
+  index,
+  exerciseIndex,
+  dayIndex,
+}: ExerciseItemProps) {
+  const { selectedMesocycleIndex, muscleGroup, onOperationHandler } =
     useMuscleEditorContext();
-
   const [isOpen, setIsOpen] = useState(false);
-
   const onOpen = () => setIsOpen(true);
   const onClose = () => setIsOpen(false);
 
-  const muscleIndex = prioritized_muscle_list.findIndex(
-    (each) => each.muscle === exercise.muscle
-  );
   return (
     <li
       className={`flex cursor-pointer p-0.5 text-xxs text-white ${BG_COLOR_M5}`}
     >
-      <div className={`flex w-3 items-center justify-center`}>{index}</div>
+      <div className={`flex w-3 items-center justify-center`}>
+        {exerciseIndex}
+      </div>
       <div
         onClick={onOpen}
         className={`flex w-32 items-center truncate indent-1`}
@@ -263,41 +283,40 @@ function ExerciseItem({ exercise, index, dayIndex }: ExerciseItemProps) {
       </div>
 
       <Modal isOpen={isOpen} onClose={onClose}>
-        <ChangeExerciseProvider
-          muscle={prioritized_muscle_list[muscleIndex]}
-          exerciseId={exercise.id}
-        >
+        <ChangeExerciseProvider muscle={muscleGroup} exerciseId={exercise.id}>
           <SelectExercise />
         </ChangeExerciseProvider>
       </Modal>
 
       <div className={`flex`}>
-        {setProgressionMatrix[selectedMesocycleIndex]?.map((each, i) => {
-          const session = each[dayIndex - 1];
-          let sets = 0;
-          if (session) {
-            sets = session[index - 1];
+        {muscleGroup.volume.setProgressionMatrix[selectedMesocycleIndex]?.map(
+          (each, i) => {
+            const session = each[dayIndex - 1];
+            let sets = 0;
+            if (session) {
+              sets = session[index - 1];
+            }
+            if (i === 0)
+              return (
+                <WeekOneSets>
+                  <WeekOneSets.Button
+                    operation="-"
+                    onClick={() => onOperationHandler("-", dayIndex, index)}
+                  />
+                  <div
+                    className={`flex w-3 items-center justify-center text-xxs text-white`}
+                  >
+                    {sets}
+                  </div>
+                  <WeekOneSets.Button
+                    operation="+"
+                    onClick={() => onOperationHandler("+", dayIndex, index)}
+                  />
+                </WeekOneSets>
+              );
+            return <div className={`flex w-3 justify-center`}>{sets}</div>;
           }
-          if (i === 0)
-            return (
-              <WeekOneSets>
-                <WeekOneSets.Button
-                  operation="-"
-                  onClick={() => onOperationHandler("-", dayIndex, index)}
-                />
-                <div
-                  className={`flex w-3 items-center justify-center text-xxs text-white`}
-                >
-                  {sets}
-                </div>
-                <WeekOneSets.Button
-                  operation="+"
-                  onClick={() => onOperationHandler("+", dayIndex, index)}
-                />
-              </WeekOneSets>
-            );
-          return <div className={`flex w-3 justify-center`}>{sets}</div>;
-        })}
+        )}
       </div>
     </li>
   );

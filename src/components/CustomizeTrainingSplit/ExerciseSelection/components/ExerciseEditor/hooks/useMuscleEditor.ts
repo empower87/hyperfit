@@ -19,7 +19,9 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
   const [mesocyclesArray, setMesocyclesArray] = useState<number[]>([]);
 
   useEffect(() => {
-    setMuscleGroup({ ...muscle });
+    const clonedMuscle = structuredClone(muscle);
+    setMuscleGroup(clonedMuscle);
+
     setFrequencyProgression([...muscle.volume.frequencyProgression]);
   }, [muscle]);
 
@@ -28,14 +30,15 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
     setMesocyclesArray(mesocyclesArray);
   }, [mesocycles]);
 
-  useEffect(() => {
-    const getMatrix = structuredClone([
-      ...muscleGroup.volume.setProgressionMatrix,
-    ]);
-    setMatrix(getMatrix);
-  }, [muscleGroup]);
+  // useEffect(() => {
+  //   const getMatrix = structuredClone([
+  //     ...muscleGroup.volume.setProgressionMatrix,
+  //   ]);
+  //   setMatrix(getMatrix);
+  // }, [muscleGroup]);
 
   useEffect(() => {
+    const matrix = muscleGroup.volume.setProgressionMatrix;
     const currentMesocycleMatrix = matrix[selectedMesocycleIndex];
     if (currentMesocycleMatrix) {
       const microcycleMatrix = currentMesocycleMatrix[microcycles - 1];
@@ -46,15 +49,19 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
         setTotalVolume(totalVolume);
       }
     }
-  }, [selectedMesocycleIndex, microcycles, matrix]);
+  }, [selectedMesocycleIndex, microcycles, muscleGroup]);
 
   const onSelectMesocycle = useCallback((index: number) => {
     setSelectedMesocycleIndex(index);
   }, []);
 
+  // TODO: Adding a set to a current mesocycle exercise that also appears in next mesocycle will have to add
+  //       the sets to the preceding mesocycle as well.
   const onOperationHandler = useCallback(
     (operation: "+" | "-", dayIndex: number, index: number) => {
-      const copyMatrix = structuredClone(matrix);
+      const copyMatrix = structuredClone(
+        muscleGroup.volume.setProgressionMatrix
+      );
       const updateAll = copyMatrix[selectedMesocycleIndex].map((e, i) => {
         let session = e[dayIndex - 1];
 
@@ -70,12 +77,50 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
         return e;
       });
       copyMatrix[selectedMesocycleIndex] = updateAll;
-      setMatrix(copyMatrix);
+      setMuscleGroup((prev) => ({
+        ...prev,
+        volume: { ...prev.volume, setProgressionMatrix: copyMatrix },
+      }));
+      // setMatrix(copyMatrix);
     },
-    [matrix]
+    [muscleGroup]
   );
 
+  const onAddTrainingDay = useCallback(() => {
+    const copyMatrix = structuredClone(muscleGroup.volume.setProgressionMatrix);
+    const frequencyProgression = muscleGroup.volume.frequencyProgression;
+    const currentMatrix = copyMatrix[selectedMesocycleIndex];
+
+    const canAddDay =
+      frequencyProgression[selectedMesocycleIndex + 1] &&
+      frequencyProgression[selectedMesocycleIndex] <
+        frequencyProgression[selectedMesocycleIndex + 1]
+        ? true
+        : false;
+    const nextMatrix = copyMatrix[selectedMesocycleIndex + 1];
+
+    if (canAddDay) {
+      for (let i = 0; i < nextMatrix.length; i++) {
+        const daysSets = nextMatrix[i][selectedMesocycleIndex];
+        copyMatrix[selectedMesocycleIndex][i][selectedMesocycleIndex] =
+          daysSets;
+      }
+      frequencyProgression[selectedMesocycleIndex]++;
+    } else {
+    }
+
+    setMuscleGroup((prev) => ({
+      ...prev,
+      volume: {
+        ...prev.volume,
+        frequencyProgression: frequencyProgression,
+        setProgressionMatrix: copyMatrix,
+      },
+    }));
+  }, [muscleGroup, mesocycles, selectedMesocycleIndex]);
+
   return {
+    muscleGroup,
     setProgressionMatrix: matrix,
     totalVolume,
     selectedMesocycleIndex,
@@ -83,5 +128,6 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
     onSelectMesocycle,
     mesocyclesArray,
     onOperationHandler,
+    onAddTrainingDay,
   };
 }
