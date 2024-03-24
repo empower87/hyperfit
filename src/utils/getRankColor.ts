@@ -5,14 +5,17 @@ export const getRankColor = (volume_indicator: VolumeLandmarkType) => {
     case "MRV":
       return {
         bg: "bg-red-500",
+        text: "text-red-500",
       };
     case "MEV":
       return {
         bg: "bg-orange-500",
+        text: "text-orange-500",
       };
     default:
       return {
         bg: "bg-green-500",
+        text: "text-green-500",
       };
   }
 };

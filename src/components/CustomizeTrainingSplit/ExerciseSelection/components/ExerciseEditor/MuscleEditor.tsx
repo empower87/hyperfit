@@ -1,10 +1,12 @@
 import { ReactNode, useEffect, useState } from "react";
+import { DotsIcon, PlusIcon } from "~/assets/icons/_icons";
 import { SectionH2 } from "~/components/Layout/Sections";
 import Modal from "~/components/Modals/Modal";
 import {
   BG_COLOR_M5,
   BG_COLOR_M6,
   BG_COLOR_M7,
+  BG_COLOR_M8,
   BORDER_COLOR_M4,
   BORDER_COLOR_M6,
 } from "~/constants/themes";
@@ -65,21 +67,22 @@ function Muscle({ muscle, rank }: MuscleProps) {
   const title = getMuscleTitleForUI(muscle.muscle);
 
   return (
-    <div id={muscle.id} className={`flex flex-col ${BG_COLOR_M6} rounded`}>
-      <div className={`flex`}>
-        <div className={`${bgColor.bg} flex w-1/3 p-1 text-sm text-white`}>
+    <div id={muscle.id} className={`flex flex-col ${BG_COLOR_M7} rounded`}>
+      <div className={`flex rounded-t ${bgColor.bg} border-b`}>
+        <div className={`flex w-1/3 p-1 text-sm text-white`}>
           <div className={`flex w-3 items-center justify-center text-xxs`}>
             {rank}
           </div>
           <div className={`flex w-full items-center indent-1`}>{title}</div>
         </div>
 
-        <div className={`flex space-x-1 p-1 text-sm text-white`}>
+        <div className={`flex space-x-1 pt-1 text-sm text-white`}>
           {mesocyclesArray?.map((each, index) => {
             return (
               <div
-                className={cn(`cursor-pointer rounded p-0.5 text-xs`, {
-                  [`${BG_COLOR_M5}`]: selectedMesocycleIndex === index,
+                className={cn(`cursor-pointer px-2 py-0.5 text-xs`, {
+                  [`bg-white ${bgColor.text} font-bold`]:
+                    selectedMesocycleIndex === index,
                 })}
                 onClick={() => onSelectMesocycle(index)}
               >
@@ -153,9 +156,21 @@ function Exercises({ muscle }: ExercisesProps) {
       {exercisesByMeso.map((each, index) => {
         const indices = exerciseIndices.splice(0, each.length);
         return (
-          <div className={`flex flex-col `}>
-            <ListHeader />
-            <ul className={`space-y-1 p-1 ${BG_COLOR_M7}`}>
+          <div
+            key={`${each[0]?.id}_SessionItem_${index}`}
+            className={`flex flex-col rounded-md ${BG_COLOR_M6}`}
+          >
+            {/* <ListHeader /> */}
+            <div className={`flex justify-between p-1`}>
+              <div className={`indent-1 text-xs font-bold text-white`}>
+                Day {index + 1}
+              </div>
+              <button className={`w-3`}>
+                <DotsIcon fill="#1E293B" />
+              </button>
+            </div>
+
+            <ul className={`space-y-1 p-1 `}>
               <SessionItem
                 exercises={each}
                 indices={indices}
@@ -180,11 +195,18 @@ type SessionItemProps = {
 function SessionItem({ exercises, indices, dayIndex }: SessionItemProps) {
   return (
     <div className={`flex flex-col rounded ${BG_COLOR_M6}`}>
-      <div className={`w-10 p-0.5 text-xs text-white `}>Day {dayIndex}</div>
+      {/* <div className={`w-10 p-0.5 text-xs text-white `}>Day {dayIndex}</div> */}
+      <div
+        className={`flex justify-between text-xxs text-white ${BG_COLOR_M7}`}
+      >
+        <div className={`pl-2`}>Exercise</div>
+        <div className={`pr-4`}>Weekly Sets</div>
+      </div>
       <div className={`flex flex-col space-y-1 p-1`}>
         {exercises.map((each, index) => {
           return (
             <ExerciseItem
+              key={`${each.id}_exerciseItem_${index}`}
               exercise={each}
               index={index + 1}
               exerciseIndex={indices[index]}
@@ -204,7 +226,7 @@ function ListHeader() {
   const microcyclesArray = Array.from(Array(microcycles), (e, i) => i);
   return (
     <div
-      className={`flex p-0.5 text-xs text-slate-300 ${BG_COLOR_M7} border-b ${BORDER_COLOR_M6}`}
+      className={`flex border-b p-0.5 text-xs  text-slate-300 ${BORDER_COLOR_M6}`}
     >
       <div className={`w-10`}>Days</div>
 
@@ -216,7 +238,10 @@ function ListHeader() {
       <div className={`flex`}>
         {microcyclesArray.map((each) => {
           return (
-            <div className={`flex w-3 items-center justify-center`}>
+            <div
+              key={`${each}_ListHeader`}
+              className={`flex w-3 items-center justify-center`}
+            >
               {each + 1}
             </div>
           );
@@ -229,9 +254,12 @@ function ListHeader() {
 function AddDayItem({ onClick }: AddItemProps) {
   return (
     <div
-      className={` flex w-56 items-center justify-center p-2 ${BG_COLOR_M7}`}
+      onClick={onClick}
+      className={` flex w-56 cursor-pointer items-center justify-center rounded-md p-2 ${BG_COLOR_M8} opacity-[40%]`}
     >
-      <Button operation="+" onClick={onClick} />
+      <div>
+        <PlusIcon fill="white" />
+      </div>
     </div>
   );
 }
@@ -241,7 +269,7 @@ type AddItemProps = {
 function AddExerciseItem({ onClick }: AddItemProps) {
   return (
     <li
-      className={`flex cursor-pointer p-0.5 text-xxs ${BG_COLOR_M6} border indent-1 text-slate-300`}
+      className={`flex cursor-pointer p-0.5 text-xxs ${BG_COLOR_M6} ${BORDER_COLOR_M4} border indent-1 text-slate-300`}
     >
       <div className={`ml-0.5 flex items-center justify-center`}>
         <Button operation="+" onClick={onClick} />
@@ -269,9 +297,7 @@ function ExerciseItem({
   const onClose = () => setIsOpen(false);
 
   return (
-    <li
-      className={`flex cursor-pointer p-0.5 text-xxs text-white ${BG_COLOR_M5}`}
-    >
+    <li className={`flex cursor-pointer text-xxs text-white ${BG_COLOR_M5}`}>
       <div className={`flex w-3 items-center justify-center`}>
         {exerciseIndex}
       </div>
@@ -298,13 +324,13 @@ function ExerciseItem({
             }
             if (i === 0)
               return (
-                <WeekOneSets>
+                <WeekOneSets key={`${exercise.id}_WeekOneSets_${each}_${i}`}>
                   <WeekOneSets.Button
                     operation="-"
                     onClick={() => onOperationHandler("-", dayIndex, index)}
                   />
                   <div
-                    className={`flex w-3 items-center justify-center text-xxs text-white`}
+                    className={`flex w-3 items-center justify-center px-0.5 text-xxs text-white`}
                   >
                     {sets}
                   </div>
@@ -314,7 +340,14 @@ function ExerciseItem({
                   />
                 </WeekOneSets>
               );
-            return <div className={`flex w-3 justify-center`}>{sets}</div>;
+            return (
+              <div
+                key={`${exercise.id}_WeekOneSets_${sets}_${i}`}
+                className={`flex w-3 justify-center border-x p-0.5 ${BORDER_COLOR_M6}`}
+              >
+                {sets}
+              </div>
+            );
           }
         )}
       </div>
@@ -338,5 +371,11 @@ function Button({ operation, onClick }: ButtonProps) {
 }
 WeekOneSets.Button = Button;
 function WeekOneSets({ children }: { children: ReactNode }) {
-  return <div className={`mr-1 flex w-9 items-center`}>{children}</div>;
+  return (
+    <div
+      className={`flex w-10 items-center justify-center border-r px-1 ${BORDER_COLOR_M6}`}
+    >
+      {children}
+    </div>
+  );
 }
