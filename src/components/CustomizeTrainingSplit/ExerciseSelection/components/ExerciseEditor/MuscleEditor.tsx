@@ -1,4 +1,5 @@
 import { ReactNode, useEffect, useState } from "react";
+import { useInView } from "react-intersection-observer";
 import { DotsIcon, PlusIcon } from "~/assets/icons/_icons";
 import { SectionH2 } from "~/components/Layout/Sections";
 import Modal from "~/components/Modals/Modal";
@@ -10,12 +11,14 @@ import {
   BORDER_COLOR_M4,
   BORDER_COLOR_M6,
 } from "~/constants/themes";
+import { MuscleType } from "~/constants/workoutSplits";
 import {
   ExerciseType,
   MusclePriorityType,
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
 import { cn } from "~/lib/clsx";
+import { Exercise } from "~/utils/getExercises";
 import getMuscleTitleForUI from "~/utils/getMuscleTitleForUI";
 import { getRankColor } from "~/utils/getRankColor";
 import { ChangeExerciseProvider } from "../ChangeExerciseModal/ChangeExerciseContext";
@@ -35,10 +38,22 @@ export default function MuscleEditor() {
     setList([...prioritized_muscle_list]);
   }, [prioritized_muscle_list]);
 
+  const { ref, inView } = useInView({
+    rootMargin: "0% 0% -80% 0%",
+  });
+  const [sticky, setSticky] = useState(false);
+
+  useEffect(() => {
+    if (inView) {
+      setSticky(true);
+    } else {
+      setSticky(false);
+    }
+  }, [inView]);
   return (
     <SectionH2 title="MUSCLE EDITOR">
-      <HeaderScrollNav />
-      <div className={`space-y-2`}>
+      <HeaderScrollNav isSticky={sticky} />
+      <div ref={ref} className={`space-y-2 scroll-smooth`}>
         {list.map((each, index) => {
           return (
             <MuscleEditorProvider muscle={each}>
@@ -67,7 +82,10 @@ function Muscle({ muscle, rank }: MuscleProps) {
   const title = getMuscleTitleForUI(muscle.muscle);
 
   return (
-    <div id={muscle.id} className={`flex flex-col ${BG_COLOR_M7} rounded`}>
+    <div
+      id={muscle.id}
+      className={`flex flex-col ${BG_COLOR_M7} scroll-smooth rounded`}
+    >
       <div className={`flex rounded-t ${bgColor.bg} border-b`}>
         <div className={`flex w-1/3 p-1 text-sm text-white`}>
           <div className={`flex w-3 items-center justify-center text-xxs`}>
@@ -94,7 +112,7 @@ function Muscle({ muscle, rank }: MuscleProps) {
       </div>
 
       <div className={`p-2`}>
-        <Exercises muscle={muscle} />
+        <Exercises />
       </div>
 
       <BottomBar>
@@ -113,6 +131,7 @@ function Muscle({ muscle, rank }: MuscleProps) {
             })}
           </div>
         </BottomBar.Section>
+
         <BottomBar.Section title="Total Volume">
           <div>{totalVolume}</div>
         </BottomBar.Section>
@@ -125,10 +144,7 @@ function Muscle({ muscle, rank }: MuscleProps) {
 //       However if the selected mesocycle is less than the last mesocycle, this button
 //       should automatically add the last mesocycles session.
 
-type ExercisesProps = {
-  muscle: MusclePriorityType;
-};
-function Exercises({ muscle }: ExercisesProps) {
+function Exercises() {
   const { selectedMesocycleIndex, muscleGroup, onAddTrainingDay } =
     useMuscleEditorContext();
 
@@ -138,7 +154,7 @@ function Exercises({ muscle }: ExercisesProps) {
     const totalExercisesByMeso =
       muscleGroup.volume.setProgressionMatrix[selectedMesocycleIndex][0]
         ?.length;
-    const exercises = muscle.exercises;
+    const exercises = muscleGroup.exercises;
     const exercisesByMeso = exercises.slice(0, totalExercisesByMeso);
     setExercisesByMeso(exercisesByMeso);
   }, [selectedMesocycleIndex, muscleGroup]);
@@ -193,15 +209,52 @@ type SessionItemProps = {
   dayIndex: number;
 };
 function SessionItem({ exercises, indices, dayIndex }: SessionItemProps) {
+  const { muscleGroup, onAddExercise } = useMuscleEditorContext();
+  const [currentExercise, setCurrentExercise] = useState<ExerciseType>(
+    exercises[0]
+  );
+
+  const [isOpen, setIsOpen] = useState(false);
+  const onOpen = () => setIsOpen(true);
+  const onClose = () => setIsOpen(false);
+
+  const onSelectHandler = (newExercise: Exercise) => {
+    const new_exercise: ExerciseType = {
+      id: newExercise.id,
+      exercise: newExercise.name,
+      muscle: newExercise.group as MuscleType,
+      session: dayIndex,
+      rank: muscleGroup.volume.landmark,
+      sets: 2,
+      reps: 10,
+      weight: 100,
+      rir: 3,
+      weightIncrement: 2,
+      trainingModality: "straight",
+      mesocycle_progression: [],
+      supersetWith: null,
+    };
+    onAddExercise(new_exercise, dayIndex - 1);
+  };
+
   return (
     <div className={`flex flex-col rounded ${BG_COLOR_M6}`}>
-      {/* <div className={`w-10 p-0.5 text-xs text-white `}>Day {dayIndex}</div> */}
       <div
         className={`flex justify-between text-xxs text-white ${BG_COLOR_M7}`}
       >
         <div className={`pl-2`}>Exercise</div>
         <div className={`pr-4`}>Weekly Sets</div>
       </div>
+
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ChangeExerciseProvider
+          muscle={muscleGroup}
+          exerciseId={currentExercise.id}
+        >
+          <SelectExercise onSelect={onSelectHandler} />
+        </ChangeExerciseProvider>
+      </Modal>
+
       <div className={`flex flex-col space-y-1 p-1`}>
         {exercises.map((each, index) => {
           return (
@@ -211,41 +264,11 @@ function SessionItem({ exercises, indices, dayIndex }: SessionItemProps) {
               index={index + 1}
               exerciseIndex={indices[index]}
               dayIndex={dayIndex}
+              onOpen={onOpen}
             />
           );
         })}
-        <AddExerciseItem onClick={() => {}} />
-      </div>
-    </div>
-  );
-}
-
-function ListHeader() {
-  const { training_program_params } = useTrainingProgramContext();
-  const { microcycles } = training_program_params;
-  const microcyclesArray = Array.from(Array(microcycles), (e, i) => i);
-  return (
-    <div
-      className={`flex border-b p-0.5 text-xs  text-slate-300 ${BORDER_COLOR_M6}`}
-    >
-      <div className={`w-10`}>Days</div>
-
-      <div className={`flex w-32 justify-between`}>
-        <div>Exercise</div>
-        <div>Weeks</div>
-      </div>
-
-      <div className={`flex`}>
-        {microcyclesArray.map((each) => {
-          return (
-            <div
-              key={`${each}_ListHeader`}
-              className={`flex w-3 items-center justify-center`}
-            >
-              {each + 1}
-            </div>
-          );
-        })}
+        <AddExerciseItem onClick={() => onOpen()} />
       </div>
     </div>
   );
@@ -283,18 +306,17 @@ type ExerciseItemProps = {
   index: number;
   exerciseIndex: number;
   dayIndex: number;
+  onOpen: () => void;
 };
 function ExerciseItem({
   exercise,
   index,
   exerciseIndex,
   dayIndex,
+  onOpen,
 }: ExerciseItemProps) {
   const { selectedMesocycleIndex, muscleGroup, onOperationHandler } =
     useMuscleEditorContext();
-  const [isOpen, setIsOpen] = useState(false);
-  const onOpen = () => setIsOpen(true);
-  const onClose = () => setIsOpen(false);
 
   return (
     <li className={`flex cursor-pointer text-xxs text-white ${BG_COLOR_M5}`}>
@@ -307,12 +329,6 @@ function ExerciseItem({
       >
         {exercise.exercise}
       </div>
-
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <ChangeExerciseProvider muscle={muscleGroup} exerciseId={exercise.id}>
-          <SelectExercise />
-        </ChangeExerciseProvider>
-      </Modal>
 
       <div className={`flex`}>
         {muscleGroup.volume.setProgressionMatrix[selectedMesocycleIndex]?.map(

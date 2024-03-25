@@ -360,10 +360,19 @@ SelectExercise.Header = Header;
 SelectExercise.Search = Search;
 SelectExercise.Filter = Filter;
 
-function SelectExercise() {
-  const { exercises, allExercises, onSaveExerciseHandler } =
+type SelectExerciseProps = {
+  onSelect: (newExercise: Exercise) => void;
+};
+export default function SelectExercise({ onSelect }: SelectExerciseProps) {
+  const { exercises, allExercises, selectedExerciseId, onSaveExerciseHandler } =
     useChangeExerciseContext();
 
+  const onSelectHandler = () => {
+    const exercise = onSaveExerciseHandler();
+    if (!exercise) return;
+    console.log(exercise, "CHECK IT OUT YO??");
+    onSelect(exercise);
+  };
   return (
     <SelectExercise.Layout>
       <SelectExercise.Header>
@@ -394,16 +403,13 @@ function SelectExercise() {
       <div className={`flex items-center justify-end p-2`}>
         <button
           onClick={() => {
-            console.log("CLICKED????");
-            onSaveExerciseHandler();
+            onSelectHandler();
           }}
           className={cn(`bg-rose-400 px-2 text-xs text-white`)}
         >
-          Save
+          Select
         </button>
       </div>
     </SelectExercise.Layout>
   );
 }
-
-export default SelectExercise;

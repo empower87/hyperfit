@@ -1,6 +1,58 @@
 import { useCallback, useEffect, useState } from "react";
-import { MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
+import {
+  ExerciseType,
+  MusclePriorityType,
+} from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
+
+type AddSubtractSetsType = {
+  type: "ADD_SUBTRACT_SETS";
+  payload: {
+    operation: "+" | "-";
+    dayIndex: number;
+    index: number;
+  };
+};
+type AddTrainingDayType = {
+  type: "ADD_TRAINING_DAY";
+  payload: {};
+};
+type RemoveTrainingDayType = {
+  type: "REMOVE_TRAINING_DAY";
+  payload: {};
+};
+type AddExerciseType = {
+  type: "ADD_EXERCISE";
+  payload: {};
+};
+type RemoveExerciseType = {
+  type: "REMOVE_EXERCISE";
+  payload: {};
+};
+type Action =
+  | AddSubtractSetsType
+  | AddTrainingDayType
+  | RemoveTrainingDayType
+  | AddExerciseType
+  | RemoveExerciseType;
+
+function muscleEditorReducer(state: MusclePriorityType, action: Action) {
+  switch (action.type) {
+    case "ADD_TRAINING_DAY":
+      return { ...state };
+    case "REMOVE_TRAINING_DAY":
+      return { ...state };
+    case "ADD_EXERCISE":
+      return { ...state };
+    case "REMOVE_EXERCISE":
+      return { ...state };
+
+    case "ADD_SUBTRACT_SETS":
+
+    default:
+      return state;
+  }
+}
 
 export default function useMuscleEditor(muscle: MusclePriorityType) {
   const { training_program_params } = useTrainingProgramContext();
@@ -21,21 +73,12 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
   useEffect(() => {
     const clonedMuscle = structuredClone(muscle);
     setMuscleGroup(clonedMuscle);
-
-    setFrequencyProgression([...muscle.volume.frequencyProgression]);
   }, [muscle]);
 
   useEffect(() => {
     const mesocyclesArray = Array.from(Array(mesocycles), (e, i) => i);
     setMesocyclesArray(mesocyclesArray);
   }, [mesocycles]);
-
-  // useEffect(() => {
-  //   const getMatrix = structuredClone([
-  //     ...muscleGroup.volume.setProgressionMatrix,
-  //   ]);
-  //   setMatrix(getMatrix);
-  // }, [muscleGroup]);
 
   useEffect(() => {
     const matrix = muscleGroup.volume.setProgressionMatrix;
@@ -54,6 +97,17 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
   const onSelectMesocycle = useCallback((index: number) => {
     setSelectedMesocycleIndex(index);
   }, []);
+
+  const onAddExercise = useCallback(
+    (newExercise: ExerciseType, dayIndex: number) => {
+      const exercises = muscleGroup.exercises;
+
+      exercises[dayIndex]?.push(newExercise);
+      console.log(exercises, newExercise, "AM I GETTING TO THIS POINT YO???");
+      setMuscleGroup((prev) => ({ ...prev, exercises: exercises }));
+    },
+    [muscleGroup]
+  );
 
   // TODO: Adding a set to a current mesocycle exercise that also appears in next mesocycle will have to add
   //       the sets to the preceding mesocycle as well.
@@ -81,7 +135,6 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
         ...prev,
         volume: { ...prev.volume, setProgressionMatrix: copyMatrix },
       }));
-      // setMatrix(copyMatrix);
     },
     [muscleGroup]
   );
@@ -129,5 +182,6 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
     mesocyclesArray,
     onOperationHandler,
     onAddTrainingDay,
+    onAddExercise,
   };
 }

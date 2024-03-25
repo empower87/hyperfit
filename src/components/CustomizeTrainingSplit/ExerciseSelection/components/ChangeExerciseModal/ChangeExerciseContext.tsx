@@ -96,7 +96,7 @@ const ChangeExerciseContext = createContext<ChangeExerciseContextType>({
   filterTags: INITIAL_FILTER_TAGS,
   onFilterTagChange: () => {},
   onSortHandler: () => {},
-  onSaveExerciseHandler: () => {},
+  onSaveExerciseHandler: () => undefined,
   onSelectExerciseHandler: () => {},
 });
 
@@ -172,29 +172,37 @@ function useChangeExercise(muscle: MusclePriorityType, exerciseId: string) {
   );
 
   const onSaveExerciseHandler = useCallback(() => {
-    const new_exercises = [...muscle.exercises];
     const new_exercise = visibleExercises.find(
       (each) => each.id === selectedExerciseId
     );
     if (!new_exercise) return;
+    return new_exercise;
+  }, [visibleExercises, selectedExerciseId]);
 
-    for (let i = 0; i < new_exercises.length; i++) {
-      for (let j = 0; j < new_exercises[i].length; j++) {
-        if (new_exercises[i][j].id === exerciseId) {
-          new_exercises[i][j] = {
-            ...new_exercises[i][j],
-            id: selectedExerciseId,
-            exercise: new_exercise.name,
-          };
-        }
-      }
-    }
-    const new_muscle = {
-      ...muscle,
-      exercises: new_exercises,
-    };
-    handleUpdateMuscle(new_muscle);
-  }, [visibleExercises, exerciseId, muscle.exercises, selectedExerciseId]);
+  // const onSaveExerciseHandler = useCallback(() => {
+  //   const new_exercises = [...muscle.exercises];
+  //   const new_exercise = visibleExercises.find(
+  //     (each) => each.id === selectedExerciseId
+  //   );
+  //   if (!new_exercise) return;
+
+  //   for (let i = 0; i < new_exercises.length; i++) {
+  //     for (let j = 0; j < new_exercises[i].length; j++) {
+  //       if (new_exercises[i][j].id === exerciseId) {
+  //         new_exercises[i][j] = {
+  //           ...new_exercises[i][j],
+  //           id: selectedExerciseId,
+  //           exercise: new_exercise.name,
+  //         };
+  //       }
+  //     }
+  //   }
+  //   const new_muscle = {
+  //     ...muscle,
+  //     exercises: new_exercises,
+  //   };
+  //   handleUpdateMuscle(new_muscle);
+  // }, [visibleExercises, exerciseId, muscle.exercises, selectedExerciseId]);
 
   return {
     exercises: visibleExercises,

@@ -17,6 +17,7 @@ const MuscleEditorContext = createContext<MuscleEditorType>({
   mesocyclesArray: [],
   onOperationHandler: () => {},
   onAddTrainingDay: () => {},
+  onAddExercise: () => {},
 });
 
 const MuscleEditorProvider = ({

@@ -6,7 +6,6 @@ import { ExerciseType } from "~/hooks/useTrainingProgram/reducer/trainingProgram
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
 import { cn } from "~/lib/clsx";
 import { ChangeExerciseProvider } from "./ChangeExerciseModal/ChangeExerciseContext";
-import SelectExercise from "./ChangeExerciseModal/ChangeExerciseModal";
 
 export default function ExercisesPreview() {
   const { prioritized_muscle_list } = useTrainingProgramContext();
@@ -45,7 +44,8 @@ export default function ExercisesPreview() {
             muscle={prioritized_muscle_list[selectedMuscleIndex]}
             exerciseId={selectedExercises[selectedExerciseIndex]?.id}
           >
-            <SelectExercise />
+            {/* <SelectExercise /> */}
+            ehh
           </ChangeExerciseProvider>
         </Modal>
 
