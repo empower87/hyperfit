@@ -9,6 +9,8 @@ export const MRV_PROGRESSION_MATRIX_ONE = [
   [[5], [5], [5], [4], [3], [2]],
 ];
 
+// NOTE: 3/25/2024 - changed this to no longer have placeholder 0s in tuple, this may effect entire app down the line.
+// keep an eye on how this effects rest of app.
 export const MRV_PROGRESSION_MATRIX_TWO = [
   [[2, 2]],
   [
@@ -20,28 +22,11 @@ export const MRV_PROGRESSION_MATRIX_TWO = [
     [2, 3],
     [2, 2],
   ],
-  [
-    [3, 3],
-    [3, 3],
-    [2, 3],
-    [2, 0],
-  ],
-  [
-    [3, 3],
-    [3, 3],
-    [3, 3],
-    [3, 0],
-    [2, 0],
-  ],
-  [
-    [3, 3],
-    [3, 3],
-    [3, 3],
-    [3, 0],
-    [2, 0],
-    [1, 0],
-  ],
+  [[3, 3], [3, 3], [2, 3], [2]],
+  [[3, 3], [3, 3], [3, 3], [3], [2]],
+  [[3, 3], [3, 3], [3, 3], [3], [2], [1]],
 ];
+
 const getMatrixByKeySchema = (keySchema: [VolumeLandmarkType, number]) => {
   switch (keySchema[0]) {
     case "MRV":

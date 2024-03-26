@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useCallback, useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import { DotsIcon, PlusIcon } from "~/assets/icons/_icons";
 import { SectionH2 } from "~/components/Layout/Sections";
@@ -145,8 +145,12 @@ function Muscle({ muscle, rank }: MuscleProps) {
 //       should automatically add the last mesocycles session.
 
 function Exercises() {
-  const { selectedMesocycleIndex, muscleGroup, onAddTrainingDay } =
-    useMuscleEditorContext();
+  const {
+    selectedMesocycleIndex,
+    muscleGroup,
+    onAddTrainingDay,
+    onAddExercise,
+  } = useMuscleEditorContext();
 
   const [exercisesByMeso, setExercisesByMeso] = useState<ExerciseType[][]>([]);
 
@@ -167,8 +171,53 @@ function Exercises() {
     Array(exercisesByMeso.flat().length),
     (e, i) => i + 1
   );
+  const [isOpen, setIsOpen] = useState(false);
+  const onOpen = () => setIsOpen(true);
+  const onClose = () => setIsOpen(false);
+
+  const onSelectHandler = (newExercise: Exercise) => {
+    const new_exercise: ExerciseType = {
+      id: newExercise.id,
+      exercise: newExercise.name,
+      muscle: newExercise.group as MuscleType,
+      session: 0,
+      rank: muscleGroup.volume.landmark,
+      sets: 2,
+      reps: 10,
+      weight: 100,
+      rir: 3,
+      weightIncrement: 2,
+      trainingModality: "straight",
+      mesocycle_progression: [],
+      supersetWith: null,
+    };
+    onAddTrainingDay(new_exercise);
+    onClose();
+  };
+
+  const addTrainingDayHandler = useCallback(() => {
+    const frequencyProgression = muscleGroup.volume.frequencyProgression;
+    const canAddDay =
+      frequencyProgression[selectedMesocycleIndex + 1] &&
+      frequencyProgression[selectedMesocycleIndex] <
+        frequencyProgression[selectedMesocycleIndex + 1]
+        ? true
+        : false;
+    if (canAddDay) {
+      onAddTrainingDay();
+    } else {
+      onOpen();
+    }
+  }, [muscleGroup, selectedMesocycleIndex]);
+
   return (
     <div className={`flex space-x-1 overflow-x-auto`}>
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ChangeExerciseProvider muscle={muscleGroup} exerciseId={""}>
+          <SelectExercise onSelect={onSelectHandler} />
+        </ChangeExerciseProvider>
+      </Modal>
+
       {exercisesByMeso.map((each, index) => {
         const indices = exerciseIndices.splice(0, each.length);
         return (
@@ -197,7 +246,7 @@ function Exercises() {
         );
       })}
       {addButtonDivs.map(() => {
-        return <AddDayItem onClick={() => onAddTrainingDay()} />;
+        return <AddDayItem onClick={() => addTrainingDayHandler()} />;
       })}
     </div>
   );
@@ -274,6 +323,9 @@ function SessionItem({ exercises, indices, dayIndex }: SessionItemProps) {
   );
 }
 
+type AddItemProps = {
+  onClick: () => void;
+};
 function AddDayItem({ onClick }: AddItemProps) {
   return (
     <div
@@ -286,12 +338,10 @@ function AddDayItem({ onClick }: AddItemProps) {
     </div>
   );
 }
-type AddItemProps = {
-  onClick: () => void;
-};
 function AddExerciseItem({ onClick }: AddItemProps) {
   return (
     <li
+      onClick={onClick}
       className={`flex cursor-pointer p-0.5 text-xxs ${BG_COLOR_M6} ${BORDER_COLOR_M4} border indent-1 text-slate-300`}
     >
       <div className={`ml-0.5 flex items-center justify-center`}>
@@ -301,6 +351,7 @@ function AddExerciseItem({ onClick }: AddItemProps) {
     </li>
   );
 }
+
 type ExerciseItemProps = {
   exercise: ExerciseType;
   index: number;

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { MRV_PROGRESSION_MATRIX_ONE } from "~/constants/volumeProgressionMatrices";
 import {
   ExerciseType,
   MusclePriorityType,
@@ -15,7 +16,9 @@ type AddSubtractSetsType = {
 };
 type AddTrainingDayType = {
   type: "ADD_TRAINING_DAY";
-  payload: {};
+  payload: {
+    firstExercise: ExerciseType;
+  };
 };
 type RemoveTrainingDayType = {
   type: "REMOVE_TRAINING_DAY";
@@ -23,7 +26,10 @@ type RemoveTrainingDayType = {
 };
 type AddExerciseType = {
   type: "ADD_EXERCISE";
-  payload: {};
+  payload: {
+    newExercise: ExerciseType;
+    dayIndex: number;
+  };
 };
 type RemoveExerciseType = {
   type: "REMOVE_EXERCISE";
@@ -36,14 +42,88 @@ type Action =
   | AddExerciseType
   | RemoveExerciseType;
 
+// setProgressionMatrix
+// array of mesocycles --
+// [
+//  mesocycle 1 - [
+//                  microcycle 1 - [ day 1 - [exercise 1, exercise 2, etc..], day 2 - [exercise 3, exercise 4, etc... ]]
+//                  microcycle 2 -
+//                  microcycle 3 -
+//                  microcycle 4 -
+//                  etc...
+//                ]
+//  mesocycle 2 -
+//  mesocycle 3 -
+//  etc...
+// ]
+
 function muscleEditorReducer(state: MusclePriorityType, action: Action) {
   switch (action.type) {
     case "ADD_TRAINING_DAY":
-      return { ...state };
+      const { firstExercise } = action.payload;
+      const exercisess = state.exercises;
+      exercisess.push([firstExercise]);
+      const freq = state.volume.frequencyProgression;
+      freq[freq.length - 1]++;
+
+      const clonedMatrix = structuredClone(state.volume.setProgressionMatrix);
+      const lastMesoMatrix = clonedMatrix[clonedMatrix.length - 1];
+      const setProgh = [...MRV_PROGRESSION_MATRIX_ONE];
+
+      let currCount = setProgh[freq[freq.length - 1] - 1][0][0];
+      for (let i = 0; i < lastMesoMatrix.length; i++) {
+        if (i > 0) {
+          currCount++;
+        }
+        lastMesoMatrix[i].push([currCount]);
+      }
+
+      clonedMatrix[clonedMatrix.length - 1] = lastMesoMatrix;
+
+      return {
+        ...state,
+        exercises: exercisess,
+        volume: {
+          ...state,
+          frequencyProgression: freq,
+          setProgressionMatrix: clonedMatrix,
+        },
+      };
     case "REMOVE_TRAINING_DAY":
       return { ...state };
     case "ADD_EXERCISE":
-      return { ...state };
+      const { newExercise, dayIndex } = action.payload;
+
+      // add exercise
+      const exercises = state.exercises;
+      exercises[dayIndex]?.push(newExercise);
+
+      // update setProgressionMatrix
+      const matrix = structuredClone(state.volume.setProgressionMatrix);
+      const setProg = [...MRV_PROGRESSION_MATRIX_ONE];
+      for (let i = 0; i < matrix.length; i++) {
+        const meso = matrix[i];
+
+        if (meso[0][dayIndex]) {
+          const frequencyProgression = state.volume.frequencyProgression;
+          let frequency = frequencyProgression[i];
+          let curCount = setProg[frequency - 1][0][0];
+
+          for (let j = 0; j < meso.length; j++) {
+            if (j > 0) {
+              curCount++;
+            }
+            meso[j][dayIndex].push(curCount);
+          }
+        }
+        matrix[i] = meso;
+      }
+
+      return {
+        ...state,
+        exercises: exercises,
+        volume: { ...state.volume, setProgressionMatrix: matrix },
+      };
     case "REMOVE_EXERCISE":
       return { ...state };
 
@@ -103,8 +183,33 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
       const exercises = muscleGroup.exercises;
 
       exercises[dayIndex]?.push(newExercise);
-      console.log(exercises, newExercise, "AM I GETTING TO THIS POINT YO???");
-      setMuscleGroup((prev) => ({ ...prev, exercises: exercises }));
+      const matrix = structuredClone(muscleGroup.volume.setProgressionMatrix);
+
+      const setProg = [...MRV_PROGRESSION_MATRIX_ONE];
+
+      for (let i = 0; i < matrix.length; i++) {
+        const meso = matrix[i];
+
+        if (meso[0][dayIndex]) {
+          const frequencyProgression = muscleGroup.volume.frequencyProgression;
+          let frequency = frequencyProgression[i];
+          let curCount = setProg[frequency - 1][0][0];
+
+          for (let j = 0; j < meso.length; j++) {
+            if (j > 0) {
+              curCount++;
+            }
+            meso[j][dayIndex].push(curCount);
+          }
+        }
+        matrix[i] = meso;
+      }
+
+      setMuscleGroup((prev) => ({
+        ...prev,
+        exercises: exercises,
+        volume: { ...prev.volume, setProgressionMatrix: matrix },
+      }));
     },
     [muscleGroup]
   );
@@ -139,38 +244,73 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
     [muscleGroup]
   );
 
-  const onAddTrainingDay = useCallback(() => {
-    const copyMatrix = structuredClone(muscleGroup.volume.setProgressionMatrix);
-    const frequencyProgression = muscleGroup.volume.frequencyProgression;
-    const currentMatrix = copyMatrix[selectedMesocycleIndex];
+  const onAddTrainingDay = useCallback(
+    (firstExercise?: ExerciseType) => {
+      const copyMatrix = structuredClone(
+        muscleGroup.volume.setProgressionMatrix
+      );
+      const frequencyProgression = muscleGroup.volume.frequencyProgression;
+      const currentMatrix = copyMatrix[selectedMesocycleIndex];
 
-    const canAddDay =
-      frequencyProgression[selectedMesocycleIndex + 1] &&
-      frequencyProgression[selectedMesocycleIndex] <
-        frequencyProgression[selectedMesocycleIndex + 1]
-        ? true
-        : false;
-    const nextMatrix = copyMatrix[selectedMesocycleIndex + 1];
+      const canAddDay =
+        frequencyProgression[selectedMesocycleIndex + 1] &&
+        frequencyProgression[selectedMesocycleIndex] <
+          frequencyProgression[selectedMesocycleIndex + 1]
+          ? true
+          : false;
+      const nextMatrix = copyMatrix[selectedMesocycleIndex + 1];
 
-    if (canAddDay) {
-      for (let i = 0; i < nextMatrix.length; i++) {
-        const daysSets = nextMatrix[i][selectedMesocycleIndex];
-        copyMatrix[selectedMesocycleIndex][i][selectedMesocycleIndex] =
-          daysSets;
+      if (canAddDay) {
+        for (let i = 0; i < nextMatrix.length; i++) {
+          const daysSets = nextMatrix[i][selectedMesocycleIndex];
+          copyMatrix[selectedMesocycleIndex][i][selectedMesocycleIndex] =
+            daysSets;
+        }
+        frequencyProgression[selectedMesocycleIndex]++;
+        setMuscleGroup((prev) => ({
+          ...prev,
+          volume: {
+            ...prev.volume,
+            frequencyProgression: frequencyProgression,
+            setProgressionMatrix: copyMatrix,
+          },
+        }));
+      } else {
+        if (!firstExercise) return;
+        const exercisess = muscleGroup.exercises;
+        exercisess.push([firstExercise]);
+        const freq = muscleGroup.volume.frequencyProgression;
+        freq[freq.length - 1]++;
+
+        const clonedMatrix = structuredClone(
+          muscleGroup.volume.setProgressionMatrix
+        );
+        const lastMesoMatrix = clonedMatrix[clonedMatrix.length - 1];
+        const setProgh = [...MRV_PROGRESSION_MATRIX_ONE];
+
+        let currCount = setProgh[freq[freq.length - 1] - 1][0][0];
+        for (let i = 0; i < lastMesoMatrix.length; i++) {
+          if (i > 0) {
+            currCount++;
+          }
+          lastMesoMatrix[i].push([currCount]);
+        }
+
+        clonedMatrix[clonedMatrix.length - 1] = lastMesoMatrix;
+
+        setMuscleGroup((prev) => ({
+          ...prev,
+          exercises: exercisess,
+          volume: {
+            ...prev.volume,
+            frequencyProgression: freq,
+            setProgressionMatrix: clonedMatrix,
+          },
+        }));
       }
-      frequencyProgression[selectedMesocycleIndex]++;
-    } else {
-    }
-
-    setMuscleGroup((prev) => ({
-      ...prev,
-      volume: {
-        ...prev.volume,
-        frequencyProgression: frequencyProgression,
-        setProgressionMatrix: copyMatrix,
-      },
-    }));
-  }, [muscleGroup, mesocycles, selectedMesocycleIndex]);
+    },
+    [muscleGroup, mesocycles, selectedMesocycleIndex]
+  );
 
   return {
     muscleGroup,
