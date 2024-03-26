@@ -11,6 +11,7 @@ const MuscleEditorContext = createContext<MuscleEditorType>({
   muscleGroup: { ...INITIAL_STATE }.muscle_priority_list[0],
   setProgressionMatrix: [],
   totalVolume: 0,
+  volumes: [],
   selectedMesocycleIndex: 0,
   frequencyProgression: [],
   onSelectMesocycle: () => {},

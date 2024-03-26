@@ -738,16 +738,11 @@ const DURATION_TIME_CONSTRAINTS = {
 };
 
 ExerciseOverview.ExercisePreview = ExercisesPreview;
-export default function ExerciseOverview({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export default function ExerciseOverview() {
   return (
     <Section title={"EXERCISES"}>
       <SessionDurationVariablesProvider>
         <div className="mb-2 flex justify-center space-x-2 text-xxs text-white">
-          {children}
           <Card title="SETTINGS">
             <SessionDurationVariables />
           </Card>

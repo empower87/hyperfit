@@ -45,12 +45,9 @@ export default function PageContent() {
                 </div> 
               */}
               <MuscleEditor />
-              {/* <MusclePriorityList /> */}
             </div>
 
-            <ExerciseOverview>
-              <ExerciseOverview.ExercisePreview />
-            </ExerciseOverview>
+            <ExerciseOverview />
           </div>
         </Section>
 

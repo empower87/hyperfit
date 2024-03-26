@@ -1,6 +1,6 @@
 import { ReactNode, useCallback, useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
-import { DotsIcon, PlusIcon } from "~/assets/icons/_icons";
+import { ArrowUpIcon, DotsIcon, PlusIcon } from "~/assets/icons/_icons";
 import { SectionH2 } from "~/components/Layout/Sections";
 import Modal from "~/components/Modals/Modal";
 import {
@@ -76,18 +76,20 @@ function Muscle({ muscle, rank }: MuscleProps) {
     muscleGroup,
     onSelectMesocycle,
     totalVolume,
+    volumes,
     mesocyclesArray,
   } = useMuscleEditorContext();
   const bgColor = getRankColor(muscle.volume.landmark);
   const title = getMuscleTitleForUI(muscle.muscle);
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   return (
     <div
       id={muscle.id}
       className={`flex flex-col ${BG_COLOR_M7} scroll-smooth rounded`}
     >
-      <div className={`flex rounded-t ${bgColor.bg} border-b`}>
-        <div className={`flex w-1/3 p-1 text-sm text-white`}>
+      <div className={`flex rounded-t ${bgColor.bg} justify-between border-b`}>
+        <div className={`flex p-1 text-sm text-white`}>
           <div className={`flex w-3 items-center justify-center text-xxs`}>
             {rank}
           </div>
@@ -109,6 +111,10 @@ function Muscle({ muscle, rank }: MuscleProps) {
             );
           })}
         </div>
+
+        <div className={`flex items-center justify-center pr-2`}>
+          <ArrowUpIcon fill="white" />
+        </div>
       </div>
 
       <div className={`p-2`}>
@@ -116,6 +122,14 @@ function Muscle({ muscle, rank }: MuscleProps) {
       </div>
 
       <BottomBar>
+        <BottomBar.Section title="Volume Landmark">
+          <div className={`flex justify-center space-x-1 p-0.5`}>
+            <div className={`p-0.5 text-xxs text-white`}>
+              {muscleGroup.volume.landmark}
+            </div>
+          </div>
+        </BottomBar.Section>
+
         <BottomBar.Section title="Frequency">
           <div className={`flex justify-center space-x-1 p-0.5`}>
             {muscleGroup.volume.frequencyProgression.map((each, index) => {
@@ -133,7 +147,20 @@ function Muscle({ muscle, rank }: MuscleProps) {
         </BottomBar.Section>
 
         <BottomBar.Section title="Total Volume">
-          <div>{totalVolume}</div>
+          <div className={`flex justify-center space-x-1 p-0.5`}>
+            {volumes.map((each, index) => {
+              return (
+                <div
+                  className={cn(`p-0.5 text-xxs text-white`, {
+                    ["border"]: selectedMesocycleIndex === index,
+                  })}
+                >
+                  {each}
+                </div>
+              );
+            })}
+          </div>
+          {/* <div>{totalVolume}</div> */}
         </BottomBar.Section>
       </BottomBar>
     </div>
@@ -145,12 +172,8 @@ function Muscle({ muscle, rank }: MuscleProps) {
 //       should automatically add the last mesocycles session.
 
 function Exercises() {
-  const {
-    selectedMesocycleIndex,
-    muscleGroup,
-    onAddTrainingDay,
-    onAddExercise,
-  } = useMuscleEditorContext();
+  const { selectedMesocycleIndex, muscleGroup, onAddTrainingDay } =
+    useMuscleEditorContext();
 
   const [exercisesByMeso, setExercisesByMeso] = useState<ExerciseType[][]>([]);
 

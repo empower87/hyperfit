@@ -145,6 +145,8 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
     mesocycles - 1
   );
   const [totalVolume, setTotalVolume] = useState(0);
+  const [volumes, setVolumes] = useState<number[]>([]);
+
   const [frequencyProgression, setFrequencyProgression] = useState<number[]>(
     []
   );
@@ -162,16 +164,27 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
 
   useEffect(() => {
     const matrix = muscleGroup.volume.setProgressionMatrix;
-    const currentMesocycleMatrix = matrix[selectedMesocycleIndex];
-    if (currentMesocycleMatrix) {
-      const microcycleMatrix = currentMesocycleMatrix[microcycles - 1];
-      if (microcycleMatrix) {
-        const totalVolume = microcycleMatrix
-          .flat()
-          .reduce((acc, cur) => acc + cur, 0);
-        setTotalVolume(totalVolume);
-      }
+    // const currentMesocycleMatrix = matrix[selectedMesocycleIndex];
+
+    let totals: number[] = [];
+    for (let i = 0; i < matrix.length; i++) {
+      const lastMatrix = matrix[i][microcycles - 1];
+      const totalVolume = lastMatrix.flat().reduce((acc, cur) => acc + cur, 0);
+      totals.push(totalVolume);
     }
+    setVolumes(totals);
+
+    // if (currentMesocycleMatrix) {
+    //   const microcycleMatrix = currentMesocycleMatrix[microcycles - 1];
+
+    //   if (microcycleMatrix) {
+    //     const totalVolume = microcycleMatrix
+    //       .flat()
+    //       .reduce((acc, cur) => acc + cur, 0);
+    //     setTotalVolume(totalVolume);
+
+    //   }
+    // }
   }, [selectedMesocycleIndex, microcycles, muscleGroup]);
 
   const onSelectMesocycle = useCallback((index: number) => {
@@ -316,6 +329,7 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
     muscleGroup,
     setProgressionMatrix: matrix,
     totalVolume,
+    volumes,
     selectedMesocycleIndex,
     frequencyProgression,
     onSelectMesocycle,
