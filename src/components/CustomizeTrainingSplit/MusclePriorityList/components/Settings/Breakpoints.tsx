@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { BG_COLOR_M5, BG_COLOR_M6 } from "~/constants/themes";
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
+import { cn } from "~/lib/clsx";
 
 type VolumeSettingFrameProps = {
   title: string;
   breakpoint: number;
-  // onChange: (value: number, other: string) => void;
   onChange: (type: "mrv_breakpoint" | "mev_breakpoint", value: number) => void;
 };
 
@@ -17,7 +17,7 @@ function VolumeSettingFrame({
   const [currentBreakpoint, setCurrentBreakpoint] =
     useState<number>(breakpoint);
 
-  const titleKey = title === "MRV -" ? "mrv_breakpoint" : "mev_breakpoint";
+  const titleKey = title === "MRV" ? "mrv_breakpoint" : "mev_breakpoint";
   const onSubtract = () => {
     setCurrentBreakpoint((prev) => prev - 1);
     onChange(titleKey, currentBreakpoint - 1);
@@ -28,26 +28,35 @@ function VolumeSettingFrame({
   };
 
   return (
-    <div className={BG_COLOR_M6 + " mb-1 flex justify-between"}>
-      <div className=" p-1 indent-1 text-xxs text-white">{title}</div>
-      <div className=" flex">
+    <div className={cn(`${BG_COLOR_M6} flex justify-between text-[0.50rem]`)}>
+      <div
+        className={cn(
+          `flex items-center justify-center px-1 indent-1 font-bold text-orange-500`,
+          {
+            ["text-red-500"]: title === "MRV",
+          }
+        )}
+      >
+        {title}
+      </div>
+      <div className="flex">
         <button
           className={
             BG_COLOR_M5 +
-            " flex h-6 w-6 items-center justify-center font-bold text-slate-300"
+            " flex h-4 w-4 items-center justify-center text-xxs font-bold text-slate-300"
           }
           onClick={onSubtract}
         >
           -
         </button>
-        <div className=" flex h-6 w-6 items-center justify-center text-xxs text-white">
+        <div className=" flex h-4 w-4 items-center justify-center text-white">
           {currentBreakpoint}
         </div>
         <button
           onClick={onAdd}
           className={
             BG_COLOR_M5 +
-            " flex h-6 w-6 items-center justify-center font-bold text-slate-300"
+            " flex h-4 w-4 items-center justify-center text-xxs font-bold text-slate-300"
           }
         >
           +
@@ -57,26 +66,18 @@ function VolumeSettingFrame({
   );
 }
 
-type ListVolumeSettingsProps = {
-  mrvBreakpoint: number;
-  mevBreakpoint: number;
-  onBreakpointChange: (
-    type: "mrv_breakpoint" | "mev_breakpoint",
-    value: number
-  ) => void;
-};
-export function ListVolumeSettings() {
+export function Breakpoints() {
   const { mrv_breakpoint, mev_breakpoint, handleUpdateBreakpoint } =
     useTrainingProgramContext();
   return (
-    <div>
+    <div className={`flex space-x-1`}>
       <VolumeSettingFrame
-        title="MRV -"
+        title="MRV"
         breakpoint={mrv_breakpoint}
         onChange={handleUpdateBreakpoint}
       />
       <VolumeSettingFrame
-        title="MEV -"
+        title="MEV"
         breakpoint={mev_breakpoint}
         onChange={handleUpdateBreakpoint}
       />

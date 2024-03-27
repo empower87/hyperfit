@@ -24,6 +24,7 @@ import { getVolumeSets } from "~/utils/musclePriorityHandlers";
 import { EditMuscleModal } from "./components/EditMuscleModal";
 import MesocycleFrequency from "./components/MesocycleFrequency";
 import { MesocycleVolumes } from "./components/MesocycleVolumes";
+import Settings from "./components/Settings/Settings";
 import useMusclePriority from "./hooks/useMusclePriority";
 import { getEndOfMesocycleVolume } from "./utils/getVolumeTotal";
 
@@ -413,7 +414,18 @@ export function MiniMusclePriorityList() {
   const colors = VOLUME_BG_COLORS;
 
   return (
-    <Card title="PRIORITY">
+    <Card title="PRIORITIZE MUSCLES">
+      <Settings>
+        <Settings.Section title="Breakpoints">
+          <Settings.Breakpoints />
+        </Settings.Section>
+
+        <Settings.Section title="Toggles">
+          <Settings.Button title="All MEV" />
+          <Settings.Button title="All MV" />
+        </Settings.Section>
+      </Settings>
+
       <DragDropContext onDragEnd={onReorder}>
         <StrictModeDroppable droppableId="droppable">
           {(provided, snapshot) => (
@@ -439,7 +451,7 @@ export function MiniMusclePriorityList() {
                         <div
                           className={`flex ${
                             colors[each.volume_landmark]
-                          } w-52 rounded-sm text-xxs text-white`}
+                          } rounded-sm text-xxs text-white`}
                         >
                           <CellA value={index + 1} className="w-5" />
                           <CellA

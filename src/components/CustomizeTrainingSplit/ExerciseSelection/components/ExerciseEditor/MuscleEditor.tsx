@@ -309,13 +309,31 @@ function SessionItem({ exercises, indices, dayIndex }: SessionItemProps) {
     onAddExercise(new_exercise, dayIndex - 1);
   };
 
+  const microcycles = muscleGroup.volume.setProgressionMatrix[0]
+    ? muscleGroup.volume.setProgressionMatrix[0]
+    : [];
+
   return (
     <div className={`flex flex-col rounded ${BG_COLOR_M6}`}>
       <div
-        className={`flex justify-between text-xxs text-white ${BG_COLOR_M7}`}
+        className={`flex justify-between text-xxs text-slate-300 ${BG_COLOR_M7}`}
       >
         <div className={`pl-2`}>Exercise</div>
-        <div className={`pr-4`}>Weekly Sets</div>
+        <div className={`flex pr-1`}>
+          <div className={``}>Week </div>
+          {microcycles.map((e, i) => {
+            console.log(microcycles, "wtf?");
+            return (
+              <div
+                className={cn(`flex w-3 items-center justify-center text-xxs`, {
+                  ["w-10"]: i === 0,
+                })}
+              >
+                {i + 1}
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       <Modal isOpen={isOpen} onClose={onClose}>

@@ -1,11 +1,6 @@
-import { BG_COLOR_M6 } from "~/constants/themes";
-import { VOLUME_BG_COLORS } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
-import {
-  TrainingProgramProvider,
-  useTrainingProgramContext,
-} from "~/hooks/useTrainingProgram/useTrainingProgram";
-import { cn } from "~/lib/clsx";
-import { CardS, SectionXL as Section } from "../Layout/Sections";
+import { BG_COLOR_M5, BG_COLOR_M7 } from "~/constants/themes";
+import { TrainingProgramProvider } from "~/hooks/useTrainingProgram/useTrainingProgram";
+import { SectionXL as Section } from "../Layout/Sections";
 import TrainingBlock from "../Macrocycle/TrainingBlock/TrainingBlock";
 import ExerciseOverview from "./ExerciseSelection/ExerciseSelection";
 import MuscleEditor from "./ExerciseSelection/components/ExerciseEditor/MuscleEditor";
@@ -22,33 +17,26 @@ export default function PageContent() {
     <div className="m-auto box-border min-h-full max-w-[1200px] px-3 py-10">
       <TrainingProgramProvider>
         <Section title="Customize Training Program">
-          <div className="">
-            <ProgramConfig>
-              {/* <TempMuscleList /> */}
-              <MiniMusclePriorityList />
-              <div className={`flex flex-col justify-center space-y-1`}>
-                <ProgramConfig.Periodization />
+          <ProgramConfig>
+            <MiniMusclePriorityList />
 
-                <SplitOverview>
-                  <SplitOverview.Split />
-                  <SplitOverview.Week />
-                </SplitOverview>
+            <div className={`flex flex-col space-y-1`}>
+              <ProgramConfig.Periodization />
 
-                <Buttons />
-              </div>
-            </ProgramConfig>
+              <SplitOverview>
+                <SplitOverview.Split />
+                <SplitOverview.Week />
+              </SplitOverview>
 
-            <div className="mb-2 flex flex-col">
-              {/* 
-                <div className="w-1/4 pr-2">
-                  <ListVolumeSettings />
-                </div> 
-              */}
-              <MuscleEditor />
+              <Buttons />
             </div>
+          </ProgramConfig>
 
-            <ExerciseOverview />
+          <div className="mb-2 flex flex-col">
+            <MuscleEditor />
           </div>
+
+          <ExerciseOverview />
         </Section>
 
         <Section title="Training Block Overview">
@@ -59,62 +47,21 @@ export default function PageContent() {
   );
 }
 
-function Cell({
-  value,
-  className,
-}: {
-  value: string | number;
-  className: string;
-}) {
-  return (
-    <div className={cn(`flex items-center justify-center p-0.5`, className)}>
-      {value}
-    </div>
-  );
-}
-
-function TempMuscleList() {
-  const { prioritized_muscle_list } = useTrainingProgramContext();
-  const colors = VOLUME_BG_COLORS;
-  return (
-    <CardS title="PRIORITY">
-      <div className={`flex w-60 flex-col space-y-0.5`}>
-        {prioritized_muscle_list.map((each, index) => {
-          return (
-            <div
-              className={`flex ${
-                colors[each.volume_landmark]
-              } rounded-sm text-xxs text-white`}
-            >
-              <Cell value={index + 1} className="w-5" />
-              <Cell
-                value={each.muscle}
-                className="w-20 justify-start indent-1"
-              />
-              <Cell value={each.volume.landmark} className="w-10" />
-            </div>
-          );
-        })}
-      </div>
-    </CardS>
-  );
-}
-
 function Buttons() {
   const { onSaveConfig } = useProgramConfigContext();
 
   return (
-    <div className={`flex justify-end space-x-1`}>
+    <div className={`flex justify-end space-x-1 rounded p-2 ${BG_COLOR_M7}`}>
       <Button
         onClick={() => {}}
-        className={`flex rounded text-white ${BG_COLOR_M6}`}
+        className={`flex rounded px-2 text-slate-700 ${BG_COLOR_M5}`}
       >
         Reset
       </Button>
 
       <Button
         onClick={() => onSaveConfig()}
-        className={`flex rounded bg-rose-400 px-2 text-white`}
+        className={`flex rounded bg-rose-400 px-3 text-white`}
       >
         Save Changes
       </Button>
