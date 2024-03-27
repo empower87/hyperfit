@@ -6,7 +6,7 @@ import {
   BG_COLOR_M5,
   BG_COLOR_M6,
   BORDER_COLOR_M4,
-  BORDER_COLOR_M6,
+  BORDER_COLOR_M7,
 } from "~/constants/themes";
 import {
   DayType,
@@ -108,7 +108,7 @@ export function TrainingWeek() {
   };
 
   return (
-    <div className={BG_COLOR_M6 + " p-1"}>
+    <div className={" p-1"}>
       <div className=" mb-1 flex space-x-1 overflow-x-auto">
         <DragDropContext onDragEnd={onDragEnd}>
           {draggableWeek.map((each, index) => {
@@ -155,7 +155,7 @@ const DroppableDay = ({
     <div className={cn(`flex w-20 flex-col ${BG_COLOR_M5} rounded`)}>
       <div
         className={cn(
-          `flex w-full justify-center p-1 text-xs font-bold text-white ${BORDER_COLOR_M6} border-b-2`
+          `flex w-full justify-center p-1 text-xs font-bold text-white ${BORDER_COLOR_M7} border-b-2`
         )}
       >
         {day}
@@ -285,8 +285,8 @@ function SelectSession({ session, splits, onSelect }: SelectSessionProps) {
 
 function Split() {
   return (
-    <div className="flex items-center space-x-2 p-1 text-sm text-white">
-      <div className={`text-xs`}>Split: </div>
+    <div className="flex items-center space-x-2 p-2 text-sm text-white">
+      <div className={`text-xs text-slate-300`}>Choose A Training Split: </div>
       <SplitSelect />
     </div>
   );

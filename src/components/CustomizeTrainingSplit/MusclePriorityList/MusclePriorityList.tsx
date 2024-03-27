@@ -19,6 +19,7 @@ import { VolumeLandmarkType } from "~/hooks/useTrainingProgram/reducer/trainingP
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
 import { cn } from "~/lib/clsx";
 import StrictModeDroppable from "~/lib/react-beautiful-dnd/StrictModeDroppable";
+import getMuscleTitleForUI from "~/utils/getMuscleTitleForUI";
 import { getVolumeSets } from "~/utils/musclePriorityHandlers";
 import { EditMuscleModal } from "./components/EditMuscleModal";
 import MesocycleFrequency from "./components/MesocycleFrequency";
@@ -399,32 +400,15 @@ export function MiniMusclePriorityList() {
     training_program_params,
     mrv_breakpoint,
     mev_breakpoint,
-    handleUpdateMuscleList,
-    handleUpdateBreakpoints,
   } = useTrainingProgramContext();
   const { mesocycles, microcycles } = training_program_params;
-  const {
-    draggableList,
-    volumeBreakpoints,
-    setDraggableList,
-    onReorder,
-    onVolumeLandmarkChange,
-    onFrequencyProgressionUpdate,
-  } = useMusclePriority(
+  const { draggableList, onReorder } = useMusclePriority(
     prioritized_muscle_list,
     [mrv_breakpoint, mev_breakpoint],
     split_sessions,
     mesocycles,
     microcycles
   );
-  const onSaveHandler = useCallback(() => {
-    handleUpdateMuscleList(draggableList);
-    handleUpdateBreakpoints(volumeBreakpoints);
-  }, [draggableList, volumeBreakpoints]);
-
-  const onResetHandler = useCallback(() => {
-    setDraggableList(prioritized_muscle_list);
-  }, []);
 
   const colors = VOLUME_BG_COLORS;
 
@@ -459,7 +443,7 @@ export function MiniMusclePriorityList() {
                         >
                           <CellA value={index + 1} className="w-5" />
                           <CellA
-                            value={each.muscle}
+                            value={getMuscleTitleForUI(each.muscle)}
                             className="w-20 justify-start indent-1"
                           />
                           <CellA
