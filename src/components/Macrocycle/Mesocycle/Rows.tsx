@@ -6,7 +6,7 @@ import {
   SplitType,
   TrainingDayType,
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
-import EditExerciseModal from "../Modals/EditExerciseModal";
+import EditExerciseModal from "../../Modals/EditExerciseModal";
 import { ExerciseCell, HeaderCell, MicrocycleCell, SessionCell } from "./Cells";
 import {
   ROW_CELL_WIDTHS,

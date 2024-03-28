@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import Settings from "~/components/CustomizeTrainingSplit/MusclePriorityList/components/Settings/Settings";
 import { BG_COLOR_M5 } from "~/constants/themes";
 import { cn } from "~/lib/clsx";
 import { useSessionDurationVariablesContext } from "./sessionDurationVariablesContext";
@@ -62,28 +63,39 @@ const TimeIncrementFrame = ({ label }: TimeIncrementFrameProps) => {
 
   return (
     <div className="flex">
-      <div className="m-1 w-12 text-xs text-white">{label}</div>
+      {/* <div className="m-1 w-12 text-xs text-white">{label}</div> */}
 
-      <div className="flex">
-        <IncrementBtn operation={"-"} onClick={() => onIncrement("-")} />
-        <div className="m-1 flex w-6 items-center justify-center text-xs text-white">
-          {time}
-        </div>
-        <IncrementBtn operation={"+"} onClick={() => onIncrement("+")} />
+      {/* <div className="flex"> */}
+      <IncrementBtn operation={"-"} onClick={() => onIncrement("-")} />
+      <div className="m-1 flex w-6 items-center justify-center text-xs text-white">
+        {time}
       </div>
+      <IncrementBtn operation={"+"} onClick={() => onIncrement("+")} />
+      {/* </div> */}
     </div>
   );
 };
 
 export default function SessionDurationVariables() {
   return (
-    <div className="flex w-80 flex-col">
-      <div className="mb-0.5 text-sm">Workout Duration Variables</div>
-
-      <TimeIncrementFrame label="warmup" />
-      <TimeIncrementFrame label="rest" />
-      <TimeIncrementFrame label="superset" />
-      <TimeIncrementFrame label="rep" />
+    <div className="flex flex-col">
+      <div className="mb-0.5 flex items-center justify-center text-sm">
+        Workout Duration Variables
+      </div>
+      <Settings>
+        <Settings.Section title="Warmup">
+          <TimeIncrementFrame label="warmup" />
+        </Settings.Section>
+        <Settings.Section title="Rest">
+          <TimeIncrementFrame label="rest" />
+        </Settings.Section>
+        <Settings.Section title="Superset">
+          <TimeIncrementFrame label="superset" />
+        </Settings.Section>
+        <Settings.Section title="Rep">
+          <TimeIncrementFrame label="rep" />
+        </Settings.Section>
+      </Settings>
     </div>
   );
 }

@@ -9,6 +9,7 @@ import {
 } from "react";
 import { DragDropContext, Draggable } from "react-beautiful-dnd";
 import ReactDOM from "react-dom";
+import { DotsIcon } from "~/assets/icons/_icons";
 import {
   CardS as Card,
   SectionH2 as Section,
@@ -17,7 +18,7 @@ import {
   BG_COLOR_M5,
   BG_COLOR_M6,
   BG_COLOR_M7,
-  BORDER_COLOR_M6,
+  BORDER_COLOR_M5,
   BORDER_COLOR_M7,
   BORDER_COLOR_M8,
 } from "~/constants/themes";
@@ -164,9 +165,7 @@ function DropdownButton({ onDropdownClick }: DropdownProps) {
       }
       onClick={() => onDropdownClick()}
     >
-      <div className="flex h-2 w-2 items-center justify-center">.</div>
-      <div className="flex h-2 w-2 items-center justify-center">.</div>
-      <div className="flex h-2 w-2 items-center justify-center">.</div>
+      <DotsIcon />
     </div>
   );
 }
@@ -217,35 +216,35 @@ function DaySessionItemHeaders({}) {
   return (
     <div className="mt-1 flex w-full text-white">
       <ItemCell
-        className={`${BORDER_COLOR_M6} ${BG_COLOR_M7} ${ITEM_CELL_WIDTHS.index} text-xxxs`}
+        className={`${BORDER_COLOR_M5} ${BG_COLOR_M6} ${ITEM_CELL_WIDTHS.index} text-xxxs`}
       >
         {" "}
       </ItemCell>
       <div className="flex w-full">
         <ItemCell
-          className={`${BORDER_COLOR_M6} ${BG_COLOR_M7} ${ITEM_CELL_WIDTHS.sets} justify-center text-xxxs`}
+          className={`${BORDER_COLOR_M5} ${BG_COLOR_M6} ${ITEM_CELL_WIDTHS.sets} justify-center text-xxxs`}
         >
           Sets
         </ItemCell>
         <ItemCell
-          className={`${BORDER_COLOR_M6} ${BG_COLOR_M7} ${ITEM_CELL_WIDTHS.reps} justify-center text-xxxs`}
+          className={`${BORDER_COLOR_M5} ${BG_COLOR_M6} ${ITEM_CELL_WIDTHS.reps} justify-center text-xxxs`}
         >
           Reps
         </ItemCell>
         <ItemCell
-          className={`${BORDER_COLOR_M6} ${BG_COLOR_M7} ${ITEM_CELL_WIDTHS.lbs} justify-center text-xxxs`}
+          className={`${BORDER_COLOR_M5} ${BG_COLOR_M6} ${ITEM_CELL_WIDTHS.lbs} justify-center text-xxxs`}
         >
           Lbs
         </ItemCell>
         <div className="flex flex-col">
           <ItemCell
-            className={`${BORDER_COLOR_M6} ${BG_COLOR_M7} ${ITEM_CELL_WIDTHS.exercise} text-xxxs`}
+            className={`${BORDER_COLOR_M5} ${BG_COLOR_M6} ${ITEM_CELL_WIDTHS.exercise} text-xxxs`}
           >
             Exercise
           </ItemCell>
         </div>
         <ItemCell
-          className={`${BORDER_COLOR_M6} ${BG_COLOR_M7} ${ITEM_CELL_WIDTHS.actions} text-xxxs`}
+          className={`${BORDER_COLOR_M5} ${BG_COLOR_M6} ${ITEM_CELL_WIDTHS.actions} text-xxxs`}
         >
           {" "}
         </ItemCell>
@@ -285,7 +284,6 @@ function DaySessionItem({
   selectedMicrocycleIndex,
   onSupersetUpdate,
 }: DaySessionItemProps) {
-  // const bgColor = getRankColor(exercise.rank);
   const [bgColor, setBgColor] = useState<string>("");
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const supersets = getSupersetMap(exercises);
@@ -346,6 +344,7 @@ function DaySessionItem({
       >
         {index}
       </ItemCell>
+
       <div className={cn(`${BORDER_COLOR} flex border-y-2 ${bgColor}`)}>
         <div className="flex flex-col">
           <div className={cn(`${BORDER_COLOR} flex border-b`)}>
@@ -523,8 +522,8 @@ function DayLayout({
   const { day, sessions } = session;
 
   return (
-    <div className={BG_COLOR_M6 + " rounded-md"}>
-      <div className={BORDER_COLOR_M8 + " mb-1 border-b-2 p-1"}>
+    <div className={`${BG_COLOR_M5} rounded`}>
+      <div className={`${BORDER_COLOR_M8} mb-1 border-b-2 p-1`}>
         <h3 className=" indent-1 text-white">{day}</h3>
       </div>
 

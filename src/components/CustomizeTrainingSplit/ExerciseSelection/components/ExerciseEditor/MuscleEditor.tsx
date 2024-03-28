@@ -75,7 +75,6 @@ function Muscle({ muscle, rank }: MuscleProps) {
     selectedMesocycleIndex,
     muscleGroup,
     onSelectMesocycle,
-    totalVolume,
     volumes,
     mesocyclesArray,
   } = useMuscleEditorContext();
