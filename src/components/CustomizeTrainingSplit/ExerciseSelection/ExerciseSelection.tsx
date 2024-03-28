@@ -19,6 +19,7 @@ import {
   BG_COLOR_M6,
   BG_COLOR_M7,
   BORDER_COLOR_M5,
+  BORDER_COLOR_M6,
   BORDER_COLOR_M7,
   BORDER_COLOR_M8,
 } from "~/constants/themes";
@@ -35,6 +36,7 @@ import { getGroupList } from "~/utils/getExercises";
 import { getRankColor } from "~/utils/getRankColor";
 import { getSessionSplitColor } from "~/utils/getSessionSplitColor";
 import { capitalizeFirstLetter } from "~/utils/uiHelpers";
+import Settings from "../MusclePriorityList/components/Settings/Settings";
 import ExercisesPreview from "./components/ExercisesPreview";
 import MesocycleToggle from "./components/MesocycleToggle";
 import SessionDurationVariables from "./components/Settings/SessionDuration/SessionDurationVariables";
@@ -192,7 +194,7 @@ const SelectDropdown: FC<SelectDropdownProps> = ({
             key={`${option}_${index}`}
             className={cn(`${BG_COLOR_M6}`)}
             value={option}
-            // selected={option === selectedOption}
+            selected={option === selectedOption}
           >
             {capitalizeFirstLetter(option)}
           </option>
@@ -212,11 +214,12 @@ const ItemCell: FC<ItemCellProps> = ({ children, className, ...props }) => {
     </div>
   );
 };
-function DaySessionItemHeaders({}) {
+
+function DaySessionItemHeaders() {
   return (
     <div className="mt-1 flex w-full text-white">
       <ItemCell
-        className={`${BORDER_COLOR_M5} ${BG_COLOR_M6} ${ITEM_CELL_WIDTHS.index} text-xxxs`}
+        className={`${BORDER_COLOR_M6} ${BG_COLOR_M5} ${ITEM_CELL_WIDTHS.index} text-xxxs`}
       >
         {" "}
       </ItemCell>
@@ -238,13 +241,13 @@ function DaySessionItemHeaders({}) {
         </ItemCell>
         <div className="flex flex-col">
           <ItemCell
-            className={`${BORDER_COLOR_M5} ${BG_COLOR_M6} ${ITEM_CELL_WIDTHS.exercise} text-xxxs`}
+            className={`${BORDER_COLOR_M6} ${BG_COLOR_M6} ${ITEM_CELL_WIDTHS.exercise} text-xxxs`}
           >
             Exercise
           </ItemCell>
         </div>
         <ItemCell
-          className={`${BORDER_COLOR_M5} ${BG_COLOR_M6} ${ITEM_CELL_WIDTHS.actions} text-xxxs`}
+          className={`${BORDER_COLOR_M6} ${BG_COLOR_M6} ${ITEM_CELL_WIDTHS.actions} text-xxxs`}
         >
           {" "}
         </ItemCell>
@@ -494,10 +497,16 @@ function DroppableDay({
         )}
       </StrictModeDroppable>
 
-      <div className=" mt-1 flex w-full flex-col">
+      {/* <div className=" mt-1 flex w-full flex-col">
         <div className=" indent-1 text-xxs text-white">Total Est. Duration</div>
-        <div className=" indent-1 text-xxs text-white">{totalDuration}min</div>
-      </div>
+      </div> */}
+      <Settings>
+        <Settings.Section title="Total Est. Duration">
+          <div className=" indent-1 text-xxs text-white">
+            {totalDuration}min
+          </div>
+        </Settings.Section>
+      </Settings>
     </li>
   );
 }

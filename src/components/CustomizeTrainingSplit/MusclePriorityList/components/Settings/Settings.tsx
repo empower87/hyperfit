@@ -30,6 +30,7 @@ function Section({ title, children }: SectionProps) {
     </div>
   );
 }
+
 Settings.Breakpoints = Breakpoints;
 Settings.Button = ToggleButton;
 Settings.Section = Section;

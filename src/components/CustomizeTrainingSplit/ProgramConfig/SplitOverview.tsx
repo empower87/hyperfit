@@ -234,7 +234,7 @@ function SessionItem({ session, index, onSplitChange }: SessionItemProps) {
 
   return (
     <li
-      className={cn(`flex p-1 ${bgColor} space-x-1 border-2`, {
+      className={cn(`flex p-1 ${bgColor} space-x-1 rounded border-2`, {
         [`${BORDER_COLOR_M4}`]: session.split === ("off" as SplitType),
       })}
     >
