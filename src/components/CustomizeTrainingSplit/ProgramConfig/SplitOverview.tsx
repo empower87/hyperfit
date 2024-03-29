@@ -82,12 +82,14 @@ export function TrainingWeek() {
 
   const onSaveHandler = () => {
     // TODO: should do this filtering logic within REDUCER
+
     // const filteredWeek = draggableWeek.map((each) => {
     //   const sessions = each.sessions.filter(
     //     (ea) => ea.split !== ("off" as SplitType)
     //   );
     //   return { ...each, sessions: sessions };
     // });
+
     handleRearrangeTrainingWeek(draggableWeek);
   };
 
@@ -108,8 +110,8 @@ export function TrainingWeek() {
   };
 
   return (
-    <div className={" p-1"}>
-      <div className=" mb-1 flex space-x-1 overflow-x-auto">
+    <div className={"p-1"}>
+      <div className="mb-1 flex space-x-1 overflow-x-auto">
         <DragDropContext onDragEnd={onDragEnd}>
           {draggableWeek.map((each, index) => {
             const day = DAYS[index];
@@ -241,6 +243,7 @@ function SessionItem({ session, index, onSplitChange }: SessionItemProps) {
       {/* <div className="flex w-4 items-center justify-center text-xxs text-white">
         x
       </div> */}
+
       <div className={`flex`}>
         <SelectSession
           session={session.split}

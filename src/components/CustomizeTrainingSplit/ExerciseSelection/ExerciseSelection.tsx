@@ -497,16 +497,15 @@ function DroppableDay({
         )}
       </StrictModeDroppable>
 
-      {/* <div className=" mt-1 flex w-full flex-col">
-        <div className=" indent-1 text-xxs text-white">Total Est. Duration</div>
-      </div> */}
-      <Settings>
-        <Settings.Section title="Total Est. Duration">
-          <div className=" indent-1 text-xxs text-white">
-            {totalDuration}min
-          </div>
-        </Settings.Section>
-      </Settings>
+      <div className={`px-2 py-1`}>
+        <Settings>
+          <Settings.Section title="Total Est. Duration">
+            <div className=" indent-1 text-xxs text-white">
+              {totalDuration}min
+            </div>
+          </Settings.Section>
+        </Settings>
+      </div>
     </li>
   );
 }
