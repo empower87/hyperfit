@@ -37,7 +37,6 @@ import { getRankColor } from "~/utils/getRankColor";
 import { getSessionSplitColor } from "~/utils/getSessionSplitColor";
 import { capitalizeFirstLetter } from "~/utils/uiHelpers";
 import Settings from "../MusclePriorityList/components/Settings/Settings";
-import ExercisesPreview from "./components/ExercisesPreview";
 import MesocycleToggle from "./components/MesocycleToggle";
 import SessionDurationVariables from "./components/Settings/SessionDuration/SessionDurationVariables";
 import {
@@ -433,6 +432,7 @@ function DroppableDay({
   const [totalDuration, setTotalDuration] = useState(0);
   const { sessionDurationCalculator, durationTimeConstants } =
     useSessionDurationVariablesContext();
+
   useEffect(() => {
     const totalDuration = sessionDurationCalculator(
       exercises,
@@ -447,11 +447,12 @@ function DroppableDay({
         <div
           className={
             getSessionSplitColor(split).bg +
-            " indent-1 text-sm font-bold text-white"
+            "indent-1 text-sm font-bold text-white"
           }
         >
           {split}
         </div>
+
         <DaySessionItemHeaders />
       </div>
 
@@ -500,7 +501,7 @@ function DroppableDay({
       <div className={`px-2 py-1`}>
         <Settings>
           <Settings.Section title="Total Est. Duration">
-            <div className=" indent-1 text-xxs text-white">
+            <div className="indent-1 text-xxs text-white">
               {totalDuration}min
             </div>
           </Settings.Section>
@@ -563,30 +564,6 @@ function DayLayout({
           </ul>
         )}
       </StrictModeDroppable>
-    </div>
-  );
-}
-
-type TitleProps = {
-  title: string;
-  selected: string;
-  onClick: (title: string) => void;
-};
-function Title({ title, selected, onClick }: TitleProps) {
-  const isSelected = title === selected;
-  const text = isSelected ? "text-sm text-white" : "text-xxs text-slate-400";
-  return (
-    <div
-      className={cn(
-        `w-full cursor-pointer p-0.5 ${BG_COLOR_M7} hover:${BG_COLOR_M6}`,
-        {
-          [`${BG_COLOR_M6} text-m mb-1 text-white`]: isSelected,
-          [`${BG_COLOR_M7} text-sm text-slate-400`]: !isSelected,
-        }
-      )}
-      onClick={() => onClick(title)}
-    >
-      <p className={cn(`indent-1 ${text}`)}>{title}</p>
     </div>
   );
 }
@@ -744,7 +721,6 @@ const DURATION_TIME_CONSTRAINTS = {
   },
 };
 
-ExerciseOverview.ExercisePreview = ExercisesPreview;
 export default function ExerciseOverview() {
   return (
     <Section title={"EXERCISES"}>
