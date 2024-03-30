@@ -70,7 +70,7 @@ export function Breakpoints() {
   const { mrv_breakpoint, mev_breakpoint, handleUpdateBreakpoint } =
     useTrainingProgramContext();
   return (
-    <div className={`flex space-x-1`}>
+    <div className={`flex space-x-1 p-1`}>
       <VolumeSettingFrame
         title="MRV"
         breakpoint={mrv_breakpoint}

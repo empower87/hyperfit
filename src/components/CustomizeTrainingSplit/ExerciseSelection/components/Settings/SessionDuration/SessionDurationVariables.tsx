@@ -63,15 +63,11 @@ const TimeIncrementFrame = ({ label }: TimeIncrementFrameProps) => {
 
   return (
     <div className="flex">
-      {/* <div className="m-1 w-12 text-xs text-white">{label}</div> */}
-
-      {/* <div className="flex"> */}
       <IncrementBtn operation={"-"} onClick={() => onIncrement("-")} />
       <div className="m-1 flex w-6 items-center justify-center text-xs text-white">
         {time}
       </div>
       <IncrementBtn operation={"+"} onClick={() => onIncrement("+")} />
-      {/* </div> */}
     </div>
   );
 };

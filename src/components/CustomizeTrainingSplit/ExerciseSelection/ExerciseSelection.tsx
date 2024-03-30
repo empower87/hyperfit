@@ -18,7 +18,6 @@ import {
   BG_COLOR_M5,
   BG_COLOR_M6,
   BG_COLOR_M7,
-  BORDER_COLOR_M5,
   BORDER_COLOR_M6,
   BORDER_COLOR_M7,
   BORDER_COLOR_M8,
@@ -216,37 +215,37 @@ const ItemCell: FC<ItemCellProps> = ({ children, className, ...props }) => {
 
 function DaySessionItemHeaders() {
   return (
-    <div className="mt-1 flex w-full text-white">
+    <div className="flex w-full text-white">
       <ItemCell
-        className={`${BORDER_COLOR_M6} ${BG_COLOR_M5} ${ITEM_CELL_WIDTHS.index} text-xxxs`}
+        className={`${BORDER_COLOR_M6} ${BG_COLOR_M6} ${ITEM_CELL_WIDTHS.index} text-xxxs`}
       >
         {" "}
       </ItemCell>
       <div className="flex w-full">
         <ItemCell
-          className={`${BORDER_COLOR_M5} ${BG_COLOR_M6} ${ITEM_CELL_WIDTHS.sets} justify-center text-xxxs`}
+          className={`${BORDER_COLOR_M6} ${BG_COLOR_M7} ${ITEM_CELL_WIDTHS.sets} justify-center text-xxxs`}
         >
           Sets
         </ItemCell>
         <ItemCell
-          className={`${BORDER_COLOR_M5} ${BG_COLOR_M6} ${ITEM_CELL_WIDTHS.reps} justify-center text-xxxs`}
+          className={`${BORDER_COLOR_M6} ${BG_COLOR_M7} ${ITEM_CELL_WIDTHS.reps} justify-center text-xxxs`}
         >
           Reps
         </ItemCell>
         <ItemCell
-          className={`${BORDER_COLOR_M5} ${BG_COLOR_M6} ${ITEM_CELL_WIDTHS.lbs} justify-center text-xxxs`}
+          className={`${BORDER_COLOR_M6} ${BG_COLOR_M7} ${ITEM_CELL_WIDTHS.lbs} justify-center text-xxxs`}
         >
           Lbs
         </ItemCell>
         <div className="flex flex-col">
           <ItemCell
-            className={`${BORDER_COLOR_M6} ${BG_COLOR_M6} ${ITEM_CELL_WIDTHS.exercise} text-xxxs`}
+            className={`${BORDER_COLOR_M7} ${BG_COLOR_M7} ${ITEM_CELL_WIDTHS.exercise} text-xxxs`}
           >
             Exercise
           </ItemCell>
         </div>
         <ItemCell
-          className={`${BORDER_COLOR_M6} ${BG_COLOR_M6} ${ITEM_CELL_WIDTHS.actions} text-xxxs`}
+          className={`${BORDER_COLOR_M7} ${BG_COLOR_M7} ${ITEM_CELL_WIDTHS.actions} text-xxxs`}
         >
           {" "}
         </ItemCell>
@@ -441,16 +440,21 @@ function DroppableDay({
     setTotalDuration(totalDuration);
   }, [selectedMicrocycleIndex, exercises, durationTimeConstants]);
 
+  const [openMenu, setOpenMenu] = useState(false);
+
+  const openMenuHandler = () => {
+    setOpenMenu(true);
+  };
   return (
-    <li className="">
-      <div className={"flex flex-col px-1"}>
+    <li className={`${BG_COLOR_M6} rounded p-1`}>
+      <div className={"flex flex-col pb-1"}>
         <div
           className={
             getSessionSplitColor(split).bg +
-            "indent-1 text-sm font-bold text-white"
+            " mx-1 mb-2 mt-1 flex items-center rounded-sm p-0.5 indent-1 text-sm font-bold text-white"
           }
         >
-          {split}
+          {split.charAt(0).toUpperCase() + split.slice(1)}
         </div>
 
         <DaySessionItemHeaders />
@@ -463,7 +467,7 @@ function DroppableDay({
         {(provided, snapshot) => (
           <ul
             id={`week_${mesocycleIndex}`}
-            className="w-full p-1"
+            className="w-full pr-0.5"
             {...provided.droppableProps}
             ref={provided.innerRef}
           >
@@ -498,7 +502,7 @@ function DroppableDay({
         )}
       </StrictModeDroppable>
 
-      <div className={`px-2 py-1`}>
+      <div className={`m-1 flex justify-between border p-1`}>
         <Settings>
           <Settings.Section title="Total Est. Duration">
             <div className="indent-1 text-xxs text-white">
@@ -506,11 +510,27 @@ function DroppableDay({
             </div>
           </Settings.Section>
         </Settings>
+
+        <div
+          onClick={() => openMenuHandler()}
+          className="relative flex justify-center pr-2"
+        >
+          <DotsIcon fill="#1E293B" />
+          {/* {openMenu ? <Menu /> : null} */}
+        </div>
       </div>
     </li>
   );
 }
-
+function Menu() {
+  return (
+    <div
+      className={`${BG_COLOR_M7} absolute left-0 top-0 flex flex-col space-y-1 rounded p-1`}
+    >
+      <div className={`text-xxs text-white`}>Edit Duration Settings</div>
+    </div>
+  );
+}
 type DayLayoutProps = {
   session: DraggableExercises;
   mesocycleIndex: number;
@@ -532,8 +552,8 @@ function DayLayout({
 
   return (
     <div className={`${BG_COLOR_M5} rounded`}>
-      <div className={`${BORDER_COLOR_M8} mb-1 border-b-2 p-1`}>
-        <h3 className=" indent-1 text-white">{day}</h3>
+      <div className={`${BORDER_COLOR_M8} border-b-2 p-1`}>
+        <h3 className="indent-1 text-white">{day}</h3>
       </div>
 
       <StrictModeDroppable
@@ -543,7 +563,7 @@ function DayLayout({
         {(provided, snapshot) => (
           <ul
             id={`session_${mesocycleIndex}`}
-            className="flex flex-col"
+            className="flex flex-col p-1"
             {...provided.droppableProps}
             ref={provided.innerRef}
           >

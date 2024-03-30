@@ -88,7 +88,7 @@ function Muscle({ muscle, rank }: MuscleProps) {
       className={`flex flex-col ${BG_COLOR_M7} scroll-smooth rounded`}
     >
       <div className={`flex rounded-t ${bgColor.bg} justify-between border-b`}>
-        <div className={`flex p-1 text-sm text-white`}>
+        <div className={`flex w-32 p-1 text-sm text-white`}>
           <div className={`flex w-3 items-center justify-center text-xxs`}>
             {rank}
           </div>
@@ -159,7 +159,6 @@ function Muscle({ muscle, rank }: MuscleProps) {
               );
             })}
           </div>
-          {/* <div>{totalVolume}</div> */}
         </BottomBar.Section>
       </BottomBar>
     </div>

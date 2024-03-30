@@ -421,8 +421,10 @@ export function MiniMusclePriorityList() {
         </Settings.Section>
 
         <Settings.Section title="Toggles">
-          <Settings.Button title="All MEV" />
-          <Settings.Button title="All MV" />
+          <div className={`flex space-x-1 p-1`}>
+            <Settings.Button title="All MEV" />
+            <Settings.Button title="All MV" />
+          </div>
         </Settings.Section>
       </Settings>
 

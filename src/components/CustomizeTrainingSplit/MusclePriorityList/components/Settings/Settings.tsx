@@ -26,7 +26,7 @@ function Section({ title, children }: SectionProps) {
       >
         {title}
       </div>
-      <div className={`flex space-x-1 p-1`}>{children}</div>
+      <div className={`flex space-x-1`}>{children}</div>
     </div>
   );
 }
