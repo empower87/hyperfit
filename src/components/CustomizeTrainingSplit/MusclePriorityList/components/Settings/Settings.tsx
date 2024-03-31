@@ -1,5 +1,12 @@
 import { ReactNode } from "react";
-import { BG_COLOR_M6, BORDER_COLOR_M6 } from "~/constants/themes";
+import {
+  BG_COLOR_M5,
+  BG_COLOR_M6,
+  BG_COLOR_M7,
+  BORDER_COLOR_M5,
+  BORDER_COLOR_M6,
+  BORDER_COLOR_M7,
+} from "~/constants/themes";
 import { cn } from "~/lib/clsx";
 import { Breakpoints } from "./Breakpoints";
 
@@ -16,13 +23,22 @@ function ToggleButton({ title }: { title: string }) {
 type SettingsProps = {
   children: ReactNode;
 };
-type SectionProps = SettingsProps & { title: string };
+type SectionProps = SettingsProps & {
+  title: string;
+  variant?: "dark" | "light";
+};
 
-function Section({ title, children }: SectionProps) {
+function Section({ title, variant, children }: SectionProps) {
+  const variants =
+    variant === "dark"
+      ? { border: BORDER_COLOR_M7, bg: BG_COLOR_M7 }
+      : variant === "light"
+      ? { border: BORDER_COLOR_M5, bg: BG_COLOR_M5 }
+      : { border: BORDER_COLOR_M6, bg: BG_COLOR_M6 };
   return (
-    <div className={`flex flex-col rounded border ${BORDER_COLOR_M6}`}>
+    <div className={`flex flex-col rounded border ${variants.border}`}>
       <div
-        className={`flex items-center justify-center px-2 py-0.5 text-xxs text-slate-300 ${BG_COLOR_M6}`}
+        className={`flex items-center justify-center px-2 py-0.5 text-xxs text-slate-300 ${variants.bg}`}
       >
         {title}
       </div>
@@ -35,5 +51,5 @@ Settings.Breakpoints = Breakpoints;
 Settings.Button = ToggleButton;
 Settings.Section = Section;
 export default function Settings({ children }: SettingsProps) {
-  return <div className={cn(`flex space-x-1 pb-2`)}>{children}</div>;
+  return <div className={cn(`flex space-x-1`)}>{children}</div>;
 }

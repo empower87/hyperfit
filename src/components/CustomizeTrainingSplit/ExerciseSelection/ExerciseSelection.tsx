@@ -4,20 +4,22 @@ import {
   ReactNode,
   useCallback,
   useEffect,
-  useRef,
   useState,
 } from "react";
 import { DragDropContext, Draggable } from "react-beautiful-dnd";
 import ReactDOM from "react-dom";
 import { DotsIcon } from "~/assets/icons/_icons";
+import Dropdown from "~/components/Layout/Dropdown";
 import {
   CardS as Card,
   SectionH2 as Section,
 } from "~/components/Layout/Sections";
+import Modal from "~/components/Modals/Modal";
 import {
   BG_COLOR_M5,
   BG_COLOR_M6,
   BG_COLOR_M7,
+  BORDER_COLOR_M5,
   BORDER_COLOR_M6,
   BORDER_COLOR_M7,
   BORDER_COLOR_M8,
@@ -117,12 +119,12 @@ function DropdownListModal({
   onClose,
   onItemClick,
 }: DropdownListProps) {
-  const root = document.getElementById("modal-body")!;
+  // const root = document.getElementById("modal-body")!;
 
-  if (!isOpen) return null;
-  return ReactDOM.createPortal(
+  // if (!isOpen) return null;
+  return (
     <div
-      className="absolute z-10 flex h-full w-full flex-col items-center justify-center"
+      className="flex h-full w-full flex-col items-center justify-center"
       onClick={() => onClose()}
     >
       <ul className={cn(`w-52 ${BG_COLOR_M6}`)}>
@@ -151,8 +153,7 @@ function DropdownListModal({
         <button className="text-xs text-white">Cancel</button>
         <button className="text-xs text-white">Select</button>
       </div>
-    </div>,
-    root
+    </div>
   );
 }
 
@@ -217,7 +218,7 @@ function DaySessionItemHeaders() {
   return (
     <div className="flex w-full text-white">
       <ItemCell
-        className={`${BORDER_COLOR_M6} ${BG_COLOR_M6} ${ITEM_CELL_WIDTHS.index} text-xxxs`}
+        className={`${BORDER_COLOR_M5} ${BG_COLOR_M5} ${ITEM_CELL_WIDTHS.index} text-xxxs`}
       >
         {" "}
       </ItemCell>
@@ -323,6 +324,15 @@ function DaySessionItem({
     setIsOpen(false);
   };
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const onModalOpen = () => {
+    setIsModalOpen(true);
+    onDropdownClose();
+  };
+  const onModalClose = () => {
+    setIsModalOpen(false);
+  };
+
   useEffect(() => {
     const supersettedColor = supersets?.get(exercise.id);
     let bgColor = "";
@@ -389,18 +399,30 @@ function DaySessionItem({
           </ItemCell>
         </div>
 
-        <ItemCell className={`${BORDER_COLOR} ${ITEM_CELL_WIDTHS.actions}`}>
+        <ItemCell
+          className={`${BORDER_COLOR} ${ITEM_CELL_WIDTHS.actions} relative`}
+        >
           <DropdownButton onDropdownClick={onDropdownClick} />
+          {isOpen ? (
+            <Dropdown onClose={onDropdownClose}>
+              <Dropdown.Item onClick={onModalOpen}>
+                Create Superset
+              </Dropdown.Item>
+            </Dropdown>
+          ) : null}
         </ItemCell>
-        {isOpen ? (
-          <DropdownListModal
-            items={exercises}
-            supersets={supersets}
-            selectedId={exercise.id}
-            isOpen={isOpen}
-            onClose={onDropdownClose}
-            onItemClick={onItemClick}
-          />
+
+        {isModalOpen ? (
+          <Modal isOpen={isModalOpen} onClose={onModalClose}>
+            <DropdownListModal
+              items={exercises}
+              supersets={supersets}
+              selectedId={exercise.id}
+              isOpen={isOpen}
+              onClose={onDropdownClose}
+              onItemClick={onItemClick}
+            />
+          </Modal>
         ) : null}
       </div>
     </li>
@@ -428,9 +450,12 @@ function DroppableDay({
   selectedMicrocycleIndex,
   onSupersetUpdate,
 }: DroppableDayProps) {
-  const [totalDuration, setTotalDuration] = useState(0);
   const { sessionDurationCalculator, durationTimeConstants } =
     useSessionDurationVariablesContext();
+
+  const [totalDuration, setTotalDuration] = useState(0);
+  const [isDropdownOpen, setIsdropdownOpen] = useState(false);
+  const [isDurationModalOpen, setIsDurationModalOpen] = useState(false);
 
   useEffect(() => {
     const totalDuration = sessionDurationCalculator(
@@ -440,13 +465,12 @@ function DroppableDay({
     setTotalDuration(totalDuration);
   }, [selectedMicrocycleIndex, exercises, durationTimeConstants]);
 
-  const [openMenu, setOpenMenu] = useState(false);
-
-  const openMenuHandler = () => {
-    setOpenMenu(true);
-  };
+  const onOpenDropdown = () => setIsdropdownOpen(true);
+  const onCloseDropdown = () => setIsdropdownOpen(false);
+  const onOpenDurationModal = () => setIsDurationModalOpen(true);
+  const onCloseDurationModal = () => setIsDurationModalOpen(false);
   return (
-    <li className={`${BG_COLOR_M6} rounded p-1`}>
+    <li className={`${BG_COLOR_M5} rounded p-1`}>
       <div className={"flex flex-col pb-1"}>
         <div
           className={
@@ -502,9 +526,9 @@ function DroppableDay({
         )}
       </StrictModeDroppable>
 
-      <div className={`m-1 flex justify-between border p-1`}>
+      <div className={`m-1 flex justify-between p-1`}>
         <Settings>
-          <Settings.Section title="Total Est. Duration">
+          <Settings.Section title="Total Duration">
             <div className="indent-1 text-xxs text-white">
               {totalDuration}min
             </div>
@@ -512,25 +536,33 @@ function DroppableDay({
         </Settings>
 
         <div
-          onClick={() => openMenuHandler()}
-          className="relative flex justify-center pr-2"
+          onClick={() => onOpenDropdown()}
+          className="relative flex cursor-pointer items-center justify-center"
         >
           <DotsIcon fill="#1E293B" />
-          {/* {openMenu ? <Menu /> : null} */}
+          {isDropdownOpen ? (
+            <Dropdown onClose={onCloseDropdown}>
+              <Dropdown.Item onClick={onOpenDurationModal}>
+                Edit Duration Settings
+              </Dropdown.Item>
+            </Dropdown>
+          ) : null}
         </div>
+
+        {isDurationModalOpen ? (
+          <Modal isOpen={isDurationModalOpen} onClose={onCloseDurationModal}>
+            <div className="mb-2 flex justify-center space-x-2 text-xxs text-white">
+              <Card title="SETTINGS">
+                <SessionDurationVariables />
+              </Card>
+            </div>
+          </Modal>
+        ) : null}
       </div>
     </li>
   );
 }
-function Menu() {
-  return (
-    <div
-      className={`${BG_COLOR_M7} absolute left-0 top-0 flex flex-col space-y-1 rounded p-1`}
-    >
-      <div className={`text-xxs text-white`}>Edit Duration Settings</div>
-    </div>
-  );
-}
+
 type DayLayoutProps = {
   session: DraggableExercises;
   mesocycleIndex: number;
@@ -551,7 +583,7 @@ function DayLayout({
   const { day, sessions } = session;
 
   return (
-    <div className={`${BG_COLOR_M5} rounded`}>
+    <div className={`${BG_COLOR_M6} rounded`}>
       <div className={`${BORDER_COLOR_M8} border-b-2 p-1`}>
         <h3 className="indent-1 text-white">{day}</h3>
       </div>
@@ -569,15 +601,17 @@ function DayLayout({
           >
             {sessions.map((each, index) => {
               return (
-                <DroppableDay
-                  key={`${each.id}_${index}_${mesocycleIndex}`}
-                  split={each.split}
-                  mesocycleIndex={mesocycleIndex}
-                  droppableId={each.id}
-                  exercises={each.exercises}
-                  selectedMicrocycleIndex={selectedMicrocycleIndex}
-                  onSupersetUpdate={onSupersetUpdate}
-                />
+                <SessionDurationVariablesProvider>
+                  <DroppableDay
+                    key={`${each.id}_${index}_${mesocycleIndex}`}
+                    split={each.split}
+                    mesocycleIndex={mesocycleIndex}
+                    droppableId={each.id}
+                    exercises={each.exercises}
+                    selectedMicrocycleIndex={selectedMicrocycleIndex}
+                    onSupersetUpdate={onSupersetUpdate}
+                  />
+                </SessionDurationVariablesProvider>
               );
             })}
             {provided.placeholder}
@@ -690,143 +724,10 @@ function WeekSessions({
   );
 }
 
-type DurationTimeConstants = typeof DURATION_TIME_CONSTRAINTS;
-type DurationTimeConstantsKeys = keyof DurationTimeConstants;
-type DurationTimeConstraint = DurationTimeConstants[DurationTimeConstantsKeys];
-
-const MODALITY_TIME_CONSTRAINTS = {
-  myoreps: {
-    value: 10,
-    min: 1,
-    max: 15,
-    increment: 1,
-    rir: "0-2",
-    initialReps: 10,
-    followingReps: 5,
-    followingRepsPercentageConstant: 0.41,
-  },
-  dropsets: {
-    value: 5,
-    min: 0,
-    max: 10,
-    increment: 1,
-    rir: "0-4",
-  },
-};
-// NOTE: use seconds
-const DURATION_TIME_CONSTRAINTS = {
-  warmup: {
-    value: 300,
-    min: 0,
-    max: 600,
-    increment: 30,
-  },
-  rest: {
-    value: 120,
-    min: 0,
-    max: 300,
-    increment: 15,
-  },
-  superset: {
-    value: 90,
-    min: 0,
-    max: 120,
-    increment: 10,
-  },
-  rep: {
-    value: 2,
-    min: 1,
-    max: 10,
-    increment: 1,
-  },
-};
-
 export default function ExerciseOverview() {
   return (
     <Section title={"EXERCISES"}>
-      <SessionDurationVariablesProvider>
-        <div className="mb-2 flex justify-center space-x-2 text-xxs text-white">
-          <Card title="SETTINGS">
-            <SessionDurationVariables />
-          </Card>
-        </div>
-
-        <SessionsWithExercises />
-      </SessionDurationVariablesProvider>
+      <SessionsWithExercises />
     </Section>
   );
 }
-
-type TimeIncrementFrameProps = {
-  title: DurationTimeConstantsKeys;
-  constraints: DurationTimeConstraint;
-  onTimeChange: (key: DurationTimeConstantsKeys, time: number) => void;
-};
-
-type IncrementBtnProps = {
-  operation: "+" | "-";
-  onClick: () => void;
-};
-const IncrementBtn = ({ operation, onClick }: IncrementBtnProps) => {
-  return (
-    <button
-      className={cn(
-        `${BG_COLOR_M5} m-1 flex h-4 w-4 items-center justify-center p-1 text-xs text-white`
-      )}
-      onClick={onClick}
-    >
-      {operation}
-    </button>
-  );
-};
-
-const TimeIncrementFrame = ({
-  title,
-  constraints,
-  onTimeChange,
-}: TimeIncrementFrameProps) => {
-  const [time, setTime] = useState<string>("00:00");
-  const { value, min, max, increment } = constraints;
-  const timeInSecondsRef = useRef<number>(value);
-
-  useEffect(() => {
-    const formattedTime = formatTime(timeInSecondsRef.current);
-    setTime(formattedTime);
-  }, [timeInSecondsRef]);
-
-  const onIncrement = (operation: "+" | "-") => {
-    if (operation === "+") {
-      if (timeInSecondsRef.current + increment > max) return;
-      timeInSecondsRef.current = timeInSecondsRef.current + increment;
-    } else {
-      if (timeInSecondsRef.current - increment < min) return;
-      timeInSecondsRef.current = timeInSecondsRef.current - increment;
-    }
-    const formattedTime = formatTime(timeInSecondsRef.current);
-    setTime(formattedTime);
-    onTimeChange(title, timeInSecondsRef.current);
-  };
-
-  const formatTime = (time: number) => {
-    const minutes = Math.floor(time / 60);
-    const remainingSeconds = time % 60;
-
-    return `${minutes.toString().padStart(2, "0")}:${remainingSeconds
-      .toString()
-      .padStart(2, "0")}`;
-  };
-
-  return (
-    <div className="flex">
-      <div className="m-1 w-12 text-xs text-white">{title}</div>
-
-      <div className="flex">
-        <IncrementBtn operation={"-"} onClick={() => onIncrement("-")} />
-        <div className="m-1 flex w-6 items-center justify-center text-xs text-white">
-          {time}
-        </div>
-        <IncrementBtn operation={"+"} onClick={() => onIncrement("+")} />
-      </div>
-    </div>
-  );
-};

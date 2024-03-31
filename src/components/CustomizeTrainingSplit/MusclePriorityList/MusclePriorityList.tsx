@@ -415,18 +415,20 @@ export function MiniMusclePriorityList() {
 
   return (
     <Card title="PRIORITIZE MUSCLES">
-      <Settings>
-        <Settings.Section title="Breakpoints">
-          <Settings.Breakpoints />
-        </Settings.Section>
+      <div className={`pb-2`}>
+        <Settings>
+          <Settings.Section title="Breakpoints">
+            <Settings.Breakpoints />
+          </Settings.Section>
 
-        <Settings.Section title="Toggles">
-          <div className={`flex space-x-1 p-1`}>
-            <Settings.Button title="All MEV" />
-            <Settings.Button title="All MV" />
-          </div>
-        </Settings.Section>
-      </Settings>
+          <Settings.Section title="Toggles">
+            <div className={`flex space-x-1 p-1`}>
+              <Settings.Button title="All MEV" />
+              <Settings.Button title="All MV" />
+            </div>
+          </Settings.Section>
+        </Settings>
+      </div>
 
       <DragDropContext onDragEnd={onReorder}>
         <StrictModeDroppable droppableId="droppable">
