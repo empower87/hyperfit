@@ -4,7 +4,7 @@ import { BG_COLOR_M7, BG_COLOR_M8 } from "~/constants/themes";
 
 const Home: NextPage = () => {
   return (
-    <div id="modal-body" className={BG_COLOR_M8 + " m-auto h-full"}>
+    <div id="modal-body" className={BG_COLOR_M8 + " flex h-full"}>
       <div
         className={
           BG_COLOR_M7 +
@@ -13,6 +13,8 @@ const Home: NextPage = () => {
       >
         <h1 className=" text-lg font-bold text-white">Hyperfit</h1>
       </div>
+
+      {/* <TableOfContents /> */}
 
       <PageContent />
     </div>

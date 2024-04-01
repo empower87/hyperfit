@@ -1,5 +1,4 @@
 import { ReactNode, useCallback, useEffect, useState } from "react";
-import { useInView } from "react-intersection-observer";
 import { ArrowUpIcon, DotsIcon, PlusIcon } from "~/assets/icons/_icons";
 import { SectionH2 } from "~/components/Layout/Sections";
 import Modal from "~/components/Modals/Modal";
@@ -24,7 +23,6 @@ import { getRankColor } from "~/utils/getRankColor";
 import { ChangeExerciseProvider } from "../ChangeExerciseModal/ChangeExerciseContext";
 import SelectExercise from "../ChangeExerciseModal/ChangeExerciseModal";
 import BottomBar from "./components/BottomBar";
-import HeaderScrollNav from "./components/HeaderScrollNav";
 import {
   MuscleEditorProvider,
   useMuscleEditorContext,
@@ -38,22 +36,22 @@ export default function MuscleEditor() {
     setList([...prioritized_muscle_list]);
   }, [prioritized_muscle_list]);
 
-  const { ref, inView } = useInView({
-    rootMargin: "0% 0% -80% 0%",
-  });
-  const [sticky, setSticky] = useState(false);
+  // const { ref, inView } = useInView({
+  //   rootMargin: "0% 0% -80% 0%",
+  // });
+  // const [sticky, setSticky] = useState(false);
 
-  useEffect(() => {
-    if (inView) {
-      setSticky(true);
-    } else {
-      setSticky(false);
-    }
-  }, [inView]);
+  // useEffect(() => {
+  //   if (inView) {
+  //     setSticky(true);
+  //   } else {
+  //     setSticky(false);
+  //   }
+  // }, [inView]);
   return (
     <SectionH2 title="MUSCLE EDITOR">
-      <HeaderScrollNav isSticky={sticky} />
-      <div ref={ref} className={`space-y-2 scroll-smooth`}>
+      {/* <HeaderScrollNav isSticky={sticky} /> */}
+      <ul className={`space-y-2 scroll-smooth`}>
         {list.map((each, index) => {
           return (
             <MuscleEditorProvider muscle={each}>
@@ -61,7 +59,7 @@ export default function MuscleEditor() {
             </MuscleEditorProvider>
           );
         })}
-      </div>
+      </ul>
     </SectionH2>
   );
 }
@@ -83,8 +81,8 @@ function Muscle({ muscle, rank }: MuscleProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   return (
-    <div
-      id={muscle.id}
+    <li
+      id={muscle.muscle}
       className={`flex flex-col ${BG_COLOR_M7} scroll-smooth rounded`}
     >
       <div className={`flex rounded-t ${bgColor.bg} justify-between border-b`}>
@@ -161,7 +159,7 @@ function Muscle({ muscle, rank }: MuscleProps) {
           </div>
         </BottomBar.Section>
       </BottomBar>
-    </div>
+    </li>
   );
 }
 
@@ -232,7 +230,7 @@ function Exercises() {
   }, [muscleGroup, selectedMesocycleIndex]);
 
   return (
-    <div className={`flex space-x-1 overflow-x-auto`}>
+    <div className={`flex min-h-[95px] space-x-1 overflow-x-auto`}>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ChangeExerciseProvider muscle={muscleGroup} exerciseId={""}>
           <SelectExercise onSelect={onSelectHandler} />
@@ -320,7 +318,6 @@ function SessionItem({ exercises, indices, dayIndex }: SessionItemProps) {
         <div className={`flex pr-1`}>
           <div className={``}>Week </div>
           {microcycles.map((e, i) => {
-            console.log(microcycles, "wtf?");
             return (
               <div
                 className={cn(`flex w-3 items-center justify-center text-xxs`, {

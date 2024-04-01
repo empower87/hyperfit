@@ -1,7 +1,8 @@
 import { BG_COLOR_M5, BG_COLOR_M7 } from "~/constants/themes";
 import { TrainingProgramProvider } from "~/hooks/useTrainingProgram/useTrainingProgram";
-import { SectionXL as Section } from "../Layout/Sections";
+import { SectionH2 as Section } from "../Layout/Sections";
 import TrainingBlock from "../Macrocycle/TrainingBlock/TrainingBlock";
+import TableOfContents from "../TableofContents/TableOfContents";
 import ExerciseOverview from "./ExerciseSelection/ExerciseSelection";
 import MuscleEditor from "./ExerciseSelection/components/ExerciseEditor/MuscleEditor";
 import {
@@ -14,36 +15,40 @@ import { useProgramConfigContext } from "./ProgramConfig/hooks/useProgramConfig"
 
 export default function PageContent() {
   return (
-    <div className="m-auto box-border min-h-full max-w-[1200px] px-3 py-10">
-      <TrainingProgramProvider>
-        <Section title="Customize Training Program">
-          <ProgramConfig>
-            <MiniMusclePriorityList />
+    <TrainingProgramProvider>
+      <div className={`mx-auto flex h-max max-w-[1200px] px-3 py-10`}>
+        <TableOfContents />
 
-            <div className={`flex flex-col space-y-1`}>
-              <ProgramConfig.Periodization />
+        <div className="w-5/6">
+          <Section title="CONFIGURATION">
+            <ProgramConfig>
+              <MiniMusclePriorityList />
 
-              <SplitOverview>
-                <SplitOverview.Split />
-                <SplitOverview.Week />
-              </SplitOverview>
+              <div className={`flex flex-col space-y-1`}>
+                <ProgramConfig.Periodization />
 
-              <Buttons />
+                <SplitOverview>
+                  <SplitOverview.Split />
+                  <SplitOverview.Week />
+                </SplitOverview>
+
+                <Buttons />
+              </div>
+            </ProgramConfig>
+
+            <div className="mb-2 flex flex-col">
+              <MuscleEditor />
             </div>
-          </ProgramConfig>
 
-          <div className="mb-2 flex flex-col">
-            <MuscleEditor />
-          </div>
+            <ExerciseOverview />
+          </Section>
 
-          <ExerciseOverview />
-        </Section>
-
-        <Section title="Training Block Overview">
-          <TrainingBlock />
-        </Section>
-      </TrainingProgramProvider>
-    </div>
+          <Section title="TRAINING BLOCK OVERVIEW">
+            <TrainingBlock />
+          </Section>
+        </div>
+      </div>
+    </TrainingProgramProvider>
   );
 }
 

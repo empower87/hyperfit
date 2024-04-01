@@ -651,7 +651,7 @@ function SessionsWithExercises() {
   };
 
   return (
-    <div className={`flex flex-col items-center`}>
+    <div id="exercise_editor" className={`flex flex-col items-center`}>
       <MesocycleToggle
         mesocycles={mesocycleTitles}
         microcycles={microcycleTitles}

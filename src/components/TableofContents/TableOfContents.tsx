@@ -1,28 +1,109 @@
+import { useEffect, useState } from "react";
 import { BORDER_COLOR_M6 } from "~/constants/themes";
+import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
+import { cn } from "~/lib/clsx";
+import getMuscleTitleForUI from "~/utils/getMuscleTitleForUI";
+import { useHeadsObserver } from "./useHeadsObserver";
 
-const CONTENTS = [
+type ContentsType = {
+  title: string;
+  id: string;
+  children: ContentsType[];
+};
+const CONTENTS: ContentsType[] = [
   {
     title: "Configuration",
+    id: "configuration",
     children: [],
   },
   {
     title: "Muscle Editor",
+    id: "muscle_editor",
     children: [],
   },
   {
     title: "Exercise Editor",
+    id: "exercise_editor",
     children: [],
   },
   {
     title: "Training Block",
+    id: "training_block",
     children: [],
   },
 ];
-export default function TableOfContents() {
+
+type ItemProps = {
+  title: string;
+  id: string;
+  activeId: string;
+};
+
+function Item({ title, id, activeId }: ItemProps) {
+  const onLinkClick = (e: any) => {
+    e.preventDefault();
+    document.querySelector(`#${id}`)?.scrollIntoView({ behavior: "smooth" });
+  };
+
   return (
-    <div className={`flex flex-col ${BORDER_COLOR_M6} rounded border-2 p-1`}>
-      <h1 className={`text-white`}>Table of Contents</h1>
-      <div className={`flex flex-col space-y-1`}></div>
+    <a
+      href={`#${title}`}
+      className={cn(`flex p-0.5 text-xs text-slate-300`, {
+        "text-rose-400": activeId === id,
+      })}
+      onClick={(e) => onLinkClick(e)}
+    >
+      {title}
+    </a>
+  );
+}
+
+type ContentsProps = ContentsType & {
+  activeId: string;
+};
+function Contents({ title, id, activeId, children }: ContentsProps) {
+  return (
+    <div className={``}>
+      <Item title={title} id={id} activeId={activeId} />
+      <div className={`flex flex-col space-y-1 pl-2`}>
+        {children.map((child) => {
+          return <Item title={child.title} id={child.id} activeId={activeId} />;
+        })}
+      </div>
     </div>
+  );
+}
+
+export default function TableOfContents() {
+  const { prioritized_muscle_list } = useTrainingProgramContext();
+  const { activeId } = useHeadsObserver();
+  const [contents, setContents] = useState<ContentsType[]>([...CONTENTS]);
+
+  useEffect(() => {
+    const muscleEditorChildren = prioritized_muscle_list.map((muscle) => {
+      const name = getMuscleTitleForUI(muscle.muscle);
+      return { title: name, id: muscle.muscle, children: [] };
+    });
+    const newContents = [...CONTENTS];
+    newContents[1].children = muscleEditorChildren;
+    setContents(newContents);
+  }, [prioritized_muscle_list]);
+
+  useEffect(() => {
+    console.log(activeId, "WTF THIS GONE LOOK LIKE??");
+  }, [activeId]);
+  return (
+    <aside
+      className={`sticky top-[65px] m-2 flex h-full w-1/6 flex-col items-end self-start overflow-y-auto overflow-x-hidden rounded`}
+    >
+      <div className={`w-2/3 rounded border-2 px-2 py-4 ${BORDER_COLOR_M6}`}>
+        <div className={`my-3 text-xxs text-white`}>TABLE OF CONTENTS</div>
+        <div className={`flex flex-col space-y-1`}>
+          {contents.map((contents) => {
+            return <Contents {...contents} activeId={activeId} />;
+          })}
+        </div>
+      </div>
+    </aside>
   );
 }
