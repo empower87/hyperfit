@@ -110,11 +110,12 @@ function ExerciseCell({
 }
 
 function HeaderCell({ values, width, cellWidths }: HeaderCellProps) {
-  let bgColor = values[0] === "" ? "" : BG_COLOR_M7;
+  const bgColor = values[0] === "" ? "" : BG_COLOR_M7;
   return (
     <div className={bgColor + " flex flex-row"} style={{ width: width }}>
       {values.map((each, index) => (
         <Cell
+          key={`${each}_${index}_HeaderCellTBlock`}
           value={each}
           width={cellWidths[index]}
           alignment="justify-center"
@@ -132,7 +133,7 @@ function MicrocycleCell({
   position,
 }: MicrocycleCellsProps) {
   const getCellData = (week: Week, details: ExerciseDetails) => {
-    let _details = details;
+    const _details = details;
 
     switch (week) {
       case "week 1":
@@ -168,7 +169,6 @@ function MicrocycleCell({
   const bottomBorder = position !== "last" ? " border-b" : " border-b-2";
   const topBorder = position === "first" ? " border-t-2" : " ";
 
-  // const cells = getCellData(week, details);
   const cells = details;
   return (
     <div

@@ -206,7 +206,7 @@ export const distributePPLSplitAcrossWeek = (
     const nextSession = getNextSplitPPL(lastIn, counter);
 
     if (_week[i].isTrainingDay && nextSession) {
-      let session: SessionType = {
+      const session: SessionType = {
         id: `${i}_${nextSession}_session`,
         split: nextSession,
         exercises: [],
@@ -337,7 +337,7 @@ export const distributeULSplitAcrossWeek = (
     const nextSession = getNextSplitUL(lastIn, counter, preferred);
 
     if (_week[i].isTrainingDay && nextSession) {
-      let session: SessionType = {
+      const session: SessionType = {
         id: `${i}_${nextSession}_session`,
         split: nextSession,
         exercises: [],

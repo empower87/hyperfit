@@ -25,7 +25,6 @@ export const INITIAL_TRAINING_PROGRAM_PARAMS: TrainingProgramParamsType = {
 
 type Action = {
   type: string;
-  payload: any;
 };
 
 export function trainingProgramSettingsReducer(
@@ -35,19 +34,16 @@ export function trainingProgramSettingsReducer(
   switch (action.type) {
     case "SET_TRAINING_PROGRAM_PARAMS":
       return {
-       ...state,
-       ...action.payload,
+        ...state,
       };
     case "SET_SESSIONS_PER_DAY":
       return {
-       ...state,
-        sessions_per_day: action.payload,
+        ...state,
       };
     case "SET_DAYS":
       return {
-       ...state,
-        days: action.payload
-      }
+        ...state,
+      };
     default:
       return state;
   }

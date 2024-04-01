@@ -164,7 +164,7 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
     const matrix = muscleGroup.volume.setProgressionMatrix;
     // const currentMesocycleMatrix = matrix[selectedMesocycleIndex];
 
-    let totals: number[] = [];
+    const totals: number[] = [];
     for (let i = 0; i < matrix.length; i++) {
       const lastMatrix = matrix[i][microcycles - 1];
       const totalVolume = lastMatrix.flat().reduce((acc, cur) => acc + cur, 0);
@@ -203,7 +203,7 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
 
         if (meso[0][dayIndex]) {
           const frequencyProgression = muscleGroup.volume.frequencyProgression;
-          let frequency = frequencyProgression[i];
+          const frequency = frequencyProgression[i];
           let curCount = setProg[frequency - 1][0][0];
 
           for (let j = 0; j < meso.length; j++) {
