@@ -54,11 +54,13 @@ export default function PageContent() {
 
 function Buttons() {
   const { onSaveConfig } = useProgramConfigContext();
-
+  const onResetConfig = () => {
+    console.log("reset");
+  };
   return (
     <div className={`flex justify-end space-x-1 rounded p-2 ${BG_COLOR_M7}`}>
       <Button
-        onClick={() => {}}
+        onClick={onResetConfig}
         className={`flex rounded px-2 text-slate-700 ${BG_COLOR_M5}`}
       >
         Reset

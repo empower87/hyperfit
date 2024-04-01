@@ -129,7 +129,6 @@ function DropdownListModal({
     >
       <ul className={cn(`w-52 ${BG_COLOR_M6}`)}>
         {items.map((each, index) => {
-          const supersetted = supersets?.get(each.id);
           return (
             <li
               className={cn(
@@ -303,8 +302,9 @@ function DaySessionItem({
 
   const onItemClick = useCallback((exerciseOne: ExerciseType) => {
     // sorts supersetted exercises by place in list
-    let indexOne = exercises.findIndex((each) => each.id === exerciseOne.id);
-    let indexTwo = exercises.findIndex((each) => each.id === exercise.id);
+    const indexOne = exercises.findIndex((each) => each.id === exerciseOne.id);
+    const indexTwo = exercises.findIndex((each) => each.id === exercise.id);
+
     if (indexOne === indexTwo) return;
 
     let one = exerciseOne;
