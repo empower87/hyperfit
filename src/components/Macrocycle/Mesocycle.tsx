@@ -99,7 +99,7 @@ export function MesocycleTable({ split, onEdit }: MesocycleTableProps) {
         style={{ width: "700px" }}
       >
         <TableHeadColumns />
-        <tbody className="">
+        {/* <tbody className="">
           {split.map((each, index) => {
             let sessionOne = each.sessions[0];
             let sessionTwo = each.sessions[1];
@@ -130,7 +130,7 @@ export function MesocycleTable({ split, onEdit }: MesocycleTableProps) {
               );
             }
           })}
-        </tbody>
+        </tbody> */}
       </table>
     </div>
   );

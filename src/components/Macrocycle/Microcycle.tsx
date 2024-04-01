@@ -2,7 +2,8 @@ import { ReactNode, useCallback, useEffect, useState } from "react";
 import {
   ExerciseType,
   SplitType,
-} from "~/hooks/useWeeklySessionSplit/reducer/weeklySessionSplitReducer";
+} from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
+
 import { getGroupList } from "~/utils/getExercises";
 
 type HeadType = "week 1" | "week 2" | "week 3" | "week 4" | "deload";
@@ -342,7 +343,7 @@ const TR = ({
               <TD rank={each.rank} bottomBorder={hasBorder}>
                 {index[i]}
               </TD>
-              <TD rank={each.rank} bottomBorder={hasBorder}>
+              {/* <TD rank={each.rank} bottomBorder={hasBorder}>
                 <SelectExercise
                   id={each.id}
                   group={each.group}
@@ -359,7 +360,7 @@ const TR = ({
                   onChange={onChangeHandler}
                   bgColor={bgColor}
                 />
-              </TD>
+              </TD> */}
               <TD rank={each.rank} bottomBorder={hasBorder}>
                 {`dumbbell`}
               </TD>

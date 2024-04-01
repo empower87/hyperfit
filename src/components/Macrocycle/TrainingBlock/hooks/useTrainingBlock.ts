@@ -14,66 +14,58 @@ export default function useTrainingBlock(training_week: TrainingDayType[]) {
 
   useEffect(() => {
     const block = getTrainingBlock(splitState);
-    setTrainingBlock(block);
+    // setTrainingBlock(block);
   }, [splitState]);
 
   const getTrainingBlock = (_split: TrainingDayType[]) => {
-    const getSplitForMesocycle = (
-      split: TrainingDayType[],
-      mesocycle: number
-    ) => {
-      const newSplit = split.map((session) => {
-        const sets_one = session.sessions[0];
-        const sets_two = session.sessions[1];
-
-        let setsOne = sets_one?.exercises?.map((exercises) => {
-          return exercises.filter((exercise) => {
-            let details = exercise.meso_details[mesocycle - 1];
-
-            if (details !== null) {
-              let update_exercise = {
-                ...exercise,
-                sets: details.sets,
-                weight: details.weight,
-              };
-              console.log(exercise, update_exercise, "TEST: WHAT?");
-              return update_exercise;
-            }
-          });
-        });
-
-        let setsTwo = sets_two?.exercises?.map((exercises) => {
-          return exercises.filter((exercise) => {
-            let details = exercise.meso_details[mesocycle - 1];
-
-            if (details !== null) {
-              let update_exercise = {
-                ...exercise,
-                sets: details.sets,
-                weight: details.weight,
-              };
-              return update_exercise;
-            }
-          });
-        });
-
-        const filterEmptySetsOne = setsOne?.filter((each) => each.length);
-        const filterEmptySetsTwo = setsTwo?.filter((each) => each.length);
-        const newSets: [ExerciseType[][], ExerciseType[][]] = [
-          filterEmptySetsOne,
-          filterEmptySetsTwo,
-        ];
-        return { ...session, sets: newSets };
-      });
-
-      return newSplit;
-    };
-
-    const meso_one = getSplitForMesocycle(_split, 1);
-    const meso_two = getSplitForMesocycle(_split, 2);
-    const meso_three = getSplitForMesocycle(_split, 3);
-
-    return [meso_one, meso_two, meso_three];
+    // const getSplitForMesocycle = (
+    //   split: TrainingDayType[],
+    //   mesocycle: number
+    // ) => {
+    //   const newSplit = split.map((session) => {
+    //     const sets_one = session.sessions[0];
+    //     const sets_two = session.sessions[1];
+    //     let setsOne = sets_one?.exercises?.map((exercises) => {
+    //       return exercises.filter((exercise) => {
+    //         let details = exercise.meso_details[mesocycle - 1];
+    //         if (details !== null) {
+    //           let update_exercise = {
+    //             ...exercise,
+    //             sets: details.sets,
+    //             weight: details.weight,
+    //           };
+    //           console.log(exercise, update_exercise, "TEST: WHAT?");
+    //           return update_exercise;
+    //         }
+    //       });
+    //     });
+    //     let setsTwo = sets_two?.exercises?.map((exercises) => {
+    //       return exercises.filter((exercise) => {
+    //         let details = exercise.meso_details[mesocycle - 1];
+    //         if (details !== null) {
+    //           let update_exercise = {
+    //             ...exercise,
+    //             sets: details.sets,
+    //             weight: details.weight,
+    //           };
+    //           return update_exercise;
+    //         }
+    //       });
+    //     });
+    //     const filterEmptySetsOne = setsOne?.filter((each) => each.length);
+    //     const filterEmptySetsTwo = setsTwo?.filter((each) => each.length);
+    //     const newSets: [ExerciseType[][], ExerciseType[][]] = [
+    //       filterEmptySetsOne,
+    //       filterEmptySetsTwo,
+    //     ];
+    //     return { ...session, sets: newSets };
+    //   });
+    //   return newSplit;
+    // };
+    // const meso_one = getSplitForMesocycle(_split, 1);
+    // const meso_two = getSplitForMesocycle(_split, 2);
+    // const meso_three = getSplitForMesocycle(_split, 3);
+    // return [meso_one, meso_two, meso_three];
   };
 
   const editExerciseHandler = (id: string, value: string) => {
