@@ -36,7 +36,7 @@ export const FULL_BODY_MUSCLES = [
   "quads",
   "traps",
   "triceps",
-];
+] as const;
 
 export const UPPER_MUSCLES = [
   "traps",
