@@ -22,36 +22,36 @@ type GroupExercisesType = {
 const getGroupExercises = (group: string, split: TrainingDayType[]) => {
   let newSplit: GroupExercisesType[] = [];
 
-  for (let i = 0; i < split.length; i++) {
-    const session_one = split[i].sessions[0];
-    const session_two = split[i].sessions[1];
-    const sets_one = split[i].sets[0];
-    const sets_two = split[i].sets[1];
+  // for (let i = 0; i < split.length; i++) {
+  //   const session_one = split[i].sessions[0];
+  //   const session_two = split[i].sessions[1];
+  //   const sets_one = split[i].sets[0];
+  //   const sets_two = split[i].sets[1];
 
-    if (session_one !== "off") {
-      for (let j = 0; j < sets_one.length; j++) {
-        if (sets_one[j][0].group === group) {
-          newSplit.push({
-            day: split[i].day,
-            split: session_one,
-            exercises: sets_one[j],
-          });
-        }
-      }
-    }
+  //   if (session_one !== "off") {
+  //     for (let j = 0; j < sets_one.length; j++) {
+  //       if (sets_one[j][0].group === group) {
+  //         newSplit.push({
+  //           day: split[i].day,
+  //           split: session_one,
+  //           exercises: sets_one[j],
+  //         });
+  //       }
+  //     }
+  //   }
 
-    if (session_two !== "off") {
-      for (let j = 0; j < sets_two.length; j++) {
-        if (sets_two[j][0].group === group) {
-          newSplit.push({
-            day: split[i].day,
-            split: session_two,
-            exercises: sets_two[j],
-          });
-        }
-      }
-    }
-  }
+  //   if (session_two !== "off") {
+  //     for (let j = 0; j < sets_two.length; j++) {
+  //       if (sets_two[j][0].group === group) {
+  //         newSplit.push({
+  //           day: split[i].day,
+  //           split: session_two,
+  //           exercises: sets_two[j],
+  //         });
+  //       }
+  //     }
+  //   }
+  // }
 
   return newSplit;
 };
@@ -76,7 +76,7 @@ export default function ExerciseDetails({
           <div className="text-sm leading-3 text-white">
             {selectedExercise.exercise}
           </div>
-          <div className="text-xs text-slate-400">{selectedExercise.group}</div>
+          {/* <div className="text-xs text-slate-400">{selectedExercise.group}</div> */}
         </div>
 
         <div className="mb-2 flex h-20">
@@ -138,13 +138,13 @@ function FullItem({
   return (
     <div className=" mb-1 flex">
       <div className={BG_COLOR_M6 + " mr-1 flex w-5/12"}>
-        <div className=" text-xxs w-1/5 indent-1 text-slate-400">
+        <div className=" w-1/5 indent-1 text-xxs text-slate-400">
           {frequency}
         </div>
-        <div className=" text-xxs w-2/5 text-slate-400">
+        <div className=" w-2/5 text-xxs text-slate-400">
           {groupExercise.day}
         </div>
-        <div className=" text-xxs w-2/5 indent-1 text-slate-400">
+        <div className=" w-2/5 indent-1 text-xxs text-slate-400">
           {groupExercise.split}
         </div>
       </div>
