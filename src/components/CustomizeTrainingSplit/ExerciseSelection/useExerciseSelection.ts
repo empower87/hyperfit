@@ -245,11 +245,11 @@ export default function useExerciseSelection(
     if (!result.destination) return;
     let outerDestinationId = 0;
     let outerDestinationSessionId = 0;
-    let outerDestinationExerciseIndex = result.destination.index;
+    const outerDestinationExerciseIndex = result.destination.index;
 
     let outerSourceId = 0;
     let outerSourceSessionId = 0;
-    let innerSourceId = result.source.index;
+    const innerSourceId = result.source.index;
 
     const destIndices = getInnerAndOuterIndices(result.destination.droppableId);
     outerDestinationId = destIndices[0];

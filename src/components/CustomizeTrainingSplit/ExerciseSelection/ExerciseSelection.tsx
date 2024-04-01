@@ -124,6 +124,8 @@ function DropdownListModal({
     >
       <ul className={cn(`w-52 ${BG_COLOR_M6}`)}>
         {items.map((each, index) => {
+          const getBGColor = supersets.get(each.id);
+          const bgColor = getBGColor ? getBGColor : "";
           return (
             <li
               className={cn(
@@ -131,7 +133,7 @@ function DropdownListModal({
                 getRankColor(each.rank),
                 {
                   [`${BG_COLOR_M5} border-white`]: each.id === selectedId,
-                  [`${supersets.get(each.id)}`]: supersets.get(each.id),
+                  [bgColor]: supersets.get(each.id),
                 }
               )}
               key={each.id}

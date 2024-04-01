@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 
 export default function useFrequencyEditor(
   mesoProgression: number[],
@@ -58,7 +58,7 @@ export default function useFrequencyEditor(
 
   const onAddSubHandler = (type: "add" | "sub", mesocycle: number) => {
     const mesocycleIndex = mesocycle - 1;
-    let mesoProg = [...currentMesoProgression];
+    const mesoProg = [...currentMesoProgression];
 
     let newValue = mesoProg[mesocycleIndex] + 1;
     if (type === "sub") {
@@ -67,14 +67,6 @@ export default function useFrequencyEditor(
     mesoProg[mesocycleIndex] = newValue;
 
     setCurrentMesoProgression(mesoProg);
-  };
-
-  const onCancelHandler = () => {
-    setCurrentMesoProgression([...mesoProgression]);
-  };
-
-  const onSaveHandler = () => {
-    console.log("saved");
   };
 
   useEffect(() => {
@@ -91,4 +83,4 @@ export default function useFrequencyEditor(
     onAddSubHandler,
     currentMesoProgression,
   };
-};
+}

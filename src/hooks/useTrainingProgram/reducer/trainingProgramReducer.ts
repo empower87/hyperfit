@@ -531,7 +531,7 @@ export default function weeklySessionSplitReducer(
       const split_change = getSplit.includes(split_sessions.split);
 
       const new_sessions = redistributeSessionsIntoNewSplit(
-        getSplit[0] as SplitSessionsNameType,
+        getSplit[0],
         splits
       );
 
@@ -586,7 +586,7 @@ export default function weeklySessionSplitReducer(
         training_block: training_block,
       };
     case "UPDATE_VOLUME_BREAKPOINTS":
-      let vol_breakpoints = action.payload.value;
+      const vol_breakpoints = action.payload.value;
       // let mev_breakpoint = state.mev_breakpoint;
 
       const update_priority_breakpoints = addMesoProgression(

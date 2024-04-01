@@ -57,7 +57,7 @@ export function TrainingWeek() {
       let outerSourceId = 0;
 
       let innerDestinationId = result.destination.index;
-      let innerSourceId = result.source.index;
+      const innerSourceId = result.source.index;
 
       outerDestinationId = getIndexOfDay(result.destination.droppableId);
       outerSourceId = getIndexOfDay(result.source.droppableId);
@@ -148,6 +148,10 @@ const DroppableDay = ({
     exercises: [],
   };
 
+  const onAddHandler = () => {
+    console.log("clicked");
+  };
+
   const sesh = sessions;
   if (!sesh.length) {
     sesh.push(offDay as unknown as SessionType);
@@ -200,7 +204,7 @@ const DroppableDay = ({
           )}
         </StrictModeDroppable>
         <div className={`flex justify-center`}>
-          <Button className={`${BG_COLOR_M6}`} onClick={() => {}}>
+          <Button className={`${BG_COLOR_M6}`} onClick={onAddHandler}>
             <PlusIcon className={`fill-white`} />
           </Button>
         </div>

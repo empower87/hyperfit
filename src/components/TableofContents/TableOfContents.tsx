@@ -40,7 +40,7 @@ type ItemProps = {
 };
 
 function Item({ title, id, activeId }: ItemProps) {
-  const onLinkClick = (e: any) => {
+  const onLinkClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
     e.preventDefault();
     document.querySelector(`#${id}`)?.scrollIntoView({ behavior: "smooth" });
   };
@@ -66,8 +66,15 @@ function Contents({ title, id, activeId, children }: ContentsProps) {
     <div className={``}>
       <Item title={title} id={id} activeId={activeId} />
       <div className={`flex flex-col space-y-1 pl-2`}>
-        {children.map((child) => {
-          return <Item title={child.title} id={child.id} activeId={activeId} />;
+        {children.map((child, index) => {
+          return (
+            <Item
+              key={`${child.id}_${index}_ContentItem`}
+              title={child.title}
+              id={child.id}
+              activeId={activeId}
+            />
+          );
         })}
       </div>
     </div>
@@ -99,8 +106,14 @@ export default function TableOfContents() {
       <div className={`w-2/3 rounded border-2 px-2 py-4 ${BORDER_COLOR_M6}`}>
         <div className={`my-3 text-xxs text-white`}>TABLE OF CONTENTS</div>
         <div className={`flex flex-col space-y-1`}>
-          {contents.map((contents) => {
-            return <Contents {...contents} activeId={activeId} />;
+          {contents.map((contents, index) => {
+            return (
+              <Contents
+                key={`${contents.id}_${index}_ContentItem`}
+                {...contents}
+                activeId={activeId}
+              />
+            );
           })}
         </div>
       </div>

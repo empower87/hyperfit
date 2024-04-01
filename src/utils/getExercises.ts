@@ -91,7 +91,7 @@ const getWeightedCriteriaTotal = (exercise: Exercise) => {
   let total = 0;
 
   for (const criteria in hypertrophy_criteria) {
-    let key = criteria as HypertrophyCriteriaKey;
+    const key = criteria as HypertrophyCriteriaKey;
     if (key === "stretch") {
       total =
         total +
@@ -191,12 +191,12 @@ export const getTotalExercisesForMuscleGroup = (
   frequencyProgression: number[],
   exercisesPerSessionSchema: number
 ) => {
-  let total_frequency = frequencyProgression[frequencyProgression.length - 1];
+  const total_frequency = frequencyProgression[frequencyProgression.length - 1];
   const muscleData = getMuscleData(group);
 
   const exercises = getGroupList(group);
 
-  let exercise_list: ExerciseType[][] = [];
+  const exercise_list: ExerciseType[][] = [];
   let exercises_index = 0;
 
   // Note: below guard clause checks to see if MEV or MV volume is 0
@@ -213,7 +213,7 @@ export const getTotalExercisesForMuscleGroup = (
   for (let i = 0; i < final_meso_frequency.length; i++) {
     const session = final_meso_frequency[i];
 
-    let session_exercises: ExerciseType[] = [];
+    const session_exercises: ExerciseType[] = [];
     for (let j = 0; j < session.length; j++) {
       if (session[j] === 0) continue;
       if (!exercises[exercises_index]) {
@@ -221,7 +221,7 @@ export const getTotalExercisesForMuscleGroup = (
       }
 
       if (exercises[exercises_index]) {
-        let exercise = {
+        const exercise = {
           ...INITIAL_EXERCISE,
           id: exercises[exercises_index].id,
           exercise: exercises[exercises_index].name,

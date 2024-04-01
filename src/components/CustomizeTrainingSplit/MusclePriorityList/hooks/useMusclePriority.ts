@@ -42,7 +42,7 @@ export default function useMusclePriority(
         exercisesPerSessionSchema,
         microcycles
       );
-      let newVolume: number[] = [];
+      const newVolume: number[] = [];
       for (let i = 0; i < _frequencyProgression.length; i++) {
         const newTotalVolume = getEndOfMesocycleVolume(
           muscle,
@@ -61,7 +61,7 @@ export default function useMusclePriority(
     muscle: MusclePriorityType,
     operator: "add" | "subtract"
   ) => {
-    let total = getMusclesMaxFrequency(split_sessions, muscle.muscle);
+    const total = getMusclesMaxFrequency(split_sessions, muscle.muscle);
     let current =
       muscle.volume.frequencyProgression[
         muscle.volume.frequencyProgression.length - 1

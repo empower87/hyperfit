@@ -67,9 +67,9 @@ const ProgramConfigContext = createContext<ProgramConfigType>({
   training_program_params: INITIAL_STATE.training_program_params,
   frequency: INITIAL_STATE.frequency,
   split: "OPT",
-  onSaveConfig: () => {},
-  onSplitChange: () => {},
-  onFrequencyChange: () => {},
+  onSaveConfig: () => null,
+  onSplitChange: () => null,
+  onFrequencyChange: () => null,
 });
 
 const ProgramConfigProvider = ({ children }: { children: ReactNode }) => {

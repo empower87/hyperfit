@@ -278,7 +278,7 @@ export default function MesocycleFrequency({
             //   frequencyProgression={frequencyProgression}
             // />
             <Cell
-              key={`${meso}_${index}_frequency_meso_${muscle}`}
+              key={`${meso}_${index}_frequency_meso_${muscle.id}`}
               className={`h-6 w-6 items-center justify-center hover:bg-slate-400 ${
                 selectedMesocycle.index !== null &&
                 selectedMesocycle.index === index

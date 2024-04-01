@@ -1,32 +1,10 @@
 import { useCallback, useReducer, useState } from "react";
-import { MuscleType } from "~/constants/workoutSplits";
 import { MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { VolumeLandmarkType } from "~/hooks/useTrainingProgram/reducer/trainingProgramUtils";
 import {
   getFrequencyByVolumeLandmark,
   getSetProgressionMatrixForMuscle,
 } from "~/hooks/useTrainingProgram/utils/musclePriorityListHandlers";
-import { getEndOfMesocycleVolume } from "../utils/getVolumeTotal";
-
-const getTotalVolumeHandler = (
-  _frequencyProgression: number[],
-  _matrix: number[][][][],
-  _muscle: MuscleType,
-  _landmark: VolumeLandmarkType,
-  _microcycles: number
-) => {
-  let newVolume: number[] = [];
-  for (let i = 0; i < _frequencyProgression.length; i++) {
-    const newTotalVolume = getEndOfMesocycleVolume(
-      _muscle,
-      i + 1,
-      _landmark,
-      _matrix
-    );
-    newVolume.push(newTotalVolume);
-  }
-  return newVolume;
-};
 
 type EditFrequencyProgression = {
   type: "EDIT_FREQUENCY_PROGRESSION";
@@ -220,7 +198,7 @@ export default function useEditMuscle(
     const prevValue = frequencyProgression[index - 1];
     const nextValue = frequencyProgression[index + 1];
 
-    let minMaxTuple: [number, number] = [0, maxValue];
+    const minMaxTuple: [number, number] = [0, maxValue];
     if (prevValue !== undefined) {
       minMaxTuple[0] = prevValue;
     }

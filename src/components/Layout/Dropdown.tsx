@@ -3,11 +3,10 @@ import { BG_COLOR_M6, BG_COLOR_M7, BORDER_COLOR_M5 } from "~/constants/themes";
 import { useOutsideClick } from "~/hooks/useOnOutsideClick";
 import { cn } from "~/lib/clsx";
 
-interface IDropdownProps extends HTMLAttributes<HTMLDivElement> {}
-
-type ItemProps = IDropdownProps & {
+interface ItemProps extends HTMLAttributes<HTMLDivElement> {
   onClick: () => void;
-};
+}
+
 function Item({ onClick, className, children, ...props }: ItemProps) {
   return (
     <div
@@ -25,9 +24,9 @@ function Item({ onClick, className, children, ...props }: ItemProps) {
 
 Dropdown.Item = Item;
 
-type DropdownProps = IDropdownProps & {
+interface DropdownProps extends HTMLAttributes<HTMLDivElement> {
   onClose: () => void;
-};
+}
 export default function Dropdown({
   onClose,
   children,

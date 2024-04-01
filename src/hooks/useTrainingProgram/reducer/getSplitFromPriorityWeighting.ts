@@ -24,9 +24,9 @@ export function getSplitFromWeights(
     const split = getOptimizedSplitForWeights(muscle);
     switch (split) {
       case "both":
-        let split = Math.round(rank / 2);
-        push = push + split;
-        pull = pull + split;
+        const splitRank = Math.round(rank / 2);
+        push = push + splitRank;
+        pull = pull + splitRank;
         break;
       case "pull":
         pull = pull + rank;
@@ -94,21 +94,21 @@ export function getSplitFromWeights(
   const push_pull_max = session_maxes_per_week[0];
   const total = push + pull + lower;
 
-  let pushDecimal = push / total;
-  let pullDecimal = pull / total;
-  let lowerDecimal = lower / total;
+  const pushDecimal = push / total;
+  const pullDecimal = pull / total;
+  const lowerDecimal = lower / total;
 
-  let pushRatio = total_sessions * pushDecimal;
-  let pullRatio = total_sessions * pullDecimal;
-  let lowerRatio = total_sessions * lowerDecimal;
+  const pushRatio = total_sessions * pushDecimal;
+  const pullRatio = total_sessions * pullDecimal;
+  const lowerRatio = total_sessions * lowerDecimal;
 
-  let pushInteger = Math.floor(pushRatio);
-  let pullInteger = Math.floor(pullRatio);
-  let lowerInteger = Math.floor(lowerRatio);
+  const pushInteger = Math.floor(pushRatio);
+  const pullInteger = Math.floor(pullRatio);
+  const lowerInteger = Math.floor(lowerRatio);
 
-  let pushTenths = pushRatio - pushInteger;
-  let pullTenths = pullRatio - pullInteger;
-  let lowerTenths = lowerRatio - lowerInteger;
+  const pushTenths = pushRatio - pushInteger;
+  const pullTenths = pullRatio - pullInteger;
+  const lowerTenths = lowerRatio - lowerInteger;
 
   let pushSessions = pushInteger;
   let pullSessions = pullInteger;
@@ -241,7 +241,7 @@ function distributeIntoSessionsBro(
   total_sessions: [number, number],
   priority: MusclePriorityType[]
 ) {
-  let BRO_WEIGHTS = {
+  const BRO_WEIGHTS = {
     back: 0,
     chest: 0,
     legs: 0,
@@ -251,8 +251,8 @@ function distributeIntoSessionsBro(
 
   // NOTE: to even out distribution among each bro split, this modifier will take into
   //       account how many muscles make up split.
-  let MODIFIER = 0;
-  let WEIGHT = 4;
+  const MODIFIER = 0;
+  const WEIGHT = 4;
 
   for (let i = 0; i < priority.length; i++) {
     const rank = priority[i].rank;
@@ -270,11 +270,11 @@ function distributeIntoSessionsBro(
         BRO_WEIGHTS.arms = BRO_WEIGHTS.arms + rank;
         break;
       case "back":
-        let back_total = (MODIFIER + 3) * WEIGHT - i;
+        const back_total = (MODIFIER + 3) * WEIGHT - i;
         BRO_WEIGHTS.back = BRO_WEIGHTS.back + rank + back_total;
         break;
       case "chest":
-        let chest_total = (MODIFIER + 3) * WEIGHT - i;
+        const chest_total = (MODIFIER + 3) * WEIGHT - i;
         BRO_WEIGHTS.chest = BRO_WEIGHTS.chest + rank + chest_total;
         break;
       default:
@@ -283,16 +283,16 @@ function distributeIntoSessionsBro(
   BRO_WEIGHTS.arms = BRO_WEIGHTS.arms + (MODIFIER + 1) * WEIGHT;
 
   console.log(BRO_WEIGHTS, priority, "TEST: modifiers on ranking");
-  let splitRanking = Object.keys(BRO_WEIGHTS).sort(
+  const splitRanking = Object.keys(BRO_WEIGHTS).sort(
     (a, b) =>
       BRO_WEIGHTS[b as keyof typeof BRO_WEIGHTS] -
       BRO_WEIGHTS[a as keyof typeof BRO_WEIGHTS]
   );
 
-  let total = total_sessions[0] + total_sessions[1];
+  const total = total_sessions[0] + total_sessions[1];
   let index = 0;
 
-  let BRO = {
+  const BRO = {
     legs: 0,
     back: 0,
     chest: 0,
@@ -301,7 +301,7 @@ function distributeIntoSessionsBro(
   };
 
   for (let j = 0; j < total; j++) {
-    let session = splitRanking[index] as keyof typeof BRO;
+    const session = splitRanking[index] as keyof typeof BRO;
     if (session) {
       BRO[session]++;
 
@@ -327,21 +327,21 @@ function distributeRatioIntoSessionsPPL(
     pull: 0,
   };
 
-  let total = Math.round(push + legs + pull);
+  const total = Math.round(push + legs + pull);
 
   if (total <= 1) {
-    let { key } = getKeyWithHighestValue(PPL);
+    const { key } = getKeyWithHighestValue(PPL);
     PPL = { ...PPL, [key]: PPL[key] + 1 };
   } else {
     // lol my logic sucks
     let highestKey: keyof typeof PPL = "push";
     let secondHighestKey: keyof typeof PPL = "pull";
 
-    let first = getKeyWithHighestValue(PPL);
+    const first = getKeyWithHighestValue(PPL);
     highestKey = first.key;
 
-    let newPPL = { ...PPL, [highestKey]: 0 };
-    let second = getKeyWithHighestValue(newPPL);
+    const newPPL = { ...PPL, [highestKey]: 0 };
+    const second = getKeyWithHighestValue(newPPL);
     secondHighestKey = second.key;
 
     PPL = {
@@ -355,7 +355,7 @@ function distributeRatioIntoSessionsPPL(
 }
 
 function divideRatioIntoSessionsOPT(push: number, legs: number, pull: number) {
-  let OPT = {
+  const OPT = {
     push: 0,
     legs: 0,
     pull: 0,
@@ -363,7 +363,7 @@ function divideRatioIntoSessionsOPT(push: number, legs: number, pull: number) {
     full: 0,
   };
 
-  let total = Math.round(push + legs + pull);
+  const total = Math.round(push + legs + pull);
 
   if (total <= 1) {
     if (legs >= 0.55) {

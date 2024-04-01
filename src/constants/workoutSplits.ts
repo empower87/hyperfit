@@ -161,7 +161,7 @@ export const getGroupList = (split: SplitType) => {
 };
 
 const getPPLULSplit = (muscle: MuscleType) => {
-  let allSplits: ("pull" | "push" | "lower" | "legs" | "upper")[] = [];
+  const allSplits: ("pull" | "push" | "lower" | "legs" | "upper")[] = [];
   if (includes(PULL_MUSCLES, muscle)) {
     allSplits.push("pull", "upper");
   } else if (includes(LOWER_MUSCLES, muscle) || muscle === "abs") {
@@ -173,7 +173,7 @@ const getPPLULSplit = (muscle: MuscleType) => {
 };
 
 const getOPTSplit = (muscle: MuscleType) => {
-  let allSplits: ("pull" | "push" | "lower" | "upper" | "full")[] = ["full"];
+  const allSplits: ("pull" | "push" | "lower" | "upper" | "full")[] = ["full"];
   if (includes(PUSH_AND_PULL_MUSCLES, muscle)) {
     allSplits.push("push", "pull", "upper");
   } else if (includes(PULL_MUSCLES, muscle)) {
@@ -252,6 +252,8 @@ export const getOptimizedSplitForWeights = (muscle: MuscleType) => {
     return "pull";
   } else if (includes(LOWER_MUSCLES, muscle)) {
     return "lower";
+  } else {
+    return "both";
   }
 };
 
@@ -287,7 +289,7 @@ export const getUpperLowerSplit = (muscle: MuscleType) => {
 };
 
 export const getOptimizedSplit = (muscle: MuscleType) => {
-  let all: ("upper" | "lower" | "push" | "pull" | "full")[] = [];
+  const all: ("upper" | "lower" | "push" | "pull" | "full")[] = [];
 
   if (includes(PUSH_AND_PULL_MUSCLES, muscle)) {
     all.push("push", "pull", "upper");

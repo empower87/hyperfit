@@ -22,7 +22,6 @@ type AddTrainingDayType = {
 };
 type RemoveTrainingDayType = {
   type: "REMOVE_TRAINING_DAY";
-  payload: {};
 };
 type AddExerciseType = {
   type: "ADD_EXERCISE";
@@ -33,7 +32,6 @@ type AddExerciseType = {
 };
 type RemoveExerciseType = {
   type: "REMOVE_EXERCISE";
-  payload: {};
 };
 type Action =
   | AddSubtractSetsType
@@ -106,7 +104,7 @@ function muscleEditorReducer(state: MusclePriorityType, action: Action) {
 
         if (meso[0][dayIndex]) {
           const frequencyProgression = state.volume.frequencyProgression;
-          let frequency = frequencyProgression[i];
+          const frequency = frequencyProgression[i];
           let curCount = setProg[frequency - 1][0][0];
 
           for (let j = 0; j < meso.length; j++) {
@@ -235,7 +233,7 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
         muscleGroup.volume.setProgressionMatrix
       );
       const updateAll = copyMatrix[selectedMesocycleIndex].map((e, i) => {
-        let session = e[dayIndex - 1];
+        const session = e[dayIndex - 1];
 
         if (session) {
           if (operation === "+") {

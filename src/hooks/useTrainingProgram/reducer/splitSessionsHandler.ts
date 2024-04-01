@@ -20,7 +20,7 @@ export const getBroSplitSessions = (
 ) => {
   const totalSessions = total_sessions[0] + total_sessions[1];
 
-  let initEvenDistribution = Math.floor(totalSessions / 5);
+  const initEvenDistribution = Math.floor(totalSessions / 5);
   let count = totalSessions % 5;
 
   const bro_sessions = {
@@ -31,7 +31,7 @@ export const getBroSplitSessions = (
     shoulders: initEvenDistribution,
   };
 
-  let added: ("legs" | "back" | "chest" | "arms" | "shoulders")[] = [];
+  const added: ("legs" | "back" | "chest" | "arms" | "shoulders")[] = [];
   for (let i = 0; i < priority.length; i++) {
     if (count < 1) break;
     const broKey = getBroSplit(priority[i].muscle);
@@ -193,16 +193,16 @@ export const distributePPLSplitAcrossWeek = (
   week: TrainingDayType[],
   sessions: PPLSessionsType["sessions"]
 ) => {
-  let counter = { ...sessions };
+  const counter = { ...sessions };
 
-  let _week = week.map((each, index) => {
+  const _week = week.map((each, index) => {
     return { ...each, sessions: [] as SessionType[] };
   });
 
-  let stack: ("push" | "pull" | "legs" | "off")[] = [];
+  const stack: ("push" | "pull" | "legs" | "off")[] = [];
 
   for (let i = 0; i < _week.length; i++) {
-    let lastIn = stack[stack.length - 1];
+    const lastIn = stack[stack.length - 1];
     const nextSession = getNextSplitPPL(lastIn, counter);
 
     if (_week[i].isTrainingDay && nextSession) {
@@ -215,8 +215,6 @@ export const distributePPLSplitAcrossWeek = (
       _week[i].sessions.push(session);
       stack.push(nextSession);
       counter[nextSession]--;
-
-      console.log(nextSession, lastIn, stack, counter, _week, "AFTER ALL");
     } else {
       stack.push("off");
     }
@@ -228,20 +226,20 @@ export const distributePPLULSplitAcrossWeek = (
   week: TrainingDayType[],
   split_sessions: PPLULSessionsType
 ) => {
-  let counter = { ...split_sessions.sessions };
+  const counter = { ...split_sessions.sessions };
 
-  let _week = week.map((each) => {
+  const _week = week.map((each) => {
     return { ...each, sessions: [] as SessionType[] };
   });
 
-  let stack: ("push" | "pull" | "legs" | "upper" | "lower" | "off")[] = [];
+  const stack: ("push" | "pull" | "legs" | "upper" | "lower" | "off")[] = [];
 
   for (let i = 0; i < _week.length; i++) {
-    let lastIn = stack[stack.length - 1];
+    const lastIn = stack[stack.length - 1];
     const nextSession = getNextSplitPPLUL(lastIn, counter);
 
     if (_week[i].isTrainingDay && nextSession) {
-      let session: SessionType = {
+      const session: SessionType = {
         id: `${i}_${nextSession}_session`,
         split: nextSession,
         exercises: [],
@@ -250,8 +248,6 @@ export const distributePPLULSplitAcrossWeek = (
       _week[i].sessions.push(session);
       stack.push(nextSession);
       counter[nextSession]--;
-
-      console.log(nextSession, lastIn, stack, counter, _week, "AFTER ALL");
     } else {
       stack.push("off");
     }
@@ -263,20 +259,21 @@ export const distributeBROSplitAcrossWeek = (
   week: TrainingDayType[],
   split_sessions: BROSessionsType
 ) => {
-  let counter = { ...split_sessions.sessions };
+  const counter = { ...split_sessions.sessions };
 
-  let _week = week.map((each) => {
+  const _week = week.map((each) => {
     return { ...each, sessions: [] as SessionType[] };
   });
 
-  let stack: ("legs" | "back" | "chest" | "arms" | "shoulders" | "off")[] = [];
+  const stack: ("legs" | "back" | "chest" | "arms" | "shoulders" | "off")[] =
+    [];
 
   for (let i = 0; i < _week.length; i++) {
-    let lastIn = stack[stack.length - 1];
+    const lastIn = stack[stack.length - 1];
     const nextSession = getNextSplitBRO(lastIn, counter);
 
     if (_week[i].isTrainingDay && nextSession) {
-      let session: SessionType = {
+      const session: SessionType = {
         id: `${i}_${nextSession}_session`,
         split: nextSession,
         exercises: [],
@@ -285,8 +282,6 @@ export const distributeBROSplitAcrossWeek = (
       _week[i].sessions.push(session);
       stack.push(nextSession);
       counter[nextSession]--;
-
-      console.log(nextSession, lastIn, stack, counter, _week, "AFTER ALL");
     } else {
       stack.push("off");
     }
@@ -325,20 +320,20 @@ export const distributeULSplitAcrossWeek = (
   week: TrainingDayType[],
   split_sessions: ULSessionsType
 ) => {
-  let preferred: "upper" | "lower" =
+  const preferred: "upper" | "lower" =
     split_sessions.sessions.upper >= split_sessions.sessions.lower
       ? "upper"
       : "lower";
-  let counter = { ...split_sessions.sessions };
+  const counter = { ...split_sessions.sessions };
 
-  let _week = week.map((each) => {
+  const _week = week.map((each) => {
     return { ...each, sessions: [] as SessionType[] };
   });
 
-  let stack: ("upper" | "lower" | "off")[] = [];
+  const stack: ("upper" | "lower" | "off")[] = [];
 
   for (let i = 0; i < _week.length; i++) {
-    let lastIn = stack[stack.length - 1];
+    const lastIn = stack[stack.length - 1];
     const nextSession = getNextSplitUL(lastIn, counter, preferred);
 
     if (_week[i].isTrainingDay && nextSession) {
@@ -351,8 +346,6 @@ export const distributeULSplitAcrossWeek = (
       _week[i].sessions.push(session);
       stack.push(nextSession);
       counter[nextSession]--;
-
-      console.log(nextSession, lastIn, stack, counter, _week, "AFTER ALL");
     } else {
       stack.push("off");
     }
@@ -364,15 +357,15 @@ export const distributeFBSplitAcrossWeek = (
   week: TrainingDayType[],
   split_sessions: FBSessionsType
 ) => {
-  let counter = { ...split_sessions.sessions };
+  const counter = { ...split_sessions.sessions };
 
-  let _week = week.map((each) => {
+  const _week = week.map((each) => {
     return { ...each, sessions: [] as SessionType[] };
   });
 
   for (let i = 0; i < _week.length; i++) {
     if (_week[i].isTrainingDay) {
-      let session: SessionType = {
+      const session: SessionType = {
         id: `${i}_full_session`,
         split: "full",
         exercises: [],
@@ -447,20 +440,20 @@ export const distributeOPTSplitAcrossWeek = (
   week: TrainingDayType[],
   sessions: OPTSessionsType
 ) => {
-  let counter = { ...sessions.sessions };
+  const counter = { ...sessions.sessions };
 
-  let _week = week.map((each) => {
+  const _week = week.map((each) => {
     return { ...each, sessions: [] as SessionType[] };
   });
 
-  let stack: ("upper" | "lower" | "full" | "push" | "pull" | "off")[] = [];
+  const stack: ("upper" | "lower" | "full" | "push" | "pull" | "off")[] = [];
 
   for (let i = 0; i < _week.length; i++) {
-    let lastIn = stack[stack.length - 1];
+    const lastIn = stack[stack.length - 1];
     const nextSession = getNextSplitOPT(lastIn, counter);
 
     if (_week[i].isTrainingDay && nextSession) {
-      let session: SessionType = {
+      const session: SessionType = {
         id: `${i}_${nextSession}_session`,
         split: nextSession,
         exercises: [],
@@ -503,7 +496,7 @@ export const distributeSplitAcrossWeek = (
   const off_day_indices = getOffDayIndices(off_days);
 
   // let counter = getSessionCounter(split_sessions.name, split_sessions.sessions);
-  let counter = { ...split_sessions };
+  const counter = { ...split_sessions };
 
   let week = _week.map((each, index) => {
     if (off_day_indices.includes(index)) {
@@ -531,7 +524,7 @@ export const distributeSplitAcrossWeek = (
       week = distributeOPTSplitAcrossWeek(week, counter);
       break;
     default:
-    // return week;
+      break;
   }
   return week;
 };

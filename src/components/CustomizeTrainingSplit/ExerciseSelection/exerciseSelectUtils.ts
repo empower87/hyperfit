@@ -20,7 +20,7 @@ export const canAddExerciseToSplit = (
   //          ---NO?: Add
   //          ---YES?: either adjust sets of all muscle groups or don't add (possible prompt user)
 
-  let groupList = getGroupList(targetSplit);
+  const groupList = getGroupList(targetSplit);
 
   if (includes(groupList, muscleGroup)) {
     return true;
@@ -60,7 +60,7 @@ export const findOptimalSplit = (
   muscle: MuscleType,
   targetExercises: ExerciseType[]
 ) => {
-  let targetMuscles = targetExercises.map((each) => each.muscle);
+  const targetMuscles = targetExercises.map((each) => each.muscle);
   const allMuscles = [...targetMuscles, muscle];
   const muscleSet = new Set(allMuscles);
 
@@ -80,7 +80,7 @@ export const findOptimalSplit = (
     });
   }
 
-  let optimalSplits: SplitType[] = [];
+  const optimalSplits: SplitType[] = [];
 
   const setSize = muscleSet.size;
   splitMap.forEach((value, key) => {
@@ -107,7 +107,7 @@ export const getSupersetMap = (exercises: ExerciseType[]) => {
     const supersetWithId = exercises[i].supersetWith;
     const currentId = exercises[i].id;
 
-    let supersetColor = SUPERSET_COLORS[supersetIndex];
+    const supersetColor = SUPERSET_COLORS[supersetIndex];
     if (!supersetWithId) continue;
     const supersetKey = paired.get(supersetWithId);
     const current = paired.get(currentId);

@@ -41,10 +41,10 @@ function useMesocycleProgression(
 
   useEffect(() => {
     const exercises = exerciseList.map((each, index) => {
-      let setsToAdd = progressWeeks(head, each);
+      const setsToAdd = progressWeeks(head, each);
       if (!setsToAdd.sets) return each;
       else if (setsToAdd.deload === true) {
-        let exercises: ExerciseType[] = [];
+        const exercises: ExerciseType[] = [];
         for (let i = 0; i < each.length; i++) {
           exercises.push({
             ...each[i],
@@ -54,7 +54,7 @@ function useMesocycleProgression(
         }
         return exercises;
       } else {
-        let exercises: ExerciseType[] = [];
+        const exercises: ExerciseType[] = [];
         for (let i = 0; i < each.length; i++) {
           if (setsToAdd.sets[i]) {
             exercises.push({
@@ -256,7 +256,7 @@ export default function Microcycle({
   const getIndices = useCallback((exercises: ExerciseType[][]) => {
     let addIndices = 0;
 
-    let indices = [];
+    const indices = [];
     for (let i = 0; i < exercises.length; i++) {
       if (exercises[i].length > 1) {
         indices.push([addIndices + 1, addIndices + 2]);

@@ -16,7 +16,7 @@ function TableHeadColumns() {
     return (
       <th
         className="bg-slate-500 text-white"
-        style={{ fontSize: "12px", width: `${width}%` }}
+        style={{ fontSize: "12px", width: width ? `${width}%` : "auto" }}
       >
         {text}
       </th>

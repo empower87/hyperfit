@@ -23,7 +23,7 @@ function addRankWeightsToMusclePriority(muscle_priority: MusclePriorityType[]) {
   const RANK_WEIGHTS = [14, 12, 10, 8, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0];
 
   for (let i = 0; i < muscle_priority.length; i++) {
-    let muscle = muscle_priority[i].muscle;
+    const muscle = muscle_priority[i].muscle;
 
     switch (muscle) {
       case "hamstrings":
@@ -59,9 +59,9 @@ function addMesoProgression(
   mrv_breakpoint: number,
   mev_breakpoint: number
 ) {
-  let items = [..._items];
+  const items = [..._items];
   for (let i = 0; i < items.length; i++) {
-    let key: VolumeLandmarkType =
+    const key: VolumeLandmarkType =
       i < mrv_breakpoint
         ? "MRV"
         : i >= mrv_breakpoint && i < mev_breakpoint
@@ -69,7 +69,7 @@ function addMesoProgression(
         : "MV";
 
     let sessions = 0;
-    let muscle = items[i].muscle;
+    const muscle = items[i].muscle;
 
     switch (split_sessions.split) {
       case "OPT":
@@ -134,7 +134,7 @@ function addMesoProgression(
           }
         };
 
-        let prog = getFrequencyProgression(sessions);
+        const prog = getFrequencyProgression(sessions);
 
         mesoProgression = prog;
         break;
@@ -178,7 +178,7 @@ function addMesoProgression(
 function getExercisesForPrioritizedMuscles(
   muscle_priority: MusclePriorityType[]
 ) {
-  let muscle_priority_with_exercises = [...muscle_priority];
+  const muscle_priority_with_exercises = [...muscle_priority];
 
   for (let i = 0; i < muscle_priority_with_exercises.length; i++) {
     const muscle = muscle_priority_with_exercises[i].muscle;
@@ -188,7 +188,7 @@ function getExercisesForPrioritizedMuscles(
     const frequencyProgression =
       muscle_priority_with_exercises[i].volume.frequencyProgression;
 
-    let exercises = getTotalExercisesForMuscleGroup(
+    const exercises = getTotalExercisesForMuscleGroup(
       muscle,
       volumeLandmark,
       frequencyProgression,
@@ -204,12 +204,12 @@ function attachMesocycleFrequencyProgression(
   split_sessions: SplitSessionsType,
   mesocycles: number
 ) {
-  let items = [..._items];
+  const items = [..._items];
 
   for (let i = 0; i < items.length; i++) {
-    let key = items[i].volume_landmark;
+    const key = items[i].volume_landmark;
     let sessions = 0;
-    let muscle = items[i].muscle;
+    const muscle = items[i].muscle;
 
     switch (split_sessions.split) {
       case "OPT":
@@ -254,7 +254,7 @@ function attachMesocycleFrequencyProgression(
 
     let mesoProgression: number[] = [];
     const getFrequencyProgression = (sessions: number, mesocycles: number) => {
-      let frequencyProgression: number[] = [];
+      const frequencyProgression: number[] = [];
 
       for (let i = 0; i < mesocycles; i++) {
         let frequency = sessions - i;
@@ -367,7 +367,7 @@ function attachMesocycleFrequencyProgression(
 // };
 
 function getSplitOverview(split_sessions: SplitSessionsType) {
-  let newObj = Object.entries(split_sessions).filter(
+  const newObj = Object.entries(split_sessions).filter(
     (each) => typeof each[1] === "number" && each[1] > 0
   );
 
@@ -378,7 +378,6 @@ export {
   addMesoProgression,
   addRankWeightsToMusclePriority,
   attachMesocycleFrequencyProgression,
-  // distributeExercisesAmongSplit,
   getExercisesForPrioritizedMuscles,
   getSplitOverview,
 };

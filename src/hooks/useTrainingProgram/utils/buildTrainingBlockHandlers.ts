@@ -12,7 +12,7 @@ const getMuscleGroupsExercisesForMesocycle = (
   setProgressionMatrix: number[][][],
   total_exercises: ExerciseType[][]
 ) => {
-  let meso_exercises: ExerciseType[][] = [];
+  const meso_exercises: ExerciseType[][] = [];
   const current_mesocycle = setProgressionMatrix;
 
   for (let i = 0; i < total_exercises.length; i++) {
@@ -73,9 +73,9 @@ const attachMesocycleProgressionToExercise = (
   exercises_index: number,
   matrix: number[][][]
 ) => {
-  let updated_exercises = [...exercises];
+  const updated_exercises = [...exercises];
   for (let i = 0; i < updated_exercises.length; i++) {
-    let mesocycle_progression: ExerciseMesocycleProgressionType[] = [];
+    const mesocycle_progression: ExerciseMesocycleProgressionType[] = [];
     for (let j = 0; j < matrix.length; j++) {
       const microcycle_progression = matrix[j];
       const microcycle_sets = microcycle_progression[exercises_index][i];
@@ -106,7 +106,7 @@ const distributeExercisesAmongSplit = (
   _training_week: TrainingDayType[],
   mesocycle: number
 ) => {
-  let training_week: TrainingDayType[] = [..._training_week].map((each) => {
+  const training_week: TrainingDayType[] = [..._training_week].map((each) => {
     const emptySessionSets = each.sessions.map((ea) => {
       return { ...ea, exercises: [] as ExerciseType[][] };
     });
@@ -165,9 +165,9 @@ const distributeExercisesAmongSplit = (
         muscle,
         splits
       );
-      let sessionExercises = [...exercises[k]];
+      const sessionExercises = [...exercises[k]];
       for (let l = 0; l < sessionExercises.length; l++) {
-        let exercise = sessionExercises[l];
+        const exercise = sessionExercises[l];
         const details = newExercises.get(exercise);
         if (details) {
           sessionExercises[l].mesocycle_progression = details;
@@ -187,7 +187,7 @@ export const buildTrainingBlockHandler = (
   training_week: TrainingDayType[],
   mesocycles: number
 ) => {
-  let mesocycle_weeks: TrainingDayType[][] = [];
+  const mesocycle_weeks: TrainingDayType[][] = [];
 
   for (let i = 0; i < mesocycles; i++) {
     const distributed_mesocycle = distributeExercisesAmongSplit(

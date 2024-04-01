@@ -70,10 +70,10 @@ export default function useTrainingBlock(training_week: TrainingDayType[]) {
 
   const editExerciseHandler = (id: string, value: string) => {
     const test = splitState.map((session) => {
-      let seshone = session.sessions[0];
-      let seshtwo = session.sessions[1];
+      const seshone = session.sessions[0];
+      const seshtwo = session.sessions[1];
 
-      let sessionOne = seshone.exercises?.map((exercises) => {
+      const sessionOne = seshone.exercises?.map((exercises) => {
         return exercises.map((ex) => {
           if (ex.id === id) {
             return { ...ex, exercise: value };
@@ -81,7 +81,7 @@ export default function useTrainingBlock(training_week: TrainingDayType[]) {
         });
       });
 
-      let sessionTwo = seshtwo.exercises?.map((exercises) => {
+      const sessionTwo = seshtwo.exercises?.map((exercises) => {
         return exercises.map((ex) => {
           if (ex.id === id) {
             return { ...ex, exercise: value };

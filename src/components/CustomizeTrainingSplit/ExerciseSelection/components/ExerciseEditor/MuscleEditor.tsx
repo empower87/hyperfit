@@ -36,25 +36,15 @@ export default function MuscleEditor() {
     setList([...prioritized_muscle_list]);
   }, [prioritized_muscle_list]);
 
-  // const { ref, inView } = useInView({
-  //   rootMargin: "0% 0% -80% 0%",
-  // });
-  // const [sticky, setSticky] = useState(false);
-
-  // useEffect(() => {
-  //   if (inView) {
-  //     setSticky(true);
-  //   } else {
-  //     setSticky(false);
-  //   }
-  // }, [inView]);
   return (
     <SectionH2 title="MUSCLE EDITOR">
-      {/* <HeaderScrollNav isSticky={sticky} /> */}
       <ul className={`space-y-2 scroll-smooth`}>
         {list.map((each, index) => {
           return (
-            <MuscleEditorProvider muscle={each}>
+            <MuscleEditorProvider
+              muscle={each}
+              key={`${index}_muscleEditorProvider`}
+            >
               <Muscle muscle={each} rank={index + 1} />
             </MuscleEditorProvider>
           );
@@ -97,6 +87,7 @@ function Muscle({ muscle, rank }: MuscleProps) {
           {mesocyclesArray?.map((each, index) => {
             return (
               <div
+                key={`${each}_${index}_mesocyclesArray`}
                 className={cn(`cursor-pointer px-2 py-0.5 text-xs`, {
                   [`bg-white ${bgColor.text} font-bold`]:
                     selectedMesocycleIndex === index,
@@ -132,6 +123,7 @@ function Muscle({ muscle, rank }: MuscleProps) {
             {muscleGroup.volume.frequencyProgression.map((each, index) => {
               return (
                 <div
+                  key={`${each}_${index}_FrequencyProgressionBottomBar`}
                   className={cn(`p-0.5 text-xxs text-white`, {
                     ["border"]: selectedMesocycleIndex === index,
                   })}
@@ -148,6 +140,7 @@ function Muscle({ muscle, rank }: MuscleProps) {
             {volumes.map((each, index) => {
               return (
                 <div
+                  key={`${each}_${index}_TotalVolumeBottomBar`}
                   className={cn(`p-0.5 text-xxs text-white`, {
                     ["border"]: selectedMesocycleIndex === index,
                   })}
@@ -244,7 +237,6 @@ function Exercises() {
             key={`${each[0]?.id}_SessionItem_${index}`}
             className={`flex flex-col rounded-md ${BG_COLOR_M6}`}
           >
-            {/* <ListHeader /> */}
             <div className={`flex justify-between p-1`}>
               <div className={`indent-1 text-xs font-bold text-white`}>
                 Day {index + 1}
@@ -264,8 +256,13 @@ function Exercises() {
           </div>
         );
       })}
-      {addButtonDivs.map(() => {
-        return <AddDayItem onClick={() => addTrainingDayHandler()} />;
+      {addButtonDivs.map((e, i) => {
+        return (
+          <AddDayItem
+            key={`${i}_AddButtonDivs`}
+            onClick={() => addTrainingDayHandler()}
+          />
+        );
       })}
     </div>
   );
@@ -320,6 +317,7 @@ function SessionItem({ exercises, indices, dayIndex }: SessionItemProps) {
           {microcycles.map((e, i) => {
             return (
               <div
+                key={`${i}_WeeksSessionHeader`}
                 className={cn(`flex w-3 items-center justify-center text-xxs`, {
                   ["w-10"]: i === 0,
                 })}
@@ -427,7 +425,7 @@ function ExerciseItem({
             }
             if (i === 0)
               return (
-                <WeekOneSets key={`${exercise.id}_WeekOneSets_${each}_${i}`}>
+                <WeekOneSets key={`${exercise.id}_WeekOneSets_${i}`}>
                   <WeekOneSets.Button
                     operation="-"
                     onClick={() => onOperationHandler("-", dayIndex, index)}

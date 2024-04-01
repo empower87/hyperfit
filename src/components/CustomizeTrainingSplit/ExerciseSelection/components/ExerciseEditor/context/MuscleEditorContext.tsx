@@ -14,11 +14,11 @@ const MuscleEditorContext = createContext<MuscleEditorType>({
   volumes: [],
   selectedMesocycleIndex: 0,
   frequencyProgression: [],
-  onSelectMesocycle: () => {},
+  onSelectMesocycle: () => null,
   mesocyclesArray: [],
-  onOperationHandler: () => {},
-  onAddTrainingDay: () => {},
-  onAddExercise: () => {},
+  onOperationHandler: () => null,
+  onAddTrainingDay: () => null,
+  onAddExercise: () => null,
 });
 
 const MuscleEditorProvider = ({

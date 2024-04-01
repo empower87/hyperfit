@@ -31,10 +31,10 @@ const filterExercisesByTags = (
   const filteredExercises: Exercise[] = [];
 
   for (let i = 0; i < exercises.length; i++) {
-    let push = true;
-    let equipment = filterTags.equipment;
-    let movement_type = filterTags.movement_type;
-    let region = filterTags.region;
+    const push = true;
+    const equipment = filterTags.equipment;
+    const movement_type = filterTags.movement_type;
+    const region = filterTags.region;
     if (equipment) {
       const hasEquipment = exercises[i].requirements.includes(equipment);
       if (!hasEquipment) continue;
@@ -93,10 +93,10 @@ const ExerciseSearchFiltersContext = createContext<ExerciseSearchFiltersType>({
   allExercises: [],
   selectedExerciseId: "",
   filterTags: INITIAL_FILTER_TAGS,
-  onFilterTagChange: () => {},
-  onSortHandler: () => {},
-  onSaveExerciseHandler: () => {},
-  onSelectExerciseHandler: () => {},
+  onFilterTagChange: () => null,
+  onSortHandler: () => null,
+  onSaveExerciseHandler: () => null,
+  onSelectExerciseHandler: () => null,
 });
 
 type ExerciseSearchFiltersProviderProps = {

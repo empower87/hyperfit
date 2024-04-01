@@ -14,7 +14,7 @@ export const getEndOfMesocycleVolume = (
       : volume_landmark === "MEV"
       ? "mev_progression_matrix"
       : "mv_progression_matrix";
-  let volFrequency = setProgressionMatrix[mesocycle - 1];
+  const volFrequency = setProgressionMatrix[mesocycle - 1];
 
   // if (exercisesPerSessionSchema === 2) {
   //   volFrequency = MRV_PROGRESSION_MATRIX_TWO

@@ -21,7 +21,6 @@ import { cn } from "~/lib/clsx";
 import StrictModeDroppable from "~/lib/react-beautiful-dnd/StrictModeDroppable";
 import getMuscleTitleForUI from "~/utils/getMuscleTitleForUI";
 import { getVolumeSets } from "~/utils/musclePriorityHandlers";
-import { EditMuscleModal } from "./components/EditMuscleModal";
 import MesocycleFrequency from "./components/MesocycleFrequency";
 import { MesocycleVolumes } from "./components/MesocycleVolumes";
 import Settings from "./components/Settings/Settings";
@@ -126,16 +125,6 @@ function Item({ muscleGroup, index, onVolumeChange }: ItemProps) {
   return (
     <>
       <li className={bgColor + " mb-0.5 flex w-full text-xs text-white"}>
-        {isModalOpen ? (
-          <EditMuscleModal onClose={onCloseModal} isOpen={isModalOpen}>
-            <EditMuscleModal.Card
-              rank={index + 1}
-              muscleGroup={muscleGroup}
-              microcycles={microcycles}
-              onClose={onCloseModal}
-            />
-          </EditMuscleModal>
-        ) : null}
         <div className={" indent-1"} style={{ width: CELL_WIDTHS[0] }}>
           {index + 1}
         </div>

@@ -40,8 +40,8 @@ export const useOutsideClick = (callback: () => void) => {
   const ref = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
-    const handleClick = (event: any) => {
-      if (ref.current && !ref.current.contains(event.target)) {
+    const handleClick = (event: MouseEvent) => {
+      if (ref.current && !ref.current.contains(event.target as Node)) {
         callback();
       }
     };

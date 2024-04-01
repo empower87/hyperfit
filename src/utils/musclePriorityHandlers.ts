@@ -7,7 +7,7 @@ export const updateMusclePriorityVolume = (
   mrv_breakpoint: number,
   mev_breakpoint: number
 ) => {
-  let updateList = [...list];
+  const updateList = [...list];
   for (let i = 0; i < updateList.length; i++) {
     if (i < mrv_breakpoint) {
       updateList[i].volume_landmark = "MRV";
@@ -41,7 +41,7 @@ export const getEndOfMesocycleVolume = (
 
   let count = 0;
   for (let i = 0; i < frequencyList.length; i++) {
-    let sets = frequencyList[i].split("-");
+    const sets = frequencyList[i].split("-");
 
     sets.forEach((each) => {
       count = count + parseInt(each);

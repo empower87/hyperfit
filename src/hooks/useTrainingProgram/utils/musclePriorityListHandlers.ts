@@ -275,7 +275,7 @@ export const onReorderUpdateMusclePriorityList = (
   muscle_priority_list: MusclePriorityType[],
   volume_breakpoints?: [number, number]
 ) => {
-  let updated_list = structuredClone(muscle_priority_list);
+  const updated_list = structuredClone(muscle_priority_list);
   for (let i = 0; i < updated_list.length; i++) {
     const muscle = updated_list[i].muscle;
     const current_volume_landmark = muscle_priority_list[i].volume.landmark;
@@ -299,13 +299,13 @@ const getSetsForCurrentMicrocycle = (
   prev_microcycle: number[][],
   set_add_indices: number[]
 ) => {
-  let microcycle: number[][] = [];
+  const microcycle: number[][] = [];
 
   for (let j = 0; j < prev_microcycle.length; j++) {
-    let session_sets: number[] = [...prev_microcycle[j]];
+    const session_sets: number[] = [...prev_microcycle[j]];
 
     for (let k = 0; k < session_sets.length; k++) {
-      let sets_to_add = set_add_indices[k];
+      const sets_to_add = set_add_indices[k];
       session_sets[k] = session_sets[k] + sets_to_add;
     }
 
@@ -340,7 +340,7 @@ const getSetProgressionMatrixForMesocycle = (
 
   const initialMesocycleLayout = matrix[currentMesocycleIndex];
 
-  let mesocycle_sets: number[][][] = [];
+  const mesocycle_sets: number[][][] = [];
 
   let prev_microcycle: number[][] = initialMesocycleLayout.map((each) => [
     ...each,
@@ -384,11 +384,11 @@ export const getSetProgressionMatrixForMuscle = (
     adjust: "add" | "subtract";
   }
 ) => {
-  let set_progression_matrix: number[][][][] = [];
+  const set_progression_matrix: number[][][][] = [];
   for (let j = 0; j < frequencyProgression.length; j++) {
     const mesocycle_index =
       frequencyProgression[j] - 1 >= 0 ? frequencyProgression[j] - 1 : 0;
-    let set_progression = getSetProgressionMatrixForMesocycle(
+    const set_progression = getSetProgressionMatrixForMesocycle(
       mesocycle_index,
       exercisesPerSessionSchema,
       microcycles,
@@ -405,7 +405,7 @@ export const onSplitChangeUpdateMusclePriorityList = (
   microcycles: number,
   update_frequency?: [MusclePriorityType["id"], "add" | "subtract"]
 ) => {
-  let updated_list = [...muscle_priority_list];
+  const updated_list = [...muscle_priority_list];
 
   for (let i = 0; i < updated_list.length; i++) {
     const muscle = updated_list[i].muscle;
@@ -462,7 +462,7 @@ export const getFrequencyProgression = (
   sessions: number,
   mesocycles: number
 ) => {
-  let frequencyProgression: number[] = [];
+  const frequencyProgression: number[] = [];
 
   for (let i = 0; i < mesocycles; i++) {
     let frequency = sessions - i;
@@ -482,7 +482,7 @@ const attachMesocycleFrequencyProgression = (
   mesocycles: number,
   changeFrequency?: "add" | "subtract"
 ) => {
-  let key = volume_landmark;
+  const key = volume_landmark;
   let sessions = 0;
 
   switch (split_sessions.split) {

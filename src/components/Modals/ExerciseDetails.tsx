@@ -20,7 +20,7 @@ type GroupExercisesType = {
 };
 
 const getGroupExercises = (group: string, split: TrainingDayType[]) => {
-  let newSplit: GroupExercisesType[] = [];
+  const newSplit: GroupExercisesType[] = [];
 
   // for (let i = 0; i < split.length; i++) {
   //   const session_one = split[i].sessions[0];
@@ -109,6 +109,7 @@ export default function ExerciseDetails({
             const frequency = index + 1;
             return (
               <FullItem
+                key={`${each.day}_${index}`}
                 groupExercise={each}
                 frequency={frequency}
                 selectedExercise={selectedExercise}
@@ -157,6 +158,7 @@ function FullItem({
           }
           return (
             <ExerciseItem
+              key={`${exercise.id}_${index}`}
               exercise={exercise}
               selectedExercise={selectedExercise.exercise}
               mb={mb}

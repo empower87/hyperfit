@@ -11,7 +11,7 @@ const SessionDurationVariablesContext =
   createContext<SessionDurationVariablesType>({
     durationTimeConstants: { ...DURATION_TIME_CONSTRAINTS },
     sessionDurationCalculator: () => 0,
-    onTimeChange: () => {},
+    onTimeChange: () => null,
   });
 
 const SessionDurationVariablesProvider = ({
