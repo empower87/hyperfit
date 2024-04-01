@@ -104,9 +104,8 @@ type DropdownProps = {
 
 type DropdownListProps = {
   items: ExerciseType[];
-  supersets: Map<string, string> | undefined;
+  supersets: Map<string, string>;
   selectedId: ExerciseType["id"];
-  isOpen: boolean;
   onClose: () => void;
   onItemClick: (exercise: ExerciseType) => void;
 };
@@ -115,13 +114,9 @@ function DropdownListModal({
   items,
   supersets,
   selectedId,
-  isOpen,
   onClose,
   onItemClick,
 }: DropdownListProps) {
-  // const root = document.getElementById("modal-body")!;
-
-  // if (!isOpen) return null;
   return (
     <div
       className="flex h-full w-full flex-col items-center justify-center"
@@ -136,7 +131,7 @@ function DropdownListModal({
                 getRankColor(each.rank),
                 {
                   [`${BG_COLOR_M5} border-white`]: each.id === selectedId,
-                  [`${supersets?.get(each.id)}`]: supersets?.get(each.id),
+                  [`${supersets.get(each.id)}`]: supersets.get(each.id),
                 }
               )}
               key={each.id}
@@ -418,7 +413,6 @@ function DaySessionItem({
               items={exercises}
               supersets={supersets}
               selectedId={exercise.id}
-              isOpen={isOpen}
               onClose={onDropdownClose}
               onItemClick={onItemClick}
             />
@@ -588,20 +582,20 @@ function DayLayout({
         <h3 className="indent-1 text-white">{day}</h3>
       </div>
 
-      <StrictModeDroppable
-        droppableId={`${day}_${mesocycleIndex}`}
-        type={`session_${mesocycleIndex}`}
-      >
-        {(provided, snapshot) => (
-          <ul
-            id={`session_${mesocycleIndex}`}
-            className="flex flex-col p-1"
-            {...provided.droppableProps}
-            ref={provided.innerRef}
-          >
-            {sessions.map((each, index) => {
-              return (
-                <SessionDurationVariablesProvider>
+      <SessionDurationVariablesProvider>
+        <StrictModeDroppable
+          droppableId={`${day}_${mesocycleIndex}`}
+          type={`session_${mesocycleIndex}`}
+        >
+          {(provided, snapshot) => (
+            <ul
+              id={`session_${mesocycleIndex}`}
+              className="flex flex-col p-1"
+              {...provided.droppableProps}
+              ref={provided.innerRef}
+            >
+              {sessions.map((each, index) => {
+                return (
                   <DroppableDay
                     key={`${each.id}_${index}_${mesocycleIndex}`}
                     split={each.split}
@@ -611,13 +605,13 @@ function DayLayout({
                     selectedMicrocycleIndex={selectedMicrocycleIndex}
                     onSupersetUpdate={onSupersetUpdate}
                   />
-                </SessionDurationVariablesProvider>
-              );
-            })}
-            {provided.placeholder}
-          </ul>
-        )}
-      </StrictModeDroppable>
+                );
+              })}
+              {provided.placeholder}
+            </ul>
+          )}
+        </StrictModeDroppable>
+      </SessionDurationVariablesProvider>
     </div>
   );
 }

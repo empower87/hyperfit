@@ -7,7 +7,6 @@ import {
   useState,
 } from "react";
 import { MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
-import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
 import { Exercise, getGroupList } from "~/utils/getExercises";
 
 type EquipmentType = "barbell" | "dumbbell" | "machine" | "cable";
@@ -94,10 +93,10 @@ const ChangeExerciseContext = createContext<ChangeExerciseContextType>({
   allExercises: [],
   selectedExerciseId: "",
   filterTags: INITIAL_FILTER_TAGS,
-  onFilterTagChange: () => {},
-  onSortHandler: () => {},
+  onFilterTagChange: () => null,
+  onSortHandler: () => null,
   onSaveExerciseHandler: () => undefined,
-  onSelectExerciseHandler: () => {},
+  onSelectExerciseHandler: () => null,
 });
 
 type ChangeExerciseProviderProps = {
@@ -123,9 +122,7 @@ const useChangeExerciseContext = () => {
 };
 
 function useChangeExercise(muscle: MusclePriorityType, exerciseId: string) {
-  const { handleUpdateMuscle } = useTrainingProgramContext();
   const allExercises = [...muscle.exercises].flat();
-
   const [visibleExercises, setVisibleExercises] = useState<Exercise[]>([]);
   const [selectedExerciseId, setSelectedExerciseId] = useState<string>("");
   const [filterTags, setFilterTags] = useState<FilterTags>({
