@@ -96,14 +96,11 @@ export default function TableOfContents() {
     setContents(newContents);
   }, [prioritized_muscle_list]);
 
-  useEffect(() => {
-    console.log(activeId, "WTF THIS GONE LOOK LIKE??");
-  }, [activeId]);
   return (
     <aside
-      className={`sticky top-[65px] m-2 flex h-full w-1/6 flex-col items-end self-start overflow-y-auto overflow-x-hidden rounded`}
+      className={`sticky top-[60px] m-2 flex h-full w-1/6 flex-col items-end self-start overflow-y-auto overflow-x-hidden rounded`}
     >
-      <div className={`w-2/3 rounded border-2 px-2 py-4 ${BORDER_COLOR_M6}`}>
+      <div className={`w-2/3 rounded border-2 px-2 py-3 ${BORDER_COLOR_M6}`}>
         <div className={`my-3 text-xxs text-white`}>TABLE OF CONTENTS</div>
         <div className={`flex flex-col space-y-1`}>
           {contents.map((contents, index) => {

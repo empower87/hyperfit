@@ -579,7 +579,7 @@ function DayLayout({
   const { day, sessions } = session;
 
   return (
-    <div className={`${BG_COLOR_M6} rounded`}>
+    <li className={`${BG_COLOR_M6} rounded`}>
       <div className={`${BORDER_COLOR_M8} border-b-2 p-1`}>
         <h3 className="indent-1 text-white">{day}</h3>
       </div>
@@ -614,7 +614,7 @@ function DayLayout({
           )}
         </StrictModeDroppable>
       </SessionDurationVariablesProvider>
-    </div>
+    </li>
   );
 }
 
@@ -689,7 +689,7 @@ function WeekSessions({
   //       as well as if it can should it change the split type??
 
   return (
-    <div className={" my-1 flex flex-col"}>
+    <div className={"my-1 flex w-full flex-col"}>
       {modalOptions && isModalPrompted ? (
         <Prompt
           splitOptions={modalOptions}
@@ -697,8 +697,7 @@ function WeekSessions({
           onClose={onSplitChange}
         />
       ) : null}
-
-      <div className="flex space-x-1">
+      <ul className="flex space-x-1 overflow-x-auto">
         <DragDropContext onDragEnd={onDragEnd}>
           {draggableExercises?.map((each, index) => {
             // NOTE: to not display days w/o any sessions
@@ -715,7 +714,7 @@ function WeekSessions({
             );
           })}
         </DragDropContext>
-      </div>
+      </ul>
     </div>
   );
 }

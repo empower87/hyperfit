@@ -21,6 +21,7 @@ function useProgramConfig() {
     frequency,
     handleOnProgramConfigChange,
   } = useTrainingProgramContext();
+
   const [list, setList] = useState<MusclePriorityType[]>([
     ...prioritized_muscle_list,
   ]);
