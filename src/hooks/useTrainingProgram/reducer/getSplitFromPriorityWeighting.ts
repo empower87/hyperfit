@@ -10,17 +10,17 @@ import {
 } from "./trainingProgramReducer";
 
 export function getSplitFromWeights(
-  sessions: [number, number],
-  priority: MusclePriorityType[],
+  frequency: [number, number],
+  muscle_priority_list: MusclePriorityType[],
   split_name: SplitSessionsNameType
 ): SplitSessionsType {
   let push = 0;
   let pull = 0;
   let lower = 0;
 
-  for (let i = 0; i < priority.length; i++) {
-    const rank = priority[i].rank;
-    const muscle = priority[i].muscle;
+  for (let i = 0; i < muscle_priority_list.length; i++) {
+    const rank = muscle_priority_list[i].rank;
+    const muscle = muscle_priority_list[i].muscle;
     const split = getOptimizedSplitForWeights(muscle);
     switch (split) {
       case "both":
@@ -42,7 +42,7 @@ export function getSplitFromWeights(
     }
   }
 
-  const total_sessions = sessions[0] + sessions[1];
+  const total_sessions = frequency[0] + frequency[1];
 
   let session_maxes_per_week = [0, 0, 0];
 
@@ -118,7 +118,10 @@ export function getSplitFromWeights(
 
   switch (split_name) {
     case "BRO":
-      const bro_sessions = distributeIntoSessionsBro(sessions, priority);
+      const bro_sessions = distributeIntoSessionsBro(
+        frequency,
+        muscle_priority_list
+      );
       return { split: "BRO", sessions: bro_sessions };
     case "PPL":
       const ppl_sessions = distributeRatioIntoSessionsPPL(

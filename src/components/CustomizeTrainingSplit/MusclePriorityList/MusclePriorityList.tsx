@@ -21,9 +21,9 @@ import { cn } from "~/lib/clsx";
 import StrictModeDroppable from "~/lib/react-beautiful-dnd/StrictModeDroppable";
 import getMuscleTitleForUI from "~/utils/getMuscleTitleForUI";
 import { getVolumeSets } from "~/utils/musclePriorityHandlers";
+import Settings from "../ProgramConfig/components/PrioritizeMuscles/Settings";
 import MesocycleFrequency from "./components/MesocycleFrequency";
 import { MesocycleVolumes } from "./components/MesocycleVolumes";
-import Settings from "./components/Settings/Settings";
 import useMusclePriority from "./hooks/useMusclePriority";
 import { getEndOfMesocycleVolume } from "./utils/getVolumeTotal";
 
@@ -411,10 +411,7 @@ export function MiniMusclePriorityList() {
           </Settings.Section>
 
           <Settings.Section title="Toggles">
-            <div className={`flex space-x-1 p-1`}>
-              <Settings.Button title="All MEV" />
-              <Settings.Button title="All MV" />
-            </div>
+            <Settings.Toggles />
           </Settings.Section>
         </Settings>
       </div>

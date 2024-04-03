@@ -6,10 +6,10 @@ import {
   OPTSessionsType,
   PPLSessionsType,
   PPLULSessionsType,
+  SessionSplitType,
   SessionType,
   SplitSessionsNameType,
   SplitSessionsType,
-  SplitType,
   TrainingDayType,
   ULSessionsType,
 } from "./trainingProgramReducer";
@@ -529,7 +529,9 @@ export const distributeSplitAcrossWeek = (
   return week;
 };
 
-const getPotentialSplits = (splitType: SplitType): SplitSessionsNameType[] => {
+const getPotentialSplits = (
+  splitType: SessionSplitType
+): SplitSessionsNameType[] => {
   switch (splitType) {
     case "arms":
       return ["BRO", "CUS"];
@@ -556,7 +558,7 @@ const getPotentialSplits = (splitType: SplitType): SplitSessionsNameType[] => {
   }
 };
 
-export const determineSplitHandler = (splitType: SplitType[]) => {
+export const determineSplitHandler = (splitType: SessionSplitType[]) => {
   let splits: SplitSessionsNameType[] = [];
 
   for (let i = 0; i < splitType.length; i++) {
@@ -572,7 +574,7 @@ export const determineSplitHandler = (splitType: SplitType[]) => {
 
 export const redistributeSessionsIntoNewSplit = (
   split: SplitSessionsNameType,
-  splits: SplitType[]
+  splits: SessionSplitType[]
 ): SplitSessionsType => {
   switch (split) {
     case "BRO":

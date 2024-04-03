@@ -18,7 +18,9 @@ export function useHeadsObserver() {
       rootMargin: "-10% 0% -75% 0px",
     });
 
-    const muscles = FULL_BODY_MUSCLES.map((each) => ` #${each}`).toString();
+    const muscles: string = FULL_BODY_MUSCLES.map(
+      (each) => ` #${each}`
+    ).toString();
     const elements = document.querySelectorAll(
       `#configuration,${muscles}, #exercise_editor, #training_block`
     );

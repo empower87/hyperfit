@@ -5,12 +5,10 @@ import TrainingBlock from "../Macrocycle/TrainingBlock/TrainingBlock";
 import TableOfContents from "../TableofContents/TableOfContents";
 import ExerciseOverview from "./ExerciseSelection/ExerciseSelection";
 import MuscleEditor from "./ExerciseSelection/components/ExerciseEditor/MuscleEditor";
-import {
-  Button,
-  MiniMusclePriorityList,
-} from "./MusclePriorityList/MusclePriorityList";
+import { Button } from "./MusclePriorityList/MusclePriorityList";
 import ProgramConfig from "./ProgramConfig/ProgramConfig";
 import SplitOverview from "./ProgramConfig/SplitOverview";
+import { PrioritizeMuscles } from "./ProgramConfig/components/PrioritizeMuscles/PrioritizeMuscles";
 import { useProgramConfigContext } from "./ProgramConfig/hooks/useProgramConfig";
 
 export default function PageContent() {
@@ -22,8 +20,7 @@ export default function PageContent() {
         <div className="w-5/6">
           <Section title="CONFIGURATION">
             <ProgramConfig>
-              <MiniMusclePriorityList />
-
+              <PrioritizeMuscles />
               <div className={`flex flex-col space-y-1`}>
                 <ProgramConfig.Periodization />
 

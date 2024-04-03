@@ -8,17 +8,7 @@ import {
   BORDER_COLOR_M7,
 } from "~/constants/themes";
 import { cn } from "~/lib/clsx";
-import { Breakpoints } from "./Breakpoints";
-
-function ToggleButton({ title }: { title: string }) {
-  return (
-    <button
-      className={`rounded ${BORDER_COLOR_M6} flex items-center justify-center border px-1 py-0.5`}
-    >
-      <div className={`text-[.5rem] text-white`}>{title}</div>
-    </button>
-  );
-}
+import { Breakpoints, Toggles } from "./Breakpoints";
 
 type SettingsProps = {
   children: ReactNode;
@@ -48,7 +38,7 @@ function Section({ title, variant, children }: SectionProps) {
 }
 
 Settings.Breakpoints = Breakpoints;
-Settings.Button = ToggleButton;
+Settings.Toggles = Toggles;
 Settings.Section = Section;
 export default function Settings({ children }: SettingsProps) {
   return <div className={cn(`flex space-x-1`)}>{children}</div>;

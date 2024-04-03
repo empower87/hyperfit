@@ -1,4 +1,4 @@
-import { ReactNode, useCallback, useEffect, useState } from "react";
+import { ReactNode, useCallback } from "react";
 import { DragDropContext, Draggable, DropResult } from "react-beautiful-dnd";
 import { PlusIcon } from "~/assets/icons/_icons";
 import { CardS } from "~/components/Layout/Sections";
@@ -12,14 +12,13 @@ import {
   DayType,
   SessionType,
   SplitType,
-  TrainingDayType,
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
-import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
 import { cn } from "~/lib/clsx";
 import StrictModeDroppable from "~/lib/react-beautiful-dnd/StrictModeDroppable";
 import { getSessionSplitColor } from "~/utils/getSessionSplitColor";
 import { Button } from "../MusclePriorityList/MusclePriorityList";
 import SplitSelect from "./SplitSelect";
+import { useProgramConfigContext } from "./hooks/useProgramConfig";
 
 const DAYS: DayType[] = [
   "Sunday",
@@ -41,13 +40,7 @@ const getIndexOfDay = (droppableId: string) => {
 };
 
 export function TrainingWeek() {
-  const { training_week, handleRearrangeTrainingWeek } =
-    useTrainingProgramContext();
-  const [draggableWeek, setDraggableWeek] = useState<TrainingDayType[]>([]);
-
-  useEffect(() => {
-    setDraggableWeek(training_week);
-  }, [training_week]);
+  const { trainingWeek, onRearrangedWeek } = useProgramConfigContext();
 
   const onDragEnd = useCallback(
     (result: DropResult) => {
@@ -62,7 +55,7 @@ export function TrainingWeek() {
       outerDestinationId = getIndexOfDay(result.destination.droppableId);
       outerSourceId = getIndexOfDay(result.source.droppableId);
 
-      const items = [...draggableWeek];
+      const items = [...trainingWeek];
       const sourceRemoved = items[outerSourceId].sessions[innerSourceId];
       let destinationRemoved: SessionType;
       destinationRemoved =
@@ -75,30 +68,13 @@ export function TrainingWeek() {
       items[outerDestinationId].sessions[innerDestinationId] = sourceRemoved;
       items[outerSourceId].sessions[innerSourceId] = destinationRemoved;
       console.log(items, "WHAT THIS LOOK LIKE????");
-      setDraggableWeek(items);
+      onRearrangedWeek(items);
     },
-    [draggableWeek]
+    [trainingWeek]
   );
 
-  const onSaveHandler = () => {
-    // TODO: should do this filtering logic within REDUCER
-
-    // const filteredWeek = draggableWeek.map((each) => {
-    //   const sessions = each.sessions.filter(
-    //     (ea) => ea.split !== ("off" as SplitType)
-    //   );
-    //   return { ...each, sessions: sessions };
-    // });
-
-    handleRearrangeTrainingWeek(draggableWeek);
-  };
-
-  const onResetHandler = () => {
-    setDraggableWeek(training_week);
-  };
-
   const onSplitChange = (newSplit: SplitType | "off", id: string) => {
-    const update_week = draggableWeek.map((day) => {
+    const update_week = trainingWeek.map((day) => {
       const sessions: SessionType[] = day.sessions.map((session) => {
         if (session.id === id)
           return { ...session, split: newSplit as SplitType };
@@ -106,14 +82,14 @@ export function TrainingWeek() {
       });
       return { ...day, sessions: sessions };
     });
-    setDraggableWeek(update_week);
+    onRearrangedWeek(update_week);
   };
 
   return (
     <div className={"p-1"}>
       <div className="mb-1 flex space-x-1 overflow-x-auto">
         <DragDropContext onDragEnd={onDragEnd}>
-          {draggableWeek.map((each, index) => {
+          {trainingWeek.map((each, index) => {
             const day = DAYS[index];
             return (
               <DroppableDay

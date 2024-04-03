@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { BG_COLOR_M5, BG_COLOR_M6 } from "~/constants/themes";
-import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
+import { useProgramConfigContext } from "~/components/CustomizeTrainingSplit/ProgramConfig/hooks/useProgramConfig";
+import { BG_COLOR_M5, BG_COLOR_M6, BORDER_COLOR_M6 } from "~/constants/themes";
 import { cn } from "~/lib/clsx";
 
 type VolumeSettingFrameProps = {
-  title: string;
+  title: "MRV" | "MEV";
   breakpoint: number;
-  onChange: (type: "mrv_breakpoint" | "mev_breakpoint", value: number) => void;
+  onChange: (type: "MRV" | "MEV", value: number) => void;
 };
 
 function VolumeSettingFrame({
@@ -20,11 +20,11 @@ function VolumeSettingFrame({
   const titleKey = title === "MRV" ? "mrv_breakpoint" : "mev_breakpoint";
   const onSubtract = () => {
     setCurrentBreakpoint((prev) => prev - 1);
-    onChange(titleKey, currentBreakpoint - 1);
+    onChange(title, currentBreakpoint - 1);
   };
   const onAdd = () => {
     setCurrentBreakpoint((prev) => prev + 1);
-    onChange(titleKey, currentBreakpoint + 1);
+    onChange(title, currentBreakpoint + 1);
   };
 
   return (
@@ -67,19 +67,62 @@ function VolumeSettingFrame({
 }
 
 export function Breakpoints() {
-  const { mrv_breakpoint, mev_breakpoint, handleUpdateBreakpoint } =
-    useTrainingProgramContext();
+  const { onBreakpointChange, volumeBreakpoints } = useProgramConfigContext();
   return (
     <div className={`flex space-x-1 p-1`}>
       <VolumeSettingFrame
         title="MRV"
-        breakpoint={mrv_breakpoint}
-        onChange={handleUpdateBreakpoint}
+        breakpoint={volumeBreakpoints[0]}
+        onChange={onBreakpointChange}
       />
       <VolumeSettingFrame
         title="MEV"
-        breakpoint={mev_breakpoint}
-        onChange={handleUpdateBreakpoint}
+        breakpoint={volumeBreakpoints[1]}
+        onChange={onBreakpointChange}
+      />
+    </div>
+  );
+}
+
+function ToggleButton({
+  title,
+  isToggled,
+  onClick,
+}: {
+  title: string;
+  isToggled: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={cn(
+        `rounded ${BORDER_COLOR_M6} flex items-center justify-center border px-1 py-0.5 hover:${BG_COLOR_M5}`,
+        { ["border-white bg-rose-400"]: isToggled }
+      )}
+    >
+      <div className={`text-[.5rem] text-white`}>{title}</div>
+    </button>
+  );
+}
+
+export function Toggles() {
+  const { onToggleBreakpoints, volumeBreakpoints } = useProgramConfigContext();
+
+  const isMEVToggled =
+    volumeBreakpoints[0] === 0 && volumeBreakpoints[1] === 14;
+  const isMVToggled = volumeBreakpoints[0] === 0 && volumeBreakpoints[1] === 0;
+  return (
+    <div className={`flex space-x-1 p-1`}>
+      <ToggleButton
+        title="All MEV"
+        isToggled={isMEVToggled}
+        onClick={() => onToggleBreakpoints("All MEV")}
+      />
+      <ToggleButton
+        title="All MV"
+        isToggled={isMVToggled}
+        onClick={() => onToggleBreakpoints("All MV")}
       />
     </div>
   );

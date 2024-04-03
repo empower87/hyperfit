@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import Settings from "~/components/CustomizeTrainingSplit/MusclePriorityList/components/Settings/Settings";
+import Settings from "~/components/CustomizeTrainingSplit/ProgramConfig/components/PrioritizeMuscles/Settings";
 import { BG_COLOR_M5 } from "~/constants/themes";
 import { cn } from "~/lib/clsx";
 import { useSessionDurationVariablesContext } from "./sessionDurationVariablesContext";

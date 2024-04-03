@@ -184,9 +184,10 @@ export type MusclePriorityType = {
   volume: MusclePriorityVolumeType;
 };
 
+export type SessionSplitType = SplitType | "off";
 export type SessionType = {
   id: string;
-  split: SplitType;
+  split: SessionSplitType;
   exercises: ExerciseType[][];
 };
 
