@@ -1,10 +1,10 @@
 import { ReactNode, useCallback } from "react";
 import { DragDropContext, Draggable, DropResult } from "react-beautiful-dnd";
-import { PlusIcon } from "~/assets/icons/_icons";
+import { DragHandleIcon } from "~/assets/icons/_icons";
 import { CardS } from "~/components/Layout/Sections";
 import {
   BG_COLOR_M5,
-  BG_COLOR_M6,
+  BG_COLOR_M7,
   BORDER_COLOR_M4,
   BORDER_COLOR_M7,
 } from "~/constants/themes";
@@ -16,7 +16,6 @@ import {
 import { cn } from "~/lib/clsx";
 import StrictModeDroppable from "~/lib/react-beautiful-dnd/StrictModeDroppable";
 import { getSessionSplitColor } from "~/utils/getSessionSplitColor";
-import { Button } from "../MusclePriorityList/MusclePriorityList";
 import SplitSelect from "./SplitSelect";
 import { useProgramConfigContext } from "./hooks/useProgramConfig";
 
@@ -128,13 +127,13 @@ const DroppableDay = ({
     console.log("clicked");
   };
 
-  const sesh = sessions;
-  if (!sesh.length) {
-    sesh.push(offDay as unknown as SessionType);
+  const allSessions = sessions;
+  if (!allSessions.length) {
+    allSessions.push(offDay as unknown as SessionType);
   }
 
   return (
-    <div className={cn(`flex w-20 flex-col ${BG_COLOR_M5} rounded`)}>
+    <div className={cn(`flex flex-col ${BG_COLOR_M5} rounded`)}>
       <div
         className={cn(
           `flex w-full justify-center p-1 text-xs font-bold text-white ${BORDER_COLOR_M7} border-b-2`
@@ -152,7 +151,7 @@ const DroppableDay = ({
               {...provided.droppableProps}
               ref={provided.innerRef}
             >
-              {sesh.map((each, index) => {
+              {allSessions.map((each, index) => {
                 return (
                   <Draggable
                     key={`${each.id}_${index}_DroppableDay`}
@@ -160,16 +159,18 @@ const DroppableDay = ({
                     index={index}
                   >
                     {(provided, snapshot) => (
-                      <div
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                      >
+                      <div ref={provided.innerRef} {...provided.draggableProps}>
                         <SessionItem
                           session={each}
-                          index={index}
                           onSplitChange={onSplitChange}
-                        />
+                        >
+                          <div
+                            {...provided.dragHandleProps}
+                            className={`flex items-center justify-start`}
+                          >
+                            <DragHandleIcon fill="white" />
+                          </div>
+                        </SessionItem>
                       </div>
                     )}
                   </Draggable>
@@ -179,11 +180,11 @@ const DroppableDay = ({
             </ul>
           )}
         </StrictModeDroppable>
-        <div className={`flex justify-center`}>
+        {/* <div className={`flex justify-center`}>
           <Button className={`${BG_COLOR_M6}`} onClick={onAddHandler}>
             <PlusIcon className={`fill-white`} />
           </Button>
-        </div>
+        </div> */}
       </div>
     </div>
   );
@@ -191,10 +192,10 @@ const DroppableDay = ({
 
 type SessionItemProps = {
   session: SessionType;
-  index: number;
   onSplitChange: (newSplit: SplitType | "off", id: string) => void;
+  children?: ReactNode;
 };
-function SessionItem({ session, index, onSplitChange }: SessionItemProps) {
+function SessionItem({ session, onSplitChange, children }: SessionItemProps) {
   const onSelectChange = (newSplit: SplitType | "off") => {
     onSplitChange(newSplit, session.id);
   };
@@ -216,20 +217,23 @@ function SessionItem({ session, index, onSplitChange }: SessionItemProps) {
 
   return (
     <li
-      className={cn(`flex p-1 ${bgColor} space-x-1 rounded border-2`, {
+      className={cn(`flex py-1 ${bgColor} rounded border-2`, {
         [`${BORDER_COLOR_M4}`]: session.split === ("off" as SplitType),
       })}
     >
-      {/* <div className="flex w-4 items-center justify-center text-xxs text-white">
-        x
-      </div> */}
-
-      <div className={`flex`}>
-        <SelectSession
-          session={session.split}
-          splits={SPLIT_NAMES}
-          onSelect={onSelectChange}
-        />
+      {children}
+      <div className={`relative flex w-14 text-xxs text-white`}>
+        {session.split === "off" ? (
+          <div className="h-full w-full bg-inherit py-0.5 indent-2 text-xxs font-bold text-white">
+            off
+          </div>
+        ) : (
+          <SelectSession
+            session={session.split}
+            splits={SPLIT_NAMES}
+            onSelect={onSelectChange}
+          />
+        )}
       </div>
     </li>
   );
@@ -247,14 +251,16 @@ function SelectSession({ session, splits, onSelect }: SelectSessionProps) {
   };
   return (
     <select
-      className={"h-full w-full bg-inherit text-xxs font-bold text-white"}
+      className={
+        "h-full w-full bg-inherit py-0.5 text-xxs font-bold text-white"
+      }
       onChange={onSelectHandler}
     >
       {splits.map((split, index) => {
         return (
           <option
             key={`${split}_${index}`}
-            className={`${BG_COLOR_M6} text-xxs font-bold text-white`}
+            className={`${BG_COLOR_M7} p-1 text-xxs font-bold text-white`}
             selected={split === session}
             value={split}
           >
