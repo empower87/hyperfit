@@ -250,10 +250,8 @@ export const getOptimizedSplitForWeights = (muscle: MuscleType) => {
     return "push";
   } else if (includes(PULL_MUSCLES, muscle)) {
     return "pull";
-  } else if (includes(LOWER_MUSCLES, muscle)) {
-    return "lower";
   } else {
-    return "both";
+    return "lower";
   }
 };
 

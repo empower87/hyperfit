@@ -133,7 +133,6 @@ export function getSplitFromWeights(
       pullSessions = pullSessions + ppl_sessions.pull;
       pushSessions = pushSessions + ppl_sessions.push;
       lowerSessions = lowerSessions + ppl_sessions.legs;
-
       return {
         split: "PPL",
         sessions: {
@@ -219,11 +218,25 @@ export function getSplitFromWeights(
         },
       };
     case "UL":
+      console.log(
+        pushSessions,
+        pullSessions,
+        lowerSessions,
+        pushTenths,
+        pullTenths,
+        lowerTenths,
+        "did i just not do the logic?"
+      );
+      const upper_lower = distributeRatioIntoSessionsUL(
+        pushTenths,
+        lowerTenths,
+        pullTenths
+      );
       return {
         split: "UL",
         sessions: {
-          upper: pushSessions + pullSessions,
-          lower: lowerSessions,
+          upper: pushSessions + pullSessions + upper_lower.upper,
+          lower: lowerSessions + upper_lower.lower,
         },
       };
     default:
@@ -330,33 +343,77 @@ function distributeRatioIntoSessionsPPL(
     pull: 0,
   };
 
+  let PPL_VALUES = {
+    push: push,
+    legs: legs,
+    pull: pull,
+  };
+
   const total = Math.round(push + legs + pull);
 
   if (total <= 1) {
-    const { key } = getKeyWithHighestValue(PPL);
+    const { key } = getKeyWithHighestValue(PPL_VALUES);
     PPL = { ...PPL, [key]: PPL[key] + 1 };
   } else {
     // lol my logic sucks
-    let highestKey: keyof typeof PPL = "push";
+    let highestKey: keyof typeof PPL = "legs";
     let secondHighestKey: keyof typeof PPL = "pull";
 
-    const first = getKeyWithHighestValue(PPL);
+    const first = getKeyWithHighestValue(PPL_VALUES);
     highestKey = first.key;
 
     const newPPL = { ...PPL, [highestKey]: 0 };
     const second = getKeyWithHighestValue(newPPL);
     secondHighestKey = second.key;
 
-    PPL = {
-      ...PPL,
-      [highestKey]: PPL[highestKey] + 1,
-      [secondHighestKey]: PPL[secondHighestKey] + 1,
-    };
+    if (highestKey === secondHighestKey) {
+      PPL = {
+        ...PPL,
+        [highestKey]: PPL[highestKey] + 2,
+      };
+    } else {
+      PPL = {
+        ...PPL,
+        [highestKey]: PPL[highestKey] + 1,
+        [secondHighestKey]: PPL[secondHighestKey] + 1,
+      };
+    }
   }
 
   return PPL;
 }
 
+function distributeRatioIntoSessionsUL(
+  push: number,
+  legs: number,
+  pull: number
+) {
+  const UL = {
+    upper: 0,
+    lower: 0,
+  };
+
+  const total = Math.round(push + legs + pull);
+
+  if (total <= 1) {
+    if (legs >= 0.55) {
+      UL.lower++;
+    } else {
+      UL.upper++;
+    }
+  } else {
+    if (legs <= 0.33) {
+      UL.upper = UL.upper + 2;
+    } else if (legs > 0.33 && legs <= 0.85) {
+      UL.lower++;
+      UL.upper++;
+    } else {
+      UL.lower = UL.lower + 2;
+    }
+  }
+
+  return UL;
+}
 function divideRatioIntoSessionsOPT(push: number, legs: number, pull: number) {
   const OPT = {
     push: 0,

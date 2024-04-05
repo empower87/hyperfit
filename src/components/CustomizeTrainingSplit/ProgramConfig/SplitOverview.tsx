@@ -123,10 +123,6 @@ const DroppableDay = ({
     exercises: [],
   };
 
-  const onAddHandler = () => {
-    console.log("clicked");
-  };
-
   const allSessions = sessions;
   if (!allSessions.length) {
     allSessions.push(offDay as unknown as SessionType);

@@ -1,5 +1,10 @@
 import { ReactNode, useCallback, useEffect, useState } from "react";
-import { ArrowUpIcon, DotsIcon, PlusIcon } from "~/assets/icons/_icons";
+import {
+  ArrowDownIcon,
+  ArrowUpIcon,
+  DotsIcon,
+  PlusIcon,
+} from "~/assets/icons/_icons";
 import { SectionH2 } from "~/components/Layout/Sections";
 import Modal from "~/components/Modals/Modal";
 import {
@@ -54,6 +59,39 @@ export default function MuscleEditor() {
   );
 }
 
+type MuscleCollapsedProps = {
+  id: string;
+  rank: number;
+  title: string;
+  bgColor: string;
+  onExpand: () => void;
+};
+function MuscleCollapsed({
+  id,
+  rank,
+  title,
+  bgColor,
+  onExpand,
+}: MuscleCollapsedProps) {
+  return (
+    <li id={id} className={`flex justify-between rounded ${bgColor}`}>
+      <div className={`flex w-32 p-1 text-sm text-white`}>
+        <div className={`flex w-3 items-center justify-center text-xs`}>
+          {rank}
+        </div>
+        <div className={`flex w-full items-center indent-1`}>{title}</div>
+      </div>
+
+      <div
+        onClick={onExpand}
+        className={`flex cursor-pointer items-center justify-center pr-2`}
+      >
+        <ArrowDownIcon fill="white" />
+      </div>
+    </li>
+  );
+}
+
 type MuscleProps = {
   muscle: MusclePriorityType;
   rank: number;
@@ -70,6 +108,19 @@ function Muscle({ muscle, rank }: MuscleProps) {
   const title = getMuscleTitleForUI(muscle.muscle);
   const [isCollapsed, setIsCollapsed] = useState(false);
 
+  const onExpandHandler = () => setIsCollapsed(false);
+  const onCollapseHandler = () => setIsCollapsed(true);
+  if (isCollapsed) {
+    return (
+      <MuscleCollapsed
+        id={muscle.muscle}
+        rank={rank}
+        title={title}
+        bgColor={bgColor.bg}
+        onExpand={() => onExpandHandler()}
+      />
+    );
+  }
   return (
     <li
       id={muscle.muscle}
@@ -77,7 +128,7 @@ function Muscle({ muscle, rank }: MuscleProps) {
     >
       <div className={`flex rounded-t ${bgColor.bg} justify-between border-b`}>
         <div className={`flex w-32 p-1 text-sm text-white`}>
-          <div className={`flex w-3 items-center justify-center text-xxs`}>
+          <div className={`flex w-3 items-center justify-center text-xs`}>
             {rank}
           </div>
           <div className={`flex w-full items-center indent-1`}>{title}</div>
@@ -100,7 +151,10 @@ function Muscle({ muscle, rank }: MuscleProps) {
           })}
         </div>
 
-        <div className={`flex items-center justify-center pr-2`}>
+        <div
+          onClick={() => onCollapseHandler()}
+          className={`flex cursor-pointer items-center justify-center pr-2`}
+        >
           <ArrowUpIcon fill="white" />
         </div>
       </div>
