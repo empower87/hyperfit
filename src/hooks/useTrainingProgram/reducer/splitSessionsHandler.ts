@@ -200,7 +200,7 @@ export const distributePPLSplitAcrossWeek = (
   });
 
   const stack: ("push" | "pull" | "legs" | "off")[] = [];
-  console.log(_week, counter, "what's going on here???");
+
   for (let i = 0; i < _week.length; i++) {
     const lastIn = stack[stack.length - 1];
     const nextSession = getNextSplitPPL(lastIn, counter);
@@ -497,7 +497,7 @@ export const distributeSplitAcrossWeek = (
 
   // let counter = getSessionCounter(split_sessions.name, split_sessions.sessions);
   const counter = { ...split_sessions };
-  console.log(counter, "OK WTF IS GOING ON HERE THO??");
+
   let week = _week.map((each, index) => {
     if (off_day_indices.includes(index)) {
       return { ...each, isTrainingDay: false };

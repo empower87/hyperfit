@@ -395,6 +395,7 @@ function distributeRatioIntoSessionsUL(
 
   const total = Math.round(push + legs + pull);
 
+  console.log(push, legs, pull, "WTF?");
   if (total <= 1) {
     if (legs >= 0.55) {
       UL.lower++;
@@ -414,6 +415,7 @@ function distributeRatioIntoSessionsUL(
 
   return UL;
 }
+
 function divideRatioIntoSessionsOPT(push: number, legs: number, pull: number) {
   const OPT = {
     push: 0,

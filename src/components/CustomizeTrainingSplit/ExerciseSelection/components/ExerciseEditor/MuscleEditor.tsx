@@ -5,6 +5,7 @@ import {
   DotsIcon,
   PlusIcon,
 } from "~/assets/icons/_icons";
+import Dropdown from "~/components/Layout/Dropdown";
 import { SectionH2 } from "~/components/Layout/Sections";
 import Modal from "~/components/Modals/Modal";
 import {
@@ -213,7 +214,51 @@ function Muscle({ muscle, rank }: MuscleProps) {
 // TODO: create a blank session card to add a day to list and select exercises to fill it.
 //       However if the selected mesocycle is less than the last mesocycle, this button
 //       should automatically add the last mesocycles session.
+type SessionProps = {
+  index: number;
+  exercises: ExerciseType[];
+  indices: number[];
+};
+function Session({ index, exercises, indices }: SessionProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const onDropdownClose = () => setIsOpen(false);
+  const onDropdownOpen = () => setIsOpen(true);
 
+  const onDeleteSession = () => {
+    console.log("delete this shit");
+  };
+  return (
+    <div
+      key={`${exercises[0]?.id}_SessionItem_${index}`}
+      className={`flex flex-col rounded-md ${BG_COLOR_M6}`}
+    >
+      <div className={`flex justify-between p-1`}>
+        <div className={`indent-1 text-xs font-bold text-white`}>
+          Day {index + 1}
+        </div>
+
+        <button className={`relative w-3`} onClick={onDropdownOpen}>
+          <DotsIcon fill="#1E293B" />
+          {isOpen ? (
+            <Dropdown onClose={onDropdownClose} className={`-bottom-6`}>
+              <Dropdown.Item onClick={onDeleteSession}>
+                Delete Session
+              </Dropdown.Item>
+            </Dropdown>
+          ) : null}
+        </button>
+      </div>
+
+      <ul className={`space-y-1 p-1 `}>
+        <SessionItem
+          exercises={exercises}
+          indices={indices}
+          dayIndex={index + 1}
+        />
+      </ul>
+    </div>
+  );
+}
 function Exercises() {
   const { selectedMesocycleIndex, muscleGroup, onAddTrainingDay } =
     useMuscleEditorContext();
@@ -286,29 +331,7 @@ function Exercises() {
 
       {exercisesByMeso.map((each, index) => {
         const indices = exerciseIndices.splice(0, each.length);
-        return (
-          <div
-            key={`${each[0]?.id}_SessionItem_${index}`}
-            className={`flex flex-col rounded-md ${BG_COLOR_M6}`}
-          >
-            <div className={`flex justify-between p-1`}>
-              <div className={`indent-1 text-xs font-bold text-white`}>
-                Day {index + 1}
-              </div>
-              <button className={`w-3`}>
-                <DotsIcon fill="#1E293B" />
-              </button>
-            </div>
-
-            <ul className={`space-y-1 p-1 `}>
-              <SessionItem
-                exercises={each}
-                indices={indices}
-                dayIndex={index + 1}
-              />
-            </ul>
-          </div>
-        );
+        return <Session exercises={each} index={index} indices={indices} />;
       })}
       {addButtonDivs.map((e, i) => {
         return (

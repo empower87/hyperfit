@@ -3,8 +3,8 @@ import {
   ExerciseMesocycleProgressionType,
   ExerciseType,
   MusclePriorityType,
+  SessionSplitType,
   SplitSessionsType,
-  SplitType,
   TrainingDayType,
 } from "../reducer/trainingProgramReducer";
 
@@ -44,7 +44,7 @@ const hasSessionReachedMaxExercises = (
 const findSessionWithLowestVolume = (
   training_week: TrainingDayType[],
   muscle: MuscleType,
-  split: SplitType[]
+  split: SessionSplitType[]
 ) => {
   let minVolume = 1000;
   let currentPosition = [0, 0];
