@@ -7,16 +7,16 @@ import { default as DragHandleIcon } from "./dragDots-svg.svg";
 import filterIcon from "./filter-svg.svg";
 import plusIcon, { default as PlusIcon } from "./plus-svg.svg";
 import searchIcon from "./search-svg.svg";
+import { default as DeleteIcon } from "./trashCan-svg.svg";
 
 export {
   ArrowDownIcon,
-  ArrowUpIcon,
-  DotsIcon,
-  DragHandleIcon,
-  FilterIcon,
+  ArrowUpIcon, DeleteIcon, DotsIcon,
+  DragHandleIcon, FilterIcon,
   PlusIcon,
   SearchIcon,
   filterIcon,
   plusIcon,
-  searchIcon,
+  searchIcon
 };
+

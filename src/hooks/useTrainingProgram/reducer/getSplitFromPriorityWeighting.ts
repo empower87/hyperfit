@@ -218,15 +218,6 @@ export function getSplitFromWeights(
         },
       };
     case "UL":
-      console.log(
-        pushSessions,
-        pullSessions,
-        lowerSessions,
-        pushTenths,
-        pullTenths,
-        lowerTenths,
-        "did i just not do the logic?"
-      );
       const upper_lower = distributeRatioIntoSessionsUL(
         pushTenths,
         lowerTenths,
@@ -395,7 +386,6 @@ function distributeRatioIntoSessionsUL(
 
   const total = Math.round(push + legs + pull);
 
-  console.log(push, legs, pull, "WTF?");
   if (total <= 1) {
     if (legs >= 0.55) {
       UL.lower++;

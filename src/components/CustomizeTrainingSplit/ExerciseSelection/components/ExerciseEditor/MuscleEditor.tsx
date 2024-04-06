@@ -2,6 +2,7 @@ import { ReactNode, useCallback, useEffect, useState } from "react";
 import {
   ArrowDownIcon,
   ArrowUpIcon,
+  DeleteIcon,
   DotsIcon,
   PlusIcon,
 } from "~/assets/icons/_icons";
@@ -9,6 +10,7 @@ import Dropdown from "~/components/Layout/Dropdown";
 import { SectionH2 } from "~/components/Layout/Sections";
 import Modal from "~/components/Modals/Modal";
 import {
+  BG_COLOR_M4,
   BG_COLOR_M5,
   BG_COLOR_M6,
   BG_COLOR_M7,
@@ -227,6 +229,7 @@ function Session({ index, exercises, indices }: SessionProps) {
   const onDeleteSession = () => {
     console.log("delete this shit");
   };
+
   return (
     <div
       key={`${exercises[0]?.id}_SessionItem_${index}`}
@@ -389,7 +392,7 @@ function SessionItem({ exercises, indices, dayIndex }: SessionItemProps) {
         className={`flex justify-between text-xxs text-slate-300 ${BG_COLOR_M7}`}
       >
         <div className={`pl-2`}>Exercise</div>
-        <div className={`flex pr-1`}>
+        <div className={`flex pr-4`}>
           <div className={``}>Week </div>
           {microcycles.map((e, i) => {
             return (
@@ -481,13 +484,13 @@ function ExerciseItem({
     useMuscleEditorContext();
 
   return (
-    <li className={`flex cursor-pointer text-xxs text-white ${BG_COLOR_M5}`}>
+    <li className={`flex text-xxs text-white ${BG_COLOR_M5}`}>
       <div className={`flex w-3 items-center justify-center`}>
         {exerciseIndex}
       </div>
       <div
         onClick={onOpen}
-        className={`flex w-32 items-center truncate indent-1`}
+        className={`flex w-32 cursor-pointer items-center truncate indent-0.5 hover:${BG_COLOR_M4}`}
       >
         {exercise.exercise}
       </div>
@@ -528,6 +531,11 @@ function ExerciseItem({
             );
           }
         )}
+        <div
+          className={`flex w-3 cursor-pointer items-center justify-center border bg-rose-400 ${BORDER_COLOR_M6} hover:bg-rose-500`}
+        >
+          <DeleteIcon fill="white" />
+        </div>
       </div>
     </li>
   );
@@ -541,7 +549,7 @@ function Button({ operation, onClick }: ButtonProps) {
   return (
     <button
       onClick={onClick}
-      className={`flex w-3 border ${BORDER_COLOR_M4} ${BG_COLOR_M6} h-3 items-center justify-center text-xxs text-white`}
+      className={`flex w-3 border ${BORDER_COLOR_M4} ${BG_COLOR_M6} h-3 items-center justify-center text-xxs text-white hover:${BG_COLOR_M5}`}
     >
       {operation}
     </button>

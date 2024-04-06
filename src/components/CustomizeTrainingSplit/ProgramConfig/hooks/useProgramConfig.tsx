@@ -17,8 +17,12 @@ import {
   SplitSessionsType,
   TrainingDayType,
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
+import { VolumeLandmarkType } from "~/hooks/useTrainingProgram/reducer/trainingProgramUtils";
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
-import { onReorderUpdateMusclePriorityList } from "~/hooks/useTrainingProgram/utils/musclePriorityListHandlers";
+import {
+  onReorderUpdateMusclePriorityList,
+  reorderListByVolumeBreakpoints,
+} from "~/hooks/useTrainingProgram/utils/musclePriorityListHandlers";
 import { onRearrangeTrainingWeek } from "~/hooks/useTrainingProgram/utils/traininingWeekHandlers";
 
 function useProgramConfig() {
@@ -117,6 +121,19 @@ function useProgramConfig() {
     [draggableList, volumeBreakpoints]
   );
 
+  const onSelectVolumeLandmarkChange = useCallback(
+    (id: MusclePriorityType["id"], volume_landmark: VolumeLandmarkType) => {
+      const list = structuredClone(draggableList);
+      const index = list.findIndex((item) => item.id === id);
+      list[index].volume.landmark = volume_landmark;
+      const { newList, newVolumeBreakpoints } =
+        reorderListByVolumeBreakpoints(list);
+      setDraggableList(newList);
+      setVolumeBreakpoints(newVolumeBreakpoints);
+    },
+    [draggableList, volumeBreakpoints]
+  );
+
   const onBreakpointChange = useCallback(
     (type: "MRV" | "MEV", value: number) => {
       const new_breakpoints: [number, number] = [...volumeBreakpoints];
@@ -184,6 +201,7 @@ function useProgramConfig() {
     onBreakpointChange,
     onToggleBreakpoints,
     onRearrangedWeek,
+    onSelectVolumeLandmarkChange,
   };
 }
 
@@ -204,6 +222,7 @@ const ProgramConfigContext = createContext<ProgramConfigType>({
   onBreakpointChange: () => null,
   onToggleBreakpoints: () => null,
   onRearrangedWeek: () => null,
+  onSelectVolumeLandmarkChange: () => null,
 });
 
 const ProgramConfigProvider = ({ children }: { children: ReactNode }) => {

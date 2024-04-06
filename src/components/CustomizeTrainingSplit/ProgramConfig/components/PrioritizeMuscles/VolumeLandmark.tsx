@@ -2,6 +2,7 @@ import { useState } from "react";
 import { BG_COLOR_M5, BG_COLOR_M6 } from "~/constants/themes";
 import { VolumeLandmarkType } from "~/hooks/useTrainingProgram/reducer/trainingProgramUtils";
 import { cn } from "~/lib/clsx";
+import { useProgramConfigContext } from "../../hooks/useProgramConfig";
 
 type ButtonProps = {
   landmark: VolumeLandmarkType;
@@ -66,20 +67,17 @@ export default function VolumeLandmark({
 }
 
 type SelectProps = {
+  id: string;
   volume_landmark: VolumeLandmarkType;
   options: ["MRV", "MEV", "MV"];
-  onSelect: (value: string) => void;
   bgColor: string;
 };
 
-export function Select({
-  volume_landmark,
-  options,
-  onSelect,
-  bgColor,
-}: SelectProps) {
+export function Select({ id, volume_landmark, options, bgColor }: SelectProps) {
+  const { onSelectVolumeLandmarkChange } = useProgramConfigContext();
+
   const onSelectHandler = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    onSelect(event.target.value);
+    onSelectVolumeLandmarkChange(id, event.target.value as VolumeLandmarkType);
   };
 
   return (

@@ -1,7 +1,12 @@
+import { ReactNode } from "react";
 import { DragDropContext, Draggable } from "react-beautiful-dnd";
+import { DragHandleIcon } from "~/assets/icons/_icons";
 import Settings from "~/components/CustomizeTrainingSplit/ProgramConfig/components/PrioritizeMuscles/Settings";
 import { CardS as Card } from "~/components/Layout/Sections";
-import { VOLUME_BG_COLORS } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
+import {
+  MusclePriorityType,
+  VOLUME_BG_COLORS,
+} from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { cn } from "~/lib/clsx";
 import StrictModeDroppable from "~/lib/react-beautiful-dnd/StrictModeDroppable";
 import getMuscleTitleForUI from "~/utils/getMuscleTitleForUI";
@@ -21,13 +26,45 @@ function Cell({
     </div>
   );
 }
+type ItemProps = {
+  muscle: MusclePriorityType;
+  index: number;
+  children: ReactNode;
+};
+
+function Item({ muscle, index, children }: ItemProps) {
+  const colors = VOLUME_BG_COLORS;
+  return (
+    <div
+      className={`flex ${
+        colors[muscle.volume.landmark]
+      } justify-between rounded-sm text-xxs text-white`}
+    >
+      <div className={`flex`}>
+        {children}
+        <Cell value={index + 1} className="w-4" />
+        <Cell
+          value={getMuscleTitleForUI(muscle.muscle)}
+          className="w-20 justify-start"
+        />
+      </div>
+
+      <div className={`flex items-center justify-center pr-2`}>
+        <Select
+          id={muscle.id}
+          volume_landmark={muscle.volume.landmark}
+          options={["MRV", "MEV", "MV"]}
+          bgColor={colors[muscle.volume.landmark]}
+        />
+      </div>
+    </div>
+  );
+}
 
 export function PrioritizeMuscles() {
   const { muscle_priority_list, onPriorityListDragEnd } =
     useProgramConfigContext();
 
-  const colors = VOLUME_BG_COLORS;
-  const onSelectHandler = () => {};
   return (
     <Card title="PRIORITIZE MUSCLES">
       <div className={`pb-2`}>
@@ -59,33 +96,15 @@ export function PrioritizeMuscles() {
                     index={index}
                   >
                     {(provided, snapshot) => (
-                      <div
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                      >
-                        <div
-                          className={`flex ${
-                            colors[each.volume_landmark]
-                          } rounded-sm text-xxs text-white`}
-                        >
-                          <Cell value={index + 1} className="w-5" />
-                          <Cell
-                            value={getMuscleTitleForUI(each.muscle)}
-                            className="w-20 justify-start indent-1"
-                          />
-                          {/* <VolumeLandmark
-                            landmark={each.volume.landmark}
-                            onSelectHandler={onSelectHandler}
-                          /> */}
-                          <Select
-                            volume_landmark={each.volume.landmark}
-                            options={["MRV", "MEV", "MV"]}
-                            onSelect={onSelectHandler}
-                            bgColor={colors[each.volume.landmark]}
-                          />
-                          {/* <Cell value={each.volume.landmark} className="w-10" /> */}
-                        </div>
+                      <div ref={provided.innerRef} {...provided.draggableProps}>
+                        <Item muscle={each} index={index}>
+                          <div
+                            {...provided.dragHandleProps}
+                            className={`flex w-4 items-center justify-center`}
+                          >
+                            <DragHandleIcon fill="white" />
+                          </div>
+                        </Item>
                       </div>
                     )}
                   </Draggable>
