@@ -211,7 +211,7 @@ export default function useExerciseSelection(
       items[destinationDayIndex].sessions[destinationSessionIndex];
     const canAdd = canAddExerciseToSplit(
       sourceExercise.muscle,
-      targetSplit.split
+      targetSplit.split as SplitType
     );
 
     if (!canAdd) {

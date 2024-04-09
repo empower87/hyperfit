@@ -133,7 +133,8 @@ function muscleEditorReducer(state: MusclePriorityType, action: Action) {
 }
 
 export default function useMuscleEditor(muscle: MusclePriorityType) {
-  const { training_program_params } = useTrainingProgramContext();
+  const { training_program_params, handleUpdateMuscle } =
+    useTrainingProgramContext();
   const { microcycles, mesocycles } = training_program_params;
   const [muscleGroup, setMuscleGroup] = useState<MusclePriorityType>({
     ...muscle,
@@ -162,8 +163,6 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
 
   useEffect(() => {
     const matrix = muscleGroup.volume.setProgressionMatrix;
-    // const currentMesocycleMatrix = matrix[selectedMesocycleIndex];
-
     const totals: number[] = [];
     for (let i = 0; i < matrix.length; i++) {
       const lastMatrix = matrix[i][microcycles - 1];
@@ -171,18 +170,6 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
       totals.push(totalVolume);
     }
     setVolumes(totals);
-
-    // if (currentMesocycleMatrix) {
-    //   const microcycleMatrix = currentMesocycleMatrix[microcycles - 1];
-
-    //   if (microcycleMatrix) {
-    //     const totalVolume = microcycleMatrix
-    //       .flat()
-    //       .reduce((acc, cur) => acc + cur, 0);
-    //     setTotalVolume(totalVolume);
-
-    //   }
-    // }
   }, [selectedMesocycleIndex, microcycles, muscleGroup]);
 
   const onSelectMesocycle = useCallback((index: number) => {
@@ -219,6 +206,42 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
       setMuscleGroup((prev) => ({
         ...prev,
         exercises: exercises,
+        volume: { ...prev.volume, setProgressionMatrix: matrix },
+      }));
+    },
+    [muscleGroup]
+  );
+
+  const onDeleteExercise = useCallback(
+    (id: ExerciseType["id"]) => {
+      let dayIndex = 0;
+      let exerciseIndex = 0;
+
+      const exercises = muscleGroup.exercises;
+      const matrix = structuredClone(muscleGroup.volume.setProgressionMatrix);
+      const newExercises = exercises.map((day, index) => {
+        return day.filter((e, i) => {
+          if (e.id !== id) {
+            return e;
+          } else {
+            dayIndex = index;
+            exerciseIndex = i;
+            return null;
+          }
+        });
+      });
+
+      for (let i = 0; i < matrix.length; i++) {
+        if (!matrix[i][0][dayIndex]) continue;
+        if (!matrix[i][0][dayIndex][exerciseIndex]) continue;
+        for (let j = 0; j < matrix[i].length; j++) {
+          matrix[i][j][dayIndex].splice(exerciseIndex, 1);
+        }
+      }
+
+      setMuscleGroup((prev) => ({
+        ...prev,
+        exercises: newExercises.filter((each) => each.length),
         volume: { ...prev.volume, setProgressionMatrix: matrix },
       }));
     },
@@ -288,15 +311,12 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
         }));
       } else {
         if (!firstExercise) return;
-        const exercisess = muscleGroup.exercises;
-        exercisess.push([firstExercise]);
+        const exercises = muscleGroup.exercises;
+        exercises.push([firstExercise]);
         const freq = muscleGroup.volume.frequencyProgression;
         freq[freq.length - 1]++;
 
-        const clonedMatrix = structuredClone(
-          muscleGroup.volume.setProgressionMatrix
-        );
-        const lastMesoMatrix = clonedMatrix[clonedMatrix.length - 1];
+        const lastMesoMatrix = copyMatrix[copyMatrix.length - 1];
         const setProgh = [...MRV_PROGRESSION_MATRIX_ONE];
 
         let currCount = setProgh[freq[freq.length - 1] - 1][0][0];
@@ -307,21 +327,29 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
           lastMesoMatrix[i].push([currCount]);
         }
 
-        clonedMatrix[clonedMatrix.length - 1] = lastMesoMatrix;
+        copyMatrix[copyMatrix.length - 1] = lastMesoMatrix;
 
         setMuscleGroup((prev) => ({
           ...prev,
-          exercises: exercisess,
+          exercises: exercises,
           volume: {
             ...prev.volume,
             frequencyProgression: freq,
-            setProgressionMatrix: clonedMatrix,
+            setProgressionMatrix: copyMatrix,
           },
         }));
       }
     },
     [muscleGroup, mesocycles, selectedMesocycleIndex]
   );
+
+  const onResetMuscleGroup = useCallback(() => {
+    setMuscleGroup(muscle);
+  }, [muscle]);
+
+  const onSaveMuscleGroupChanges = useCallback(() => {
+    handleUpdateMuscle(muscleGroup);
+  }, [muscleGroup]);
 
   return {
     muscleGroup,
@@ -335,5 +363,35 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
     onOperationHandler,
     onAddTrainingDay,
     onAddExercise,
+    onDeleteExercise,
+    onResetMuscleGroup,
+    onSaveMuscleGroupChanges,
   };
 }
+
+// FULL 1:
+// SETS | REPS | EXERCISE
+//  4x    4-7    Smith-Machine Squat
+//  3x    8-12   Smith-Machine Row
+//  3x    8-12   Seated DB Overhead Press
+//  3x    7-10   Dip or Dip Machine
+//  3x    8-12   Preacher Curl
+//  3x   12-15   Leg Raises
+
+// FULL 2:
+// SETS | REPS | EXERCISE
+// 3x     3-5    Deadlifts
+// 3x     7-10   Barbell Bench Press
+// 3x     8-12   Lat Pulldown
+// 3x     8-12   Overhead Cable Triceps Extension
+// 3x     8-12   Cable Lateral Raise
+// 3x     8-12   Cable Reverse Fly
+
+// FULL 3:
+// SETS | REPS | EXERCISE
+// 3x     7-10   Leg Press
+// 3x    12-15   Calf Raises on Leg Press
+// 3x     7-10   T-Bar Row
+// 3x     8-12   Incline DB Bench Press
+// 3x     7-10   Incline DB Curl
+// 3x     7-10   DB Lateral Raise

@@ -106,6 +106,8 @@ function Muscle({ muscle, rank }: MuscleProps) {
     onSelectMesocycle,
     volumes,
     mesocyclesArray,
+    onResetMuscleGroup,
+    onSaveMuscleGroupChanges,
   } = useMuscleEditorContext();
   const bgColor = getRankColor(muscle.volume.landmark);
   const title = getMuscleTitleForUI(muscle.muscle);
@@ -167,47 +169,56 @@ function Muscle({ muscle, rank }: MuscleProps) {
       </div>
 
       <BottomBar>
-        <BottomBar.Section title="Volume Landmark">
-          <div className={`flex justify-center space-x-1 p-0.5`}>
-            <div className={`p-0.5 text-xxs text-white`}>
-              {muscleGroup.volume.landmark}
+        <BottomBar.Container>
+          <BottomBar.Section title="Volume Landmark">
+            <div className={`flex justify-center space-x-1 p-0.5`}>
+              <div className={`p-0.5 text-xxs text-white`}>
+                {muscleGroup.volume.landmark}
+              </div>
             </div>
-          </div>
-        </BottomBar.Section>
+          </BottomBar.Section>
 
-        <BottomBar.Section title="Frequency">
-          <div className={`flex justify-center space-x-1 p-0.5`}>
-            {muscleGroup.volume.frequencyProgression.map((each, index) => {
-              return (
-                <div
-                  key={`${each}_${index}_FrequencyProgressionBottomBar`}
-                  className={cn(`p-0.5 text-xxs text-white`, {
-                    ["border"]: selectedMesocycleIndex === index,
-                  })}
-                >
-                  {each}
-                </div>
-              );
-            })}
-          </div>
-        </BottomBar.Section>
+          <BottomBar.Section title="Frequency">
+            <div className={`flex justify-center space-x-1 p-0.5`}>
+              {muscleGroup.volume.frequencyProgression.map((each, index) => {
+                return (
+                  <div
+                    key={`${each}_${index}_FrequencyProgressionBottomBar`}
+                    className={cn(`p-0.5 text-xxs text-white`, {
+                      ["border"]: selectedMesocycleIndex === index,
+                    })}
+                  >
+                    {each}
+                  </div>
+                );
+              })}
+            </div>
+          </BottomBar.Section>
 
-        <BottomBar.Section title="Total Volume">
-          <div className={`flex justify-center space-x-1 p-0.5`}>
-            {volumes.map((each, index) => {
-              return (
-                <div
-                  key={`${each}_${index}_TotalVolumeBottomBar`}
-                  className={cn(`p-0.5 text-xxs text-white`, {
-                    ["border"]: selectedMesocycleIndex === index,
-                  })}
-                >
-                  {each}
-                </div>
-              );
-            })}
-          </div>
-        </BottomBar.Section>
+          <BottomBar.Section title="Total Volume">
+            <div className={`flex justify-center space-x-1 p-0.5`}>
+              {volumes.map((each, index) => {
+                return (
+                  <div
+                    key={`${each}_${index}_TotalVolumeBottomBar`}
+                    className={cn(`p-0.5 text-xxs text-white`, {
+                      ["border"]: selectedMesocycleIndex === index,
+                    })}
+                  >
+                    {each}
+                  </div>
+                );
+              })}
+            </div>
+          </BottomBar.Section>
+        </BottomBar.Container>
+        <BottomBar.Container>
+          <BottomBar.Button label="Reset" onClick={onResetMuscleGroup} />
+          <BottomBar.Button
+            label="Save Changes"
+            onClick={onSaveMuscleGroupChanges}
+          />
+        </BottomBar.Container>
       </BottomBar>
     </li>
   );
@@ -274,6 +285,12 @@ function Exercises() {
         ?.length;
     const exercises = muscleGroup.exercises;
     const exercisesByMeso = exercises.slice(0, totalExercisesByMeso);
+
+    console.log(
+      totalExercisesByMeso,
+      exercises,
+      "OK EXERCISES SHOULD BE DIFFERRENT"
+    );
     setExercisesByMeso(exercisesByMeso);
   }, [selectedMesocycleIndex, muscleGroup]);
 
@@ -412,7 +429,7 @@ function SessionItem({ exercises, indices, dayIndex }: SessionItemProps) {
       <Modal isOpen={isOpen} onClose={onClose}>
         <ChangeExerciseProvider
           muscle={muscleGroup}
-          exerciseId={currentExercise.id}
+          exerciseId={currentExercise?.id}
         >
           <SelectExercise onSelect={onSelectHandler} />
         </ChangeExerciseProvider>
@@ -480,8 +497,12 @@ function ExerciseItem({
   dayIndex,
   onOpen,
 }: ExerciseItemProps) {
-  const { selectedMesocycleIndex, muscleGroup, onOperationHandler } =
-    useMuscleEditorContext();
+  const {
+    selectedMesocycleIndex,
+    muscleGroup,
+    onOperationHandler,
+    onDeleteExercise,
+  } = useMuscleEditorContext();
 
   return (
     <li className={`flex text-xxs text-white ${BG_COLOR_M5}`}>
@@ -532,6 +553,7 @@ function ExerciseItem({
           }
         )}
         <div
+          onClick={() => onDeleteExercise(exercise.id)}
           className={`flex w-3 cursor-pointer items-center justify-center border bg-rose-400 ${BORDER_COLOR_M6} hover:bg-rose-500`}
         >
           <DeleteIcon fill="white" />

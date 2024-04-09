@@ -27,6 +27,7 @@ import {
 import {
   EXERCISE_TRAINING_MODALITIES,
   ExerciseType,
+  SessionSplitType,
   SplitType,
   TrainingDayType,
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
@@ -426,7 +427,7 @@ function DaySessionItem({
 }
 
 type DroppableDayProps = {
-  split: SplitType;
+  split: SessionSplitType;
   droppableId: string;
   mesocycleIndex: number;
   exercises: ExerciseType[];
