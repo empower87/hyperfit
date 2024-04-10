@@ -334,7 +334,7 @@ function distributeRatioIntoSessionsPPL(
     pull: 0,
   };
 
-  let PPL_VALUES = {
+  const PPL_VALUES = {
     push: push,
     legs: legs,
     pull: pull,

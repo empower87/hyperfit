@@ -349,7 +349,14 @@ function Exercises() {
 
       {exercisesByMeso.map((each, index) => {
         const indices = exerciseIndices.splice(0, each.length);
-        return <Session exercises={each} index={index} indices={indices} />;
+        return (
+          <Session
+            key={`${each[0].id}_${index}_Session`}
+            exercises={each}
+            index={index}
+            indices={indices}
+          />
+        );
       })}
       {addButtonDivs.map((e, i) => {
         return (

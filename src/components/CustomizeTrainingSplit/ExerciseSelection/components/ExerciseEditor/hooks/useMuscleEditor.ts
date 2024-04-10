@@ -216,8 +216,6 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
     [muscleGroup]
   );
 
-  const onDeleteSession = useCallback(() => {}, []);
-
   const onDeleteExercise = useCallback(
     (id: ExerciseType["id"]) => {
       let dayIndex = 0;
