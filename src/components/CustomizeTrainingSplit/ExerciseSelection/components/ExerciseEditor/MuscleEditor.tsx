@@ -233,13 +233,10 @@ type SessionProps = {
   indices: number[];
 };
 function Session({ index, exercises, indices }: SessionProps) {
+  const { onDeleteSession } = useMuscleEditorContext();
   const [isOpen, setIsOpen] = useState(false);
   const onDropdownClose = () => setIsOpen(false);
   const onDropdownOpen = () => setIsOpen(true);
-
-  const onDeleteSession = () => {
-    console.log("delete this shit");
-  };
 
   return (
     <div
@@ -255,7 +252,7 @@ function Session({ index, exercises, indices }: SessionProps) {
           <DotsIcon fill="#1E293B" />
           {isOpen ? (
             <Dropdown onClose={onDropdownClose} className={`-bottom-6`}>
-              <Dropdown.Item onClick={onDeleteSession}>
+              <Dropdown.Item onClick={() => onDeleteSession(index)}>
                 Delete Session
               </Dropdown.Item>
             </Dropdown>

@@ -20,6 +20,7 @@ const MuscleEditorContext = createContext<MuscleEditorType>({
   onAddTrainingDay: () => null,
   onAddExercise: () => null,
   onDeleteExercise: () => null,
+  onDeleteSession: () => null,
   onResetMuscleGroup: () => null,
   onSaveMuscleGroupChanges: () => null,
 });

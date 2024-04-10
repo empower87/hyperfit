@@ -216,6 +216,68 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
     [muscleGroup]
   );
 
+  const updateSetProgressionMatrix = (
+    operation: "add" | "delete",
+    index: number,
+    dayIndex: number,
+    exerciseIndex: number
+  ) => {
+    const matrix = structuredClone(muscleGroup.volume.setProgressionMatrix);
+    const setProg = [...MRV_PROGRESSION_MATRIX_ONE];
+    const frequencyProgression = muscleGroup.volume.frequencyProgression;
+    const frequency = frequencyProgression[index];
+    let curCount = setProg[frequency - 1][0][0];
+
+    for (let i = 0; i < matrix.length; i++) {
+      const meso = matrix[i];
+
+      if (meso[0][dayIndex]) {
+        const frequencyProgression = muscleGroup.volume.frequencyProgression;
+        const frequency = frequencyProgression[i];
+        let curCount = setProg[frequency - 1][0][0];
+
+        for (let j = 0; j < meso.length; j++) {
+          if (j > 0) {
+            curCount++;
+          }
+          meso[j][dayIndex].push(curCount);
+        }
+      }
+      matrix[i] = meso;
+    }
+  };
+
+  const onDeleteSession = useCallback(
+    (dayIndex: number) => {
+      const matrix = structuredClone(muscleGroup.volume.setProgressionMatrix);
+      const frequencyProgression = muscleGroup.volume.frequencyProgression;
+      const exercises = structuredClone(muscleGroup.exercises);
+      exercises.splice(dayIndex, 1);
+      for (let i = 0; i < matrix.length; i++) {
+        // console.log(matrix[i][0], matrix[i][0][dayIndex], i, "Ok wtf?");
+        if (matrix[i][0][dayIndex]) {
+          for (let j = 0; j < matrix[i].length; j++) {
+            console.log(matrix[i][j], matrix[i][j][dayIndex], "Ok wtf?");
+            matrix[i][j].splice(dayIndex, 1);
+            // matrix[i][j].filter((each) => each.length);
+          }
+        }
+      }
+      console.log(matrix, frequencyProgression, "WTF");
+      frequencyProgression[selectedMesocycleIndex]--;
+      setMuscleGroup((prev) => ({
+        ...prev,
+        exercises: exercises,
+        volume: {
+          ...prev.volume,
+          setProgressionMatrix: matrix,
+          frequencyProgression: frequencyProgression,
+        },
+      }));
+    },
+    [selectedMesocycleIndex, muscleGroup]
+  );
+
   const onDeleteExercise = useCallback(
     (id: ExerciseType["id"]) => {
       let dayIndex = 0;
@@ -289,15 +351,9 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
       );
       const frequencyProgression = muscleGroup.volume.frequencyProgression;
 
-      const canAddDay =
-        frequencyProgression[selectedMesocycleIndex + 1] &&
-        frequencyProgression[selectedMesocycleIndex] <
-          frequencyProgression[selectedMesocycleIndex + 1]
-          ? true
-          : false;
       const nextMatrix = copyMatrix[selectedMesocycleIndex + 1];
 
-      if (canAddDay) {
+      if (!firstExercise) {
         for (let i = 0; i < nextMatrix.length; i++) {
           const frequency = frequencyProgression[selectedMesocycleIndex + 1];
           const daysSets = nextMatrix[i][frequency - 1];
@@ -313,7 +369,7 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
           },
         }));
       } else {
-        if (!firstExercise) return;
+        // if (!firstExercise) return;
 
         const exercises = muscleGroup.exercises;
         exercises.push([firstExercise]);
@@ -368,6 +424,7 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
     onAddTrainingDay,
     onAddExercise,
     onDeleteExercise,
+    onDeleteSession,
     onResetMuscleGroup,
     onSaveMuscleGroupChanges,
   };
