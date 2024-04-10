@@ -273,11 +273,22 @@ function Session({ index, exercises, indices }: SessionProps) {
     </div>
   );
 }
+
 function Exercises() {
   const { selectedMesocycleIndex, muscleGroup, onAddTrainingDay } =
     useMuscleEditorContext();
-
+  const { training_program_params } = useTrainingProgramContext();
+  const { mesocycles } = training_program_params;
   const [exercisesByMeso, setExercisesByMeso] = useState<ExerciseType[][]>([]);
+  const [isOpen, setIsOpen] = useState(false);
+  const canAddSessionAtMesocycle =
+    !muscleGroup.volume.frequencyProgression[selectedMesocycleIndex + 1] ||
+    (muscleGroup.volume.frequencyProgression[selectedMesocycleIndex + 1] &&
+      muscleGroup.volume.frequencyProgression[selectedMesocycleIndex] <
+        muscleGroup.volume.frequencyProgression[selectedMesocycleIndex + 1])
+      ? true
+      : false;
+  const isLastMesocycle = mesocycles - 1 === selectedMesocycleIndex;
 
   useEffect(() => {
     const totalExercisesByMeso =
@@ -285,12 +296,6 @@ function Exercises() {
         ?.length;
     const exercises = muscleGroup.exercises;
     const exercisesByMeso = exercises.slice(0, totalExercisesByMeso);
-
-    console.log(
-      totalExercisesByMeso,
-      exercises,
-      "OK EXERCISES SHOULD BE DIFFERRENT"
-    );
     setExercisesByMeso(exercisesByMeso);
   }, [selectedMesocycleIndex, muscleGroup]);
 
@@ -302,7 +307,7 @@ function Exercises() {
     Array(exercisesByMeso.flat().length),
     (e, i) => i + 1
   );
-  const [isOpen, setIsOpen] = useState(false);
+
   const onOpen = () => setIsOpen(true);
   const onClose = () => setIsOpen(false);
 
@@ -327,19 +332,12 @@ function Exercises() {
   };
 
   const addTrainingDayHandler = useCallback(() => {
-    const frequencyProgression = muscleGroup.volume.frequencyProgression;
-    const canAddDay =
-      frequencyProgression[selectedMesocycleIndex + 1] &&
-      frequencyProgression[selectedMesocycleIndex] <
-        frequencyProgression[selectedMesocycleIndex + 1]
-        ? true
-        : false;
-    if (canAddDay) {
+    if (!isLastMesocycle) {
       onAddTrainingDay();
     } else {
       onOpen();
     }
-  }, [muscleGroup, selectedMesocycleIndex]);
+  }, [isLastMesocycle, onAddTrainingDay]);
 
   return (
     <div className={`flex min-h-[95px] space-x-1 overflow-x-auto`}>
@@ -355,10 +353,16 @@ function Exercises() {
       })}
       {addButtonDivs.map((e, i) => {
         return (
-          <AddDayItem
-            key={`${i}_AddButtonDivs`}
-            onClick={() => addTrainingDayHandler()}
-          />
+          <AddDayItem key={`${i}_AddButtonDivs`}>
+            {i === 0 && canAddSessionAtMesocycle ? (
+              <button
+                onClick={addTrainingDayHandler}
+                className={`flex items-center justify-center p-1 hover:${BG_COLOR_M7}`}
+              >
+                <PlusIcon fill="white" />
+              </button>
+            ) : null}
+          </AddDayItem>
         );
       })}
     </div>
@@ -455,21 +459,18 @@ function SessionItem({ exercises, indices, dayIndex }: SessionItemProps) {
 }
 
 type AddItemProps = {
-  onClick: () => void;
+  children?: ReactNode;
 };
-function AddDayItem({ onClick }: AddItemProps) {
+function AddDayItem({ children }: AddItemProps) {
   return (
     <div
-      onClick={onClick}
-      className={` flex w-56 cursor-pointer items-center justify-center rounded-md p-2 ${BG_COLOR_M8} opacity-[40%]`}
+      className={` flex w-56 items-center justify-center rounded-md p-2 ${BG_COLOR_M8} opacity-[40%]`}
     >
-      <div>
-        <PlusIcon fill="white" />
-      </div>
+      {children}
     </div>
   );
 }
-function AddExerciseItem({ onClick }: AddItemProps) {
+function AddExerciseItem({ onClick }: { onClick: () => void }) {
   return (
     <li
       onClick={onClick}

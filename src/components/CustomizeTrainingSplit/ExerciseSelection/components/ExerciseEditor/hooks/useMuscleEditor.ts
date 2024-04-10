@@ -139,6 +139,7 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
   const [muscleGroup, setMuscleGroup] = useState<MusclePriorityType>({
     ...muscle,
   });
+
   const [matrix, setMatrix] = useState<number[][][][]>([]);
   const [selectedMesocycleIndex, setSelectedMesocycleIndex] = useState(
     mesocycles - 1
@@ -172,9 +173,12 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
     setVolumes(totals);
   }, [selectedMesocycleIndex, microcycles, muscleGroup]);
 
-  const onSelectMesocycle = useCallback((index: number) => {
-    setSelectedMesocycleIndex(index);
-  }, []);
+  const onSelectMesocycle = useCallback(
+    (index: number) => {
+      setSelectedMesocycleIndex(index);
+    },
+    [selectedMesocycleIndex]
+  );
 
   const onAddExercise = useCallback(
     (newExercise: ExerciseType, dayIndex: number) => {
@@ -211,6 +215,8 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
     },
     [muscleGroup]
   );
+
+  const onDeleteSession = useCallback(() => {}, []);
 
   const onDeleteExercise = useCallback(
     (id: ExerciseType["id"]) => {
@@ -284,7 +290,6 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
         muscleGroup.volume.setProgressionMatrix
       );
       const frequencyProgression = muscleGroup.volume.frequencyProgression;
-      const currentMatrix = copyMatrix[selectedMesocycleIndex];
 
       const canAddDay =
         frequencyProgression[selectedMesocycleIndex + 1] &&
@@ -296,9 +301,9 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
 
       if (canAddDay) {
         for (let i = 0; i < nextMatrix.length; i++) {
-          const daysSets = nextMatrix[i][selectedMesocycleIndex];
-          copyMatrix[selectedMesocycleIndex][i][selectedMesocycleIndex] =
-            daysSets;
+          const frequency = frequencyProgression[selectedMesocycleIndex + 1];
+          const daysSets = nextMatrix[i][frequency - 1];
+          copyMatrix[selectedMesocycleIndex][i][frequency - 1] = daysSets;
         }
         frequencyProgression[selectedMesocycleIndex]++;
         setMuscleGroup((prev) => ({
@@ -311,6 +316,7 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
         }));
       } else {
         if (!firstExercise) return;
+
         const exercises = muscleGroup.exercises;
         exercises.push([firstExercise]);
         const freq = muscleGroup.volume.frequencyProgression;
