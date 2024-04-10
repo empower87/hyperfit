@@ -3,10 +3,9 @@ import { BG_COLOR_M6 } from "~/constants/themes";
 import {
   DayType,
   ExerciseType,
-  SplitType,
+  SessionSplitType,
   TrainingDayType,
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
-import EditExerciseModal from "../../Modals/EditExerciseModal";
 import { ExerciseCell, HeaderCell, MicrocycleCell, SessionCell } from "./Cells";
 import {
   ROW_CELL_WIDTHS,
@@ -18,7 +17,7 @@ import {
 
 type DataRowProps = {
   exercise: ExerciseType;
-  split: SplitType;
+  split: SessionSplitType;
   index: number;
   currentMesocycleIndex: number;
   position: "first" | "last" | "mid";
@@ -50,7 +49,7 @@ function DataRow({
 
   return (
     <div className="flex flex-row">
-      {isOpen && (
+      {/* {isOpen && (
         <EditExerciseModal
           isOpen={isOpen}
           onClose={closeModal}
@@ -58,7 +57,7 @@ function DataRow({
           exercise={exercise}
           currentMesocycle={currentMesocycleIndex}
         />
-      )}
+      )} */}
 
       <SessionCell split={split} index={index} width={ROW_SECTION_WIDTHS[0]} />
       <ExerciseCell
@@ -153,7 +152,7 @@ const HeaderRow = ({ sessionHeader }: HeaderRowProps) => {
 type SessionSplitRowType = {
   day: DayType;
   sessionSplitIndex: 0 | 1;
-  split: SplitType;
+  split: SessionSplitType;
   exercises: ExerciseType[][];
   currentMesocycleIndex: number;
 };

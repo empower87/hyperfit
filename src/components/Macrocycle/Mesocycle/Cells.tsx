@@ -2,7 +2,7 @@ import { BG_COLOR_M7 } from "~/constants/themes";
 import {
   ExerciseDetails,
   ExerciseType,
-  SplitType,
+  SessionSplitType,
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 
 type ExerciseCellProps = {
@@ -27,7 +27,7 @@ type MicrocycleCellsProps = {
   position: "last" | "first" | "mid";
 };
 type SessionCellProps = {
-  split: SplitType;
+  split: SessionSplitType;
   index: number;
   width: string;
 };
