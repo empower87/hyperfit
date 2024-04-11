@@ -23,6 +23,7 @@ const MuscleEditorContext = createContext<MuscleEditorType>({
   onDeleteSession: () => null,
   onResetMuscleGroup: () => null,
   onSaveMuscleGroupChanges: () => null,
+  toggleSetProgression: () => null,
 });
 
 const MuscleEditorProvider = ({

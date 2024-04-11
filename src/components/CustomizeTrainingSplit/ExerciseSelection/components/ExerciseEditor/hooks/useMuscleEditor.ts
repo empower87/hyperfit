@@ -252,19 +252,18 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
       const matrix = structuredClone(muscleGroup.volume.setProgressionMatrix);
       const frequencyProgression = muscleGroup.volume.frequencyProgression;
       const exercises = structuredClone(muscleGroup.exercises);
+
+      frequencyProgression[selectedMesocycleIndex]--;
       exercises.splice(dayIndex, 1);
+
       for (let i = 0; i < matrix.length; i++) {
-        // console.log(matrix[i][0], matrix[i][0][dayIndex], i, "Ok wtf?");
         if (matrix[i][0][dayIndex]) {
           for (let j = 0; j < matrix[i].length; j++) {
-            console.log(matrix[i][j], matrix[i][j][dayIndex], "Ok wtf?");
             matrix[i][j].splice(dayIndex, 1);
-            // matrix[i][j].filter((each) => each.length);
           }
         }
       }
-      console.log(matrix, frequencyProgression, "WTF");
-      frequencyProgression[selectedMesocycleIndex]--;
+
       setMuscleGroup((prev) => ({
         ...prev,
         exercises: exercises,
