@@ -173,6 +173,30 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
     setVolumes(totals);
   }, [selectedMesocycleIndex, microcycles, muscleGroup]);
 
+  useEffect(() => {
+    const allExercises = structuredClone(muscleGroup.exercises);
+
+    for (let i = 0; i < allExercises.length; i++) {
+      const exercises = allExercises[i];
+      for (let j = 0; j < exercises.length; j++) {
+        const exercise = exercises[j];
+        exercise.setsTest = [];
+        exercise.setProgressionAlgo = [];
+
+        for (let k = 0; k < mesocycles; k++) {
+          exercise.setsTest.push(2 + k);
+          exercise.setProgressionAlgo.push("ADD_ONE_PER_MICROCYCLE");
+        }
+        exercises[j] = exercise;
+      }
+      allExercises[i] = exercises;
+    }
+    setMuscleGroup((prev) => ({ ...prev, exercises: allExercises }));
+    console.log(allExercises, "CHECK CH CH CHECK IT OUT ");
+  }, [muscle]);
+
+  const toggleSetProgression = useCallback(() => {}, []);
+
   const onSelectMesocycle = useCallback(
     (index: number) => {
       setSelectedMesocycleIndex(index);
@@ -426,6 +450,7 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
     onDeleteSession,
     onResetMuscleGroup,
     onSaveMuscleGroupChanges,
+    toggleSetProgression,
   };
 }
 

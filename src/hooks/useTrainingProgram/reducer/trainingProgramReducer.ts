@@ -1,3 +1,4 @@
+import { SetProgressionType } from "~/components/CustomizeTrainingSplit/ExerciseSelection/components/ExerciseEditor/hooks/setProgressionHandlers";
 import { MuscleType } from "~/constants/workoutSplits";
 import { buildTrainingBlockHandler } from "../utils/buildTrainingBlockHandlers";
 import {
@@ -157,6 +158,8 @@ export type ExerciseType = {
   trainingModality: ExerciseTrainingModality;
   mesocycle_progression: ExerciseMesocycleProgressionType[];
   supersetWith: ExerciseType["id"] | null;
+  setsTest?: number[];
+  setProgressionAlgo?: SetProgressionType[];
 };
 
 export type TrainingProgramParamsType = {

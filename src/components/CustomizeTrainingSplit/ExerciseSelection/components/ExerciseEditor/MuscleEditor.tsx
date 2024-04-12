@@ -35,6 +35,7 @@ import {
   MuscleEditorProvider,
   useMuscleEditorContext,
 } from "./context/MuscleEditorContext";
+import { getSetProgressionForExercise } from "./hooks/setProgressionHandlers";
 
 export default function MuscleEditor() {
   const { prioritized_muscle_list } = useTrainingProgramContext();
@@ -278,6 +279,7 @@ function Exercises() {
   const { mesocycles } = training_program_params;
   const [exercisesByMeso, setExercisesByMeso] = useState<ExerciseType[][]>([]);
   const [isOpen, setIsOpen] = useState(false);
+
   const canAddSessionAtMesocycle =
     !muscleGroup.volume.frequencyProgression[selectedMesocycleIndex + 1] ||
     (muscleGroup.volume.frequencyProgression[selectedMesocycleIndex + 1] &&
@@ -285,6 +287,7 @@ function Exercises() {
         muscleGroup.volume.frequencyProgression[selectedMesocycleIndex + 1])
       ? true
       : false;
+
   const isLastMesocycle = mesocycles - 1 === selectedMesocycleIndex;
 
   useEffect(() => {
@@ -293,6 +296,7 @@ function Exercises() {
         ?.length;
     const exercises = muscleGroup.exercises;
     const exercisesByMeso = exercises.slice(0, totalExercisesByMeso);
+    console.log(exercisesByMeso, exercises, "WHTFLSDF");
     setExercisesByMeso(exercisesByMeso);
   }, [selectedMesocycleIndex, muscleGroup]);
 
@@ -453,6 +457,7 @@ function SessionItem({ exercises, indices, dayIndex }: SessionItemProps) {
               exerciseIndex={indices[index]}
               dayIndex={dayIndex}
               onOpen={onOpen}
+              totalExercisesInSession={exercises.length}
             />
           );
         })}
@@ -494,6 +499,7 @@ type ExerciseItemProps = {
   exerciseIndex: number;
   dayIndex: number;
   onOpen: () => void;
+  totalExercisesInSession: number;
 };
 function ExerciseItem({
   exercise,
@@ -501,18 +507,35 @@ function ExerciseItem({
   exerciseIndex,
   dayIndex,
   onOpen,
+  totalExercisesInSession,
 }: ExerciseItemProps) {
   const {
     selectedMesocycleIndex,
     muscleGroup,
     onOperationHandler,
     onDeleteExercise,
+    toggleSetProgression,
   } = useMuscleEditorContext();
+  const { training_program_params } = useTrainingProgramContext();
+  const { microcycles } = training_program_params;
+
+  const sets = getSetProgressionForExercise(
+    exercise.setProgressionAlgo
+      ? exercise.setProgressionAlgo[selectedMesocycleIndex]
+      : "ADD_ONE_PER_MICROCYCLE",
+    selectedMesocycleIndex,
+    exercise,
+    microcycles,
+    totalExercisesInSession,
+    index - 1
+  );
 
   return (
     <li className={`flex text-xxs text-white ${BG_COLOR_M5}`}>
       <div className={`flex w-3 items-center justify-center`}>
-        {exerciseIndex}
+        <button onClick={toggleSetProgression} className={``}>
+          {exerciseIndex}
+        </button>
       </div>
       <div
         onClick={onOpen}
@@ -522,7 +545,35 @@ function ExerciseItem({
       </div>
 
       <div className={`flex`}>
-        {muscleGroup.volume.setProgressionMatrix[selectedMesocycleIndex]?.map(
+        {sets?.map((each, i) => {
+          if (i === 0)
+            return (
+              <WeekOneSets key={`${exercise.id}_WeekOneSets_${i}`}>
+                <WeekOneSets.Button
+                  operation="-"
+                  onClick={() => onOperationHandler("-", dayIndex, index)}
+                />
+                <div
+                  className={`flex w-3 items-center justify-center px-0.5 text-xxs text-white`}
+                >
+                  {each}
+                </div>
+                <WeekOneSets.Button
+                  operation="+"
+                  onClick={() => onOperationHandler("+", dayIndex, index)}
+                />
+              </WeekOneSets>
+            );
+          return (
+            <div
+              key={`${exercise.id}_WeekOneSets_${sets}_${i}`}
+              className={`flex w-3 justify-center border-x p-0.5 ${BORDER_COLOR_M6}`}
+            >
+              {each}
+            </div>
+          );
+        })}
+        {/* {muscleGroup.volume.setProgressionMatrix[selectedMesocycleIndex]?.map(
           (each, i) => {
             const session = each[dayIndex - 1];
             let sets = 0;
@@ -556,7 +607,7 @@ function ExerciseItem({
               </div>
             );
           }
-        )}
+        )} */}
         <div
           onClick={() => onDeleteExercise(exercise.id)}
           className={`flex w-3 cursor-pointer items-center justify-center border bg-rose-400 ${BORDER_COLOR_M6} hover:bg-rose-500`}
