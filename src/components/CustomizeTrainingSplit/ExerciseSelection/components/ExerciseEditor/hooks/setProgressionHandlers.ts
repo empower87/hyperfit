@@ -42,8 +42,7 @@ const setProgression_addOne = (
   exercise: ExerciseType,
   microcycles: number
 ) => {
-  if (!exercise.setsTest) return [];
-  const initialSets = exercise.setsTest[mesocycleIndex];
+  const initialSets = exercise.initialSetsPerMeso[mesocycleIndex];
 
   const setsPerMicrocycle: number[] = [];
   let addCount = 0;
@@ -59,8 +58,7 @@ const setProgression_addOneOdd = (
   exercise: ExerciseType,
   microcycles: number
 ) => {
-  if (!exercise.setsTest) return [];
-  const initialSets = exercise.setsTest[mesocycleIndex];
+  const initialSets = exercise.initialSetsPerMeso[mesocycleIndex];
 
   const setsPerMicrocycle: number[] = [];
   let addCount = 0;
@@ -78,8 +76,7 @@ const setProgression_flatAdd = (
   exercise: ExerciseType,
   microcycles: number
 ) => {
-  if (!exercise.setsTest) return [];
-  const initialSets = exercise.setsTest[mesocycleIndex];
+  const initialSets = exercise.initialSetsPerMeso[mesocycleIndex];
 
   const setsPerMicrocycle: number[] = [];
   let addCount = 0;
@@ -97,8 +94,7 @@ const setProgression_noAdd = (
   exercise: ExerciseType,
   microcycles: number
 ) => {
-  if (!exercise.setsTest) return [];
-  const initialSets = exercise.setsTest[mesocycleIndex];
+  const initialSets = exercise.initialSetsPerMeso[mesocycleIndex];
   const setsPerMicrocycle: number[] = [];
 
   for (let i = 0; i < microcycles; i++) {
@@ -114,12 +110,12 @@ const setProgression_addOnePerMicrocycle = (
   totalExercisesInSession: number,
   exerciseIndex: number
 ) => {
-  if (!exercise.setsTest) return [];
-  const initialSets = exercise.setsTest[mesocycleIndex];
+  const initialSets = exercise.initialSetsPerMeso[mesocycleIndex];
   const setsPerMicrocycle: number[] = [initialSets];
 
   let setCount = initialSets;
   let addCount = 0;
+
   for (let i = 0; i < microcycles - 1; i++) {
     if (addCount === exerciseIndex) {
       setCount++;
@@ -129,7 +125,7 @@ const setProgression_addOnePerMicrocycle = (
     } else {
       addCount++;
     }
-    console.log("ADDONEPERMESOCYCLETEST", i, microcycles);
+
     setsPerMicrocycle.push(setCount);
   }
   return setsPerMicrocycle;

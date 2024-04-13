@@ -296,7 +296,7 @@ function Exercises() {
         ?.length;
     const exercises = muscleGroup.exercises;
     const exercisesByMeso = exercises.slice(0, totalExercisesByMeso);
-    console.log(exercisesByMeso, exercises, "WHTFLSDF");
+    console.log(exercisesByMeso, exercises, totalExercisesByMeso, "WHTFLSDF");
     setExercisesByMeso(exercisesByMeso);
   }, [selectedMesocycleIndex, muscleGroup]);
 
@@ -327,6 +327,8 @@ function Exercises() {
       trainingModality: "straight",
       mesocycle_progression: [],
       supersetWith: null,
+      initialSetsPerMeso: [],
+      setProgressionSchema: [],
     };
     onAddTrainingDay(new_exercise);
     onClose();
@@ -407,6 +409,8 @@ function SessionItem({ exercises, indices, dayIndex }: SessionItemProps) {
       trainingModality: "straight",
       mesocycle_progression: [],
       supersetWith: null,
+      initialSetsPerMeso: [],
+      setProgressionSchema: [],
     };
     onAddExercise(new_exercise, dayIndex - 1);
   };
@@ -520,15 +524,14 @@ function ExerciseItem({
   const { microcycles } = training_program_params;
 
   const sets = getSetProgressionForExercise(
-    exercise.setProgressionAlgo
-      ? exercise.setProgressionAlgo[selectedMesocycleIndex]
-      : "ADD_ONE_PER_MICROCYCLE",
+    exercise.setProgressionSchema[selectedMesocycleIndex],
     selectedMesocycleIndex,
     exercise,
     microcycles,
     totalExercisesInSession,
     index - 1
   );
+  console.log(sets, "WTF DUDE?");
 
   return (
     <li className={`flex text-xxs text-white ${BG_COLOR_M5}`}>

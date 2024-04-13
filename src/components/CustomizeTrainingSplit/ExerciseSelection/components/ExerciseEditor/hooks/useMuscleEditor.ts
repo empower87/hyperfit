@@ -150,17 +150,14 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
   const [frequencyProgression, setFrequencyProgression] = useState<number[]>(
     []
   );
-  const [mesocyclesArray, setMesocyclesArray] = useState<number[]>([]);
+  // const [mesocyclesArray, setMesocyclesArray] = useState<number[]>([]);
+  const mesocyclesArray = Array.from(Array(mesocycles), (e, i) => i);
 
   useEffect(() => {
     const clonedMuscle = structuredClone(muscle);
-    setMuscleGroup(clonedMuscle);
-  }, [muscle]);
 
-  useEffect(() => {
-    const mesocyclesArray = Array.from(Array(mesocycles), (e, i) => i);
-    setMesocyclesArray(mesocyclesArray);
-  }, [mesocycles]);
+    setMuscleGroup({ ...clonedMuscle });
+  }, [muscle]);
 
   useEffect(() => {
     const matrix = muscleGroup.volume.setProgressionMatrix;
@@ -172,28 +169,6 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
     }
     setVolumes(totals);
   }, [selectedMesocycleIndex, microcycles, muscleGroup]);
-
-  useEffect(() => {
-    const allExercises = structuredClone(muscleGroup.exercises);
-
-    for (let i = 0; i < allExercises.length; i++) {
-      const exercises = allExercises[i];
-      for (let j = 0; j < exercises.length; j++) {
-        const exercise = exercises[j];
-        exercise.setsTest = [];
-        exercise.setProgressionAlgo = [];
-
-        for (let k = 0; k < mesocycles; k++) {
-          exercise.setsTest.push(2 + k);
-          exercise.setProgressionAlgo.push("ADD_ONE_PER_MICROCYCLE");
-        }
-        exercises[j] = exercise;
-      }
-      allExercises[i] = exercises;
-    }
-    setMuscleGroup((prev) => ({ ...prev, exercises: allExercises }));
-    console.log(allExercises, "CHECK CH CH CHECK IT OUT ");
-  }, [muscle]);
 
   const toggleSetProgression = useCallback(() => {}, []);
 
@@ -359,8 +334,13 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
         return e;
       });
       copyMatrix[selectedMesocycleIndex] = updateAll;
+      const copyExercises = structuredClone(muscleGroup.exercises);
+      copyExercises[dayIndex - 1][index - 1].initialSetsPerMeso[
+        selectedMesocycleIndex
+      ] += operation === "+" ? 1 : -1;
       setMuscleGroup((prev) => ({
         ...prev,
+        exercises: copyExercises,
         volume: { ...prev.volume, setProgressionMatrix: copyMatrix },
       }));
     },

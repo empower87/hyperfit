@@ -160,6 +160,8 @@ export type ExerciseType = {
   supersetWith: ExerciseType["id"] | null;
   setsTest?: number[];
   setProgressionAlgo?: SetProgressionType[];
+  initialSetsPerMeso: number[]
+  setProgressionSchema: SetProgressionType[]
 };
 
 export type TrainingProgramParamsType = {
