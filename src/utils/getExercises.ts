@@ -1,5 +1,8 @@
-import { SetProgressionType } from "~/components/CustomizeTrainingSplit/ExerciseSelection/components/ExerciseEditor/hooks/setProgressionHandlers";
-import { getVolumeProgressionMatrix } from "~/constants/volumeProgressionMatrices";
+import { SetProgressionType } from "~/components/CustomizeTrainingSplit/ExerciseSelection/components/ExerciseEditor/utils/setProgressionHandlers";
+import {
+  MRV_PROGRESSION_MATRIX_ONE,
+  getVolumeProgressionMatrix,
+} from "~/constants/volumeProgressionMatrices";
 import { MuscleType } from "~/constants/workoutSplits";
 import { ExerciseType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { VolumeLandmarkType } from "~/hooks/useTrainingProgram/reducer/trainingProgramUtils";
@@ -234,19 +237,11 @@ export const getTotalExercisesForMuscleGroup = (
         };
 
         // Initializes the set progression schema and initial sets per meso
-        const setsToAdd = [];
-        const schemasToAdd: SetProgressionType[] = [];
-        for (let m = 0; m < frequencyProgression.length; m++) {
-          const currentMeso = matrix[frequencyProgression[m] - 1];
-          const currentSession = currentMeso[i];
-          const currentSet =
-            currentSession && currentSession[j] ? currentSession[j] : 0;
 
-          setsToAdd.push(currentSet);
-          schemasToAdd.push("ADD_ONE_PER_MICROCYCLE");
-        }
-        exercise.initialSetsPerMeso = setsToAdd;
-        exercise.setProgressionSchema = schemasToAdd;
+        const toAdd = initializeSetsPerMeso(frequencyProgression, matrix, i, j);
+
+        exercise.initialSetsPerMeso = toAdd.sets;
+        exercise.setProgressionSchema = toAdd.schemas;
 
         session_exercises.push(exercise);
         exercises_index++;
@@ -255,4 +250,56 @@ export const getTotalExercisesForMuscleGroup = (
     exercise_list.push(session_exercises);
   }
   return exercise_list;
+};
+
+const initializeSetsPerMeso = (
+  frequencyProgression: number[],
+  matrix: number[][][],
+  sessionIndex: number,
+  exerciseIndex: number
+) => {
+  const setsToAdd = [];
+  const schemasToAdd: SetProgressionType[] = [];
+  for (let m = 0; m < frequencyProgression.length; m++) {
+    const currentMeso = matrix[frequencyProgression[m] - 1];
+    const currentSession = currentMeso[sessionIndex];
+    const currentSet =
+      currentSession && currentSession[exerciseIndex]
+        ? currentSession[exerciseIndex]
+        : 0;
+
+    setsToAdd.push(currentSet);
+    schemasToAdd.push("ADD_ONE_PER_MICROCYCLE");
+  }
+  return {
+    sets: setsToAdd,
+    schemas: schemasToAdd,
+  };
+};
+
+export const initializeNewExerciseSetsPerMeso = (
+  frequencyProgression: number[],
+  sessionIndex: number
+) => {
+  const setsToAdd = [];
+  const schemasToAdd: SetProgressionType[] = [];
+
+  const matrix = [...MRV_PROGRESSION_MATRIX_ONE];
+  for (let i = 0; i < frequencyProgression.length; i++) {
+    const currentMeso = frequencyProgression[i];
+    const set = matrix[frequencyProgression[i] - 1];
+    const currentSet = set[sessionIndex] ? set[sessionIndex][0] : 2;
+
+    if (sessionIndex + 1 <= currentMeso) {
+      setsToAdd.push(currentSet);
+      schemasToAdd.push("FLAT_ADD");
+    } else {
+      setsToAdd.push(0);
+      schemasToAdd.push("NO_ADD");
+    }
+  }
+  return {
+    sets: setsToAdd,
+    schemas: schemasToAdd,
+  };
 };

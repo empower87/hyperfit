@@ -1,4 +1,4 @@
-import { ReactNode, useCallback, useEffect, useState } from "react";
+import { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
 import {
   ArrowDownIcon,
   ArrowUpIcon,
@@ -18,11 +18,7 @@ import {
   BORDER_COLOR_M4,
   BORDER_COLOR_M6,
 } from "~/constants/themes";
-import { MuscleType } from "~/constants/workoutSplits";
-import {
-  ExerciseType,
-  MusclePriorityType,
-} from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
+import { ExerciseType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
 import { cn } from "~/lib/clsx";
 import { Exercise } from "~/utils/getExercises";
@@ -35,15 +31,15 @@ import {
   MuscleEditorProvider,
   useMuscleEditorContext,
 } from "./context/MuscleEditorContext";
-import { getSetProgressionForExercise } from "./hooks/setProgressionHandlers";
+import { getSetProgressionForExercise } from "./utils/setProgressionHandlers";
 
 export default function MuscleEditor() {
   const { prioritized_muscle_list } = useTrainingProgramContext();
-  const [list, setList] = useState<MusclePriorityType[]>([]);
 
-  useEffect(() => {
-    setList([...prioritized_muscle_list]);
-  }, [prioritized_muscle_list]);
+  const list = useMemo(
+    () => prioritized_muscle_list.map((each) => structuredClone(each)),
+    [prioritized_muscle_list]
+  );
 
   return (
     <SectionH2 title="MUSCLE EDITOR">
@@ -51,10 +47,10 @@ export default function MuscleEditor() {
         {list.map((each, index) => {
           return (
             <MuscleEditorProvider
+              key={`${each.id}_${index}_MuscleEditorProvider`}
               muscle={each}
-              key={`${index}_muscleEditorProvider`}
             >
-              <Muscle muscle={each} rank={index + 1} />
+              <Muscle rank={index + 1} />
             </MuscleEditorProvider>
           );
         })}
@@ -97,10 +93,9 @@ function MuscleCollapsed({
 }
 
 type MuscleProps = {
-  muscle: MusclePriorityType;
   rank: number;
 };
-function Muscle({ muscle, rank }: MuscleProps) {
+function Muscle({ rank }: MuscleProps) {
   const {
     selectedMesocycleIndex,
     muscleGroup,
@@ -110,8 +105,8 @@ function Muscle({ muscle, rank }: MuscleProps) {
     onResetMuscleGroup,
     onSaveMuscleGroupChanges,
   } = useMuscleEditorContext();
-  const bgColor = getRankColor(muscle.volume.landmark);
-  const title = getMuscleTitleForUI(muscle.muscle);
+  const bgColor = getRankColor(muscleGroup.volume.landmark);
+  const title = getMuscleTitleForUI(muscleGroup.muscle);
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   const onExpandHandler = () => setIsCollapsed(false);
@@ -119,7 +114,7 @@ function Muscle({ muscle, rank }: MuscleProps) {
   if (isCollapsed) {
     return (
       <MuscleCollapsed
-        id={muscle.muscle}
+        id={muscleGroup.muscle}
         rank={rank}
         title={title}
         bgColor={bgColor.bg}
@@ -129,7 +124,7 @@ function Muscle({ muscle, rank }: MuscleProps) {
   }
   return (
     <li
-      id={muscle.muscle}
+      id={muscleGroup.muscle}
       className={`flex flex-col ${BG_COLOR_M7} scroll-smooth rounded`}
     >
       <div className={`flex rounded-t ${bgColor.bg} justify-between border-b`}>
@@ -234,7 +229,7 @@ type SessionProps = {
   indices: number[];
 };
 function Session({ index, exercises, indices }: SessionProps) {
-  const { onDeleteSession } = useMuscleEditorContext();
+  const { onRemoveTrainingDay } = useMuscleEditorContext();
   const [isOpen, setIsOpen] = useState(false);
   const onDropdownClose = () => setIsOpen(false);
   const onDropdownOpen = () => setIsOpen(true);
@@ -242,7 +237,7 @@ function Session({ index, exercises, indices }: SessionProps) {
   return (
     <div
       key={`${exercises[0]?.id}_SessionItem_${index}`}
-      className={`flex flex-col rounded-md ${BG_COLOR_M6}`}
+      className={`flex flex-col rounded-md ${BG_COLOR_M6} mb-2`}
     >
       <div className={`flex justify-between p-1`}>
         <div className={`indent-1 text-xs font-bold text-white`}>
@@ -253,7 +248,7 @@ function Session({ index, exercises, indices }: SessionProps) {
           <DotsIcon fill="#1E293B" />
           {isOpen ? (
             <Dropdown onClose={onDropdownClose} className={`-bottom-6`}>
-              <Dropdown.Item onClick={() => onDeleteSession(index)}>
+              <Dropdown.Item onClick={() => onRemoveTrainingDay(index)}>
                 Delete Session
               </Dropdown.Item>
             </Dropdown>
@@ -273,10 +268,11 @@ function Session({ index, exercises, indices }: SessionProps) {
 }
 
 function Exercises() {
-  const { selectedMesocycleIndex, muscleGroup, onAddTrainingDay } =
+  const { muscleGroup, selectedMesocycleIndex, onAddTrainingDay } =
     useMuscleEditorContext();
   const { training_program_params } = useTrainingProgramContext();
   const { mesocycles } = training_program_params;
+
   const [exercisesByMeso, setExercisesByMeso] = useState<ExerciseType[][]>([]);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -292,11 +288,9 @@ function Exercises() {
 
   useEffect(() => {
     const totalExercisesByMeso =
-      muscleGroup.volume.setProgressionMatrix[selectedMesocycleIndex][0]
-        ?.length;
-    const exercises = muscleGroup.exercises;
+      muscleGroup.volume.frequencyProgression[selectedMesocycleIndex];
+    const exercises = structuredClone(muscleGroup.exercises);
     const exercisesByMeso = exercises.slice(0, totalExercisesByMeso);
-    console.log(exercisesByMeso, exercises, totalExercisesByMeso, "WHTFLSDF");
     setExercisesByMeso(exercisesByMeso);
   }, [selectedMesocycleIndex, muscleGroup]);
 
@@ -312,27 +306,12 @@ function Exercises() {
   const onOpen = () => setIsOpen(true);
   const onClose = () => setIsOpen(false);
 
-  const onSelectHandler = (newExercise: Exercise) => {
-    const new_exercise: ExerciseType = {
-      id: newExercise.id,
-      exercise: newExercise.name,
-      muscle: newExercise.group as MuscleType,
-      session: 0,
-      rank: muscleGroup.volume.landmark,
-      sets: 2,
-      reps: 10,
-      weight: 100,
-      rir: 3,
-      weightIncrement: 2,
-      trainingModality: "straight",
-      mesocycle_progression: [],
-      supersetWith: null,
-      initialSetsPerMeso: [],
-      setProgressionSchema: [],
-    };
-    onAddTrainingDay(new_exercise);
-    onClose();
-  };
+  const onSelectHandler = useCallback(
+    (newExercise: Exercise) => {
+      onAddTrainingDay(newExercise, exercisesByMeso.length);
+    },
+    [exercisesByMeso]
+  );
 
   const addTrainingDayHandler = useCallback(() => {
     if (!isLastMesocycle) {
@@ -346,7 +325,7 @@ function Exercises() {
     <div className={`flex min-h-[95px] space-x-1 overflow-x-auto`}>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ChangeExerciseProvider muscle={muscleGroup} exerciseId={""}>
-          <SelectExercise onSelect={onSelectHandler} />
+          <SelectExercise onSelect={onSelectHandler} onClose={onClose} />
         </ChangeExerciseProvider>
       </Modal>
 
@@ -384,6 +363,7 @@ type SessionItemProps = {
   indices: number[];
   dayIndex: number;
 };
+
 function SessionItem({ exercises, indices, dayIndex }: SessionItemProps) {
   const { muscleGroup, onAddExercise } = useMuscleEditorContext();
   const [currentExercise, setCurrentExercise] = useState<ExerciseType>(
@@ -394,26 +374,12 @@ function SessionItem({ exercises, indices, dayIndex }: SessionItemProps) {
   const onOpen = () => setIsOpen(true);
   const onClose = () => setIsOpen(false);
 
-  const onSelectHandler = (newExercise: Exercise) => {
-    const new_exercise: ExerciseType = {
-      id: newExercise.id,
-      exercise: newExercise.name,
-      muscle: newExercise.group as MuscleType,
-      session: dayIndex,
-      rank: muscleGroup.volume.landmark,
-      sets: 2,
-      reps: 10,
-      weight: 100,
-      rir: 3,
-      weightIncrement: 2,
-      trainingModality: "straight",
-      mesocycle_progression: [],
-      supersetWith: null,
-      initialSetsPerMeso: [],
-      setProgressionSchema: [],
-    };
-    onAddExercise(new_exercise, dayIndex - 1);
-  };
+  const onSelectHandler = useCallback(
+    (newExercise: Exercise) => {
+      onAddExercise(newExercise, dayIndex - 1);
+    },
+    [dayIndex]
+  );
 
   const microcycles = muscleGroup.volume.setProgressionMatrix[0]
     ? muscleGroup.volume.setProgressionMatrix[0]
@@ -447,7 +413,7 @@ function SessionItem({ exercises, indices, dayIndex }: SessionItemProps) {
           muscle={muscleGroup}
           exerciseId={currentExercise?.id}
         >
-          <SelectExercise onSelect={onSelectHandler} />
+          <SelectExercise onSelect={onSelectHandler} onClose={onClose} />
         </ChangeExerciseProvider>
       </Modal>
 
@@ -515,9 +481,8 @@ function ExerciseItem({
 }: ExerciseItemProps) {
   const {
     selectedMesocycleIndex,
-    muscleGroup,
-    onOperationHandler,
-    onDeleteExercise,
+    onSetIncrement,
+    onRemoveExercise,
     toggleSetProgression,
   } = useMuscleEditorContext();
   const { training_program_params } = useTrainingProgramContext();
@@ -531,7 +496,6 @@ function ExerciseItem({
     totalExercisesInSession,
     index - 1
   );
-  console.log(sets, "WTF DUDE?");
 
   return (
     <li className={`flex text-xxs text-white ${BG_COLOR_M5}`}>
@@ -554,7 +518,7 @@ function ExerciseItem({
               <WeekOneSets key={`${exercise.id}_WeekOneSets_${i}`}>
                 <WeekOneSets.Button
                   operation="-"
-                  onClick={() => onOperationHandler("-", dayIndex, index)}
+                  onClick={() => onSetIncrement("-", exercise.id)}
                 />
                 <div
                   className={`flex w-3 items-center justify-center px-0.5 text-xxs text-white`}
@@ -563,7 +527,7 @@ function ExerciseItem({
                 </div>
                 <WeekOneSets.Button
                   operation="+"
-                  onClick={() => onOperationHandler("+", dayIndex, index)}
+                  onClick={() => onSetIncrement("+", exercise.id)}
                 />
               </WeekOneSets>
             );
@@ -576,43 +540,8 @@ function ExerciseItem({
             </div>
           );
         })}
-        {/* {muscleGroup.volume.setProgressionMatrix[selectedMesocycleIndex]?.map(
-          (each, i) => {
-            const session = each[dayIndex - 1];
-            let sets = 0;
-            if (session) {
-              sets = session[index - 1];
-            }
-            if (i === 0)
-              return (
-                <WeekOneSets key={`${exercise.id}_WeekOneSets_${i}`}>
-                  <WeekOneSets.Button
-                    operation="-"
-                    onClick={() => onOperationHandler("-", dayIndex, index)}
-                  />
-                  <div
-                    className={`flex w-3 items-center justify-center px-0.5 text-xxs text-white`}
-                  >
-                    {sets}
-                  </div>
-                  <WeekOneSets.Button
-                    operation="+"
-                    onClick={() => onOperationHandler("+", dayIndex, index)}
-                  />
-                </WeekOneSets>
-              );
-            return (
-              <div
-                key={`${exercise.id}_WeekOneSets_${sets}_${i}`}
-                className={`flex w-3 justify-center border-x p-0.5 ${BORDER_COLOR_M6}`}
-              >
-                {sets}
-              </div>
-            );
-          }
-        )} */}
         <div
-          onClick={() => onDeleteExercise(exercise.id)}
+          onClick={() => onRemoveExercise(exercise.id)}
           className={`flex w-3 cursor-pointer items-center justify-center border bg-rose-400 ${BORDER_COLOR_M6} hover:bg-rose-500`}
         >
           <DeleteIcon fill="white" />

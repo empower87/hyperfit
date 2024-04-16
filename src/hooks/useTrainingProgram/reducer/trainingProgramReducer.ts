@@ -1,4 +1,4 @@
-import { SetProgressionType } from "~/components/CustomizeTrainingSplit/ExerciseSelection/components/ExerciseEditor/hooks/setProgressionHandlers";
+import { SetProgressionType } from "~/components/CustomizeTrainingSplit/ExerciseSelection/components/ExerciseEditor/utils/setProgressionHandlers";
 import { MuscleType } from "~/constants/workoutSplits";
 import { buildTrainingBlockHandler } from "../utils/buildTrainingBlockHandlers";
 import {
@@ -160,8 +160,8 @@ export type ExerciseType = {
   supersetWith: ExerciseType["id"] | null;
   setsTest?: number[];
   setProgressionAlgo?: SetProgressionType[];
-  initialSetsPerMeso: number[]
-  setProgressionSchema: SetProgressionType[]
+  initialSetsPerMeso: number[];
+  setProgressionSchema: SetProgressionType[];
 };
 
 export type TrainingProgramParamsType = {
@@ -378,7 +378,6 @@ export default function weeklySessionSplitReducer(
       const li = action.payload.muscle_priority_list;
       const params = action.payload.training_program_config;
 
-      console.log(fr, sp, "WHAT THIS?");
       const re = onReorderUpdateMusclePriorityList(li, breakpoints);
 
       const up_sp = getSplitFromWeights(fr, re, sp);

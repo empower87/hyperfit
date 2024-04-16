@@ -181,12 +181,19 @@ function Filter() {
   );
 }
 
-function Layout({ children }: { children: ReactNode }) {
+function Layout({
+  children,
+  onClose,
+}: {
+  children: ReactNode;
+  onClose: () => void;
+}) {
   return (
     <div className={cn(`flex flex-col ${BG_COLOR_M7} w-[900px]`)}>
-      <div className={cn(`flex justify-between ${BG_COLOR_M6} mb-2`)}>
+      <div className={cn(`flex justify-between ${BG_COLOR_M6} mb-2 p-1`)}>
         <div className={cn(`indent-1 text-sm text-white`)}>Select Exercise</div>
         <button
+          onClick={onClose}
           className={cn(
             `mr-1 flex h-5 w-5 items-center justify-center text-white hover:${BG_COLOR_M5}`
           )}
@@ -362,19 +369,23 @@ SelectExercise.Filter = Filter;
 
 type SelectExerciseProps = {
   onSelect: (newExercise: Exercise) => void;
+  onClose: () => void;
 };
-export default function SelectExercise({ onSelect }: SelectExerciseProps) {
+export default function SelectExercise({
+  onSelect,
+  onClose,
+}: SelectExerciseProps) {
   const { exercises, allExercises, selectedExerciseId, onSaveExerciseHandler } =
     useChangeExerciseContext();
 
   const onSelectHandler = () => {
     const exercise = onSaveExerciseHandler();
     if (!exercise) return;
-    console.log(exercise, "CHECK IT OUT YO??");
     onSelect(exercise);
+    onClose();
   };
   return (
-    <SelectExercise.Layout>
+    <SelectExercise.Layout onClose={onClose}>
       <SelectExercise.Header>
         <SelectExercise.Search />
         <SelectExercise.Filter />
