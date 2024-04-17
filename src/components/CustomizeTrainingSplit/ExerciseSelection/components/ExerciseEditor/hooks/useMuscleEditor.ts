@@ -76,6 +76,7 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
   const [selectedMesocycleIndex, setSelectedMesocycleIndex] = useState(
     mesocycles - 1
   );
+
   const [volumes, setVolumes] = useState<number[]>([]);
   const mesocyclesArray = Array.from(Array(mesocycles), (e, i) => i);
 
@@ -84,17 +85,8 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
   }, [muscle]);
 
   useEffect(() => {
-    // const matrix = muscleGroup.volume.setProgressionMatrix;
-    // const totals: number[] = [];
-    // for (let i = 0; i < matrix.length; i++) {
-    //   const lastMatrix = matrix[i][microcycles - 1];
-    //   const totalVolume = lastMatrix.flat().reduce((acc, cur) => acc + cur, 0);
-    //   totals.push(totalVolume);
-    // }
     const exercises = muscleGroup.exercises;
-
     let totalVolumes = calculateTotalVolume(exercises, mesocycles, microcycles);
-
     setVolumes(totalVolumes);
   }, [selectedMesocycleIndex, microcycles, mesocycles, muscleGroup]);
 
@@ -128,15 +120,43 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
     [muscleGroup]
   );
 
+  const updateABunchofShit = (
+    empty_index: number,
+    frequencyProgression: number[],
+    landmark: VolumeLandmarkType,
+    exercises: ExerciseType[][]
+  ) => {
+    // DELETE FROM CURRENT MESOCYCLE AND ALL MESOCYCLES
+    // DELETE ONLY FROM THIS MESOCYCLE
+    // DELETE FROM ALL MESOCYCLES AND READJUST FREQUENCY PROGRESSION
+    // DELETE FROM ALL MESOCYCLES AND REPLACE WITH NEXT SESSION
+  };
+
   const onRemoveExercise = useCallback(
     (id: ExerciseType["id"]) => {
-      const exercises = [...muscleGroup.exercises];
+      const exercises = muscleGroup.exercises;
+      const frequencyProgression = [...muscleGroup.volume.frequencyProgression];
       const rem_exercises = exercises.map((day) => {
         return day.filter((e) => e.id !== id);
       });
+      let empty_index = 0;
+      const filtered_exercises = rem_exercises.filter((each, index) => {
+        if (!each.length) {
+          empty_index = index;
+        } else return each;
+      });
+
+      // frequencyProgression[empty_index]--;
+      console.log(
+        filtered_exercises,
+        empty_index,
+        frequencyProgression,
+        "ok what it do?"
+      );
       setMuscleGroup((prev) => ({
         ...prev,
-        exercises: rem_exercises.filter((each) => each.length),
+        exercises: filtered_exercises,
+        volume: { ...prev.volume, frequencyProgression: frequencyProgression },
       }));
     },
     [muscleGroup]
@@ -144,14 +164,16 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
 
   const onRemoveTrainingDay = useCallback(
     (dayIndex: number) => {
-      const freq = [...muscleGroup.volume.frequencyProgression];
-      freq[selectedMesocycleIndex]--;
-      const cloned_exercises = structuredClone(muscleGroup.exercises);
-      cloned_exercises.splice(dayIndex, 1);
+      const frequencyProgression = [...muscleGroup.volume.frequencyProgression];
+      frequencyProgression[selectedMesocycleIndex]--;
+
+      const exercises = [...muscleGroup.exercises];
+      exercises.splice(dayIndex, 1);
+
       setMuscleGroup((prev) => ({
         ...prev,
-        exercises: cloned_exercises,
-        volume: { ...prev.volume, frequencyProgression: freq },
+        exercises: exercises,
+        volume: { ...prev.volume, frequencyProgression: frequencyProgression },
       }));
     },
     [selectedMesocycleIndex, muscleGroup]
@@ -159,14 +181,17 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
 
   const onSetIncrement = useCallback(
     (operation: "+" | "-", exerciseId: ExerciseType["id"]) => {
-      const copiedExercises = structuredClone(muscleGroup.exercises);
-      const exercise = copiedExercises.flat().find((e) => e.id === exerciseId);
+      const exercises = [...muscleGroup.exercises];
+      const exercise = exercises.flat().find((e) => e.id === exerciseId);
       if (!exercise) return;
+
       const sets = exercise.initialSetsPerMeso[selectedMesocycleIndex];
+      if (operation === "-" && sets - 1 < 1) return;
+
       exercise.initialSetsPerMeso[selectedMesocycleIndex] =
         sets + (operation === "+" ? 1 : -1);
 
-      const incrementedExercise = copiedExercises.map((day) => {
+      const incrementedExercise = exercises.map((day) => {
         return day.map((e) => {
           if (e.id === exerciseId) {
             return exercise;
@@ -185,13 +210,14 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
 
   const onAddTrainingDay = useCallback(
     (firstExercise?: Exercise, dayIndex?: number) => {
-      if (!firstExercise || !dayIndex) {
-        const freq = [...muscleGroup.volume.frequencyProgression];
-        freq[selectedMesocycleIndex]++;
+      const frequencyProgression = [...muscleGroup.volume.frequencyProgression];
+      const cloned_exercises = [...muscleGroup.exercises];
 
-        const nextFreq = freq[selectedMesocycleIndex + 1];
-        const sessionIndex = freq[selectedMesocycleIndex] - 1;
-        const cloned_exercises = structuredClone(muscleGroup.exercises);
+      if (!firstExercise || !dayIndex) {
+        frequencyProgression[selectedMesocycleIndex]++;
+
+        const nextFreq = frequencyProgression[selectedMesocycleIndex + 1];
+        const sessionIndex = frequencyProgression[selectedMesocycleIndex] - 1;
         const sessionExercises = [...cloned_exercises[sessionIndex]];
 
         const toCopyExercises = cloned_exercises[nextFreq - 1];
@@ -211,16 +237,16 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
         setMuscleGroup((prev) => ({
           ...prev,
           exercises: cloned_exercises,
-          volume: { ...prev.volume, frequencyProgression: freq },
+          volume: {
+            ...prev.volume,
+            frequencyProgression: frequencyProgression,
+          },
         }));
       } else {
-        const cloned_exercises = structuredClone(muscleGroup.exercises);
-        const freq = [...muscleGroup.volume.frequencyProgression];
-        freq[freq.length - 1]++;
-
+        frequencyProgression[frequencyProgression.length - 1]++;
         const initial_exercise = getNewExercise(
           firstExercise,
-          freq,
+          frequencyProgression,
           muscleGroup.volume.landmark,
           dayIndex
         );
@@ -229,7 +255,10 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
         setMuscleGroup((prev) => ({
           ...prev,
           exercises: cloned_exercises,
-          volume: { ...prev.volume, frequencyProgression: freq },
+          volume: {
+            ...prev.volume,
+            frequencyProgression: frequencyProgression,
+          },
         }));
       }
     },

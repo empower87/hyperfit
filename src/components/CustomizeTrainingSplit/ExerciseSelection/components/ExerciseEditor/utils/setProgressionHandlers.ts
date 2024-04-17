@@ -232,7 +232,3 @@ export const getSetProgressionForExercise = (
 //  2 three    =   2          2          2          3          3          3          3          3
 //  3 four     =   2          2          2          2          3          3          3          3
 //  4 five     =   2          2          2          2          2          3          3          3
-
-//  277.36 loan
-// 1825.00 rent
-//  110.57 phone

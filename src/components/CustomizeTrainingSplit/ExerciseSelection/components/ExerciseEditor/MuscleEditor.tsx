@@ -1,4 +1,4 @@
-import { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
+import { ReactNode, useCallback, useMemo, useState } from "react";
 import {
   ArrowDownIcon,
   ArrowUpIcon,
@@ -273,7 +273,7 @@ function Exercises() {
   const { training_program_params } = useTrainingProgramContext();
   const { mesocycles } = training_program_params;
 
-  const [exercisesByMeso, setExercisesByMeso] = useState<ExerciseType[][]>([]);
+  // const [exercisesByMeso, setExercisesByMeso] = useState<ExerciseType[][]>([]);
   const [isOpen, setIsOpen] = useState(false);
 
   const canAddSessionAtMesocycle =
@@ -285,14 +285,9 @@ function Exercises() {
       : false;
 
   const isLastMesocycle = mesocycles - 1 === selectedMesocycleIndex;
-
-  useEffect(() => {
-    const totalExercisesByMeso =
-      muscleGroup.volume.frequencyProgression[selectedMesocycleIndex];
-    const exercises = structuredClone(muscleGroup.exercises);
-    const exercisesByMeso = exercises.slice(0, totalExercisesByMeso);
-    setExercisesByMeso(exercisesByMeso);
-  }, [selectedMesocycleIndex, muscleGroup]);
+  const totalExercisesByMeso =
+    muscleGroup.volume.frequencyProgression[selectedMesocycleIndex];
+  const exercisesByMeso = muscleGroup.exercises.slice(0, totalExercisesByMeso);
 
   const totalSessions = exercisesByMeso.length;
   const remaining = totalSessions < 5 ? 5 - totalSessions : 0;
@@ -471,6 +466,7 @@ type ExerciseItemProps = {
   onOpen: () => void;
   totalExercisesInSession: number;
 };
+
 function ExerciseItem({
   exercise,
   index,
@@ -504,6 +500,7 @@ function ExerciseItem({
           {exerciseIndex}
         </button>
       </div>
+
       <div
         onClick={onOpen}
         className={`flex w-32 cursor-pointer items-center truncate indent-0.5 hover:${BG_COLOR_M4}`}

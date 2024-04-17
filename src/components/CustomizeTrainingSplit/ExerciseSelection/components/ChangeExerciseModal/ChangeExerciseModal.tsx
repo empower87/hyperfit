@@ -83,6 +83,7 @@ function FilterTag({ tag, onRemoveTag }: FilterTagProps) {
     </div>
   );
 }
+
 type FilterMenuProps = {
   onSelectTag: (key: FilterTagsKey, value: string | null) => void;
 };
@@ -288,7 +289,7 @@ function List({ children }: { children: ReactNode }) {
   return (
     <div className={cn(`flex flex-col p-2`)}>
       <div className={cn(`mb-2 flex border-b-2 indent-1 text-xs text-white`)}>
-        <div className={`w-4/12`}>Exercises</div>
+        <div className={`w-4/12`}>Exercise</div>
         <div
           onClick={() => onClickHandler("rank")}
           className={cn(`w-1/12 cursor-pointer hover:${BG_COLOR_M6}`, {
