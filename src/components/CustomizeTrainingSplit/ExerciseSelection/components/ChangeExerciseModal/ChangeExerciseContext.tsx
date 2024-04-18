@@ -173,6 +173,7 @@ function useChangeExercise(muscle: MusclePriorityType, exerciseId: string) {
       (each) => each.id === selectedExerciseId
     );
     if (!new_exercise) return;
+    setSelectedExerciseId("");
     return new_exercise;
   }, [visibleExercises, selectedExerciseId]);
 

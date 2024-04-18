@@ -8,11 +8,12 @@ import useMuscleEditor from "../hooks/useMuscleEditor";
 type MuscleEditorType = ReturnType<typeof useMuscleEditor>;
 
 const MuscleEditorContext = createContext<MuscleEditorType>({
-  muscleGroup: { ...INITIAL_STATE }.muscle_priority_list[0],
+  muscleGroup: INITIAL_STATE.muscle_priority_list[0],
   volumes: [],
   selectedMesocycleIndex: 0,
   onSelectMesocycle: () => null,
   mesocyclesArray: [],
+  microcyclesArray: [],
   onSetIncrement: () => null,
   onAddTrainingDay: () => null,
   onAddExercise: () => null,

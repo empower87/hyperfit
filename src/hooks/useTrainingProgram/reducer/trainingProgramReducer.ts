@@ -349,7 +349,7 @@ const INITIAL_SPLIT_SESSIONS: SplitSessionsType = {
 export const INITIAL_STATE: State = {
   frequency: [3, 0],
   training_program_params: { ...INITIAL_TRAINING_PROGRAM_PARAMS },
-  muscle_priority_list: [...MUSCLE_PRIORITY_LIST],
+  muscle_priority_list: MUSCLE_PRIORITY_LIST,
   training_week: [...INITIAL_WEEK],
   training_block: [],
   split_sessions: { ...INITIAL_SPLIT_SESSIONS },

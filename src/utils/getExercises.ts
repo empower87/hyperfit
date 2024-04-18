@@ -205,6 +205,25 @@ export const getTotalExercisesForMuscleGroup = (
   const exercise_list: ExerciseType[][] = [];
   let exercises_index = 0;
 
+  if (rank === "MEV") {
+    const array = initializeSetsPerMeso_mev(
+      muscleData.MEV,
+      frequencyProgression
+    );
+
+    for (let e = 0; e < array.length; e++) {
+      const session = array[e];
+      const sessionExercises: ExerciseType[] = [];
+      const exercise = {
+        ...INITIAL_EXERCISE,
+        id: `${exercises[exercises_index].id}_${exercises_index}`,
+        exercise: exercises[exercises_index].name,
+        muscle: group,
+        rank: rank,
+        meso_progression: frequencyProgression,
+      };
+    }
+  }
   // Note: below guard clause checks to see if MEV or MV volume is 0
   //       thus no need for exercises for this muscle group.
   if (muscleData[rank] === 0) return exercise_list;
@@ -250,6 +269,71 @@ export const getTotalExercisesForMuscleGroup = (
     exercise_list.push(session_exercises);
   }
   return exercise_list;
+};
+
+// 8
+// 6
+// 2
+
+// DELOAD NOTE
+// deload should be implemented on 3 weeks of hard training
+// otherwise should be around 4 weeks
+
+const frequencyHandler = (max_freq: number) => {
+  switch (max_freq) {
+    case 1:
+    case 2:
+    default:
+  }
+};
+
+// NOTE: May need to experiment with a more algorithmic logic to create these values then hard coding
+//       these cases
+const initializeSetsPerMeso_mev = (
+  mev_target: number,
+  frequencyProgression: number[]
+) => {
+  const total_frequency = frequencyProgression[frequencyProgression.length - 1];
+
+  // const total_exercises = total_frequency * exercisesPerSessionSchema
+  // 1 2 4
+
+  switch (mev_target) {
+    case 2:
+      return [[2]];
+    case 4:
+      if (total_frequency === 2) {
+        return [[2], [2]];
+      } else {
+        return [[2, 2]];
+      }
+    case 6:
+      if (total_frequency === 2) {
+        return [[3], [3]];
+      } else {
+        return [[3, 3]];
+      }
+    case 8:
+      if (total_frequency === 2) {
+        return [
+          [2, 2],
+          [2, 2],
+        ];
+      } else {
+        return [[3, 3]];
+      }
+    case 10:
+      if (total_frequency === 2) {
+        return [
+          [3, 2],
+          [3, 2],
+        ];
+      } else {
+        return [[4, 3]];
+      }
+    default:
+      return [[]];
+  }
 };
 
 const initializeSetsPerMeso = (

@@ -360,25 +360,12 @@ type SessionItemProps = {
 };
 
 function SessionItem({ exercises, indices, dayIndex }: SessionItemProps) {
-  const { muscleGroup, onAddExercise } = useMuscleEditorContext();
-  const [currentExercise, setCurrentExercise] = useState<ExerciseType>(
-    exercises[0]
-  );
-
+  const { muscleGroup, microcyclesArray, onAddExercise } =
+    useMuscleEditorContext();
   const [isOpen, setIsOpen] = useState(false);
+
   const onOpen = () => setIsOpen(true);
   const onClose = () => setIsOpen(false);
-
-  const onSelectHandler = useCallback(
-    (newExercise: Exercise) => {
-      onAddExercise(newExercise, dayIndex - 1);
-    },
-    [dayIndex]
-  );
-
-  const microcycles = muscleGroup.volume.setProgressionMatrix[0]
-    ? muscleGroup.volume.setProgressionMatrix[0]
-    : [];
 
   return (
     <div className={`flex flex-col rounded ${BG_COLOR_M6}`}>
@@ -388,7 +375,7 @@ function SessionItem({ exercises, indices, dayIndex }: SessionItemProps) {
         <div className={`pl-2`}>Exercise</div>
         <div className={`flex pr-4`}>
           <div className={``}>Week </div>
-          {microcycles.map((e, i) => {
+          {microcyclesArray.map((e, i) => {
             return (
               <div
                 key={`${i}_WeeksSessionHeader`}
@@ -404,11 +391,11 @@ function SessionItem({ exercises, indices, dayIndex }: SessionItemProps) {
       </div>
 
       <Modal isOpen={isOpen} onClose={onClose}>
-        <ChangeExerciseProvider
-          muscle={muscleGroup}
-          exerciseId={currentExercise?.id}
-        >
-          <SelectExercise onSelect={onSelectHandler} onClose={onClose} />
+        <ChangeExerciseProvider muscle={muscleGroup} exerciseId={""}>
+          <SelectExercise
+            onSelect={(newExercise) => onAddExercise(newExercise, dayIndex - 1)}
+            onClose={onClose}
+          />
         </ChangeExerciseProvider>
       </Modal>
 

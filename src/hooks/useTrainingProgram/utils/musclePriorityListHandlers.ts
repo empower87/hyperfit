@@ -453,8 +453,8 @@ const getMaxFrequencyForMEVMV = (
   if (volume_landmark === "MRV") return 0;
   const volume = data[volume_landmark];
 
-  if (volume > 8) return 3;
-  else if (volume > 4 && volume <= 8) return 2;
+  // if (volume > 8) return 3;
+  if (volume > 4 && volume <= 10) return 2;
   else if (volume > 0 && volume <= 4) return 1;
   else return 0;
 };
@@ -603,7 +603,7 @@ export const onVolumeLandmarkChangeHandler = (
   muscle_priority_list: MusclePriorityType[],
   volume_breakpoints: [number, number]
 ) => {
-  const list = [...muscle_priority_list];
+  const list = structuredClone(muscle_priority_list);
   const index = list.findIndex((item) => item.id === id);
   const prev_volume_landmark = list[index].volume.landmark;
 
