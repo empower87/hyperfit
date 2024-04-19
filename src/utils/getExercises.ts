@@ -214,15 +214,37 @@ export const getTotalExercisesForMuscleGroup = (
     for (let e = 0; e < array.length; e++) {
       const session = array[e];
       const sessionExercises: ExerciseType[] = [];
-      const exercise = {
-        ...INITIAL_EXERCISE,
-        id: `${exercises[exercises_index].id}_${exercises_index}`,
-        exercise: exercises[exercises_index].name,
-        muscle: group,
-        rank: rank,
-        meso_progression: frequencyProgression,
-      };
+
+      for (let f = 0; f < session.length; f++) {
+        if (!exercises[exercises_index]) {
+          exercises_index = 0;
+        }
+        if (exercises[exercises_index]) {
+          const exercise = {
+            ...INITIAL_EXERCISE,
+            id: `${exercises[exercises_index].id}_${exercises_index}`,
+            exercise: exercises[exercises_index].name,
+            muscle: group,
+            rank: rank,
+            meso_progression: frequencyProgression,
+            initializeSetsPerMeso: [],
+            setProgressionnSchema: [],
+          };
+          const initSets = [];
+          const setProgSchema: SetProgressionType[] = [];
+          for (let g = 0; g < frequencyProgression.length; g++) {
+            initSets.push(session[f]);
+            setProgSchema.push("NO_ADD");
+          }
+          exercise.initialSetsPerMeso = initSets;
+          exercise.setProgressionSchema = setProgSchema;
+          sessionExercises.push(exercise);
+          exercises_index++;
+        }
+      }
+      exercise_list.push(sessionExercises);
     }
+    return exercise_list;
   }
   // Note: below guard clause checks to see if MEV or MV volume is 0
   //       thus no need for exercises for this muscle group.
