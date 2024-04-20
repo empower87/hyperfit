@@ -158,8 +158,6 @@ export type ExerciseType = {
   trainingModality: ExerciseTrainingModality;
   mesocycle_progression: ExerciseMesocycleProgressionType[];
   supersetWith: ExerciseType["id"] | null;
-  setsTest?: number[];
-  setProgressionAlgo?: SetProgressionType[];
   initialSetsPerMeso: number[];
   setProgressionSchema: SetProgressionType[];
 };

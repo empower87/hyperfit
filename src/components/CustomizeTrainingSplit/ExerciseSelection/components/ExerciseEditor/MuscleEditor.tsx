@@ -1,10 +1,12 @@
 import { ReactNode, useCallback, useMemo, useState } from "react";
 import {
+  AddIcon,
   ArrowDownIcon,
   ArrowUpIcon,
   DeleteIcon,
   DotsIcon,
   PlusIcon,
+  SubtractIcon,
 } from "~/assets/icons/_icons";
 import Dropdown from "~/components/Layout/Dropdown";
 import { SectionH2 } from "~/components/Layout/Sections";
@@ -27,6 +29,7 @@ import { getRankColor } from "~/utils/getRankColor";
 import { ChangeExerciseProvider } from "../ChangeExerciseModal/ChangeExerciseContext";
 import SelectExercise from "../ChangeExerciseModal/ChangeExerciseModal";
 import BottomBar from "./components/BottomBar";
+import SideMenu from "./components/SideMenu";
 import {
   MuscleEditorProvider,
   useMuscleEditorContext,
@@ -159,66 +162,238 @@ function Muscle({ rank }: MuscleProps) {
           <ArrowUpIcon fill="white" />
         </div>
       </div>
+      <div className={`flex `}>
+        <SideMenu>
+          <BottomBar>
+            <BottomBar.Container alignment="y">
+              <BottomBar.Section title="Volume Landmark" alignment="x">
+                <div className={`flex justify-center space-x-1 p-0.5`}>
+                  <div className={`p-0.5 text-xxs text-white`}>
+                    {muscleGroup.volume.landmark}
+                  </div>
+                </div>
+              </BottomBar.Section>
 
-      <div className={`p-2`}>
-        <Exercises />
+              <BottomBar.ToggleMesocycle
+                mesocycles={
+                  <div className={`flex justify-center space-x-1 p-0.5`}>
+                    {mesocyclesArray?.map((each, index) => {
+                      const isSelected = index === selectedMesocycleIndex;
+                      return (
+                        <BottomBar.Cell
+                          value={each + 1}
+                          selectedValue={isSelected}
+                        />
+                      );
+                    })}
+                  </div>
+                }
+                frequency={
+                  <div className={`flex justify-center space-x-1 p-0.5`}>
+                    {muscleGroup.volume.frequencyProgression.map(
+                      (each, index) => {
+                        const isSelected = index === selectedMesocycleIndex;
+                        return (
+                          <BottomBar.Cell
+                            value={each}
+                            selectedValue={isSelected}
+                          />
+                        );
+                      }
+                    )}
+                  </div>
+                }
+                volume={
+                  <div className={`flex justify-center space-x-1 p-0.5`}>
+                    {volumes.map((each, index) => {
+                      const isSelected = index === selectedMesocycleIndex;
+                      return (
+                        <BottomBar.Cell
+                          value={each}
+                          selectedValue={isSelected}
+                        />
+                      );
+                    })}
+                  </div>
+                }
+              />
+              {/* <BottomBar.Section title="Frequency" alignment="y">
+                <div className={`flex justify-center space-x-1 p-0.5`}>
+                  {muscleGroup.volume.frequencyProgression.map(
+                    (each, index) => {
+                      return (
+                        <div
+                          key={`${each}_${index}_FrequencyProgressionBottomBar`}
+                          className={cn(`p-0.5 text-xxs text-white`, {
+                            ["border"]: selectedMesocycleIndex === index,
+                          })}
+                        >
+                          {each}
+                        </div>
+                      );
+                    }
+                  )}
+                </div>
+              </BottomBar.Section> */}
+              {/* 
+              <BottomBar.Section title="Total Volume" alignment="y">
+                <div className={`flex justify-center space-x-1 p-0.5`}>
+                  {volumes.map((each, index) => {
+                    return (
+                      <div
+                        key={`${each}_${index}_TotalVolumeBottomBar`}
+                        className={cn(`p-0.5 text-xxs text-white`, {
+                          ["border"]: selectedMesocycleIndex === index,
+                        })}
+                      >
+                        {each}
+                      </div>
+                    );
+                  })}
+                </div>
+              </BottomBar.Section> */}
+            </BottomBar.Container>
+
+            <BottomBar.Container alignment="x">
+              <BottomBar.Button label="Reset" onClick={onResetMuscleGroup} />
+              <BottomBar.Button
+                label="Save"
+                onClick={onSaveMuscleGroupChanges}
+              />
+            </BottomBar.Container>
+          </BottomBar>
+        </SideMenu>
+        <div className={`w-auto overflow-x-auto p-2`}>
+          <Exercises />
+        </div>
       </div>
-
-      <BottomBar>
-        <BottomBar.Container>
-          <BottomBar.Section title="Volume Landmark">
-            <div className={`flex justify-center space-x-1 p-0.5`}>
-              <div className={`p-0.5 text-xxs text-white`}>
-                {muscleGroup.volume.landmark}
-              </div>
-            </div>
-          </BottomBar.Section>
-
-          <BottomBar.Section title="Frequency">
-            <div className={`flex justify-center space-x-1 p-0.5`}>
-              {muscleGroup.volume.frequencyProgression.map((each, index) => {
-                return (
-                  <div
-                    key={`${each}_${index}_FrequencyProgressionBottomBar`}
-                    className={cn(`p-0.5 text-xxs text-white`, {
-                      ["border"]: selectedMesocycleIndex === index,
-                    })}
-                  >
-                    {each}
-                  </div>
-                );
-              })}
-            </div>
-          </BottomBar.Section>
-
-          <BottomBar.Section title="Total Volume">
-            <div className={`flex justify-center space-x-1 p-0.5`}>
-              {volumes.map((each, index) => {
-                return (
-                  <div
-                    key={`${each}_${index}_TotalVolumeBottomBar`}
-                    className={cn(`p-0.5 text-xxs text-white`, {
-                      ["border"]: selectedMesocycleIndex === index,
-                    })}
-                  >
-                    {each}
-                  </div>
-                );
-              })}
-            </div>
-          </BottomBar.Section>
-        </BottomBar.Container>
-        <BottomBar.Container>
-          <BottomBar.Button label="Reset" onClick={onResetMuscleGroup} />
-          <BottomBar.Button
-            label="Save Changes"
-            onClick={onSaveMuscleGroupChanges}
-          />
-        </BottomBar.Container>
-      </BottomBar>
     </li>
   );
 }
+// function Muscle({ rank }: MuscleProps) {
+//   const {
+//     selectedMesocycleIndex,
+//     muscleGroup,
+//     onSelectMesocycle,
+//     volumes,
+//     mesocyclesArray,
+//     onResetMuscleGroup,
+//     onSaveMuscleGroupChanges,
+//   } = useMuscleEditorContext();
+//   const bgColor = getRankColor(muscleGroup.volume.landmark);
+//   const title = getMuscleTitleForUI(muscleGroup.muscle);
+//   const [isCollapsed, setIsCollapsed] = useState(false);
+
+//   const onExpandHandler = () => setIsCollapsed(false);
+//   const onCollapseHandler = () => setIsCollapsed(true);
+//   if (isCollapsed) {
+//     return (
+//       <MuscleCollapsed
+//         id={muscleGroup.muscle}
+//         rank={rank}
+//         title={title}
+//         bgColor={bgColor.bg}
+//         onExpand={() => onExpandHandler()}
+//       />
+//     );
+//   }
+//   return (
+//     <li
+//       id={muscleGroup.muscle}
+//       className={`flex flex-col ${BG_COLOR_M7} scroll-smooth rounded`}
+//     >
+//       <div className={`flex rounded-t ${bgColor.bg} justify-between border-b`}>
+//         <div className={`flex w-32 p-1 text-sm text-white`}>
+//           <div className={`flex w-3 items-center justify-center text-xs`}>
+//             {rank}
+//           </div>
+//           <div className={`flex w-full items-center indent-1`}>{title}</div>
+//         </div>
+
+//         <div className={`flex space-x-1 pt-1 text-sm text-white`}>
+//           {mesocyclesArray?.map((each, index) => {
+//             return (
+//               <div
+//                 key={`${each}_${index}_mesocyclesArray`}
+//                 className={cn(`cursor-pointer px-2 py-0.5 text-xs`, {
+//                   [`bg-white ${bgColor.text} font-bold`]:
+//                     selectedMesocycleIndex === index,
+//                 })}
+//                 onClick={() => onSelectMesocycle(index)}
+//               >
+//                 Mesocycle {each + 1}
+//               </div>
+//             );
+//           })}
+//         </div>
+
+//         <div
+//           onClick={() => onCollapseHandler()}
+//           className={`flex cursor-pointer items-center justify-center pr-2`}
+//         >
+//           <ArrowUpIcon fill="white" />
+//         </div>
+//       </div>
+
+//       <div className={`p-2`}>
+//         <Exercises />
+//       </div>
+
+//       <BottomBar>
+//         <BottomBar.Container>
+//           <BottomBar.Section title="Volume Landmark">
+//             <div className={`flex justify-center space-x-1 p-0.5`}>
+//               <div className={`p-0.5 text-xxs text-white`}>
+//                 {muscleGroup.volume.landmark}
+//               </div>
+//             </div>
+//           </BottomBar.Section>
+
+//           <BottomBar.Section title="Frequency">
+//             <div className={`flex justify-center space-x-1 p-0.5`}>
+//               {muscleGroup.volume.frequencyProgression.map((each, index) => {
+//                 return (
+//                   <div
+//                     key={`${each}_${index}_FrequencyProgressionBottomBar`}
+//                     className={cn(`p-0.5 text-xxs text-white`, {
+//                       ["border"]: selectedMesocycleIndex === index,
+//                     })}
+//                   >
+//                     {each}
+//                   </div>
+//                 );
+//               })}
+//             </div>
+//           </BottomBar.Section>
+
+//           <BottomBar.Section title="Total Volume">
+//             <div className={`flex justify-center space-x-1 p-0.5`}>
+//               {volumes.map((each, index) => {
+//                 return (
+//                   <div
+//                     key={`${each}_${index}_TotalVolumeBottomBar`}
+//                     className={cn(`p-0.5 text-xxs text-white`, {
+//                       ["border"]: selectedMesocycleIndex === index,
+//                     })}
+//                   >
+//                     {each}
+//                   </div>
+//                 );
+//               })}
+//             </div>
+//           </BottomBar.Section>
+//         </BottomBar.Container>
+//         <BottomBar.Container>
+//           <BottomBar.Button label="Reset" onClick={onResetMuscleGroup} />
+//           <BottomBar.Button
+//             label="Save Changes"
+//             onClick={onSaveMuscleGroupChanges}
+//           />
+//         </BottomBar.Container>
+//       </BottomBar>
+//     </li>
+//   );
+// }
 
 // TODO: create a blank session card to add a day to list and select exercises to fill it.
 //       However if the selected mesocycle is less than the last mesocycle, this button
@@ -380,7 +555,7 @@ function SessionItem({ exercises, indices, dayIndex }: SessionItemProps) {
               <div
                 key={`${i}_WeeksSessionHeader`}
                 className={cn(`flex w-3 items-center justify-center text-xxs`, {
-                  ["w-10"]: i === 0,
+                  ["w-11"]: i === 0,
                 })}
               >
                 {i + 1}
@@ -425,7 +600,7 @@ type AddItemProps = {
 function AddDayItem({ children }: AddItemProps) {
   return (
     <div
-      className={` flex w-56 items-center justify-center rounded-md p-2 ${BG_COLOR_M8} opacity-[40%]`}
+      className={`mb-2 flex w-56 items-center justify-center rounded-md p-2 ${BG_COLOR_M8} opacity-[40%]`}
     >
       {children}
     </div>
@@ -505,7 +680,7 @@ function ExerciseItem({
                   onClick={() => onSetIncrement("-", exercise.id)}
                 />
                 <div
-                  className={`flex w-3 items-center justify-center px-0.5 text-xxs text-white`}
+                  className={`flex w-3 items-center justify-center px-1 text-xxs text-white`}
                 >
                   {each}
                 </div>
@@ -518,7 +693,7 @@ function ExerciseItem({
           return (
             <div
               key={`${exercise.id}_WeekOneSets_${sets}_${i}`}
-              className={`flex w-3 justify-center border-x p-0.5 ${BORDER_COLOR_M6}`}
+              className={`flex w-3 justify-center border-r-2 p-0.5 ${BORDER_COLOR_M6}`}
             >
               {each}
             </div>
@@ -543,9 +718,13 @@ function Button({ operation, onClick }: ButtonProps) {
   return (
     <button
       onClick={onClick}
-      className={`flex w-3 border ${BORDER_COLOR_M4} ${BG_COLOR_M6} h-3 items-center justify-center text-xxs text-white hover:${BG_COLOR_M5}`}
+      className={`flex w-[11px] border ${BORDER_COLOR_M4} ${BG_COLOR_M6} h-[11px] items-center justify-center p-[2px] text-xxs text-white hover:${BG_COLOR_M5}`}
     >
-      {operation}
+      {operation === "+" ? (
+        <AddIcon fill="white" />
+      ) : (
+        <SubtractIcon fill="white" />
+      )}
     </button>
   );
 }
@@ -553,7 +732,7 @@ WeekOneSets.Button = Button;
 function WeekOneSets({ children }: { children: ReactNode }) {
   return (
     <div
-      className={`flex w-10 items-center justify-center border-r px-1 ${BORDER_COLOR_M6}`}
+      className={`flex w-11 items-center justify-center border-x-2 px-1 ${BORDER_COLOR_M6}`}
     >
       {children}
     </div>
