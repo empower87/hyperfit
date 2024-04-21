@@ -111,7 +111,9 @@ function Muscle({ rank }: MuscleProps) {
   const bgColor = getRankColor(muscleGroup.volume.landmark);
   const title = getMuscleTitleForUI(muscleGroup.muscle);
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isSideMenuCollapsed, setIsSideMenuCollapsed] = useState(false);
 
+  const onToggleSideMenu = () => setIsSideMenuCollapsed((prev) => !prev);
   const onExpandHandler = () => setIsCollapsed(false);
   const onCollapseHandler = () => setIsCollapsed(true);
   if (isCollapsed) {
@@ -130,29 +132,12 @@ function Muscle({ rank }: MuscleProps) {
       id={muscleGroup.muscle}
       className={`flex flex-col ${BG_COLOR_M7} scroll-smooth rounded`}
     >
-      <div className={`flex rounded-t ${bgColor.bg} justify-between border-b`}>
+      <div className={`flex rounded-t ${bgColor.bg} justify-between `}>
         <div className={`flex w-32 p-1 text-sm text-white`}>
           <div className={`flex w-3 items-center justify-center text-xs`}>
             {rank}
           </div>
           <div className={`flex w-full items-center indent-1`}>{title}</div>
-        </div>
-
-        <div className={`flex space-x-1 pt-1 text-sm text-white`}>
-          {mesocyclesArray?.map((each, index) => {
-            return (
-              <div
-                key={`${each}_${index}_mesocyclesArray`}
-                className={cn(`cursor-pointer px-2 py-0.5 text-xs`, {
-                  [`bg-white ${bgColor.text} font-bold`]:
-                    selectedMesocycleIndex === index,
-                })}
-                onClick={() => onSelectMesocycle(index)}
-              >
-                Mesocycle {each + 1}
-              </div>
-            );
-          })}
         </div>
 
         <div
@@ -162,13 +147,17 @@ function Muscle({ rank }: MuscleProps) {
           <ArrowUpIcon fill="white" />
         </div>
       </div>
+
       <div className={`flex `}>
-        <SideMenu>
+        <SideMenu
+          isCollapsed={isSideMenuCollapsed}
+          onCollapse={onToggleSideMenu}
+        >
           <BottomBar>
             <BottomBar.Container alignment="y">
               <BottomBar.Section title="Volume Landmark" alignment="x">
                 <div className={`flex justify-center space-x-1 p-0.5`}>
-                  <div className={`p-0.5 text-xxs text-white`}>
+                  <div className={`p-0.5 text-xxs ${bgColor.text}`}>
                     {muscleGroup.volume.landmark}
                   </div>
                 </div>
@@ -176,88 +165,60 @@ function Muscle({ rank }: MuscleProps) {
 
               <BottomBar.ToggleMesocycle
                 mesocycles={
-                  <div className={`flex justify-center space-x-1 p-0.5`}>
+                  <div className={`flex justify-center`}>
                     {mesocyclesArray?.map((each, index) => {
                       const isSelected = index === selectedMesocycleIndex;
+
                       return (
-                        <BottomBar.Cell
-                          value={each + 1}
+                        <BottomBar.MesocycleCell
                           selectedValue={isSelected}
-                        />
+                          onClick={() => onSelectMesocycle(index)}
+                        >
+                          {each + 1}
+                        </BottomBar.MesocycleCell>
                       );
                     })}
                   </div>
                 }
                 frequency={
-                  <div className={`flex justify-center space-x-1 p-0.5`}>
+                  <div className={`flex justify-center p-0.5`}>
                     {muscleGroup.volume.frequencyProgression.map(
                       (each, index) => {
                         const isSelected = index === selectedMesocycleIndex;
                         return (
-                          <BottomBar.Cell
-                            value={each}
-                            selectedValue={isSelected}
-                          />
+                          <BottomBar.Cell selectedValue={isSelected}>
+                            <Button onClick={() => {}}>
+                              <SubtractIcon fill="white" />
+                            </Button>
+                            <div className={`px-1`}>{each}</div>
+                            <Button onClick={() => {}}>
+                              <AddIcon fill="white" />
+                            </Button>
+                          </BottomBar.Cell>
                         );
                       }
                     )}
                   </div>
                 }
                 volume={
-                  <div className={`flex justify-center space-x-1 p-0.5`}>
+                  <div className={`flex justify-center p-0.5`}>
                     {volumes.map((each, index) => {
                       const isSelected = index === selectedMesocycleIndex;
                       return (
-                        <BottomBar.Cell
-                          value={each}
-                          selectedValue={isSelected}
-                        />
+                        <BottomBar.Cell selectedValue={isSelected}>
+                          {each}
+                        </BottomBar.Cell>
                       );
                     })}
                   </div>
                 }
               />
-              {/* <BottomBar.Section title="Frequency" alignment="y">
-                <div className={`flex justify-center space-x-1 p-0.5`}>
-                  {muscleGroup.volume.frequencyProgression.map(
-                    (each, index) => {
-                      return (
-                        <div
-                          key={`${each}_${index}_FrequencyProgressionBottomBar`}
-                          className={cn(`p-0.5 text-xxs text-white`, {
-                            ["border"]: selectedMesocycleIndex === index,
-                          })}
-                        >
-                          {each}
-                        </div>
-                      );
-                    }
-                  )}
-                </div>
-              </BottomBar.Section> */}
-              {/* 
-              <BottomBar.Section title="Total Volume" alignment="y">
-                <div className={`flex justify-center space-x-1 p-0.5`}>
-                  {volumes.map((each, index) => {
-                    return (
-                      <div
-                        key={`${each}_${index}_TotalVolumeBottomBar`}
-                        className={cn(`p-0.5 text-xxs text-white`, {
-                          ["border"]: selectedMesocycleIndex === index,
-                        })}
-                      >
-                        {each}
-                      </div>
-                    );
-                  })}
-                </div>
-              </BottomBar.Section> */}
             </BottomBar.Container>
 
             <BottomBar.Container alignment="x">
               <BottomBar.Button label="Reset" onClick={onResetMuscleGroup} />
               <BottomBar.Button
-                label="Save"
+                label="Save Changes"
                 onClick={onSaveMuscleGroupChanges}
               />
             </BottomBar.Container>
@@ -613,7 +574,9 @@ function AddExerciseItem({ onClick }: { onClick: () => void }) {
       className={`flex cursor-pointer p-0.5 text-xxs ${BG_COLOR_M6} ${BORDER_COLOR_M4} border indent-1 text-slate-300`}
     >
       <div className={`ml-0.5 flex items-center justify-center`}>
-        <Button operation="+" onClick={onClick} />
+        <Button onClick={onClick}>
+          <AddIcon fill="white" />
+        </Button>
       </div>
       Add Exercise
     </li>
@@ -676,18 +639,20 @@ function ExerciseItem({
             return (
               <WeekOneSets key={`${exercise.id}_WeekOneSets_${i}`}>
                 <WeekOneSets.Button
-                  operation="-"
                   onClick={() => onSetIncrement("-", exercise.id)}
-                />
+                >
+                  <SubtractIcon fill="white" />
+                </WeekOneSets.Button>
                 <div
                   className={`flex w-3 items-center justify-center px-1 text-xxs text-white`}
                 >
                   {each}
                 </div>
                 <WeekOneSets.Button
-                  operation="+"
                   onClick={() => onSetIncrement("+", exercise.id)}
-                />
+                >
+                  <AddIcon fill="white" />
+                </WeekOneSets.Button>
               </WeekOneSets>
             );
           return (
@@ -711,20 +676,16 @@ function ExerciseItem({
 }
 
 type ButtonProps = {
-  operation: "+" | "-";
+  children: ReactNode;
   onClick: () => void;
 };
-function Button({ operation, onClick }: ButtonProps) {
+function Button({ children, onClick }: ButtonProps) {
   return (
     <button
       onClick={onClick}
       className={`flex w-[11px] border ${BORDER_COLOR_M4} ${BG_COLOR_M6} h-[11px] items-center justify-center p-[2px] text-xxs text-white hover:${BG_COLOR_M5}`}
     >
-      {operation === "+" ? (
-        <AddIcon fill="white" />
-      ) : (
-        <SubtractIcon fill="white" />
-      )}
+      {children}
     </button>
   );
 }

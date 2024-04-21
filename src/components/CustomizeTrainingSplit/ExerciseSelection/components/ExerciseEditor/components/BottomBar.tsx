@@ -1,6 +1,7 @@
-import { ReactNode } from "react";
+import { HTMLAttributes, ReactNode } from "react";
 import {
   BG_COLOR_M5,
+  BG_COLOR_M6,
   BG_COLOR_M7,
   BORDER_COLOR_M6,
   BORDER_COLOR_M7,
@@ -18,10 +19,10 @@ function Button({ label, onClick }: ButtonProps) {
     <button
       onClick={onClick}
       className={cn(
-        `rounded-sm px-1 py-0.5 text-xxs ${text} ${bgColor} ${BORDER_COLOR_M6} hover:opacity-80`
+        `rounded-sm px-2 py-0.5 text-xxs ${text} ${bgColor} ${BORDER_COLOR_M6} flex items-center justify-center hover:opacity-80`
       )}
     >
-      <p className={`text-nowrap`}>{label}</p>
+      {label}
     </button>
   );
 }
@@ -32,14 +33,10 @@ function Container({
   children: ReactNode;
   alignment: "x" | "y";
 }) {
+  const classes =
+    alignment === "x" ? "space-x-1 p-1 justify-end" : "flex-col space-y-1";
   return (
-    <div
-      className={cn(`flex w-full items-start`, {
-        ["flex-col space-y-1"]: alignment === "y",
-      })}
-    >
-      {children}
-    </div>
+    <div className={cn(`flex w-full items-start ${classes}`)}>{children}</div>
   );
 }
 
@@ -70,10 +67,11 @@ BottomBar.Button = Button;
 BottomBar.Section = Section;
 BottomBar.ToggleMesocycle = ToggleMesocycle;
 BottomBar.Cell = Cell;
+BottomBar.MesocycleCell = MesocycleCell;
 export default function BottomBar({ children }: { children: ReactNode }) {
   return (
     <div
-      className={`flex flex-col space-y-1 border-t p-2 text-xxs text-white ${BORDER_COLOR_M6}`}
+      className={`flex flex-col space-y-1 border-t px-1 pb-1 text-xxs text-white ${BORDER_COLOR_M6}`}
     >
       {children}
     </div>
@@ -88,10 +86,6 @@ export default function BottomBar({ children }: { children: ReactNode }) {
 //     </div>
 //   );
 // }
-
-function Counter() {
-  return <button></button>;
-}
 
 type ToggleMesocycleProps = {
   mesocycles: ReactNode;
@@ -108,7 +102,7 @@ export function ToggleMesocycle({
       className={cn(`flex w-full flex-col rounded border ${BORDER_COLOR_M7}`)}
     >
       <div
-        className={`flex items-center justify-between text-xxs text-white ${BG_COLOR_M7}`}
+        className={`flex items-center justify-between border-b text-xxs text-white ${BG_COLOR_M7}`}
       >
         <div className={`px-1 py-0.5`}>Mesocycle</div>
         {mesocycles}
@@ -127,20 +121,47 @@ export function ToggleMesocycle({
 }
 
 type CellProps = {
-  value: number;
+  children: ReactNode;
   selectedValue: boolean;
 };
-function Cell({ value, selectedValue }: CellProps) {
+function Cell({ children, selectedValue }: CellProps) {
   return (
     <div
       className={cn(
-        `flex w-10 items-center justify-center p-0.5 text-xxs text-white`,
+        `flex w-10 items-center justify-center p-0.5 text-xxs text-slate-300`,
         {
-          ["border"]: selectedValue,
+          ["font-bold text-white"]: selectedValue,
         }
       )}
     >
-      {value}
+      {children}
+    </div>
+  );
+}
+
+interface MesocycleCellProps extends HTMLAttributes<HTMLDivElement> {
+  children: ReactNode;
+  selectedValue: boolean;
+}
+function MesocycleCell({
+  children,
+  selectedValue,
+  className,
+  ...props
+}: MesocycleCellProps) {
+  return (
+    <div
+      {...props}
+      className={cn(
+        `flex w-10 cursor-pointer items-center justify-center p-0.5 text-xxs text-white last:rounded-tr`,
+        {
+          [`bg-white font-bold text-slate-700`]: selectedValue,
+          [`hover:${BG_COLOR_M6}`]: !selectedValue,
+        },
+        className
+      )}
+    >
+      {children}
     </div>
   );
 }

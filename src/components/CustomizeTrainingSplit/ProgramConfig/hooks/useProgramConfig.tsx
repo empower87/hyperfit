@@ -210,7 +210,7 @@ type ProgramConfigType = ReturnType<typeof useProgramConfig>;
 const ProgramConfigContext = createContext<ProgramConfigType>({
   muscle_priority_list: INITIAL_STATE.muscle_priority_list,
   volumeBreakpoints: [4, 9],
-  trainingWeek: [...INITIAL_WEEK],
+  trainingWeek: INITIAL_WEEK,
   split_sessions: INITIAL_STATE.split_sessions,
   training_program_params: INITIAL_STATE.training_program_params,
   frequency: INITIAL_STATE.frequency,
