@@ -22,6 +22,7 @@ const MuscleEditorContext = createContext<MuscleEditorType>({
   onResetMuscleGroup: () => null,
   onSaveMuscleGroupChanges: () => null,
   toggleSetProgression: () => null,
+  onFrequencyProgressionIncrement: () => null,
 });
 
 const MuscleEditorProvider = ({

@@ -163,7 +163,7 @@ function useTrainingProgram() {
   }, []);
 
   useEffect(() => {
-    dispatch({ type: "UPDATE_TRAINING_WEEK" });
+    // dispatch({ type: "UPDATE_TRAINING_WEEK" });
     console.log(
       frequency,
       split_sessions,
@@ -172,7 +172,7 @@ function useTrainingProgram() {
       training_week,
       "ALL DATA"
     );
-  }, [frequency, split_sessions, muscle_priority_list]);
+  }, [frequency, split_sessions, muscle_priority_list, training_week]);
 
   // useEffect(() => {
   //   dispatch({ type: "GET_TRAINING_BLOCK" });

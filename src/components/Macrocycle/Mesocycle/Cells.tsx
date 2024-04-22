@@ -1,6 +1,5 @@
 import { BG_COLOR_M7 } from "~/constants/themes";
 import {
-  ExerciseDetails,
   ExerciseType,
   SessionSplitType,
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
@@ -11,7 +10,6 @@ type ExerciseCellProps = {
   width: string;
   cellWidths: string[];
   position: "last" | "first" | "mid";
-  openModal: () => void;
 };
 type HeaderCellProps = {
   values: string[];
@@ -59,7 +57,6 @@ function ExerciseCell({
   width,
   cellWidths,
   position,
-  openModal,
 }: ExerciseCellProps) {
   const bgColor =
     exercise.rank === "MRV"
@@ -77,7 +74,6 @@ function ExerciseCell({
         topBorder +
         " flex flex-row border-x-2 border-slate-600"
       }
-      onClick={() => openModal()}
       style={{ width: width }}
     >
       <Cell
@@ -101,7 +97,7 @@ function ExerciseCell({
         alignment="justify-start"
       />
       <Cell
-        value={"straight"}
+        value={exercise.trainingModality}
         width={cellWidths[4]}
         alignment="justify-start"
       />
@@ -132,44 +128,11 @@ function MicrocycleCell({
   cellWidths,
   position,
 }: MicrocycleCellsProps) {
-  const getCellData = (week: Week, details: ExerciseDetails) => {
-    const _details = details;
-
-    switch (week) {
-      case "week 1":
-        return [
-          `${_details.sets}`,
-          `${_details.reps}`,
-          `${_details.weight}`,
-          `${_details.rir}`,
-        ];
-      case "week 2":
-        return [
-          `${_details.sets + 1}`,
-          `${_details.weight + 5}`,
-          `${_details.rir - 1}`,
-        ];
-      case "week 3":
-        return [
-          `${_details.sets + 2}`,
-          `${_details.weight + 10}`,
-          `${_details.rir - 2}`,
-        ];
-      case "week 4":
-        return [
-          `${_details.sets + 3}`,
-          `${_details.weight + 15}`,
-          `${_details.rir - 3}`,
-        ];
-      default:
-        return ["2", `${_details.reps}`, `${_details.weight}`, "5"];
-    }
-  };
-
   const bottomBorder = position !== "last" ? " border-b" : " border-b-2";
   const topBorder = position === "first" ? " border-t-2" : " ";
 
-  const cells = details;
+  const cells =
+    week === "week 1" || week === "deload" ? details : details.slice(0, 3);
   return (
     <div
       className={

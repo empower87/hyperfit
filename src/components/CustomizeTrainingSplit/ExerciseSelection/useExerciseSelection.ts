@@ -34,6 +34,7 @@ export default function useExerciseSelection(
   }>();
 
   useEffect(() => {
+    console.log(training_week, "OK LETS CHECK OUT THIS");
     const cloned_week = structuredClone(training_week);
     const draggableExercises: DraggableExercises[] = cloned_week?.map(
       (each) => {

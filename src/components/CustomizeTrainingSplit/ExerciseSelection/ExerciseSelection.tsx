@@ -39,6 +39,7 @@ import { getRankColor } from "~/utils/getRankColor";
 import { getSessionSplitColor } from "~/utils/getSessionSplitColor";
 import { capitalizeFirstLetter } from "~/utils/uiHelpers";
 import Settings from "../ProgramConfig/components/PrioritizeMuscles/Settings";
+import { getSetProgressionForExercise } from "./components/ExerciseEditor/utils/setProgressionHandlers";
 import MesocycleToggle from "./components/MesocycleToggle";
 import SessionDurationVariables from "./components/Settings/SessionDuration/SessionDurationVariables";
 import {
@@ -258,6 +259,7 @@ type DaySessionItemProps = {
   sessionId: string;
   exercises: ExerciseType[];
   selectedMicrocycleIndex: number;
+  selectedMesocycleIndex: number;
   onSupersetUpdate: (
     _exercise: ExerciseType,
     exercise: ExerciseType,
@@ -281,6 +283,7 @@ function DaySessionItem({
   sessionId,
   exercises,
   selectedMicrocycleIndex,
+  selectedMesocycleIndex,
   onSupersetUpdate,
 }: DaySessionItemProps) {
   const [bgColor, setBgColor] = useState<string>("");
@@ -292,8 +295,21 @@ function DaySessionItem({
   const [selectedExerciseName, setSelectedExerciseName] = useState<string>(
     exercise.exercise
   );
+
+  const setProgressionSchema =
+    exercise.setProgressionSchema[selectedMesocycleIndex];
+  const setsOverWeek = getSetProgressionForExercise(
+    setProgressionSchema,
+    selectedMesocycleIndex,
+    exercise,
+    4,
+    2,
+    0
+  );
+
   const mesocycle_progression = exercise.mesocycle_progression;
-  const sets = mesocycle_progression[selectedMicrocycleIndex].sets;
+  // const sets = mesocycle_progression[selectedMicrocycleIndex].sets;
+  const sets = setsOverWeek[selectedMicrocycleIndex];
   const reps = mesocycle_progression[selectedMicrocycleIndex].reps;
   const lbs = mesocycle_progression[selectedMicrocycleIndex].weight;
   const modality = exercise.trainingModality;
@@ -511,6 +527,7 @@ function DroppableDay({
                         sessionId={droppableId}
                         exercises={exercises}
                         selectedMicrocycleIndex={selectedMicrocycleIndex}
+                        selectedMesocycleIndex={mesocycleIndex}
                         onSupersetUpdate={onSupersetUpdate}
                       />
                     </div>
@@ -657,7 +674,7 @@ function SessionsWithExercises() {
         onClickHandler={onClickHandler}
       />
       <WeekSessions
-        mesocycle_index={selectedMesocycleIndex}
+        selectedMesocycleIndex={selectedMesocycleIndex}
         selectedMicrocycleIndex={selectedMicrocycleIndex}
         training_week={training_block[selectedMesocycleIndex]}
       />
@@ -666,13 +683,13 @@ function SessionsWithExercises() {
 }
 
 type WeekSessionsProps = {
-  mesocycle_index: number;
+  selectedMesocycleIndex: number;
   selectedMicrocycleIndex: number;
   training_week: TrainingDayType[];
 };
 
 function WeekSessions({
-  mesocycle_index,
+  selectedMesocycleIndex,
   selectedMicrocycleIndex,
   training_week,
 }: WeekSessionsProps) {
@@ -682,7 +699,7 @@ function WeekSessions({
     onSupersetUpdate,
     modalOptions,
     onDragEnd,
-  } = useExerciseSelection(training_week, mesocycle_index);
+  } = useExerciseSelection(training_week, selectedMesocycleIndex);
 
   const [isModalPrompted, setIsModalPrompted] = useState<boolean>(false);
 
@@ -698,6 +715,7 @@ function WeekSessions({
           onClose={onSplitChange}
         />
       ) : null}
+
       <ul className="flex space-x-1 overflow-x-auto">
         <DragDropContext onDragEnd={onDragEnd}>
           {draggableExercises?.map((each, index) => {
@@ -706,9 +724,9 @@ function WeekSessions({
             if (!hasSessions) return null;
             return (
               <DayLayout
-                key={`${each.day}_${mesocycle_index}_draggableExercisesObject_${index}`}
+                key={`${each.day}_${selectedMesocycleIndex}_draggableExercisesObject_${index}`}
                 session={each}
-                mesocycleIndex={mesocycle_index}
+                mesocycleIndex={selectedMesocycleIndex}
                 selectedMicrocycleIndex={selectedMicrocycleIndex}
                 onSupersetUpdate={onSupersetUpdate}
               />

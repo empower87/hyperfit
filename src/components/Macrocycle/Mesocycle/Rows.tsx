@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { BG_COLOR_M6 } from "~/constants/themes";
 import {
   DayType,
@@ -33,32 +32,12 @@ function DataRow({
   currentMesocycleIndex,
   position,
 }: DataRowProps) {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-
   const details = exercise.mesocycle_progression.map((each) => {
     return [each.sets, each.reps, each.weight, each.rir];
   });
 
-  const closeModal = () => {
-    setIsOpen(false);
-  };
-
-  const openModal = () => {
-    setIsOpen(true);
-  };
-
   return (
     <div className="flex flex-row">
-      {/* {isOpen && (
-        <EditExerciseModal
-          isOpen={isOpen}
-          onClose={closeModal}
-          split={split}
-          exercise={exercise}
-          currentMesocycle={currentMesocycleIndex}
-        />
-      )} */}
-
       <SessionCell split={split} index={index} width={ROW_SECTION_WIDTHS[0]} />
       <ExerciseCell
         exercise={exercise}
@@ -66,7 +45,6 @@ function DataRow({
         width={ROW_SECTION_WIDTHS[1]}
         cellWidths={ROW_CELL_WIDTHS["exercise"]}
         position={position}
-        openModal={openModal}
       />
       <MicrocycleCell
         week="week 1"

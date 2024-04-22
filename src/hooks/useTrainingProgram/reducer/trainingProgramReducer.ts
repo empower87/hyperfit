@@ -385,11 +385,26 @@ export default function weeklySessionSplitReducer(
         params.mesocycles,
         params.microcycles
       );
+
+      const new_training_week_ = distributeSplitAcrossWeek(
+        [...INITIAL_WEEK],
+        fr,
+        up_sp
+      );
+
+      const get_training_block_ = buildTrainingBlockHandler(
+        re_up_li,
+        up_sp,
+        new_training_week_,
+        mesocycles
+      );
       return {
         ...state,
         frequency: fr,
         muscle_priority_list: re_up_li,
         split_sessions: up_sp,
+        training_week: new_training_week_,
+        training_block: get_training_block_,
       };
     case "UPDATE_FREQUENCY":
       const new_freq = action.payload.frequency;
