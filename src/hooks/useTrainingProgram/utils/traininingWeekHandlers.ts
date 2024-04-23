@@ -30,12 +30,6 @@ export const onRearrangeTrainingWeek = (
 
   const new_sessions = redistributeSessionsIntoNewSplit(getSplit[0], splits);
 
-  console.log(
-    splits,
-    new_sessions,
-    "what this look like? lets just have a looksie"
-  );
-
   const filteredWeek = rearranged_week.map((each) => {
     const sessions = each.sessions.filter((ea) => ea.split !== "off");
     return {

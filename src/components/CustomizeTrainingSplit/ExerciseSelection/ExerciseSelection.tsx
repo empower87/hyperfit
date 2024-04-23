@@ -466,17 +466,13 @@ function DroppableDay({
   const { sessionDurationCalculator, durationTimeConstants } =
     useSessionDurationVariablesContext();
 
-  const [totalDuration, setTotalDuration] = useState(0);
   const [isDropdownOpen, setIsdropdownOpen] = useState(false);
   const [isDurationModalOpen, setIsDurationModalOpen] = useState(false);
 
-  useEffect(() => {
-    const totalDuration = sessionDurationCalculator(
-      exercises,
-      selectedMicrocycleIndex
-    );
-    setTotalDuration(totalDuration);
-  }, [selectedMicrocycleIndex, exercises, durationTimeConstants]);
+  const totalDuration = sessionDurationCalculator(
+    exercises,
+    selectedMicrocycleIndex
+  );
 
   const onOpenDropdown = () => setIsdropdownOpen(true);
   const onCloseDropdown = () => setIsdropdownOpen(false);
@@ -597,7 +593,7 @@ function DayLayout({
   const { day, sessions } = session;
 
   return (
-    <li className={`${BG_COLOR_M6} rounded`}>
+    <li className={`${BG_COLOR_M6} mb-2 rounded`}>
       <div className={`${BORDER_COLOR_M8} border-b-2 p-1`}>
         <h3 className="indent-1 text-white">{day}</h3>
       </div>
@@ -665,7 +661,10 @@ function SessionsWithExercises() {
   };
 
   return (
-    <div id="exercise_editor" className={`flex flex-col items-center`}>
+    <div
+      id="exercise_editor"
+      className={`flex flex-col items-center rounded ${BG_COLOR_M7}`}
+    >
       <MesocycleToggle
         mesocycles={mesocycleTitles}
         microcycles={microcycleTitles}
@@ -707,7 +706,7 @@ function WeekSessions({
   //       as well as if it can should it change the split type??
 
   return (
-    <div className={"my-1 flex w-full flex-col"}>
+    <div className={"flex w-full flex-col p-2"}>
       {modalOptions && isModalPrompted ? (
         <Prompt
           splitOptions={modalOptions}
@@ -740,7 +739,7 @@ function WeekSessions({
 
 export default function ExerciseOverview() {
   return (
-    <Section title={"EXERCISES"}>
+    <Section title={"TRAINING WEEK OVERVIEW"}>
       <SessionsWithExercises />
     </Section>
   );

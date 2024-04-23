@@ -1,30 +1,48 @@
-import { BG_COLOR_M6, BG_COLOR_M7 } from "~/constants/themes";
+import { HTMLAttributes, ReactNode } from "react";
+import {
+  BG_COLOR_M6,
+  BG_COLOR_M7,
+  BG_COLOR_M8,
+  BORDER_COLOR_M8,
+} from "~/constants/themes";
 import { cn } from "~/lib/clsx";
 
-type TitleProps = {
-  title: string;
-  selected: string;
-  variant: "primary" | "secondary";
-  onClick: (title: string) => void;
-};
-function Title({ title, selected, variant, onClick }: TitleProps) {
-  const isSelected = title === selected;
-  const text = isSelected ? "text-sm text-white" : "text-xxs text-slate-400";
-  const textSize = variant === "secondary" ? "text-xxs" : "text-sm";
-  const padding = variant === "secondary" ? "px-0.5 py-1" : "px-1 py-2";
+interface ToggleProps extends HTMLAttributes<HTMLButtonElement> {
+  selected: boolean;
+  children: ReactNode;
+}
 
+function Toggle({ selected, children, ...props }: ToggleProps) {
   return (
-    <div
+    <button
       className={cn(
-        `cursor-pointer ${padding} ${BG_COLOR_M7} hover:${BG_COLOR_M6}`,
+        `flex cursor-pointer items-center justify-center px-2 text-sm last:rounded-r ${BG_COLOR_M7} hover:${BG_COLOR_M6}`,
         {
-          [`${BG_COLOR_M6} text-m mb-1 text-white`]: isSelected,
-          [`${BG_COLOR_M7} text-m text-slate-400`]: !isSelected,
+          [`${BG_COLOR_M6} text-white`]: selected,
+          [`${BG_COLOR_M7} text-slate-400`]: !selected,
         }
       )}
-      onClick={() => onClick(title)}
+      {...props}
     >
-      <p className={cn(`indent-1 ${textSize}`)}>{title}</p>
+      {children}
+    </button>
+  );
+}
+
+type ToggleLayoutProps = {
+  label: string;
+  children: ReactNode;
+};
+function ToggleLayout({ label, children }: ToggleLayoutProps) {
+  return (
+    <div className={`flex justify-center rounded border ${BORDER_COLOR_M8}`}>
+      <div
+        className={`flex items-center justify-center px-2 py-1 text-sm text-white ${BG_COLOR_M8}`}
+      >
+        {label}
+      </div>
+
+      <div className={`flex space-x-1`}>{children}</div>
     </div>
   );
 }
@@ -36,6 +54,7 @@ type MesocycleToggleProps = {
   selectedMicrocycleIndex: number;
   onClickHandler: (value: string) => void;
 };
+
 export default function MesocycleToggle({
   mesocycles,
   microcycles,
@@ -46,36 +65,36 @@ export default function MesocycleToggle({
   const selectedMesocycle = mesocycles[selectedMesocycleIndex];
   const selectedMicrocycle = microcycles[selectedMicrocycleIndex];
   return (
-    <div className={`mb-3 flex w-full flex-col items-center justify-center`}>
-      <div className={`flex w-full justify-center p-1 ${BG_COLOR_M6}`}>
-        <div className={`flex space-x-2`}>
-          {mesocycles.map((each, index) => {
-            return (
-              <Title
-                key={`${each}_${index}_MesocyclesTitles`}
-                title={each}
-                selected={selectedMesocycle}
-                variant="primary"
-                onClick={() => onClickHandler(each)}
-              />
-            );
-          })}
-        </div>
-      </div>
-
-      <div className={`flex space-x-1 p-1`}>
-        {microcycles.map((each, index) => {
+    <div className={`flex w-full items-center space-x-2 rounded p-2`}>
+      <ToggleLayout label="Mesocycle">
+        {mesocycles.map((each, index) => {
+          const isSelected = selectedMesocycle === each;
           return (
-            <Title
-              key={`${each}_${index}_MicrocyclesTitles`}
-              title={each}
-              selected={selectedMicrocycle}
-              variant="secondary"
+            <Toggle
+              key={`${each}_${index}_MesocyclesTitles`}
+              selected={isSelected}
               onClick={() => onClickHandler(each)}
-            />
+            >
+              {index + 1}
+            </Toggle>
           );
         })}
-      </div>
+      </ToggleLayout>
+
+      <ToggleLayout label="Week">
+        {microcycles.map((each, index) => {
+          const isSelected = selectedMicrocycle === each;
+          return (
+            <Toggle
+              key={`${each}_${index}_MicrocyclesTitles`}
+              selected={isSelected}
+              onClick={() => onClickHandler(each)}
+            >
+              {index + 1}
+            </Toggle>
+          );
+        })}
+      </ToggleLayout>
     </div>
   );
 }
