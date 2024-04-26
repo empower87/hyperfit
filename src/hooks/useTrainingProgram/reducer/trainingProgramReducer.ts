@@ -1,4 +1,3 @@
-import { SetProgressionType } from "~/components/CustomizeTrainingSplit/ExerciseSelection/components/ExerciseEditor/utils/setProgressionHandlers";
 import { MuscleType } from "~/constants/workoutSplits";
 import { buildTrainingBlockHandler } from "../utils/buildTrainingBlockHandlers";
 import {
@@ -141,6 +140,13 @@ export const EXERCISE_TRAINING_MODALITIES = [
   "lengthened partials",
 ] as const;
 
+export type SetProgressionType =
+  | "ADD_ONE"
+  | "ADD_ONE_ODD"
+  | "FLAT_ADD"
+  | "NO_ADD"
+  | "ADD_ONE_PER_MICROCYCLE"
+  | "ADD_MANY_PER_MICROCYCLE";
 export type ExerciseTrainingModality =
   (typeof EXERCISE_TRAINING_MODALITIES)[number];
 

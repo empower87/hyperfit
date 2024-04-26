@@ -1,10 +1,12 @@
-import { SetProgressionType } from "~/components/CustomizeTrainingSplit/ExerciseSelection/components/ExerciseEditor/utils/setProgressionHandlers";
 import {
   MRV_PROGRESSION_MATRIX_ONE,
   getVolumeProgressionMatrix,
 } from "~/constants/volumeProgressionMatrices";
 import { MuscleType } from "~/constants/workoutSplits";
-import { ExerciseType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
+import {
+  ExerciseType,
+  SetProgressionType,
+} from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { VolumeLandmarkType } from "~/hooks/useTrainingProgram/reducer/trainingProgramUtils";
 import {
   ABS_EXERCISES,
@@ -465,3 +467,18 @@ export const initializeNewExerciseSetsPerMeso = (
 //   }
 //   return exercise_list;
 // };
+
+const getMevMvIncrement = (
+  initialSet: number,
+  microcycles: number,
+  target: number
+) => {
+  const setsToProgress = target - initialSet;
+  const increment = setsToProgress / microcycles - 1;
+
+  return increment;
+};
+
+const handleIncrement = (increment: number) => {
+  const roundedIncrement = Math.round(increment);
+};

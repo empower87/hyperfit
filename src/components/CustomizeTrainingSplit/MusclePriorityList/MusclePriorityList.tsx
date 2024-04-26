@@ -6,6 +6,7 @@ import {
   useState,
 } from "react";
 import { DragDropContext, Draggable } from "react-beautiful-dnd";
+import Settings from "~/components/Configuration/components/PrioritizeMuscles/Settings";
 import {
   CardS as Card,
   SectionH2 as Section,
@@ -21,7 +22,6 @@ import { cn } from "~/lib/clsx";
 import StrictModeDroppable from "~/lib/react-beautiful-dnd/StrictModeDroppable";
 import getMuscleTitleForUI from "~/utils/getMuscleTitleForUI";
 import { getVolumeSets } from "~/utils/musclePriorityHandlers";
-import Settings from "../ProgramConfig/components/PrioritizeMuscles/Settings";
 import MesocycleFrequency from "./components/MesocycleFrequency";
 import { MesocycleVolumes } from "./components/MesocycleVolumes";
 import useMusclePriority from "./hooks/useMusclePriority";
