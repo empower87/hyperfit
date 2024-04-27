@@ -7,8 +7,6 @@ import {
 } from "react";
 import {
   AddIcon,
-  ArrowDownIcon,
-  ArrowUpIcon,
   DeleteIcon,
   DotsIcon,
   PlusIcon,
@@ -32,8 +30,9 @@ import { Exercise } from "~/utils/getExercises";
 import { getMuscleData } from "~/utils/getMuscleData";
 import getMuscleTitleForUI from "~/utils/getMuscleTitleForUI";
 import { getRankColor } from "~/utils/getRankColor";
-import { ChangeExerciseProvider } from "../TrainingWeekOverview/components/ChangeExerciseModal/ChangeExerciseContext";
-import SelectExercise from "../TrainingWeekOverview/components/ChangeExerciseModal/ChangeExerciseModal";
+
+import CollapsableHeader from "../Layout/CollapsableHeader";
+import SelectExercise from "../Modals/ChangeExerciseModal/ChangeExerciseModal";
 import SideMenu from "./components/SideMenu";
 import {
   MuscleEditorProvider,
@@ -62,39 +61,6 @@ export default function MuscleEditor() {
         );
       })}
     </ul>
-  );
-}
-
-type MuscleCollapsedProps = {
-  id: string;
-  rank: number;
-  title: string;
-  bgColor: string;
-  onExpand: () => void;
-};
-function MuscleCollapsed({
-  id,
-  rank,
-  title,
-  bgColor,
-  onExpand,
-}: MuscleCollapsedProps) {
-  return (
-    <li id={id} className={`flex justify-between rounded ${bgColor}`}>
-      <div className={`flex w-32 p-1 text-sm text-white`}>
-        <div className={`flex w-3 items-center justify-center text-xs`}>
-          {rank}
-        </div>
-        <div className={`flex w-full items-center indent-1`}>{title}</div>
-      </div>
-
-      <div
-        onClick={onExpand}
-        className={`flex cursor-pointer items-center justify-center pr-2`}
-      >
-        <ArrowDownIcon fill="white" />
-      </div>
-    </li>
   );
 }
 
@@ -133,13 +99,16 @@ function Muscle({ rank }: MuscleProps) {
 
   if (isCollapsed) {
     return (
-      <MuscleCollapsed
-        id={muscleGroup.muscle}
-        rank={rank}
-        title={title}
-        bgColor={bgColor.bg}
-        onExpand={() => onExpandHandler()}
-      />
+      <li id={muscleGroup.muscle}>
+        <CollapsableHeader className={`${bgColor.bg} rounded`}>
+          <CollapsableHeader.Title label={`${rank} ${title}`} />
+
+          <CollapsableHeader.Button
+            isCollapsed={isCollapsed}
+            onCollapse={onExpandHandler}
+          />
+        </CollapsableHeader>
+      </li>
     );
   }
   return (
@@ -147,21 +116,14 @@ function Muscle({ rank }: MuscleProps) {
       id={muscleGroup.muscle}
       className={`flex flex-col ${BG_COLOR_M7} scroll-smooth rounded`}
     >
-      <div className={`flex rounded-t ${bgColor.bg} justify-between `}>
-        <div className={`flex w-32 p-1 text-sm text-white`}>
-          <div className={`flex w-3 items-center justify-center text-xs`}>
-            {rank}
-          </div>
-          <div className={`flex w-full items-center indent-1`}>{title}</div>
-        </div>
+      <CollapsableHeader className={`${bgColor.bg}`}>
+        <CollapsableHeader.Title label={`${rank} ${title}`} />
 
-        <div
-          onClick={() => onCollapseHandler()}
-          className={`flex cursor-pointer items-center justify-center pr-2`}
-        >
-          <ArrowUpIcon fill="white" />
-        </div>
-      </div>
+        <CollapsableHeader.Button
+          isCollapsed={isCollapsed}
+          onCollapse={onCollapseHandler}
+        />
+      </CollapsableHeader>
 
       <div className={`flex`}>
         <SideMenu
@@ -365,9 +327,12 @@ function Exercises() {
   return (
     <div className={`flex min-h-[95px] space-x-1 overflow-x-auto`}>
       <Modal isOpen={isOpen} onClose={onClose}>
-        <ChangeExerciseProvider muscle={muscleGroup} exerciseId={""}>
-          <SelectExercise onSelect={onSelectHandler} onClose={onClose} />
-        </ChangeExerciseProvider>
+        <SelectExercise
+          muscle={muscleGroup}
+          exerciseId=""
+          onSelect={onSelectHandler}
+          onClose={onClose}
+        />
       </Modal>
 
       {exercisesByMeso.map((each, index) => {
@@ -437,12 +402,12 @@ function SessionItem({ exercises, indices, dayIndex }: SessionItemProps) {
       </div>
 
       <Modal isOpen={isOpen} onClose={onClose}>
-        <ChangeExerciseProvider muscle={muscleGroup} exerciseId={""}>
-          <SelectExercise
-            onSelect={(newExercise) => onAddExercise(newExercise, dayIndex - 1)}
-            onClose={onClose}
-          />
-        </ChangeExerciseProvider>
+        <SelectExercise
+          muscle={muscleGroup}
+          exerciseId=""
+          onSelect={(newExercise) => onAddExercise(newExercise, dayIndex - 1)}
+          onClose={onClose}
+        />
       </Modal>
 
       <div className={`flex flex-col space-y-1 p-1`}>

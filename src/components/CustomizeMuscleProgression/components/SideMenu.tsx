@@ -174,7 +174,7 @@ export default function SideMenu({
 }: SideMenuProps) {
   if (isCollapsed) {
     return (
-      <div className={cn(`w-8 ${BG_COLOR_M6} flex flex-col`)}>
+      <div className={cn(`w-8 ${BG_COLOR_M6} flex flex-col rounded-bl`)}>
         <div className={`flex p-1`}>
           <button
             onClick={onCollapse}
@@ -187,7 +187,7 @@ export default function SideMenu({
     );
   }
   return (
-    <div className={cn(`w-56 ${BG_COLOR_M6} flex flex-col`)}>
+    <div className={cn(`w-56 ${BG_COLOR_M6} flex flex-col rounded-bl`)}>
       <div className={`flex p-1`}>
         <button
           onClick={onCollapse}

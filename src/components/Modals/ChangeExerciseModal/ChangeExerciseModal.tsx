@@ -1,6 +1,5 @@
 import { ReactNode, useCallback, useState } from "react";
 import { FilterIcon, SearchIcon } from "~/assets/icons/_icons";
-import { Button } from "~/components/CustomizeTrainingSplit/MusclePriorityList/MusclePriorityList";
 import {
   BG_COLOR_M5,
   BG_COLOR_M6,
@@ -9,9 +8,11 @@ import {
   BORDER_COLOR_M5,
 } from "~/constants/themes";
 import { useOutsideClick } from "~/hooks/useOnOutsideClick";
+import { MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { cn } from "~/lib/clsx";
 import { Exercise } from "~/utils/getExercises";
 import {
+  ChangeExerciseProvider,
   FilterTagsKey,
   useChangeExerciseContext,
 } from "./ChangeExerciseContext";
@@ -172,9 +173,9 @@ function Filter() {
       </div>
 
       <div className={`w-1/12`}>
-        <Button onClick={onClick} className="">
+        <button onClick={onClick} className="">
           <FilterIcon className="fill-white text-sm" />
-        </Button>
+        </button>
       </div>
 
       {showMenu ? <FilterMenu onSelectTag={onFilterTagChange} /> : null}
@@ -369,13 +370,18 @@ SelectExercise.Search = Search;
 SelectExercise.Filter = Filter;
 
 type SelectExerciseProps = {
+  muscle: MusclePriorityType;
+  exerciseId: string;
   onSelect: (newExercise: Exercise) => void;
   onClose: () => void;
 };
-export default function SelectExercise({
+function SelectExerciseContents({
   onSelect,
   onClose,
-}: SelectExerciseProps) {
+}: {
+  onSelect: (newExercise: Exercise) => void;
+  onClose: () => void;
+}) {
   const { exercises, allExercises, selectedExerciseId, onSaveExerciseHandler } =
     useChangeExerciseContext();
 
@@ -423,5 +429,17 @@ export default function SelectExercise({
         </button>
       </div>
     </SelectExercise.Layout>
+  );
+}
+export default function SelectExercise({
+  muscle,
+  exerciseId,
+  onSelect,
+  onClose,
+}: SelectExerciseProps) {
+  return (
+    <ChangeExerciseProvider muscle={muscle} exerciseId={exerciseId}>
+      <SelectExerciseContents onSelect={onSelect} onClose={onClose} />
+    </ChangeExerciseProvider>
   );
 }

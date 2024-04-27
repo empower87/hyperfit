@@ -1,6 +1,5 @@
 import { ReactNode, useCallback, useState } from "react";
 import { FilterIcon, SearchIcon } from "~/assets/icons/_icons";
-import { Button } from "~/components/CustomizeTrainingSplit/MusclePriorityList/MusclePriorityList";
 import {
   BG_COLOR_M5,
   BG_COLOR_M6,
@@ -172,9 +171,9 @@ function Filter() {
       </div>
 
       <div className={`w-1/12`}>
-        <Button onClick={onClick} className="">
+        <button onClick={onClick} className="">
           <FilterIcon className="fill-white text-sm" />
-        </Button>
+        </button>
       </div>
 
       {showMenu ? <FilterMenu onSelectTag={onFilterTagChange} /> : null}
