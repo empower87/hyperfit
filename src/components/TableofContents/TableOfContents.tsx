@@ -49,7 +49,7 @@ function Item({ title, id, activeId }: ItemProps) {
     <a
       href={`#${title}`}
       className={cn(`flex p-0.5 text-xs text-slate-300`, {
-        "text-rose-400": activeId === id,
+        "font-semibold text-rose-400": activeId === id,
       })}
       onClick={(e) => onLinkClick(e)}
     >

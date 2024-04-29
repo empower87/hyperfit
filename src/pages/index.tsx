@@ -20,7 +20,7 @@ const Home: NextPage = () => {
           " fixed z-10 flex h-10 w-full items-center justify-center"
         }
       >
-        <h1 className=" text-lg font-bold text-white">Hyperfit</h1>
+        <h1 className=" text-lg font-bold text-rose-400">Hyperfit</h1>
       </div>
 
       <TrainingProgramProvider>

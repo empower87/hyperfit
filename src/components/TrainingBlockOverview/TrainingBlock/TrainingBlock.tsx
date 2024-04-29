@@ -106,7 +106,7 @@ export default function TrainingBlock() {
   const { mesocycles, microcycles } = training_program_params;
 
   return (
-    <div id="training_block" className={" flex flex-col"}>
+    <div id="training_block" className={"flex w-full flex-col"}>
       {training_block.map((each, index) => {
         return (
           <Mesocycle

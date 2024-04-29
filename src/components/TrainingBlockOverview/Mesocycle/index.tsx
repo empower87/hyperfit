@@ -3,7 +3,7 @@ import CollapsableHeader from "~/components/Layout/CollapsableHeader";
 import { BG_COLOR_M6, BG_COLOR_M7, BORDER_COLOR_M6 } from "~/constants/themes";
 import { TrainingDayType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { cn } from "~/lib/clsx";
-import { SessionRow } from "./Rows";
+import { HeaderRow, SessionRow } from "./Rows";
 import { ROW_SECTION_WIDTHS } from "./constants";
 
 // TODO: Still need to move this into Cell.tsx and add customization
@@ -86,11 +86,9 @@ export default function Mesocycle({
   }
   return (
     <div
-      className={cn(
-        `${BG_COLOR_M6} mb-3 flex w-full max-w-[1200px] flex-col rounded`
-      )}
+      className={cn(`${BG_COLOR_M6} mb-3 flex max-w-[1200px] flex-col rounded`)}
     >
-      <CollapsableHeader>
+      <CollapsableHeader className={`bg-rose-400`}>
         <CollapsableHeader.Title
           label={`Mesocycle ${currentMesocycleIndex + 1}`}
         />
@@ -101,11 +99,10 @@ export default function Mesocycle({
         />
       </CollapsableHeader>
 
-      <div className="flex flex-col">
-        <div>
-          <SessionHeaderLayout />
-        </div>
-        <div className="flex flex-col">
+      <div className="flex flex-col space-y-1 p-2">
+        <HeaderRow />
+
+        <div className="flex flex-col space-y-2">
           {split.map((each, index) => {
             return (
               <SessionRow

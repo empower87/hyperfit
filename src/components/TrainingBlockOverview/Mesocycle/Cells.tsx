@@ -1,160 +1,71 @@
+import { HTMLAttributes, ReactNode } from "react";
 import { BG_COLOR_M7 } from "~/constants/themes";
-import {
-  ExerciseType,
-  SessionSplitType,
-} from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
+import { SessionSplitType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
+import { cn } from "~/lib/clsx";
+import { CELL_WIDTHS } from "./constants";
 
-type ExerciseCellProps = {
-  exercise: ExerciseType;
-  index: number;
-  width: string;
-  cellWidths: string[];
-  position: "last" | "first" | "mid";
+interface CellProps extends HTMLAttributes<HTMLDivElement> {
+  value: string | number;
+}
+function Cell({ value, className, ...props }: CellProps) {
+  return (
+    <div {...props} className={cn(`flex justify-center`, className)}>
+      <p className="truncate text-[10px] text-white">{value}</p>
+    </div>
+  );
+}
+
+type RowCellProps = {
+  data: string[] | number[];
+  widths: string[];
+  bgColor: string;
 };
+export function ExerciseCell({ data, widths, bgColor }: RowCellProps) {
+  return (
+    <div className={cn(`flex space-x-0.5`)}>
+      {data.map((each, index) => {
+        const nonCenteredCells = index !== 0 ? "justify-start indent-1" : "";
+        return (
+          <Cell
+            value={each}
+            className={`${bgColor} ${widths[index]} ${nonCenteredCells}`}
+          />
+        );
+      })}
+    </div>
+  );
+}
+
+export function WeekCell({ data, widths, bgColor }: RowCellProps) {
+  return (
+    <div className={cn(`flex space-x-0.5`)}>
+      {data.map((each, index) => {
+        return <Cell value={each} className={`${bgColor} ${widths[index]}`} />;
+      })}
+    </div>
+  );
+}
+
 type HeaderCellProps = {
-  values: string[];
-  width: string;
-  cellWidths: string[];
+  label: string;
+  children?: ReactNode;
 };
-type Week = "week 1" | "week 2" | "week 3" | "week 4" | "deload";
-type MicrocycleCellsProps = {
-  week: Week;
-  details: number[];
-  width: string;
-  cellWidths: string[];
-  position: "last" | "first" | "mid";
-};
+export function HeaderCell({ label, children }: HeaderCellProps) {
+  return (
+    <div className={`flex flex-col space-y-0.5 overflow-hidden rounded`}>
+      <div className={`flex justify-center text-[12px] ${BG_COLOR_M7}`}>
+        {label}
+      </div>
+      <div className={`flex space-x-0.5`}>{children}</div>
+    </div>
+  );
+}
+
 type SessionCellProps = {
   split: SessionSplitType;
-  index: number;
-  width: string;
+  children?: ReactNode;
 };
-
-function Cell({
-  value,
-  width,
-  alignment,
-}: {
-  value: string | number;
-  width: string;
-  alignment: string;
-}) {
-  return (
-    <div
-      className={alignment + " flex border-r border-slate-600"}
-      style={{ width: width }}
-    >
-      <p className="truncate text-white" style={{ fontSize: "10px" }}>
-        {value}
-      </p>
-    </div>
-  );
-}
-
-function ExerciseCell({
-  exercise,
-  index,
-  width,
-  cellWidths,
-  position,
-}: ExerciseCellProps) {
-  const bgColor =
-    exercise.rank === "MRV"
-      ? "bg-red-400"
-      : exercise.rank === "MEV"
-      ? "bg-orange-400"
-      : "bg-green-400";
-  const bottomBorder = position !== "last" ? " border-b" : " border-b-2";
-  const topBorder = position === "first" ? " border-t-2" : "";
-  return (
-    <div
-      className={
-        bgColor +
-        bottomBorder +
-        topBorder +
-        " flex flex-row border-x-2 border-slate-600"
-      }
-      style={{ width: width }}
-    >
-      <Cell
-        value={`${index}`}
-        width={cellWidths[0]}
-        alignment="justify-center"
-      />
-      <Cell
-        value={exercise.muscle}
-        width={cellWidths[1]}
-        alignment="justify-start"
-      />
-      <Cell
-        value={exercise.exercise}
-        width={cellWidths[2]}
-        alignment="justify-start"
-      />
-      <Cell
-        value={"dumbbell"}
-        width={cellWidths[3]}
-        alignment="justify-start"
-      />
-      <Cell
-        value={exercise.trainingModality}
-        width={cellWidths[4]}
-        alignment="justify-start"
-      />
-    </div>
-  );
-}
-
-function HeaderCell({ values, width, cellWidths }: HeaderCellProps) {
-  const bgColor = values[0] === "" ? "" : BG_COLOR_M7;
-  return (
-    <div className={bgColor + " flex flex-row"} style={{ width: width }}>
-      {values.map((each, index) => (
-        <Cell
-          key={`${each}_${index}_HeaderCellTBlock`}
-          value={each}
-          width={cellWidths[index]}
-          alignment="justify-center"
-        />
-      ))}
-    </div>
-  );
-}
-
-function MicrocycleCell({
-  week,
-  details,
-  width,
-  cellWidths,
-  position,
-}: MicrocycleCellsProps) {
-  const bottomBorder = position !== "last" ? " border-b" : " border-b-2";
-  const topBorder = position === "first" ? " border-t-2" : " ";
-
-  const cells =
-    week === "week 1" || week === "deload" ? details : details.slice(0, 3);
-  return (
-    <div
-      className={
-        bottomBorder +
-        topBorder +
-        " flex border-r-2 border-slate-600 bg-slate-400"
-      }
-      style={{ width: width }}
-    >
-      {cells.map((cell, index) => (
-        <Cell
-          key={`${cell}_${index}_cell`}
-          value={cell}
-          width={cellWidths[index]}
-          alignment="justify-center"
-        />
-      ))}
-    </div>
-  );
-}
-
-function SessionCell({ split, index, width }: SessionCellProps) {
+export function SessionCell({ split, children }: SessionCellProps) {
   const backgroundColor =
     split === "upper"
       ? "bg-blue-400"
@@ -162,22 +73,18 @@ function SessionCell({ split, index, width }: SessionCellProps) {
       ? "bg-red-400"
       : "bg-purple-400";
   return (
-    <div className={"flex justify-end"} style={{ width: width }}>
-      {index === 1 && (
-        <div className="flex">
-          <p
-            className={
-              backgroundColor +
-              " flex w-9 justify-center border-y-2 border-l-2 border-slate-600 font-bold text-white"
-            }
-            style={{ fontSize: "10px" }}
-          >
-            {split}
-          </p>
+    <div className={cn(`flex ${CELL_WIDTHS.day} justify-between`)}>
+      {children}
+
+      <div className={`flex items-start`}>
+        <div
+          className={cn(
+            `${backgroundColor} rounded-sm px-1 text-[10px] font-semibold text-white`
+          )}
+        >
+          {split.charAt(0).toUpperCase() + split.slice(1)}
         </div>
-      )}
+      </div>
     </div>
   );
 }
-
-export { ExerciseCell, HeaderCell, MicrocycleCell, SessionCell };

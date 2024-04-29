@@ -210,37 +210,37 @@ const ItemCell: FC<ItemCellProps> = ({ children, className, ...props }) => {
 
 function DaySessionItemHeaders() {
   return (
-    <div className="flex w-full text-white">
+    <div className="flex text-white">
       <ItemCell
         className={`${BORDER_COLOR_M5} ${BG_COLOR_M5} ${ITEM_CELL_WIDTHS.index} text-xxxs`}
       >
         {" "}
       </ItemCell>
-      <div className="flex w-full">
+      <div className="flex w-full overflow-hidden rounded-sm">
         <ItemCell
-          className={`${BORDER_COLOR_M6} ${BG_COLOR_M7} ${ITEM_CELL_WIDTHS.sets} justify-center text-xxxs`}
+          className={`${BORDER_COLOR_M5} ${BG_COLOR_M6} ${ITEM_CELL_WIDTHS.sets} justify-center text-xxxs`}
         >
           Sets
         </ItemCell>
         <ItemCell
-          className={`${BORDER_COLOR_M6} ${BG_COLOR_M7} ${ITEM_CELL_WIDTHS.reps} justify-center text-xxxs`}
+          className={`${BORDER_COLOR_M5} ${BG_COLOR_M6} ${ITEM_CELL_WIDTHS.reps} justify-center text-xxxs`}
         >
           Reps
         </ItemCell>
         <ItemCell
-          className={`${BORDER_COLOR_M6} ${BG_COLOR_M7} ${ITEM_CELL_WIDTHS.lbs} justify-center text-xxxs`}
+          className={`${BORDER_COLOR_M5} ${BG_COLOR_M6} ${ITEM_CELL_WIDTHS.lbs} justify-center text-xxxs`}
         >
           Lbs
         </ItemCell>
         <div className="flex flex-col">
           <ItemCell
-            className={`${BORDER_COLOR_M7} ${BG_COLOR_M7} ${ITEM_CELL_WIDTHS.exercise} text-xxxs`}
+            className={`${BORDER_COLOR_M5} ${BG_COLOR_M6} ${ITEM_CELL_WIDTHS.exercise} text-xxxs`}
           >
             Exercise
           </ItemCell>
         </div>
         <ItemCell
-          className={`${BORDER_COLOR_M7} ${BG_COLOR_M7} ${ITEM_CELL_WIDTHS.actions} text-xxxs`}
+          className={`${BORDER_COLOR_M6} ${BG_COLOR_M6} ${ITEM_CELL_WIDTHS.actions} rounded-r-sm text-xxxs`}
         >
           {" "}
         </ItemCell>
@@ -366,7 +366,11 @@ function DaySessionItem({
         {index}
       </ItemCell>
 
-      <div className={cn(`${BORDER_COLOR} flex border-y-2 ${bgColor}`)}>
+      <div
+        className={cn(
+          `${BORDER_COLOR} flex overflow-hidden rounded border-y-2 ${bgColor}`
+        )}
+      >
         <div className="flex flex-col">
           <div className={cn(`${BORDER_COLOR} flex border-b`)}>
             <ItemCell
@@ -589,8 +593,8 @@ function DayLayout({
   const { day, sessions } = session;
 
   return (
-    <li className={`${BG_COLOR_M6} mb-2 rounded`}>
-      <div className={`${BORDER_COLOR_M7} border-b-2 p-1`}>
+    <li className={`${BORDER_COLOR_M7} mb-2 rounded border-2`}>
+      <div className={`${BORDER_COLOR_M7} ${BG_COLOR_M7} p-1`}>
         <h3 className="indent-1 text-white">{day}</h3>
       </div>
 
@@ -659,7 +663,7 @@ export default function TrainingWeekOverview() {
   return (
     <div
       id="exercise_editor"
-      className={`flex flex-col items-center rounded ${BG_COLOR_M7}`}
+      className={`flex flex-col items-center rounded ${BG_COLOR_M6}`}
     >
       <MesocycleToggle
         mesocycles={mesocycleTitles}
