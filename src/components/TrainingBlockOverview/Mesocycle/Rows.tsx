@@ -27,6 +27,7 @@ function DataRow({ exercise, index }: DataRowProps) {
     exercise.trainingModality,
   ];
 
+  const alternatingBGColors = index % 2 === 0 ? BG_COLOR_M4 : `bg-zinc-400`;
   return (
     <li className={`flex flex-row space-x-1 overflow-hidden`}>
       <ExerciseCell
@@ -40,7 +41,7 @@ function DataRow({ exercise, index }: DataRowProps) {
           <WeekCell
             data={each}
             widths={CELL_WIDTHS.week.widths}
-            bgColor={`${BG_COLOR_M4}`}
+            bgColor={`${alternatingBGColors}`}
           />
         );
       })}
@@ -48,7 +49,7 @@ function DataRow({ exercise, index }: DataRowProps) {
       <WeekCell
         data={details[0]}
         widths={CELL_WIDTHS.week.widths}
-        bgColor={`${BG_COLOR_M4}`}
+        bgColor={`${alternatingBGColors}`}
       />
     </li>
   );
@@ -74,6 +75,7 @@ export function HeaderRow() {
           data={CELL_WIDTHS.exercise.headers}
           widths={CELL_WIDTHS.exercise.widths}
           bgColor={`${BG_COLOR_M7}`}
+          fontSize="text-xxxs"
         />
       </HeaderCell>
 
@@ -84,6 +86,7 @@ export function HeaderRow() {
               data={CELL_WIDTHS.week.headers}
               widths={CELL_WIDTHS.week.widths}
               bgColor={`${BG_COLOR_M7}`}
+              fontSize="text-xxxs"
             />
           </HeaderCell>
         );
@@ -94,6 +97,7 @@ export function HeaderRow() {
           data={CELL_WIDTHS.week.headers}
           widths={CELL_WIDTHS.week.widths}
           bgColor={`${BG_COLOR_M7}`}
+          fontSize="text-xxxs"
         />
       </HeaderCell>
     </div>

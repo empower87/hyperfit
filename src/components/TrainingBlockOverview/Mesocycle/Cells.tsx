@@ -6,11 +6,12 @@ import { CELL_WIDTHS } from "./constants";
 
 interface CellProps extends HTMLAttributes<HTMLDivElement> {
   value: string | number;
+  fontSize?: string;
 }
-function Cell({ value, className, ...props }: CellProps) {
+function Cell({ value, className, fontSize, ...props }: CellProps) {
   return (
     <div {...props} className={cn(`flex justify-center`, className)}>
-      <p className="truncate text-[10px] text-white">{value}</p>
+      <p className={cn(`truncate text-[10px] text-white`, fontSize)}>{value}</p>
     </div>
   );
 }
@@ -19,8 +20,14 @@ type RowCellProps = {
   data: string[] | number[];
   widths: string[];
   bgColor: string;
+  fontSize?: string;
 };
-export function ExerciseCell({ data, widths, bgColor }: RowCellProps) {
+export function ExerciseCell({
+  data,
+  widths,
+  bgColor,
+  fontSize,
+}: RowCellProps) {
   return (
     <div className={cn(`flex space-x-0.5`)}>
       {data.map((each, index) => {
@@ -29,6 +36,7 @@ export function ExerciseCell({ data, widths, bgColor }: RowCellProps) {
           <Cell
             value={each}
             className={`${bgColor} ${widths[index]} ${nonCenteredCells}`}
+            fontSize={fontSize}
           />
         );
       })}
@@ -36,11 +44,17 @@ export function ExerciseCell({ data, widths, bgColor }: RowCellProps) {
   );
 }
 
-export function WeekCell({ data, widths, bgColor }: RowCellProps) {
+export function WeekCell({ data, widths, bgColor, fontSize }: RowCellProps) {
   return (
     <div className={cn(`flex space-x-0.5`)}>
       {data.map((each, index) => {
-        return <Cell value={each} className={`${bgColor} ${widths[index]}`} />;
+        return (
+          <Cell
+            value={each}
+            className={`${bgColor} ${widths[index]}`}
+            fontSize={fontSize}
+          />
+        );
       })}
     </div>
   );

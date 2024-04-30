@@ -1,60 +1,9 @@
 import { useState } from "react";
 import CollapsableHeader from "~/components/Layout/CollapsableHeader";
-import { BG_COLOR_M6, BG_COLOR_M7, BORDER_COLOR_M6 } from "~/constants/themes";
+import { BG_COLOR_M6 } from "~/constants/themes";
 import { TrainingDayType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { cn } from "~/lib/clsx";
 import { HeaderRow, SessionRow } from "./Rows";
-import { ROW_SECTION_WIDTHS } from "./constants";
-
-// TODO: Still need to move this into Cell.tsx and add customization
-function SessionHeaderLayout() {
-  return (
-    <div className={BG_COLOR_M7 + " ml-1 mr-1 mt-1 flex"}>
-      <div
-        className={BORDER_COLOR_M6 + " border-r-2 indent-1 text-white"}
-        style={{ width: ROW_SECTION_WIDTHS[0] }}
-      >
-        Day
-      </div>
-      <div
-        className={BORDER_COLOR_M6 + " border-r-2 indent-1 text-white"}
-        style={{ width: ROW_SECTION_WIDTHS[1] }}
-      >
-        Session
-      </div>
-      <div
-        className={BORDER_COLOR_M6 + " border-r-2 indent-1 text-white"}
-        style={{ width: ROW_SECTION_WIDTHS[2] }}
-      >
-        Week 1
-      </div>
-      <div
-        className={BORDER_COLOR_M6 + " border-r-2 indent-1 text-white"}
-        style={{ width: ROW_SECTION_WIDTHS[3] }}
-      >
-        Week 2
-      </div>
-      <div
-        className={BORDER_COLOR_M6 + " border-r-2 indent-1 text-white"}
-        style={{ width: ROW_SECTION_WIDTHS[4] }}
-      >
-        Week 3
-      </div>
-      <div
-        className={BORDER_COLOR_M6 + " border-r-2 indent-1 text-white"}
-        style={{ width: ROW_SECTION_WIDTHS[5] }}
-      >
-        Week 4
-      </div>
-      <div
-        className=" indent-1 text-white"
-        style={{ width: ROW_SECTION_WIDTHS[6] }}
-      >
-        Deload
-      </div>
-    </div>
-  );
-}
 
 type MesocycleProps = {
   split: TrainingDayType[];
@@ -99,7 +48,7 @@ export default function Mesocycle({
         />
       </CollapsableHeader>
 
-      <div className="flex flex-col space-y-1 p-2">
+      <div className="flex flex-col space-y-1 overflow-x-auto p-2">
         <HeaderRow />
 
         <div className="flex flex-col space-y-2">

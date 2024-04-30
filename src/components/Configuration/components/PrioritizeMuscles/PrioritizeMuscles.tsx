@@ -2,13 +2,11 @@ import { ReactNode } from "react";
 import { DragDropContext, Draggable } from "react-beautiful-dnd";
 import { DragHandleIcon } from "~/assets/icons/_icons";
 import { CardS as Card } from "~/components/Layout/Sections";
-import {
-  MusclePriorityType,
-  VOLUME_BG_COLORS,
-} from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
+import { MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { cn } from "~/lib/clsx";
 import StrictModeDroppable from "~/lib/react-beautiful-dnd/StrictModeDroppable";
 import getMuscleTitleForUI from "~/utils/getMuscleTitleForUI";
+import { getRankColor } from "~/utils/getRankColor";
 import { useProgramConfigContext } from "../../hooks/useProgramConfig";
 import Settings from "./Settings";
 import { Select } from "./VolumeLandmark";
@@ -33,12 +31,11 @@ type ItemProps = {
 };
 
 function Item({ muscle, index, children }: ItemProps) {
-  const colors = VOLUME_BG_COLORS;
+  // const colors = VOLUME_BG_COLORS;
+  const colors = getRankColor(muscle.volume.landmark);
   return (
     <div
-      className={`flex ${
-        colors[muscle.volume.landmark]
-      } justify-between rounded-sm text-xxs text-white`}
+      className={`flex ${colors.bg} justify-between rounded-sm text-xxs text-white`}
     >
       <div className={`flex`}>
         {children}
@@ -54,7 +51,7 @@ function Item({ muscle, index, children }: ItemProps) {
           id={muscle.id}
           volume_landmark={muscle.volume.landmark}
           options={["MRV", "MEV", "MV"]}
-          bgColor={colors[muscle.volume.landmark]}
+          bgColor={colors.bg}
         />
       </div>
     </div>

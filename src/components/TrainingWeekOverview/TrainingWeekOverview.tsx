@@ -202,11 +202,18 @@ interface ItemCellProps extends HTMLAttributes<HTMLDivElement> {
 }
 const ItemCell: FC<ItemCellProps> = ({ children, className, ...props }) => {
   return (
-    <div {...props} className={cn(`flex border-r-2 p-0.5 text-xxs`, className)}>
+    <div {...props} className={cn(`flex p-0.5 text-xxs`, className)}>
       {children}
     </div>
   );
 };
+// const ItemCell: FC<ItemCellProps> = ({ children, className, ...props }) => {
+//   return (
+//     <div {...props} className={cn(`flex border-r-2 p-0.5 text-xxs`, className)}>
+//       {children}
+//     </div>
+//   );
+// };
 
 function DaySessionItemHeaders() {
   return (
@@ -357,7 +364,7 @@ function DaySessionItem({
 
   const BORDER_COLOR = exercise.supersetWith ? "border-white" : BORDER_COLOR_M7;
   return (
-    <li className={cn(`mb-0.5 flex text-white`)}>
+    <li className={cn(`mb-0.5 flex text-white `)}>
       <ItemCell
         className={cn(
           `${BORDER_COLOR} ${ITEM_CELL_WIDTHS.index} justify-center`
@@ -368,28 +375,28 @@ function DaySessionItem({
 
       <div
         className={cn(
-          `${BORDER_COLOR} flex overflow-hidden rounded border-y-2 ${bgColor}`
+          `${BG_COLOR_M7} ${BORDER_COLOR_M7} flex space-x-0.5 overflow-hidden rounded border-2`
         )}
       >
-        <div className="flex flex-col">
-          <div className={cn(`${BORDER_COLOR} flex border-b`)}>
+        <div className="flex flex-col space-y-0.5">
+          <div className={cn(`flex space-x-0.5`)}>
             <ItemCell
-              className={`${BORDER_COLOR} ${ITEM_CELL_WIDTHS.sets} justify-center border-r`}
+              className={`${bgColor} ${ITEM_CELL_WIDTHS.sets} justify-center`}
             >
               {sets}
             </ItemCell>
             <ItemCell
-              className={`${BORDER_COLOR} ${ITEM_CELL_WIDTHS.reps} justify-center border-r`}
+              className={`${bgColor} ${ITEM_CELL_WIDTHS.reps} justify-center`}
             >
               {reps}
             </ItemCell>
             <ItemCell
-              className={`${BORDER_COLOR} ${ITEM_CELL_WIDTHS.lbs} justify-center`}
+              className={`${bgColor} ${ITEM_CELL_WIDTHS.lbs} justify-center`}
             >
               {lbs}
             </ItemCell>
           </div>
-          <ItemCell className={`${BORDER_COLOR}`}>
+          <ItemCell className={`${bgColor}`}>
             <SelectDropdown
               options={[...EXERCISE_TRAINING_MODALITIES]}
               className={`${ITEM_CELL_WIDTHS.modality}`}
@@ -398,8 +405,8 @@ function DaySessionItem({
           </ItemCell>
         </div>
 
-        <div className=" flex flex-col text-xxs">
-          <ItemCell className={`${BORDER_COLOR} ${ITEM_CELL_WIDTHS.exercise}`}>
+        <div className=" flex flex-col space-y-0.5 text-xxs">
+          <ItemCell className={`${bgColor} ${ITEM_CELL_WIDTHS.exercise}`}>
             <SelectDropdown
               className={`w-full truncate`}
               options={allExercises}
@@ -407,15 +414,13 @@ function DaySessionItem({
             />
           </ItemCell>
           <ItemCell
-            className={`${BORDER_COLOR} ${ITEM_CELL_WIDTHS.exercise} truncate border-t indent-1 text-slate-300`}
+            className={`${bgColor} ${ITEM_CELL_WIDTHS.exercise} truncate indent-1 text-slate-300`}
           >
             {exercise.muscle}
           </ItemCell>
         </div>
 
-        <ItemCell
-          className={`${BORDER_COLOR} ${ITEM_CELL_WIDTHS.actions} relative`}
-        >
+        <ItemCell className={`${bgColor} ${ITEM_CELL_WIDTHS.actions} relative`}>
           <DropdownButton onDropdownClick={onDropdownClick} />
           {isOpen ? (
             <Dropdown onClose={onDropdownClose}>
@@ -441,6 +446,239 @@ function DaySessionItem({
     </li>
   );
 }
+// function DaySessionItemHeaders() {
+//   return (
+//     <div className="flex text-white">
+//       <ItemCell
+//         className={`${BORDER_COLOR_M5} ${BG_COLOR_M5} ${ITEM_CELL_WIDTHS.index} text-xxxs`}
+//       >
+//         {" "}
+//       </ItemCell>
+//       <div className="flex w-full overflow-hidden rounded-sm">
+//         <ItemCell
+//           className={`${BORDER_COLOR_M5} ${BG_COLOR_M6} ${ITEM_CELL_WIDTHS.sets} justify-center text-xxxs`}
+//         >
+//           Sets
+//         </ItemCell>
+//         <ItemCell
+//           className={`${BORDER_COLOR_M5} ${BG_COLOR_M6} ${ITEM_CELL_WIDTHS.reps} justify-center text-xxxs`}
+//         >
+//           Reps
+//         </ItemCell>
+//         <ItemCell
+//           className={`${BORDER_COLOR_M5} ${BG_COLOR_M6} ${ITEM_CELL_WIDTHS.lbs} justify-center text-xxxs`}
+//         >
+//           Lbs
+//         </ItemCell>
+//         <div className="flex flex-col">
+//           <ItemCell
+//             className={`${BORDER_COLOR_M5} ${BG_COLOR_M6} ${ITEM_CELL_WIDTHS.exercise} text-xxxs`}
+//           >
+//             Exercise
+//           </ItemCell>
+//         </div>
+//         <ItemCell
+//           className={`${BORDER_COLOR_M6} ${BG_COLOR_M6} ${ITEM_CELL_WIDTHS.actions} rounded-r-sm text-xxxs`}
+//         >
+//           {" "}
+//         </ItemCell>
+//       </div>
+//     </div>
+//   );
+// }
+
+// type DaySessionItemProps = {
+//   index: number;
+//   exercise: ExerciseType;
+//   sessionId: string;
+//   exercises: ExerciseType[];
+//   selectedMicrocycleIndex: number;
+//   selectedMesocycleIndex: number;
+//   onSupersetUpdate: (
+//     _exercise: ExerciseType,
+//     exercise: ExerciseType,
+//     sessionId: string
+//   ) => void;
+// };
+
+// const ITEM_CELL_WIDTHS = {
+//   index: "w-4",
+//   sets: "w-6",
+//   reps: "w-6",
+//   lbs: "w-6",
+//   exercise: "w-36",
+//   actions: "w-4",
+//   modality: "w-14",
+// };
+
+// function DaySessionItem({
+//   index,
+//   exercise,
+//   sessionId,
+//   exercises,
+//   selectedMicrocycleIndex,
+//   selectedMesocycleIndex,
+//   onSupersetUpdate,
+// }: DaySessionItemProps) {
+//   const [bgColor, setBgColor] = useState<string>("");
+//   const [isOpen, setIsOpen] = useState<boolean>(false);
+//   const supersets = getSupersetMap(exercises);
+
+//   const allExercises = getGroupList(exercise.muscle).map((each) => each.name);
+
+//   const [selectedExerciseName, setSelectedExerciseName] = useState<string>(
+//     exercise.exercise
+//   );
+
+//   const setProgressionSchema =
+//     exercise.setProgressionSchema[selectedMesocycleIndex];
+//   const setsOverWeek = getSetProgressionForExercise(
+//     setProgressionSchema,
+//     selectedMesocycleIndex,
+//     exercise,
+//     4,
+//     2,
+//     0
+//   );
+
+//   const mesocycle_progression = exercise.mesocycle_progression;
+//   // const sets = mesocycle_progression[selectedMicrocycleIndex].sets;
+//   const sets = setsOverWeek[selectedMicrocycleIndex];
+//   const reps = mesocycle_progression[selectedMicrocycleIndex].reps;
+//   const lbs = mesocycle_progression[selectedMicrocycleIndex].weight;
+//   const modality = exercise.trainingModality;
+
+//   const onItemClick = useCallback((exerciseOne: ExerciseType) => {
+//     // sorts supersetted exercises by place in list
+//     const indexOne = exercises.findIndex((each) => each.id === exerciseOne.id);
+//     const indexTwo = exercises.findIndex((each) => each.id === exercise.id);
+
+//     if (indexOne === indexTwo) return;
+
+//     let one = exerciseOne;
+//     let two = exercise;
+//     if (indexOne > indexTwo) {
+//       one = exercise;
+//       two = exerciseOne;
+//     }
+//     onSupersetUpdate(one, two, sessionId);
+//   }, []);
+
+//   const onDropdownClick = () => {
+//     setIsOpen(true);
+//   };
+
+//   const onDropdownClose = () => {
+//     setIsOpen(false);
+//   };
+
+//   const [isModalOpen, setIsModalOpen] = useState(false);
+//   const onModalOpen = () => {
+//     setIsModalOpen(true);
+//     onDropdownClose();
+//   };
+//   const onModalClose = () => {
+//     setIsModalOpen(false);
+//   };
+
+//   useEffect(() => {
+//     const supersettedColor = supersets?.get(exercise.id);
+//     let bgColor = "";
+//     if (supersettedColor) {
+//       bgColor = supersettedColor;
+//     } else {
+//       const bgColorByRank = getRankColor(exercise.rank);
+//       bgColor = bgColorByRank.bg;
+//     }
+//     setBgColor(bgColor);
+//   }, [supersets, exercise]);
+
+//   const BORDER_COLOR = exercise.supersetWith ? "border-white" : BORDER_COLOR_M7;
+//   return (
+//     <li className={cn(`mb-0.5 flex text-white`)}>
+//       <ItemCell
+//         className={cn(
+//           `${BORDER_COLOR} ${ITEM_CELL_WIDTHS.index} justify-center`
+//         )}
+//       >
+//         {index}
+//       </ItemCell>
+
+//       <div
+//         className={cn(
+//           `${BORDER_COLOR} flex overflow-hidden rounded border-y-2 ${bgColor}`
+//         )}
+//       >
+//         <div className="flex flex-col">
+//           <div className={cn(`${BORDER_COLOR} flex border-b`)}>
+//             <ItemCell
+//               className={`${BORDER_COLOR} ${ITEM_CELL_WIDTHS.sets} justify-center border-r`}
+//             >
+//               {sets}
+//             </ItemCell>
+//             <ItemCell
+//               className={`${BORDER_COLOR} ${ITEM_CELL_WIDTHS.reps} justify-center border-r`}
+//             >
+//               {reps}
+//             </ItemCell>
+//             <ItemCell
+//               className={`${BORDER_COLOR} ${ITEM_CELL_WIDTHS.lbs} justify-center`}
+//             >
+//               {lbs}
+//             </ItemCell>
+//           </div>
+//           <ItemCell className={`${BORDER_COLOR}`}>
+//             <SelectDropdown
+//               options={[...EXERCISE_TRAINING_MODALITIES]}
+//               className={`${ITEM_CELL_WIDTHS.modality}`}
+//               selectedOption={modality}
+//             />
+//           </ItemCell>
+//         </div>
+
+//         <div className=" flex flex-col text-xxs">
+//           <ItemCell className={`${BORDER_COLOR} ${ITEM_CELL_WIDTHS.exercise}`}>
+//             <SelectDropdown
+//               className={`w-full truncate`}
+//               options={allExercises}
+//               selectedOption={selectedExerciseName}
+//             />
+//           </ItemCell>
+//           <ItemCell
+//             className={`${BORDER_COLOR} ${ITEM_CELL_WIDTHS.exercise} truncate border-t indent-1 text-slate-300`}
+//           >
+//             {exercise.muscle}
+//           </ItemCell>
+//         </div>
+
+//         <ItemCell
+//           className={`${BORDER_COLOR} ${ITEM_CELL_WIDTHS.actions} relative`}
+//         >
+//           <DropdownButton onDropdownClick={onDropdownClick} />
+//           {isOpen ? (
+//             <Dropdown onClose={onDropdownClose}>
+//               <Dropdown.Item onClick={onModalOpen}>
+//                 Create Superset
+//               </Dropdown.Item>
+//             </Dropdown>
+//           ) : null}
+//         </ItemCell>
+
+//         {isModalOpen ? (
+//           <Modal isOpen={isModalOpen} onClose={onModalClose}>
+//             <DropdownListModal
+//               items={exercises}
+//               supersets={supersets}
+//               selectedId={exercise.id}
+//               onClose={onDropdownClose}
+//               onItemClick={onItemClick}
+//             />
+//           </Modal>
+//         ) : null}
+//       </div>
+//     </li>
+//   );
+// }
 
 type DroppableDayProps = {
   split: SessionSplitType;

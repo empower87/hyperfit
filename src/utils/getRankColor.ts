@@ -9,13 +9,13 @@ export const getRankColor = (volume_indicator: VolumeLandmarkType) => {
       };
     case "MEV":
       return {
-        bg: "bg-orange-500",
-        text: "text-orange-500",
+        bg: "bg-amber-500",
+        text: "text-amber-500",
       };
     default:
       return {
-        bg: "bg-green-500",
-        text: "text-green-500",
+        bg: "bg-lime-500",
+        text: "text-lime-500",
       };
   }
 };

@@ -541,7 +541,7 @@ function ExerciseItem({
         })}
         <div
           onClick={() => onRemoveExercise(exercise.id)}
-          className={`flex w-3 cursor-pointer items-center justify-center border bg-rose-400 ${BORDER_COLOR_M6} hover:bg-rose-500`}
+          className={`flex w-3 cursor-pointer items-center justify-center border bg-red-400 ${BORDER_COLOR_M6} hover:bg-rose-500`}
         >
           <DeleteIcon fill="white" />
         </div>
