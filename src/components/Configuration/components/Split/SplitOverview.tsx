@@ -272,8 +272,8 @@ function Split() {
   );
 }
 
-SplitOverview.Split = Split;
-SplitOverview.Week = TrainingWeek;
+SplitOverview.SplitSelect = Split;
+SplitOverview.SplitWeek = TrainingWeek;
 
 export default function SplitOverview({ children }: { children: ReactNode }) {
   return <CardS title="WORKOUT SPLIT">{children}</CardS>;

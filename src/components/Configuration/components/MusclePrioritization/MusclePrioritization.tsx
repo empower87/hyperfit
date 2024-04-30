@@ -58,7 +58,7 @@ function Item({ muscle, index, children }: ItemProps) {
   );
 }
 
-export function PrioritizeMuscles() {
+export default function MusclePrioritization() {
   const { muscle_priority_list, onPriorityListDragEnd } =
     useProgramConfigContext();
 

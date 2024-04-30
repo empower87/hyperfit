@@ -39,22 +39,21 @@ export default function Frequency() {
       onFrequencyChange([frequency[0], value]);
     } else {
       onFrequencyChange([value, frequency[1]]);
-      // setTotalSessionsPerWeek(value);
     }
   };
 
   return (
-    <div className={`flex flex-col p-1`}>
+    <div className={`flex h-full flex-col p-1`}>
       <div className={`pb-1 text-xs text-white`}>Frequency</div>
       <SelectFrequency
-        title="Weekly Sessions: "
+        title="Weekly Sessions:"
         options={[...OPTIONS].slice(3)}
         selectedOption={frequency[0]}
         onChange={handleSelectChange}
       />
 
       <SelectFrequency
-        title="Daily Sessions: "
+        title="Daily Sessions:"
         options={[...OPTIONS].slice(0, frequency[0] + 1)}
         selectedOption={frequency[1]}
         onChange={handleSelectChange}

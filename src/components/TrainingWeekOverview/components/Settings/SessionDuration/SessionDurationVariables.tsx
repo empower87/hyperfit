@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import Settings from "~/components/Configuration/components/PrioritizeMuscles/Settings";
+import Settings from "~/components/Configuration/components/MusclePrioritization/Settings";
 import { BG_COLOR_M5 } from "~/constants/themes";
 import { cn } from "~/lib/clsx";
 import { useSessionDurationVariablesContext } from "./sessionDurationVariablesContext";

@@ -2,7 +2,7 @@ import { Button } from "~/components/Layout/Buttons";
 import { BG_COLOR_M5, BG_COLOR_M7 } from "~/constants/themes";
 import { useProgramConfigContext } from "../hooks/useProgramConfig";
 
-export default function Buttons() {
+export default function Actions() {
   const { onSaveConfig } = useProgramConfigContext();
   const onResetConfig = () => {
     console.log("reset");

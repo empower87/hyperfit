@@ -35,7 +35,7 @@ import { getGroupList } from "~/utils/getExercises";
 import { getRankColor } from "~/utils/getRankColor";
 import { getSessionSplitColor } from "~/utils/getSessionSplitColor";
 import { capitalizeFirstLetter } from "~/utils/uiHelpers";
-import Settings from "../Configuration/components/PrioritizeMuscles/Settings";
+import Settings from "../Configuration/components/MusclePrioritization/Settings";
 import MesocycleToggle from "./components/MesocycleToggle";
 import SessionDurationVariables from "./components/Settings/SessionDuration/SessionDurationVariables";
 import {
