@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { HTMLAttributes, ReactNode } from "react";
 import {
   BG_COLOR_M6,
   BG_COLOR_M7,
@@ -7,10 +7,10 @@ import {
 } from "~/constants/themes";
 import { cn } from "~/lib/clsx";
 
-type SectionProps = {
+interface SectionProps extends HTMLAttributes<HTMLDivElement> {
   title: string;
   children: ReactNode;
-};
+}
 export function SectionXL({ title, children }: SectionProps) {
   return (
     <div className="mb-6 p-2">
@@ -35,10 +35,10 @@ export function SectionM({ title, children }: SectionProps) {
 
 export function SectionH2({ title, children }: SectionProps) {
   return (
-    <div className={"m-1 flex flex-col"}>
+    <div className={"mx-1 mb-8 flex flex-col"}>
       <div className={cn(`relative my-6 ${BORDER_COLOR_M6} border-b-2`)}>
         <h3
-          className={`${BG_COLOR_M8} absolute bottom-[-8px] left-[50%] translate-x-[-50%] px-3 text-xs text-white`}
+          className={`${BG_COLOR_M8} absolute bottom-[-8px] left-[50%] translate-x-[-50%] px-3 text-xs text-rose-400`}
         >
           {title}
         </h3>
@@ -47,10 +47,12 @@ export function SectionH2({ title, children }: SectionProps) {
     </div>
   );
 }
-
-export function CardS({ title, children }: SectionProps) {
+export function CardS({ title, children, className, ...props }: SectionProps) {
   return (
-    <div className={cn(`flex flex-col ${BG_COLOR_M7} rounded-md p-1.5`)}>
+    <div
+      {...props}
+      className={cn(`flex flex-col ${BG_COLOR_M7} rounded-md p-1.5`, className)}
+    >
       <div
         className={cn(`flex items-center ${BORDER_COLOR_M6} border-b pb-0.5`)}
       >

@@ -15,7 +15,7 @@ import {
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { cn } from "~/lib/clsx";
 import StrictModeDroppable from "~/lib/react-beautiful-dnd/StrictModeDroppable";
-import { getSessionSplitColor } from "~/utils/getSessionSplitColor";
+import { getSplitColor } from "~/utils/getIndicatorColors";
 import { useProgramConfigContext } from "../../hooks/useProgramConfig";
 import SplitSelect from "./SplitSelect";
 
@@ -66,7 +66,6 @@ export function TrainingWeek() {
       }
       items[outerDestinationId].sessions[innerDestinationId] = sourceRemoved;
       items[outerSourceId].sessions[innerSourceId] = destinationRemoved;
-      console.log(items, "WHAT THIS LOOK LIKE????");
       onRearrangedWeek(items);
     },
     [trainingWeek]
@@ -190,7 +189,7 @@ function SessionItem({ session, onSplitChange, children }: SessionItemProps) {
   const onSelectChange = (newSplit: SplitType | "off") => {
     onSplitChange(newSplit, session.id);
   };
-  const bgColor = getSessionSplitColor(session.split).bg;
+  const bgColor = getSplitColor(session.split).bg;
 
   const SPLIT_NAMES: (SplitType | "off")[] = [
     "upper",
@@ -243,7 +242,7 @@ function SelectSession({ session, splits, onSelect }: SelectSessionProps) {
   return (
     <select
       className={
-        "h-full w-full bg-inherit py-0.5 text-xxs font-bold text-white"
+        "h-full w-full bg-inherit py-0.5 text-xxs font-bold text-white outline-none"
       }
       onChange={onSelectHandler}
     >

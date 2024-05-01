@@ -5,8 +5,8 @@ import { CardS as Card } from "~/components/Layout/Sections";
 import { MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { cn } from "~/lib/clsx";
 import StrictModeDroppable from "~/lib/react-beautiful-dnd/StrictModeDroppable";
+import { getRankColor } from "~/utils/getIndicatorColors";
 import getMuscleTitleForUI from "~/utils/getMuscleTitleForUI";
-import { getRankColor } from "~/utils/getRankColor";
 import { useProgramConfigContext } from "../../hooks/useProgramConfig";
 import Settings from "./Settings";
 import { Select } from "./VolumeLandmark";
@@ -24,21 +24,22 @@ function Cell({
     </div>
   );
 }
+
 type ItemProps = {
   muscle: MusclePriorityType;
   index: number;
   children: ReactNode;
 };
-
 function Item({ muscle, index, children }: ItemProps) {
-  // const colors = VOLUME_BG_COLORS;
   const colors = getRankColor(muscle.volume.landmark);
+
   return (
     <div
       className={`flex ${colors.bg} justify-between rounded-sm text-xxs text-white`}
     >
       <div className={`flex`}>
         {children}
+
         <Cell value={index + 1} className="w-4" />
         <Cell
           value={getMuscleTitleForUI(muscle.muscle)}
@@ -63,7 +64,7 @@ export default function MusclePrioritization() {
     useProgramConfigContext();
 
   return (
-    <Card title="PRIORITIZE MUSCLES">
+    <Card title="PRIORITIZE MUSCLES" className={`w-full`}>
       <div className={`pb-2`}>
         <Settings>
           <Settings.Section title="Breakpoints">

@@ -27,9 +27,9 @@ import { ExerciseType } from "~/hooks/useTrainingProgram/reducer/trainingProgram
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
 import { cn } from "~/lib/clsx";
 import { Exercise } from "~/utils/getExercises";
+import { getRankColor } from "~/utils/getIndicatorColors";
 import { getMuscleData } from "~/utils/getMuscleData";
 import getMuscleTitleForUI from "~/utils/getMuscleTitleForUI";
-import { getRankColor } from "~/utils/getRankColor";
 
 import CollapsableHeader from "../Layout/CollapsableHeader";
 import SelectExercise from "../Modals/ChangeExerciseModal/ChangeExerciseModal";

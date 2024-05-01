@@ -9,7 +9,10 @@ import { ProgramConfigProvider } from "./hooks/useProgramConfig";
 export default function Configuration({ children }: { children: ReactNode }) {
   return (
     <ProgramConfigProvider>
-      <div id="configuration" className="mb-5 flex h-full w-full space-x-1">
+      <div
+        id="configuration"
+        className={`flex h-full w-full flex-col space-x-1 sm:flex-row`}
+      >
         {children}
       </div>
     </ProgramConfigProvider>
@@ -24,5 +27,7 @@ Configuration.Actions = Actions;
 Configuration.Layout = Layout;
 Configuration.Frequency = Frequency;
 Configuration.Split = SplitOverview;
+Configuration.SplitSelect = SplitOverview.SplitSelect;
+Configuration.SplitWeek = SplitOverview.SplitWeek;
 Configuration.Periodization = Periodization;
 Configuration.MusclePrioritization = MusclePrioritization;

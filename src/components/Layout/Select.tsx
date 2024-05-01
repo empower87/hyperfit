@@ -16,7 +16,7 @@ export function Select<T extends string | number>({
   return (
     <select
       className={cn(
-        `h-full w-full bg-inherit text-white ${BORDER_COLOR_M5} rounded border text-xs`
+        `h-full w-full bg-inherit text-white ${BORDER_COLOR_M5} rounded border text-xs outline-slate-700`
       )}
       onChange={onSelect}
     >

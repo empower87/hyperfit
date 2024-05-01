@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { BG_COLOR_M5, BG_COLOR_M6, BORDER_COLOR_M6 } from "~/constants/themes";
 import { cn } from "~/lib/clsx";
+import { getRankColor } from "~/utils/getIndicatorColors";
 import { useProgramConfigContext } from "../../hooks/useProgramConfig";
 
 type VolumeSettingFrameProps = {
@@ -25,15 +26,12 @@ function VolumeSettingFrame({
     setCurrentBreakpoint((prev) => prev + 1);
     onChange(title, currentBreakpoint + 1);
   };
-
+  const textColor = getRankColor(title);
   return (
     <div className={cn(`${BG_COLOR_M6} flex justify-between text-[0.50rem]`)}>
       <div
         className={cn(
-          `flex items-center justify-center px-1 indent-1 font-bold text-orange-500`,
-          {
-            ["text-red-500"]: title === "MRV",
-          }
+          `flex items-center justify-center px-1 indent-1 font-bold ${textColor.text}`
         )}
       >
         {title}

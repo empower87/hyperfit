@@ -1,6 +1,5 @@
 import { type NextPage } from "next";
 import Configuration from "~/components/Configuration";
-import SplitOverview from "~/components/Configuration/components/Split/SplitOverview";
 import MuscleEditor from "~/components/CustomizeMuscleProgression/MuscleEditor";
 import { SectionH2 as Section } from "~/components/Layout/Sections";
 import TableOfContents from "~/components/TableofContents/TableOfContents";
@@ -34,8 +33,8 @@ const Home: NextPage = () => {
                   <Configuration.Periodization />
 
                   <Configuration.Split>
-                    <SplitOverview.SplitSelect />
-                    <SplitOverview.SplitWeek />
+                    <Configuration.SplitSelect />
+                    <Configuration.SplitWeek />
                   </Configuration.Split>
 
                   <Configuration.Actions />

@@ -6,7 +6,7 @@ import {
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
 import { cn } from "~/lib/clsx";
-import { getRankColor } from "~/utils/getRankColor";
+import { getRankColor } from "~/utils/getIndicatorColors";
 import { ExerciseCell, HeaderCell, SessionCell, WeekCell } from "./Cells";
 import { CELL_WIDTHS } from "./constants";
 
@@ -36,9 +36,10 @@ function DataRow({ exercise, index }: DataRowProps) {
         bgColor={getRankColor(exercise.rank).bg}
       />
 
-      {details.map((each) => {
+      {details.map((each, index) => {
         return (
           <WeekCell
+            key={`${each[0]}_DataRow_${index}`}
             data={each}
             widths={CELL_WIDTHS.week.widths}
             bgColor={`${alternatingBGColors}`}
@@ -79,10 +80,11 @@ export function HeaderRow() {
         />
       </HeaderCell>
 
-      {MICROCYCLE_HEADERS.map((each) => {
+      {MICROCYCLE_HEADERS.map((each, index) => {
         return (
           <HeaderCell label={each}>
             <WeekCell
+              key={`${each}_MicrocycleHeader_${index}`}
               data={CELL_WIDTHS.week.headers}
               widths={CELL_WIDTHS.week.widths}
               bgColor={`${BG_COLOR_M7}`}

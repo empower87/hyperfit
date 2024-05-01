@@ -2,6 +2,7 @@ import { HTMLAttributes, ReactNode } from "react";
 import { BG_COLOR_M7 } from "~/constants/themes";
 import { SessionSplitType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { cn } from "~/lib/clsx";
+import { getSplitColor } from "~/utils/getIndicatorColors";
 import { CELL_WIDTHS } from "./constants";
 
 interface CellProps extends HTMLAttributes<HTMLDivElement> {
@@ -80,12 +81,6 @@ type SessionCellProps = {
   children?: ReactNode;
 };
 export function SessionCell({ split, children }: SessionCellProps) {
-  const backgroundColor =
-    split === "upper"
-      ? "bg-blue-400"
-      : split === "lower"
-      ? "bg-red-400"
-      : "bg-purple-400";
   return (
     <div className={cn(`flex ${CELL_WIDTHS.day} justify-between`)}>
       {children}
@@ -93,7 +88,9 @@ export function SessionCell({ split, children }: SessionCellProps) {
       <div className={`flex items-start`}>
         <div
           className={cn(
-            `${backgroundColor} rounded-sm px-1 text-[10px] font-semibold text-white`
+            `${
+              getSplitColor(split).bg
+            } rounded-sm px-1 text-[10px] font-semibold text-white`
           )}
         >
           {split.charAt(0).toUpperCase() + split.slice(1)}

@@ -10,8 +10,8 @@ const TRAINING_BLOCKS = [1, 2, 3, 4];
 
 export default function Periodization() {
   return (
-    <Card title="PERIODIZATION">
-      <div className={`flex h-full space-x-1`}>
+    <Card title="PERIODIZATION" className={"h-full"}>
+      <div className={`flex space-x-1`}>
         <Frequency />
         <OtherParams />
       </div>

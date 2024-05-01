@@ -25,7 +25,6 @@ export default function Mesocycle({
         <CollapsableHeader.Title
           label={`Mesocycle ${currentMesocycleIndex + 1}`}
         />
-
         <CollapsableHeader.Button
           isCollapsed={isCollapsed}
           onCollapse={onExpand}
@@ -41,7 +40,6 @@ export default function Mesocycle({
         <CollapsableHeader.Title
           label={`Mesocycle ${currentMesocycleIndex + 1}`}
         />
-
         <CollapsableHeader.Button
           isCollapsed={isCollapsed}
           onCollapse={onCollapse}

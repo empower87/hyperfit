@@ -32,8 +32,7 @@ import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainin
 import { cn } from "~/lib/clsx";
 import StrictModeDroppable from "~/lib/react-beautiful-dnd/StrictModeDroppable";
 import { getGroupList } from "~/utils/getExercises";
-import { getRankColor } from "~/utils/getRankColor";
-import { getSessionSplitColor } from "~/utils/getSessionSplitColor";
+import { getRankColor, getSplitColor } from "~/utils/getIndicatorColors";
 import { capitalizeFirstLetter } from "~/utils/uiHelpers";
 import Settings from "../Configuration/components/MusclePrioritization/Settings";
 import MesocycleToggle from "./components/MesocycleToggle";
@@ -721,7 +720,7 @@ function DroppableDay({
       <div className={"flex flex-col pb-1"}>
         <div
           className={
-            getSessionSplitColor(split).bg +
+            getSplitColor(split).bg +
             " mx-1 mb-2 mt-1 flex items-center rounded-sm p-0.5 indent-1 text-sm font-bold text-white"
           }
         >
