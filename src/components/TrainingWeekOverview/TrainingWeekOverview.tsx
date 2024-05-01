@@ -177,7 +177,7 @@ const SelectDropdown: FC<SelectDropdownProps> = ({
   return (
     <select
       {...props}
-      className={cn(` bg-inherit`, className)}
+      className={cn(`bg-inherit`, className)}
       defaultValue={selectedOption}
     >
       {options.map((option, index) => {
@@ -206,13 +206,6 @@ const ItemCell: FC<ItemCellProps> = ({ children, className, ...props }) => {
     </div>
   );
 };
-// const ItemCell: FC<ItemCellProps> = ({ children, className, ...props }) => {
-//   return (
-//     <div {...props} className={cn(`flex border-r-2 p-0.5 text-xxs`, className)}>
-//       {children}
-//     </div>
-//   );
-// };
 
 function DaySessionItemHeaders() {
   return (

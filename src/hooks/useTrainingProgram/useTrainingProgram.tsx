@@ -4,8 +4,8 @@ import {
   useCallback,
   useContext,
   useEffect,
-  useReducer,
 } from "react";
+import { usePersistedReducer } from "../usePersistedReducer";
 import weeklySessionSplitReducer, {
   INITIAL_STATE,
   MusclePriorityType,
@@ -49,7 +49,13 @@ const useTrainingProgramContext = () => {
   return useContext(TrainingProgramContext);
 };
 
+const STORAGE_KEY = "TRAINING_PROGRAM_STATE";
 function useTrainingProgram() {
+  // const [state, dispatch] = useReducer(
+  //   weeklySessionSplitReducer,
+  //   INITIAL_STATE
+  // );
+
   const [
     {
       frequency,
@@ -62,7 +68,15 @@ function useTrainingProgram() {
       mev_breakpoint,
     },
     dispatch,
-  ] = useReducer(weeklySessionSplitReducer, INITIAL_STATE);
+  ] = usePersistedReducer(
+    weeklySessionSplitReducer,
+    INITIAL_STATE,
+    STORAGE_KEY
+  );
+
+  // useEffect(() => {
+  //   setValue(state);
+  // }, [state]);
 
   const handleFrequencyChange = useCallback(
     (value: [number, number], split?: SplitSessionsNameType) => {
