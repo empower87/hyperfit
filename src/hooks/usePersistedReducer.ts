@@ -1,58 +1,30 @@
-import deepEqual from "fast-deep-equal/es6";
-import { Dispatch, useCallback, useEffect, useReducer, useRef } from "react";
-import { usePrevious } from "./usePrevious";
+import { Dispatch, useCallback, useReducer } from "react";
+import { useLocalStorage } from "./useLocalStorage";
 
 type UseLocalStorageOptions<T> = {
   serializer?: (value: T) => string;
   deserializer?: (value: string) => T;
   initializeWithValue?: boolean;
 };
+const IS_SERVER = typeof window === "undefined";
 
-export function usePersistedReducer<State, Action>(
-  reducer: (state: State, action: Action) => State,
-  initialState: State,
-  storageKey: string
-): [State, Dispatch<Action>] {
-  const isMounted = useRef(false);
+const STORAGE_KEY = "TRAINING_PROGRAM_STATE";
+export function usePersistedReducer<S, A>(
+  reducer: (state: S, action: A) => S,
+  initialState: S
+): [S, Dispatch<A>] {
+  const [savedState, saveState] = useLocalStorage(STORAGE_KEY, initialState);
 
-  const init = useCallback((): State => {
-    try {
-      const stringState = window.localStorage.getItem(storageKey);
-      if (stringState) {
-        try {
-          return JSON.parse(stringState);
-        } catch (error) {
-          return initialState;
-        }
-      } else {
-        return initialState;
-      }
-    } catch (error) {
-      console.warn(`Error reading localStorage key “${storageKey}”:`, error);
-      return initialState;
-    }
-  }, [initialState, storageKey]);
+  const reducerLocalStorage = useCallback(
+    (state: S, action: A) => {
+      const newState = reducer(state, action);
 
-  const [state, dispatch] = useReducer(reducer, initialState, init);
-  const prevState = usePrevious(state);
+      saveState(newState);
 
-  useEffect(() => {
-    if (isMounted.current) {
-      const stateEqual = deepEqual(prevState, state);
-      if (!stateEqual) {
-        const stringifiedState = JSON.stringify(state);
-        localStorage.setItem(storageKey, stringifiedState);
-      }
-    } else {
-      isMounted.current = true;
-    }
-  }, [state]);
+      return newState;
+    },
+    [saveState]
+  );
 
-  useEffect(() => {
-    return () => {
-      isMounted.current = false;
-    };
-  }, [storageKey]);
-
-  return [state, dispatch];
+  return useReducer(reducerLocalStorage, savedState);
 }

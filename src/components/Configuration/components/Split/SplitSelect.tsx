@@ -30,22 +30,26 @@ function SelectSplit({ selectedOption, onSelect }: SelectSplitProps) {
   const options = Object.values(SPLITS);
   const selected = SPLITS[selectedOption];
   return (
-    <div className=" flex w-full">
+    <div className="flex w-full">
       <Select
         selectedOption={selected}
         options={options}
         onSelect={handleSelectChange}
+        className={`outline-none`}
       />
     </div>
   );
 }
 
 export default function SplitSelect() {
-  const { split, onSplitChange } = useProgramConfigContext();
+  const { split_sessions, onSplitChange } = useProgramConfigContext();
 
   return (
     <div className={``}>
-      <SelectSplit selectedOption={split} onSelect={onSplitChange} />
+      <SelectSplit
+        selectedOption={split_sessions.split}
+        onSelect={onSplitChange}
+      />
     </div>
   );
 }

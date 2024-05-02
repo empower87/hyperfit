@@ -1,22 +1,26 @@
-import { ReactNode } from "react";
+import { HTMLAttributes, ReactNode } from "react";
 import { BG_COLOR_M6, BORDER_COLOR_M5 } from "~/constants/themes";
 import { cn } from "~/lib/clsx";
 
-type SelectProps<T> = {
+interface SelectProps<T> extends HTMLAttributes<HTMLSelectElement> {
   selectedOption: T;
   options: T[];
   onSelect: (event: React.ChangeEvent<HTMLSelectElement>) => void;
-};
+}
 
 export function Select<T extends string | number>({
   selectedOption,
   options,
   onSelect,
+  className,
+  ...props
 }: SelectProps<T>) {
   return (
     <select
+      {...props}
       className={cn(
-        `h-full w-full bg-inherit text-white ${BORDER_COLOR_M5} rounded border text-xs outline-slate-700`
+        `h-full w-full bg-inherit text-white ${BORDER_COLOR_M5} rounded border text-xs outline-slate-700`,
+        className
       )}
       onChange={onSelect}
     >

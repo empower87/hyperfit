@@ -207,9 +207,12 @@ function SessionItem({ session, onSplitChange, children }: SessionItemProps) {
 
   return (
     <li
-      className={cn(`flex py-1 ${bgColor} rounded border-2`, {
-        [`${BORDER_COLOR_M4}`]: session.split === ("off" as SplitType),
-      })}
+      className={cn(
+        `flex py-1 ${bgColor} rounded border-2 focus-within:border-rose-400`,
+        {
+          [`${BORDER_COLOR_M4}`]: session.split === ("off" as SplitType),
+        }
+      )}
     >
       {children}
       <div className={`relative flex w-14 text-xxs text-white`}>

@@ -265,6 +265,10 @@ type AdjustFrequencyProgression = {
     update_frequency_tuple: [MusclePriorityType["id"], "add" | "subtract"];
   };
 };
+type InitStoredAction = {
+  type: "INIT_STORED";
+  payload: { value: State };
+};
 type Action =
   | UpdateProgramConfigAction
   | UpdateFrequencyAction
@@ -276,7 +280,8 @@ type Action =
   | RearrangeTrainingWeekAction
   | AdjustFrequencyProgression
   | UpdateBreakpointsAction
-  | UpdateExercisesByMuscleAction;
+  | UpdateExercisesByMuscleAction
+  | InitStoredAction;
 
 const INITIAL_MRV_BREAKPOINT = 4;
 const INITIAL_MEV_BREAKPOINT = 9;
@@ -649,6 +654,8 @@ export default function weeklySessionSplitReducer(
         mrv_breakpoint: mrv_breakpoint,
         mev_breakpoint: mev_breakpoint,
       };
+    case "INIT_STORED":
+      return action.payload.value;
     default:
       return state;
   }

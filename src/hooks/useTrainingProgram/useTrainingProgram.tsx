@@ -1,11 +1,14 @@
+import deepEqual from "fast-deep-equal/es6";
 import {
   ReactNode,
   createContext,
   useCallback,
   useContext,
   useEffect,
+  useMemo,
+  useReducer,
+  useRef,
 } from "react";
-import { usePersistedReducer } from "../usePersistedReducer";
 import weeklySessionSplitReducer, {
   INITIAL_STATE,
   MusclePriorityType,
@@ -38,8 +41,12 @@ const TrainingProgramContext = createContext<TrainingProgramType>({
 
 const TrainingProgramProvider = ({ children }: { children: ReactNode }) => {
   const values = useTrainingProgram();
+  const contextValues = useMemo(() => {
+    return values;
+  }, [values]);
+
   return (
-    <TrainingProgramContext.Provider value={values}>
+    <TrainingProgramContext.Provider value={contextValues}>
       {children}
     </TrainingProgramContext.Provider>
   );
@@ -51,32 +58,39 @@ const useTrainingProgramContext = () => {
 
 const STORAGE_KEY = "TRAINING_PROGRAM_STATE";
 function useTrainingProgram() {
-  // const [state, dispatch] = useReducer(
-  //   weeklySessionSplitReducer,
-  //   INITIAL_STATE
-  // );
-
-  const [
-    {
-      frequency,
-      split_sessions,
-      muscle_priority_list,
-      training_program_params,
-      training_week,
-      training_block,
-      mrv_breakpoint,
-      mev_breakpoint,
-    },
-    dispatch,
-  ] = usePersistedReducer(
+  const [state, dispatch] = useReducer(
     weeklySessionSplitReducer,
-    INITIAL_STATE,
-    STORAGE_KEY
+    INITIAL_STATE
   );
-
+  const prevState = useRef(state);
+  // const prevState = usePrevious(state);
   // useEffect(() => {
   //   setValue(state);
   // }, [state]);
+
+  useEffect(() => {
+    const raw = window.localStorage.getItem(STORAGE_KEY);
+    console.log(raw, "YO WHAT UP ???");
+    if (raw) {
+      //checking if there already is a state in localstorage
+      dispatch({
+        type: "INIT_STORED",
+        payload: { value: JSON.parse(raw) },
+        //if yes, update the current state with the stored one
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    const initialEqual = deepEqual(INITIAL_STATE, state);
+    const prevInitialEqual = deepEqual(prevState, INITIAL_STATE);
+    const stateEqual = deepEqual(prevState, state);
+    if (!stateEqual && !initialEqual && !prevInitialEqual) {
+      const stringifiedState = JSON.stringify(state);
+      localStorage.setItem(STORAGE_KEY, stringifiedState);
+      console.log(state, prevState, "OH BOY");
+    }
+  }, [state]);
 
   const handleFrequencyChange = useCallback(
     (value: [number, number], split?: SplitSessionsNameType) => {
@@ -95,7 +109,7 @@ function useTrainingProgram() {
         payload: { priority_list: items },
       });
     },
-    [muscle_priority_list]
+    [state.muscle_priority_list]
   );
 
   const handleUpdateMuscle = useCallback(
@@ -105,7 +119,7 @@ function useTrainingProgram() {
         payload: { updated_muscle: updated_muscle },
       });
     },
-    [muscle_priority_list]
+    [state.muscle_priority_list]
   );
 
   const handleUpdateBreakpoint = useCallback(
@@ -179,14 +193,19 @@ function useTrainingProgram() {
   useEffect(() => {
     // dispatch({ type: "UPDATE_TRAINING_WEEK" });
     console.log(
-      frequency,
-      split_sessions,
-      muscle_priority_list,
-      training_block,
-      training_week,
+      state.frequency,
+      state.split_sessions,
+      state.muscle_priority_list,
+      state.training_block,
+      state.training_week,
       "ALL DATA"
     );
-  }, [frequency, split_sessions, muscle_priority_list, training_week]);
+  }, [
+    state.frequency,
+    state.split_sessions,
+    state.muscle_priority_list,
+    state.training_week,
+  ]);
 
   // useEffect(() => {
   //   dispatch({ type: "GET_TRAINING_BLOCK" });
@@ -194,12 +213,12 @@ function useTrainingProgram() {
   // }, [training_week, muscle_priority_list, frequency, split_sessions]);
 
   return {
-    training_week,
-    training_block,
-    split_sessions,
-    frequency,
-    training_program_params,
-    prioritized_muscle_list: muscle_priority_list,
+    training_week: state.training_week,
+    training_block: state.training_block,
+    split_sessions: state.split_sessions,
+    frequency: state.frequency,
+    training_program_params: state.training_program_params,
+    prioritized_muscle_list: state.muscle_priority_list,
     handleUpdateMuscleList,
     handleUpdateMuscle,
     handleUpdateBreakpoint,
@@ -209,8 +228,8 @@ function useTrainingProgram() {
     handleRearrangeTrainingWeek,
     handleChangeFrequencyProgression,
     handleOnProgramConfigChange,
-    mrv_breakpoint,
-    mev_breakpoint,
+    mrv_breakpoint: state.mrv_breakpoint,
+    mev_breakpoint: state.mev_breakpoint,
   };
 }
 
