@@ -82,9 +82,8 @@ export function HeaderRow() {
 
       {MICROCYCLE_HEADERS.map((each, index) => {
         return (
-          <HeaderCell label={each}>
+          <HeaderCell label={each} key={`${each}_MicrocycleHeader_${index}`}>
             <WeekCell
-              key={`${each}_MicrocycleHeader_${index}`}
               data={CELL_WIDTHS.week.headers}
               widths={CELL_WIDTHS.week.widths}
               bgColor={`${BG_COLOR_M7}`}

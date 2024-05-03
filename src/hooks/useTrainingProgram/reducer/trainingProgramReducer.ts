@@ -366,10 +366,7 @@ export const INITIAL_STATE: State = {
   mev_breakpoint: INITIAL_MEV_BREAKPOINT,
 };
 
-export default function weeklySessionSplitReducer(
-  state: State,
-  action: Action
-) {
+export default function trainingProgramReducer(state: State, action: Action) {
   const frequency = state.frequency;
   const muscle_priority_list = state.muscle_priority_list;
   const split_sessions = state.split_sessions;
@@ -382,40 +379,48 @@ export default function weeklySessionSplitReducer(
 
   switch (action.type) {
     case "UPDATE_PROGRAM_CONFIG":
-      const fr = action.payload.frequency;
-      const sp = action.payload.split;
-      const li = action.payload.muscle_priority_list;
+      const frequencyPayload = action.payload.frequency;
+      const split = action.payload.split;
+      const list = action.payload.muscle_priority_list;
       const params = action.payload.training_program_config;
 
-      const re = onReorderUpdateMusclePriorityList(li, breakpoints);
+      const reorderedList = onReorderUpdateMusclePriorityList(
+        list,
+        breakpoints
+      );
 
-      const up_sp = getSplitFromWeights(fr, re, sp);
-      const re_up_li = onSplitChangeUpdateMusclePriorityList(
-        re,
-        up_sp,
+      const weightedSplit = getSplitFromWeights(
+        frequencyPayload,
+        reorderedList,
+        split
+      );
+
+      const finalizedMuscleList = onSplitChangeUpdateMusclePriorityList(
+        reorderedList,
+        weightedSplit,
         params.mesocycles,
         params.microcycles
       );
 
-      const new_training_week_ = distributeSplitAcrossWeek(
+      const distributedAcrossWeek = distributeSplitAcrossWeek(
         [...INITIAL_WEEK],
-        fr,
-        up_sp
+        frequencyPayload,
+        weightedSplit
       );
 
-      const get_training_block_ = buildTrainingBlockHandler(
-        re_up_li,
-        up_sp,
-        new_training_week_,
+      const distributedAcrossMesocycles = buildTrainingBlockHandler(
+        finalizedMuscleList,
+        weightedSplit,
+        distributedAcrossWeek,
         mesocycles
       );
       return {
         ...state,
-        frequency: fr,
-        muscle_priority_list: re_up_li,
-        split_sessions: up_sp,
-        training_week: new_training_week_,
-        training_block: get_training_block_,
+        frequency: frequencyPayload,
+        muscle_priority_list: finalizedMuscleList,
+        split_sessions: weightedSplit,
+        training_week: distributedAcrossWeek,
+        training_block: distributedAcrossMesocycles,
       };
     case "UPDATE_FREQUENCY":
       const new_freq = action.payload.frequency;

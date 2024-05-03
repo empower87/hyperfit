@@ -9,7 +9,7 @@ import {
   useReducer,
   useRef,
 } from "react";
-import weeklySessionSplitReducer, {
+import trainingProgramReducer, {
   INITIAL_STATE,
   MusclePriorityType,
   SplitSessionsNameType,
@@ -57,38 +57,43 @@ const useTrainingProgramContext = () => {
 };
 
 const STORAGE_KEY = "TRAINING_PROGRAM_STATE";
+
 function useTrainingProgram() {
-  const [state, dispatch] = useReducer(
-    weeklySessionSplitReducer,
-    INITIAL_STATE
-  );
+  const [state, dispatch] = useReducer(trainingProgramReducer, INITIAL_STATE);
   const prevState = useRef(state);
-  // const prevState = usePrevious(state);
-  // useEffect(() => {
-  //   setValue(state);
-  // }, [state]);
 
   useEffect(() => {
     const raw = window.localStorage.getItem(STORAGE_KEY);
-    console.log(raw, "YO WHAT UP ???");
     if (raw) {
-      //checking if there already is a state in localstorage
+      const parsed = JSON.parse(raw);
       dispatch({
         type: "INIT_STORED",
-        payload: { value: JSON.parse(raw) },
-        //if yes, update the current state with the stored one
+        payload: { value: parsed },
       });
+
+      prevState.current = parsed;
     }
   }, []);
 
   useEffect(() => {
-    const initialEqual = deepEqual(INITIAL_STATE, state);
-    const prevInitialEqual = deepEqual(prevState, INITIAL_STATE);
-    const stateEqual = deepEqual(prevState, state);
-    if (!stateEqual && !initialEqual && !prevInitialEqual) {
+    const initialStateEqual = deepEqual(INITIAL_STATE, state);
+    const stateEqual = deepEqual(prevState.current, state);
+
+    const raw = window.localStorage.getItem(STORAGE_KEY);
+    let parsed;
+    if (raw) {
+      parsed = JSON.parse(raw);
+    }
+    console.log(
+      state.split_sessions,
+      prevState.current.split_sessions,
+      parsed.split_sessions,
+      "STATE | PREV_STATE | LOCAL_STORAGE"
+    );
+
+    if (!stateEqual && !initialStateEqual) {
       const stringifiedState = JSON.stringify(state);
-      localStorage.setItem(STORAGE_KEY, stringifiedState);
-      console.log(state, prevState, "OH BOY");
+      window.localStorage.setItem(STORAGE_KEY, stringifiedState);
     }
   }, [state]);
 
@@ -186,12 +191,6 @@ function useTrainingProgram() {
   );
 
   useEffect(() => {
-    dispatch({ type: "UPDATE_SPLIT_SESSIONS", payload: { split: "OPT" } });
-    // dispatch({ type: "UPDATE_TRAINING_WEEK" });
-  }, []);
-
-  useEffect(() => {
-    // dispatch({ type: "UPDATE_TRAINING_WEEK" });
     console.log(
       state.frequency,
       state.split_sessions,
@@ -206,11 +205,6 @@ function useTrainingProgram() {
     state.muscle_priority_list,
     state.training_week,
   ]);
-
-  // useEffect(() => {
-  //   dispatch({ type: "GET_TRAINING_BLOCK" });
-  //   console.log(muscle_priority_list, training_block, "TEST: TRAINING BLOCK");
-  // }, [training_week, muscle_priority_list, frequency, split_sessions]);
 
   return {
     training_week: state.training_week,

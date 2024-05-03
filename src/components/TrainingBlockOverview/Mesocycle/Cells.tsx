@@ -35,6 +35,7 @@ export function ExerciseCell({
         const nonCenteredCells = index !== 0 ? "justify-start indent-1" : "";
         return (
           <Cell
+            key={`${each}_ExerciseCell_${index}`}
             value={each}
             className={`${bgColor} ${widths[index]} ${nonCenteredCells}`}
             fontSize={fontSize}
@@ -51,6 +52,7 @@ export function WeekCell({ data, widths, bgColor, fontSize }: RowCellProps) {
       {data.map((each, index) => {
         return (
           <Cell
+            key={`${each}_WeekCell_${index}`}
             value={each}
             className={`${bgColor} ${widths[index]}`}
             fontSize={fontSize}
