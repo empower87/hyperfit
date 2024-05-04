@@ -48,7 +48,6 @@ function useProgramConfig() {
 
   useEffect(() => {
     const new_training_week = distributeSplitAcrossWeek(
-      [...INITIAL_WEEK],
       frequency,
       split_sessions
     );
@@ -73,9 +72,28 @@ function useProgramConfig() {
     training_block,
   ]);
 
-  const onFrequencyChange = useCallback((values: [number, number]) => {
-    setProgramConfig((prev) => ({ ...prev, frequency: values }));
-  }, []);
+  const onFrequencyChange = useCallback(
+    (values: [number, number]) => {
+      const { split_sessions, muscle_priority_list } = programConfig;
+      const new_split_sessions = getSplitFromWeights(
+        values,
+        muscle_priority_list,
+        split_sessions.split
+      );
+      const new_training_week = distributeSplitAcrossWeek(
+        values,
+        new_split_sessions
+      );
+
+      setProgramConfig((prev) => ({
+        ...prev,
+        frequency: values,
+        split_sessions: new_split_sessions,
+        training_week: new_training_week,
+      }));
+    },
+    [programConfig]
+  );
 
   const onSplitChange = useCallback(
     (split: SplitSessionsNameType) => {
@@ -87,11 +105,10 @@ function useProgramConfig() {
         split
       );
       const new_training_week = distributeSplitAcrossWeek(
-        [...INITIAL_WEEK],
         frequency,
         new_split_sessions
       );
-      console.log(new_split_sessions, "ARE THESE CHANGING?");
+      console.log(new_split_sessions, new_training_week, "ARE THESE CHANGING?");
       setProgramConfig((prev) => ({
         ...prev,
         split_sessions: new_split_sessions,

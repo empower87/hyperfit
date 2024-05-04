@@ -403,7 +403,6 @@ export default function trainingProgramReducer(state: State, action: Action) {
       );
 
       const distributedAcrossWeek = distributeSplitAcrossWeek(
-        [...INITIAL_WEEK],
         frequencyPayload,
         weightedSplit
       );
@@ -531,7 +530,6 @@ export default function trainingProgramReducer(state: State, action: Action) {
       };
     case "UPDATE_TRAINING_WEEK":
       const new_training_week = distributeSplitAcrossWeek(
-        [...INITIAL_WEEK],
         frequency,
         split_sessions
       );

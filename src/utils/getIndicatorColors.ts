@@ -66,7 +66,7 @@ export const getSplitColor = (split: SplitType | "off") => {
     case "chest":
       return {
         bg: "bg-emerald-600",
-        text: "text-teal-500",
+        text: "text-emerald-600",
       };
     case "shoulders":
       return {

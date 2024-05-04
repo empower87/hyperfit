@@ -3,12 +3,6 @@ import { DragDropContext, Draggable, DropResult } from "react-beautiful-dnd";
 import { DragHandleIcon } from "~/assets/icons/_icons";
 import { CardS } from "~/components/Layout/Sections";
 import {
-  BG_COLOR_M5,
-  BG_COLOR_M7,
-  BORDER_COLOR_M4,
-  BORDER_COLOR_M7,
-} from "~/constants/themes";
-import {
   DayType,
   SessionType,
   SplitType,
@@ -116,22 +110,22 @@ const DroppableDay = ({
   droppableId: string;
   onSplitChange: (newSplit: SplitType | "off", id: string) => void;
 }) => {
-  const offDay = {
+  const offDay: SessionType = {
     id: `${droppableId}_off_session`,
     split: "off",
     exercises: [],
   };
 
-  const allSessions = sessions;
+  const allSessions = structuredClone(sessions);
   if (!allSessions.length) {
-    allSessions.push(offDay as unknown as SessionType);
+    allSessions.push(offDay);
   }
 
   return (
-    <div className={cn(`flex flex-col ${BG_COLOR_M5} rounded`)}>
+    <div className={cn(`flex flex-col rounded bg-primary-500`)}>
       <div
         className={cn(
-          `flex w-full justify-center p-1 text-xs font-bold text-white ${BORDER_COLOR_M7} border-b-2`
+          `flex w-full justify-center border-b-2 border-primary-700 p-1 text-xs font-bold text-white`
         )}
       >
         {day}
@@ -210,7 +204,7 @@ function SessionItem({ session, onSplitChange, children }: SessionItemProps) {
       className={cn(
         `flex py-1 ${bgColor} rounded border-2 focus-within:border-rose-400`,
         {
-          [`${BORDER_COLOR_M4}`]: session.split === ("off" as SplitType),
+          [`border-primary-400`]: session.split === ("off" as SplitType),
         }
       )}
     >
@@ -253,7 +247,7 @@ function SelectSession({ session, splits, onSelect }: SelectSessionProps) {
         return (
           <option
             key={`${split}_${index}`}
-            className={`${BG_COLOR_M7} p-1 text-xxs font-bold text-white`}
+            className={`bg-primary-700 p-1 text-xxs font-bold text-white`}
             selected={split === session}
             value={split}
           >
