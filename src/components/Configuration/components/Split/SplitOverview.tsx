@@ -50,6 +50,7 @@ export function TrainingWeek() {
 
       const items = [...trainingWeek];
       const sourceRemoved = items[outerSourceId].sessions[innerSourceId];
+
       let destinationRemoved: SessionType;
       destinationRemoved =
         items[outerDestinationId].sessions[innerDestinationId];
@@ -60,6 +61,7 @@ export function TrainingWeek() {
       }
       items[outerDestinationId].sessions[innerDestinationId] = sourceRemoved;
       items[outerSourceId].sessions[innerSourceId] = destinationRemoved;
+
       onRearrangedWeek(items);
     },
     [trainingWeek]
@@ -110,17 +112,6 @@ const DroppableDay = ({
   droppableId: string;
   onSplitChange: (newSplit: SplitType | "off", id: string) => void;
 }) => {
-  const offDay: SessionType = {
-    id: `${droppableId}_off_session`,
-    split: "off",
-    exercises: [],
-  };
-
-  const allSessions = structuredClone(sessions);
-  if (!allSessions.length) {
-    allSessions.push(offDay);
-  }
-
   return (
     <div className={cn(`flex flex-col rounded bg-primary-500`)}>
       <div
@@ -140,7 +131,7 @@ const DroppableDay = ({
               {...provided.droppableProps}
               ref={provided.innerRef}
             >
-              {allSessions.map((each, index) => {
+              {sessions.map((each, index) => {
                 return (
                   <Draggable
                     key={`${each.id}_${index}_DroppableDay`}

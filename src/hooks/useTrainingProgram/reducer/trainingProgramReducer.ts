@@ -6,11 +6,12 @@ import {
   onSplitChangeUpdateMusclePriorityList,
 } from "../utils/musclePriorityListHandlers";
 import { getSplitFromWeights } from "./getSplitFromPriorityWeighting";
+
 import {
   determineSplitHandler,
   distributeSplitAcrossWeek,
   redistributeSessionsIntoNewSplit,
-} from "./splitSessionsHandler";
+} from "./splitSessionHandler";
 import { VolumeLandmarkType, addMesoProgression } from "./trainingProgramUtils";
 
 export type DayType =
@@ -21,18 +22,6 @@ export type DayType =
   | "Thursday"
   | "Friday"
   | "Saturday";
-
-export type SplitType =
-  | "push"
-  | "legs"
-  | "pull"
-  | "lower"
-  | "upper"
-  | "full"
-  | "back"
-  | "chest"
-  | "arms"
-  | "shoulders";
 
 export type PPLSessionsType = {
   split: "PPL";
@@ -100,6 +89,7 @@ export type CUSSessionsType = {
     shoulders?: number;
   };
 };
+
 export type SplitSessionsType =
   | PPLSessionsType
   | PPLULSessionsType
@@ -111,6 +101,9 @@ export type SplitSessionsType =
 
 export type SplitSessionsNameType = SplitSessionsType["split"];
 export type SplitSessionsSplitsType = SplitSessionsType["sessions"];
+
+type SessionKeys<T> = T extends T ? keyof T : never;
+export type SplitType = SessionKeys<SplitSessionsSplitsType>;
 
 export type ExerciseDetails = {
   sets: number;
@@ -223,6 +216,7 @@ type UpdateProgramConfigAction = {
     split: SplitSessionsNameType;
     muscle_priority_list: MusclePriorityType[];
     training_program_config: TrainingProgramParamsType;
+    training_week: TrainingDayType[];
   };
 };
 type UpdateFrequencyAction = {
@@ -383,6 +377,7 @@ export default function trainingProgramReducer(state: State, action: Action) {
       const split = action.payload.split;
       const list = action.payload.muscle_priority_list;
       const params = action.payload.training_program_config;
+      const trainingWeek = action.payload.training_week;
 
       const reorderedList = onReorderUpdateMusclePriorityList(
         list,
@@ -410,7 +405,7 @@ export default function trainingProgramReducer(state: State, action: Action) {
       const distributedAcrossMesocycles = buildTrainingBlockHandler(
         finalizedMuscleList,
         weightedSplit,
-        distributedAcrossWeek,
+        trainingWeek,
         mesocycles
       );
       return {
@@ -418,7 +413,7 @@ export default function trainingProgramReducer(state: State, action: Action) {
         frequency: frequencyPayload,
         muscle_priority_list: finalizedMuscleList,
         split_sessions: weightedSplit,
-        training_week: distributedAcrossWeek,
+        training_week: trainingWeek,
         training_block: distributedAcrossMesocycles,
       };
     case "UPDATE_FREQUENCY":

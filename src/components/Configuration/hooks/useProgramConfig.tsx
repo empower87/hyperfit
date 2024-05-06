@@ -8,7 +8,8 @@ import {
 } from "react";
 import { DropResult } from "react-beautiful-dnd";
 import { getSplitFromWeights } from "~/hooks/useTrainingProgram/reducer/getSplitFromPriorityWeighting";
-import { distributeSplitAcrossWeek } from "~/hooks/useTrainingProgram/reducer/splitSessionsHandler";
+import { distributeSplitAcrossWeek } from "~/hooks/useTrainingProgram/reducer/splitSessionHandler";
+
 import {
   INITIAL_STATE,
   INITIAL_WEEK,
@@ -23,7 +24,6 @@ import {
   onReorderUpdateMusclePriorityList,
   reorderListByVolumeBreakpoints,
 } from "~/hooks/useTrainingProgram/utils/musclePriorityListHandlers";
-import { onRearrangeTrainingWeek } from "~/hooks/useTrainingProgram/utils/traininingWeekHandlers";
 
 function useProgramConfig() {
   const {
@@ -47,15 +47,15 @@ function useProgramConfig() {
   ]);
 
   useEffect(() => {
-    const new_training_week = distributeSplitAcrossWeek(
-      frequency,
-      split_sessions
-    );
+    // const new_training_week = distributeSplitAcrossWeek(
+    //   frequency,
+    //   split_sessions
+    // );
     setProgramConfig({
       muscle_priority_list: prioritized_muscle_list,
       mrv_breakpoint: mrv_breakpoint,
       mev_breakpoint: mev_breakpoint,
-      training_week: new_training_week,
+      training_week: training_week,
       split_sessions: split_sessions,
       training_program_params: training_program_params,
       frequency: frequency,
@@ -120,28 +120,39 @@ function useProgramConfig() {
 
   const onRearrangedWeek = useCallback(
     (rearranged_week: TrainingDayType[]) => {
-      const updated_week = onRearrangeTrainingWeek(
-        rearranged_week,
-        programConfig.split_sessions
-      );
+      // const updated_week = onRearrangeTrainingWeek(
+      //   rearranged_week,
+      //   programConfig.split_sessions
+      // );
       // NOTE: updates training week's isTrainingDay boolean on UI change.
       //       may not need this boolean, but instead just check sessions.length
       //       to determine if a day is a training day or not.
-      const revised_training_week = updated_week.map((each) => {
-        const sessions = each.sessions.map((ea) => ea.split);
-        let isTrainingDay = true;
-        if (sessions.length === 0) {
-          isTrainingDay = false;
-        }
-        return {
-          ...each,
-          isTrainingDay,
-        };
-      });
+      // const revised_training_week = rearranged_week.map((each) => {
+      //   const sessions = each.sessions.map((ea) => ea.split);
+      //   let isTrainingDay = true;
+      //   if (sessions.length === 0) {
+      //     isTrainingDay = false;
+      //   }
+      //   return {
+      //     ...each,
+      //     isTrainingDay: isTrainingDay,
+      //   };
+      // });
       // setTrainingWeek(revised_training_week);
+
+      const updateTrainingDay = rearranged_week.map((each) => {
+        let hasTrainingDay = false;
+        each.sessions.forEach((each) => {
+          if (each.split !== "off") {
+            hasTrainingDay = true;
+          }
+        });
+        return { ...each, isTrainingDay: hasTrainingDay };
+      });
+
       setProgramConfig((prev) => ({
         ...prev,
-        training_week: revised_training_week,
+        training_week: updateTrainingDay,
       }));
     },
     [programConfig]
@@ -246,12 +257,14 @@ function useProgramConfig() {
       muscle_priority_list,
       training_program_params,
       split_sessions,
+      training_week,
     } = programConfig;
     handleOnProgramConfigChange(
       frequency,
       split_sessions.split,
       muscle_priority_list,
-      training_program_params
+      training_program_params,
+      training_week
     );
   }, [programConfig]);
 

@@ -28,7 +28,7 @@ function Section({ title, variant, children }: SectionProps) {
   return (
     <div className={`flex flex-col rounded border ${variants.border}`}>
       <div
-        className={`flex items-center justify-center px-2 py-0.5 text-xxs text-slate-300 ${variants.bg}`}
+        className={`flex items-center justify-center px-2 py-0.5 text-xs text-slate-300 ${variants.bg}`}
       >
         {title}
       </div>

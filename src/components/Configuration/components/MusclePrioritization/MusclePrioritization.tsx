@@ -35,7 +35,7 @@ function Item({ muscle, index, children }: ItemProps) {
 
   return (
     <div
-      className={`flex ${colors.bg} justify-between rounded-sm text-xxs text-white`}
+      className={`flex ${colors.bg} justify-between rounded-sm text-xs text-white`}
     >
       <div className={`flex`}>
         {children}

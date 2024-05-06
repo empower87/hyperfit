@@ -175,7 +175,8 @@ function useTrainingProgram() {
       _frequency: [number, number],
       _split: SplitSessionsNameType,
       _muscle_priority_list: MusclePriorityType[],
-      _params: TrainingProgramParamsType
+      _params: TrainingProgramParamsType,
+      _training_week: TrainingDayType[]
     ) => {
       dispatch({
         type: "UPDATE_PROGRAM_CONFIG",
@@ -184,6 +185,7 @@ function useTrainingProgram() {
           split: _split,
           muscle_priority_list: _muscle_priority_list,
           training_program_config: _params,
+          training_week: _training_week,
         },
       });
     },

@@ -1,7 +1,7 @@
 import {
   determineSplitHandler,
   redistributeSessionsIntoNewSplit,
-} from "../reducer/splitSessionsHandler";
+} from "../reducer/splitSessionHandler";
 import {
   SplitSessionsSplitsType,
   SplitSessionsType,
@@ -20,6 +20,7 @@ export const onRearrangeTrainingWeek = (
 ) => {
   const splits = rearranged_week
     .map((each) => {
+      console.log(each.sessions, "BUT WHY?");
       const sessions = each.sessions.map((ea) => ea.split);
       const noOffSessions = sessions.filter((each) => each !== "off");
       return noOffSessions;
@@ -39,7 +40,7 @@ export const onRearrangeTrainingWeek = (
     };
   });
 
-  return filteredWeek;
+  return rearranged_week;
 };
 
 const THREE = ["lower", "legs", "back", "chest"];

@@ -28,7 +28,7 @@ function VolumeSettingFrame({
   };
   const textColor = getRankColor(title);
   return (
-    <div className={cn(`${BG_COLOR_M6} flex justify-between text-[0.50rem]`)}>
+    <div className={cn(`${BG_COLOR_M6} flex justify-between text-xxs`)}>
       <div
         className={cn(
           `flex items-center justify-center px-1 indent-1 font-bold ${textColor.text}`
