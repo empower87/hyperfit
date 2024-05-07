@@ -59,31 +59,16 @@ const useTrainingProgramContext = () => {
 
 const STORAGE_KEY = "TRAINING_PROGRAM_STATE";
 
-function isValidState(obj: any): obj is State {
-  // Check if the object has the required properties and their types match the State type
+function isMyType(obj: any): obj is State {
   return (
-    typeof obj === "object" &&
-    obj !== null &&
-    Array.isArray(obj.frequency) &&
-    obj.frequency.length === 2 &&
-    obj.frequency.every((num: number) => typeof num === "number") &&
-    typeof obj.training_program_params === "object" &&
-    Array.isArray(obj.muscle_priority_list) &&
-    obj.muscle_priority_list.every(
-      (item: MusclePriorityType) => typeof item === "object"
-    ) &&
-    Array.isArray(obj.training_week) &&
-    obj.training_week.every(
-      (item: TrainingDayType) => typeof item === "object"
-    ) &&
-    Array.isArray(obj.training_block) &&
-    obj.training_block.every(
-      (arr: TrainingDayType[]) =>
-        Array.isArray(arr) && arr.every((item) => typeof item === "object")
-    ) &&
-    typeof obj.split_sessions === "object" &&
-    typeof obj.mrv_breakpoint === "number" &&
-    typeof obj.mev_breakpoint === "number"
+    "frequency" in obj &&
+    "training_program_params" in obj &&
+    "muscle_priority_list" in obj &&
+    "training_week" in obj &&
+    "training_block" in obj &&
+    "split_sessions" in obj &&
+    "mrv_breakpoint" in obj &&
+    "mev_breakpoint" in obj
   );
 }
 
@@ -96,7 +81,7 @@ function parseState(stateString: string | null): State | null {
     const parsedState = JSON.parse(stateString);
 
     // Type guard to ensure the parsed object matches the State type
-    if (isValidState(parsedState)) {
+    if (isMyType(parsedState)) {
       return parsedState;
     } else {
       console.error("Invalid state data in localStorage");
