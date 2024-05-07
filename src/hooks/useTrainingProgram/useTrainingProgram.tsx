@@ -59,6 +59,10 @@ const useTrainingProgramContext = () => {
 
 const STORAGE_KEY = "TRAINING_PROGRAM_STATE";
 
+function validateStateFromJson(param: any): param is State {
+  return param;
+}
+
 function useTrainingProgram() {
   const [state, dispatch] = useReducer(trainingProgramReducer, INITIAL_STATE);
   const prevState = useRef<State>(state);
@@ -66,8 +70,8 @@ function useTrainingProgram() {
   useEffect(() => {
     const raw = window.localStorage.getItem(STORAGE_KEY);
     if (raw) {
-      const parsed: State | undefined = JSON.parse(raw);
-      if (!parsed) return;
+      const parsed = JSON.parse(raw);
+      if (!validateStateFromJson(parsed)) return;
       dispatch({
         type: "INIT_STORED",
         payload: { value: parsed },
@@ -80,12 +84,6 @@ function useTrainingProgram() {
   useEffect(() => {
     const initialStateEqual = deepEqual(INITIAL_STATE, state);
     const stateEqual = deepEqual(prevState.current, state);
-
-    console.log(
-      state.split_sessions,
-      prevState.current.split_sessions,
-      "STATE | PREV_STATE | LOCAL_STORAGE"
-    );
 
     if (!stateEqual && !initialStateEqual) {
       const stringifiedState = JSON.stringify(state);
