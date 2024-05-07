@@ -78,7 +78,7 @@ function parseState(stateString: string | null): State | null {
   }
 
   try {
-    const parsedState = JSON.parse(stateString);
+    const parsedState: any = JSON.parse(stateString);
 
     // Type guard to ensure the parsed object matches the State type
     if (isMyType(parsedState)) {
