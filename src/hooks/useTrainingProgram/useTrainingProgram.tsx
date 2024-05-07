@@ -66,15 +66,19 @@ function isValidState(obj: any): obj is State {
     obj !== null &&
     Array.isArray(obj.frequency) &&
     obj.frequency.length === 2 &&
-    obj.frequency.every((num: any) => typeof num === "number") &&
+    obj.frequency.every((num: number) => typeof num === "number") &&
     typeof obj.training_program_params === "object" &&
     Array.isArray(obj.muscle_priority_list) &&
-    obj.muscle_priority_list.every((item: any) => typeof item === "object") &&
+    obj.muscle_priority_list.every(
+      (item: MusclePriorityType) => typeof item === "object"
+    ) &&
     Array.isArray(obj.training_week) &&
-    obj.training_week.every((item: any) => typeof item === "object") &&
+    obj.training_week.every(
+      (item: TrainingDayType) => typeof item === "object"
+    ) &&
     Array.isArray(obj.training_block) &&
     obj.training_block.every(
-      (arr: any) =>
+      (arr: TrainingDayType[]) =>
         Array.isArray(arr) && arr.every((item) => typeof item === "object")
     ) &&
     typeof obj.split_sessions === "object" &&
@@ -111,8 +115,7 @@ function useTrainingProgram() {
   useEffect(() => {
     const raw = window.localStorage.getItem(STORAGE_KEY);
     if (raw) {
-      const parsed = JSON.parse(raw);
-      const state = parseState(parsed);
+      const state = parseState(raw);
       if (!state) return;
       dispatch({
         type: "INIT_STORED",
