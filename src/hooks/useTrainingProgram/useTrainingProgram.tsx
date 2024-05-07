@@ -66,7 +66,8 @@ function useTrainingProgram() {
   useEffect(() => {
     const raw = window.localStorage.getItem(STORAGE_KEY);
     if (raw) {
-      const parsed: State = JSON.parse(raw);
+      const parsed: State | undefined = JSON.parse(raw);
+      if (!parsed) return;
       dispatch({
         type: "INIT_STORED",
         payload: { value: parsed },
