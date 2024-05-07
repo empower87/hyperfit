@@ -47,7 +47,7 @@ const calculateTotalVolume = (
   mesocycles: number,
   microcycles: number
 ) => {
-  let totalVolumes = Array.from(Array(mesocycles), (e, i) => 0);
+  const totalVolumes = Array.from(Array(mesocycles), (e, i) => 0);
   for (let i = 0; i < exercises.length; i++) {
     for (let g = 0; g < exercises[i].length; g++) {
       for (let j = 0; j < mesocycles; j++) {
@@ -111,7 +111,11 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
 
   useEffect(() => {
     const exercises = muscleGroup.exercises;
-    let totalVolumes = calculateTotalVolume(exercises, mesocycles, microcycles);
+    const totalVolumes = calculateTotalVolume(
+      exercises,
+      mesocycles,
+      microcycles
+    );
     setVolumes(totalVolumes);
   }, [selectedMesocycleIndex, microcycles, mesocycles, muscleGroup]);
 

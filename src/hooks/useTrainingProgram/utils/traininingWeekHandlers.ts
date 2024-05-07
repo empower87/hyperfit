@@ -20,7 +20,6 @@ export const onRearrangeTrainingWeek = (
 ) => {
   const splits = rearranged_week
     .map((each) => {
-      console.log(each.sessions, "BUT WHY?");
       const sessions = each.sessions.map((ea) => ea.split);
       const noOffSessions = sessions.filter((each) => each !== "off");
       return noOffSessions;
@@ -50,10 +49,10 @@ const ONE = ["arms", "shoulders"];
 const INITIAL_WEEK = [0, 0, 0, 0, 0, 0, 0];
 
 const distributeSessions = (sessions: SplitSessionsSplitsType) => {
-  let three = [];
-  let two = [];
-  let one = [];
-  let off = [];
+  const three = [];
+  const two = [];
+  const one = [];
+  const off = [];
 
   for (const key in sessions) {
     const value: number = sessions[key as keyof SplitSessionsSplitsType];
@@ -100,10 +99,10 @@ const distributeSessions = (sessions: SplitSessionsSplitsType) => {
 // -- [5 / 3 = 1.7] 1.7 3.4 5.1 2 3 5                     0 1 1 1 1 0 1
 // --
 const getArrangedSplit = (sessions: SplitSessionsSplitsType) => {
-  let number_split: number[] = [...INITIAL_WEEK];
-  let arranged_split: (number | string)[] = [...INITIAL_WEEK];
+  const number_split: number[] = [...INITIAL_WEEK];
+  const arranged_split: (number | string)[] = [...INITIAL_WEEK];
 
-  let { three, two, one, off } = distributeSessions(sessions);
+  const { three, two, one, off } = distributeSessions(sessions);
 
   // initialize array with level threes distributed as evenly as possible
   const restPeriod = parseFloat((7 / three.length).toFixed(2));
@@ -117,22 +116,10 @@ const getArrangedSplit = (sessions: SplitSessionsSplitsType) => {
   }
 
   // 0 1 2 3 4 5 6
-  for (let j = 0; j < number_split.length; j++) {
-    let first = j;
-    let last = number_split.length - 1 - j;
-  }
 
   while (three.length + two.length + one.length + off.length > 0) {
     // divide 7 by total sessions
     // loop over sessions and add above + itself and round to get indices
     // distribute indices ie. [0, 1, 0, 1, 1, 0, 1]
-
-    for (let i = 0; i < number_split.length; i++) {
-      let left = i - 1;
-      let right = i + 1;
-    }
-
-    if (three.length) {
-    }
   }
 };

@@ -532,7 +532,7 @@ function ExerciseItem({
             );
           return (
             <div
-              key={`${exercise.id}_WeekOneSets_${sets}_${i}`}
+              key={`${exercise.id}_WeekOneSets_${each}_${i}`}
               className={`flex w-3 justify-center border-r-2 p-0.5 ${BORDER_COLOR_M6}`}
             >
               {each}

@@ -13,6 +13,7 @@ import trainingProgramReducer, {
   INITIAL_STATE,
   MusclePriorityType,
   SplitSessionsNameType,
+  State,
   TrainingDayType,
   TrainingProgramParamsType,
 } from "./reducer/trainingProgramReducer";
@@ -60,12 +61,12 @@ const STORAGE_KEY = "TRAINING_PROGRAM_STATE";
 
 function useTrainingProgram() {
   const [state, dispatch] = useReducer(trainingProgramReducer, INITIAL_STATE);
-  const prevState = useRef(state);
+  const prevState = useRef<State>(state);
 
   useEffect(() => {
     const raw = window.localStorage.getItem(STORAGE_KEY);
     if (raw) {
-      const parsed = JSON.parse(raw);
+      const parsed: State = JSON.parse(raw);
       dispatch({
         type: "INIT_STORED",
         payload: { value: parsed },
@@ -79,15 +80,9 @@ function useTrainingProgram() {
     const initialStateEqual = deepEqual(INITIAL_STATE, state);
     const stateEqual = deepEqual(prevState.current, state);
 
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    let parsed;
-    if (raw) {
-      parsed = JSON.parse(raw);
-    }
     console.log(
       state.split_sessions,
       prevState.current.split_sessions,
-      parsed.split_sessions,
       "STATE | PREV_STATE | LOCAL_STORAGE"
     );
 
