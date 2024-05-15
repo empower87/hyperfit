@@ -5,14 +5,17 @@ import {
   onReorderUpdateMusclePriorityList,
   onSplitChangeUpdateMusclePriorityList,
 } from "../utils/musclePriorityListHandlers";
-import { getSplitFromWeights } from "./getSplitFromPriorityWeighting";
+import {
+  getRankWeightsBySplit,
+  getSplitFromWeights,
+  maths,
+} from "./getSplitFromPriorityWeighting";
 
+import { distributeSplitAcrossWeek } from "../utils/distributeSplitAcrossTrainingWeek";
 import {
   determineSplitHandler,
-  distributeSplitAcrossWeek,
   redistributeSessionsIntoNewSplit,
 } from "./splitSessionHandler";
-import { VolumeLandmarkType, addMesoProgression } from "./trainingProgramUtils";
 
 export type DayType =
   | "Sunday"
@@ -23,86 +26,243 @@ export type DayType =
   | "Friday"
   | "Saturday";
 
+// export type PPLSessionsType = {
+//   split: "PPL";
+//   sessions: {
+//     push: number;
+//     legs: number;
+//     pull: number;
+//   };
+// };
+// export type PPLULSessionsType = {
+//   split: "PPLUL";
+//   sessions: {
+//     push: number;
+//     legs: number;
+//     pull: number;
+//     lower: number;
+//     upper: number;
+//   };
+// };
+// export type BROSessionsType = {
+//   split: "BRO";
+//   sessions: {
+//     legs: number;
+//     back: number;
+//     chest: number;
+//     arms: number;
+//     shoulders: number;
+//   };
+// };
+// export type ULSessionsType = {
+//   split: "UL";
+//   sessions: {
+//     upper: number;
+//     lower: number;
+//   };
+// };
+// export type FBSessionsType = {
+//   split: "FB";
+//   sessions: {
+//     full: number;
+//   };
+// };
+// export type OPTSessionsType = {
+//   split: "OPT";
+//   sessions: {
+//     upper: number;
+//     lower: number;
+//     push: number;
+//     pull: number;
+//     full: number;
+//   };
+// };
+// export type CUSSessionsType = {
+//   split: "CUS";
+//   sessions: {
+//     upper?: number;
+//     lower?: number;
+//     push?: number;
+//     legs?: number;
+//     pull?: number;
+//     full?: number;
+//     back?: number;
+//     chest?: number;
+//     arms?: number;
+//     shoulders?: number;
+//   };
+// };
+type Sessions = {
+  upper?: never;
+  lower?: never;
+  full?: never;
+  push?: never;
+  pull?: never;
+  legs?: never;
+  chest?: never;
+  back?: never;
+  arms?: never;
+  shoulders?: never;
+};
+
+export type FBSessionsType = {
+  upper?: never;
+  lower?: never;
+  full: number;
+  push?: never;
+  pull?: never;
+  legs?: never;
+  chest?: never;
+  back?: never;
+  arms?: never;
+  shoulders?: never;
+};
+
+export type BROSessionsType = {
+  upper?: never;
+  lower?: never;
+  full?: never;
+  push?: never;
+  pull?: never;
+  legs: number;
+  chest: number;
+  back: number;
+  arms: number;
+  shoulders: number;
+};
 export type PPLSessionsType = {
-  split: "PPL";
-  sessions: {
-    push: number;
-    legs: number;
-    pull: number;
-  };
+  upper?: never;
+  lower?: never;
+  full?: never;
+  push: number;
+  pull: number;
+  legs: number;
+  chest?: never;
+  back?: never;
+  arms?: never;
+  shoulders?: never;
 };
 export type PPLULSessionsType = {
-  split: "PPLUL";
-  sessions: {
-    push: number;
-    legs: number;
-    pull: number;
-    lower: number;
-    upper: number;
-  };
-};
-export type BROSessionsType = {
-  split: "BRO";
-  sessions: {
-    legs: number;
-    back: number;
-    chest: number;
-    arms: number;
-    shoulders: number;
-  };
+  upper: number;
+  lower: number;
+  full?: never;
+  push: number;
+  pull: number;
+  legs: number;
+  chest?: never;
+  back?: never;
+  arms?: never;
+  shoulders?: never;
 };
 export type ULSessionsType = {
-  split: "UL";
-  sessions: {
-    upper: number;
-    lower: number;
-  };
-};
-export type FBSessionsType = {
-  split: "FB";
-  sessions: {
-    full: number;
-  };
+  upper: number;
+  lower: number;
+  full?: never;
+  push?: never;
+  pull?: never;
+  legs?: never;
+  chest?: never;
+  back?: never;
+  arms?: never;
+  shoulders?: never;
 };
 export type OPTSessionsType = {
-  split: "OPT";
-  sessions: {
-    upper: number;
-    lower: number;
-    push: number;
-    pull: number;
-    full: number;
-  };
+  upper: number;
+  lower: number;
+  full: number;
+  push: number;
+  pull: number;
+  legs?: never;
+  chest?: never;
+  back?: never;
+  arms?: never;
+  shoulders?: never;
 };
 export type CUSSessionsType = {
-  split: "CUS";
-  sessions: {
-    upper?: number;
-    lower?: number;
-    push?: number;
-    legs?: number;
-    pull?: number;
-    full?: number;
-    back?: number;
-    chest?: number;
-    arms?: number;
-    shoulders?: number;
-  };
+  upper?: number;
+  lower?: number;
+  full?: number;
+  push?: number;
+  pull?: number;
+  legs?: number;
+  chest?: number;
+  back?: number;
+  arms?: number;
+  shoulders?: number;
 };
+export type SplitSessionsNameType =
+  | "BRO"
+  | "OPT"
+  | "PPL"
+  | "PPLUL"
+  | "UL"
+  | "FB"
+  | "CUS";
+export type SplitSessionsType = SplitSessionsGenericType<SplitSessionsNameType>;
 
-export type SplitSessionsType =
-  | PPLSessionsType
-  | PPLULSessionsType
-  | BROSessionsType
-  | ULSessionsType
-  | FBSessionsType
-  | OPTSessionsType
-  | CUSSessionsType;
+export type ReturnValidSessionKeys<T extends SplitSessionsType["sessions"]> = {
+  [key in keyof T]-?: T[key] extends number ? key : never;
+}[keyof T] & {};
 
-export type SplitSessionsNameType = SplitSessionsType["split"];
-export type SplitSessionsSplitsType = SplitSessionsType["sessions"];
+export type OPTSessionKeys = ReturnValidSessionKeys<OPTSessionsType>;
+export type BROSessionKeys = ReturnValidSessionKeys<BROSessionsType>;
+export type PPLSessionKeys = ReturnValidSessionKeys<PPLSessionsType>;
+export type PPLULSessionKeys = ReturnValidSessionKeys<PPLULSessionsType>;
+export type ULSessionKeys = ReturnValidSessionKeys<ULSessionsType>;
+export type FBSessionKeys = ReturnValidSessionKeys<FBSessionsType>;
+export type CUSSessionKeys = ReturnValidSessionKeys<CUSSessionsType>;
 
-type SessionKeys<T> = T extends T ? keyof T : never;
+export type SplitSessionsGenericType<T extends SplitSessionsNameType> =
+  T extends "BRO"
+    ? {
+        split: "BRO";
+        sessions: BROSessionsType;
+      }
+    : T extends "OPT"
+    ? {
+        split: "OPT";
+        sessions: OPTSessionsType;
+      }
+    : T extends "PPL"
+    ? {
+        split: "PPL";
+        sessions: PPLSessionsType;
+      }
+    : T extends "PPLUL"
+    ? {
+        split: "PPLUL";
+        sessions: PPLULSessionsType;
+      }
+    : T extends "UL"
+    ? {
+        split: "UL";
+        sessions: ULSessionsType;
+      }
+    : T extends "FB"
+    ? {
+        split: "FB";
+        sessions: FBSessionsType;
+      }
+    : T extends "CUS"
+    ? {
+        split: "CUS";
+        sessions: CUSSessionsType;
+      }
+    : never;
+
+// export type SplitSessionsType =
+//   | PPLSessionsType
+//   | PPLULSessionsType
+//   | BROSessionsType
+//   | ULSessionsType
+//   | FBSessionsType
+//   | OPTSessionsType
+//   | CUSSessionsType;
+
+export type SplitSessionsSplitsType =
+  SplitSessionsGenericType<SplitSessionsNameType>["sessions"];
+
+export type SessionKeys<T> = T extends T ? keyof T : never;
 export type SplitType = SessionKeys<SplitSessionsSplitsType>;
 
 export type ExerciseDetails = {
@@ -119,7 +279,7 @@ export type ExerciseMesocycleProgressionType = {
   weight: number;
   rir: number;
 };
-
+export type VolumeLandmarkType = "MRV" | "MEV" | "MV";
 export const EXERCISE_TRAINING_MODALITIES = [
   "straight",
   "down",
@@ -180,8 +340,6 @@ export type MusclePriorityType = {
   id: string;
   rank: number;
   muscle: MuscleType;
-  volume_landmark: VolumeLandmarkType;
-  mesoProgression: number[];
   exercises: ExerciseType[][];
   volume: MusclePriorityVolumeType;
 };
@@ -378,6 +536,13 @@ export default function trainingProgramReducer(state: State, action: Action) {
       const list = action.payload.muscle_priority_list;
       const params = action.payload.training_program_config;
       const trainingWeek = action.payload.training_week;
+
+      const sesh = getRankWeightsBySplit(
+        list,
+        split_sessions.split,
+        breakpoints
+      );
+      const mathss = maths(sesh, frequencyPayload[0] + frequencyPayload[1]);
 
       const reorderedList = onReorderUpdateMusclePriorityList(
         list,
@@ -616,16 +781,16 @@ export default function trainingProgramReducer(state: State, action: Action) {
       const vol_breakpoints = action.payload.value;
       // let mev_breakpoint = state.mev_breakpoint;
 
-      const update_priority_breakpoints = addMesoProgression(
-        state.muscle_priority_list,
-        state.split_sessions,
-        vol_breakpoints[0],
-        vol_breakpoints[1]
-      );
+      // const update_priority_breakpoints = addMesoProgression(
+      //   state.muscle_priority_list,
+      //   state.split_sessions,
+      //   vol_breakpoints[0],
+      //   vol_breakpoints[1]
+      // );
 
       return {
         ...state,
-        muscle_priority_list: update_priority_breakpoints,
+        // muscle_priority_list: update_priority_breakpoints,
         mrv_breakpoint: vol_breakpoints[0],
         mev_breakpoint: vol_breakpoints[1],
       };
@@ -639,16 +804,16 @@ export default function trainingProgramReducer(state: State, action: Action) {
         mev_breakpoint = action.payload.value;
       }
 
-      const update_priority_breakpoint = addMesoProgression(
-        state.muscle_priority_list,
-        state.split_sessions,
-        mrv_breakpoint,
-        mev_breakpoint
-      );
+      // const update_priority_breakpoint = addMesoProgression(
+      //   state.muscle_priority_list,
+      //   state.split_sessions,
+      //   mrv_breakpoint,
+      //   mev_breakpoint
+      // );
 
       return {
         ...state,
-        muscle_priority_list: update_priority_breakpoint,
+        // muscle_priority_list: update_priority_breakpoint,
         mrv_breakpoint: mrv_breakpoint,
         mev_breakpoint: mev_breakpoint,
       };

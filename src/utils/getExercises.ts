@@ -6,8 +6,8 @@ import { MuscleType } from "~/constants/workoutSplits";
 import {
   ExerciseType,
   SetProgressionType,
+  type VolumeLandmarkType,
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
-import { VolumeLandmarkType } from "~/hooks/useTrainingProgram/reducer/trainingProgramUtils";
 import {
   ABS_EXERCISES,
   BACK_EXERCISES,

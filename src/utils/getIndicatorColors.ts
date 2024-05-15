@@ -1,5 +1,7 @@
-import { SplitType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
-import { VolumeLandmarkType } from "~/hooks/useTrainingProgram/reducer/trainingProgramUtils";
+import {
+  type SplitType,
+  type VolumeLandmarkType,
+} from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 
 export const getRankColor = (volume_indicator: VolumeLandmarkType) => {
   switch (volume_indicator) {

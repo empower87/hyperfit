@@ -31,6 +31,7 @@ export default function getMuscleTitleForUI(muscle: MuscleType) {
     case "triceps":
       return "Triceps";
     default:
-      return muscle;
+      const _never: never = muscle;
+      return _never;
   }
 }

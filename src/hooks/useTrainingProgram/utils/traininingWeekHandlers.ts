@@ -55,7 +55,8 @@ const distributeSessions = (sessions: SplitSessionsSplitsType) => {
   const off = [];
 
   for (const key in sessions) {
-    const value: number = sessions[key as keyof SplitSessionsSplitsType];
+    // const value: number = sessions[key as keyof SplitSessionsSplitsType];
+    const value: number = 0;
     if (THREE.includes(key)) {
       for (let i = 0; i < value; i++) {
         three.push(key);

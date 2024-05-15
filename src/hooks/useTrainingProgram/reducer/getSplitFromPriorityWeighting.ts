@@ -1,13 +1,210 @@
 import {
   getBroSplit,
+  getOPTSplit,
   getOptimizedSplitForWeights,
+  getPPLULSplit,
+  getPushPullLegsSplit,
+  getUpperLowerSplit,
 } from "~/constants/workoutSplits";
 import { getKeyWithHighestValue } from "~/utils/getKeyWithHighestValue";
+
+import { MUSCLE_WEIGHTS_MODIFIERS } from "~/constants/weighting/muscles";
+import { isKey } from "~/utils/typeHelpers/isKey";
+import { getRankWeightForMuscle as original } from "../utils/musclePriorityListHandlers";
+import {
+  RANK_WEIGHTS_TEST,
+  getWeightedList,
+} from "../utils/prioritizationWeightingHandlers";
+import { initSplitSessions } from "./splitSessionHandler";
 import {
   MusclePriorityType,
   SplitSessionsNameType,
   SplitSessionsType,
 } from "./trainingProgramReducer";
+
+const getWeightRanking_BRO = (
+  muscle_priority_list: MusclePriorityType[],
+  sessions: SplitSessionsType
+) => {
+  type BROKeys = keyof typeof sessions.sessions;
+  const sessions_float = { ...sessions };
+
+  for (let i = 0; i < muscle_priority_list.length; i++) {
+    const bro_muscle = muscle_priority_list[i].muscle;
+    const bro_rank = muscle_priority_list[i].rank;
+    switch (sessions_float.split) {
+      case "BRO":
+        const bro_split = getBroSplit(bro_muscle);
+        sessions_float.sessions[bro_split] =
+          sessions_float.sessions[bro_split] + bro_rank;
+        break;
+      case "UL":
+    }
+  }
+};
+
+const roundHalf = (num: number) => {
+  return Math.round(num * 2) / 2;
+};
+
+export const maths = (
+  split_sessions: SplitSessionsType,
+  total_sessions: number
+) => {
+  const sessions_mapped = structuredClone(split_sessions.sessions);
+  const sessions_float = { ...sessions_mapped };
+  const sessions_ratio = { ...sessions_mapped };
+  const sessions_remainders = { ...sessions_mapped };
+
+  const total = Object.values(sessions_float).reduce(
+    (acc, val) => acc + val,
+    0
+  );
+
+  const sessionsTest: {
+    session: string;
+    modifiers: number[];
+  }[] = [];
+
+  for (const [key, val] of Object.entries(sessions_mapped)) {
+    const decimal = val / total;
+    const ratio = total_sessions * decimal;
+    const integer = Math.floor(ratio);
+    const remainder = ratio - integer;
+
+    const validKey = isKey(sessions_mapped, key);
+    if (validKey) {
+      sessions_float[key] = integer;
+      sessions_ratio[key] = ratio;
+      sessions_remainders[key] = roundHalf(remainder);
+
+      const rounded = Math.round(ratio * 100) / 100;
+      const roundedVal = Math.round(val * 100) / 100;
+      sessionsTest.push({
+        session: key,
+        modifiers: [roundedVal, integer, rounded, roundHalf(remainder)],
+      });
+    }
+  }
+
+  return sessionsTest;
+};
+
+export const getRankWeightsBySplit = (
+  muscle_priority_list: MusclePriorityType[],
+  split: SplitSessionsType["split"],
+  breakpoints: [number, number]
+) => {
+  // const sessions = structuredClone(split_sessions);
+  // const sessions_mapped = Object.fromEntries(
+  //   Object.entries(split_sessions.sessions).map(([key, val]) => [key, 0])
+  // );
+  // const sessions = { ...split_sessions };
+  const sessions = initSplitSessions(split);
+  // const sessions = { split: split_sessions.split, sessions: sessions_mapped };
+  const weights = getWeightedList(breakpoints);
+
+  for (let i = 0; i < muscle_priority_list.length; i++) {
+    const muscle = muscle_priority_list[i].muscle;
+    // const rank = parseFloat(`1.${MUSCLE_WEIGHTS[muscle]}`);
+
+    const muscleWeight = MUSCLE_WEIGHTS_MODIFIERS[muscle].optimalFrequency;
+    const muscleVolume = MUSCLE_WEIGHTS_MODIFIERS[muscle].muscleVolume;
+
+    // const muscleVolume = parseFloat(
+    //   `1.${MUSCLE_WEIGHTS_MODIFIERS[muscle].muscleVolume}`
+    // );
+    const rank = muscleWeight * muscleVolume;
+    // const weight1 = getRankWeightForMuscle(i, muscle, weights) * rank;
+    const weight1 = RANK_WEIGHTS_TEST[i];
+    // const floatedWeight = parseFloat(`1.${Math.round(weight1)}`);
+    const weight = rank * weight1;
+
+    console.log(
+      `${muscle} : `,
+      muscleWeight,
+      muscleVolume,
+      rank,
+      weight1,
+      weight,
+      sessions,
+      "YO WHAT IS GOING ON HERE?"
+    );
+
+    switch (sessions.split) {
+      case "BRO":
+        const bro_splits = getBroSplit(muscle);
+        sessions.sessions[bro_splits] = sessions.sessions[bro_splits] + weight;
+        break;
+      case "PPL":
+        const ppl_splits = getPushPullLegsSplit(muscle);
+        sessions.sessions[ppl_splits] = sessions.sessions[ppl_splits] + weight;
+
+        break;
+      case "PPLUL":
+        const pplul_splits = getPPLULSplit(muscle);
+        for (let j = 0; j < pplul_splits.length; j++) {
+          const split_weight = Math.round(weight / 2);
+
+          if (pplul_splits[j].includes("push")) {
+            sessions.sessions["push"] =
+              sessions.sessions["push"] + split_weight;
+            sessions.sessions["upper"] =
+              sessions.sessions["upper"] + split_weight;
+          } else if (pplul_splits[j].includes("pull")) {
+            sessions.sessions["pull"] =
+              sessions.sessions["pull"] + split_weight;
+            sessions.sessions["upper"] =
+              sessions.sessions["upper"] + split_weight;
+          } else {
+            sessions.sessions["legs"] =
+              sessions.sessions["legs"] + split_weight;
+            sessions.sessions["lower"] =
+              sessions.sessions["lower"] + split_weight;
+          }
+        }
+
+        break;
+      case "UL":
+        const ul_splits = getUpperLowerSplit(muscle);
+        sessions.sessions[ul_splits] = sessions.sessions[ul_splits] + weight;
+        break;
+      case "OPT":
+        const opt_splits = getOPTSplit(muscle);
+        switch (muscle) {
+          case "calves":
+          case "glutes":
+          case "hamstrings":
+          case "quads":
+            sessions.sessions["lower"] = sessions.sessions["lower"] + weight;
+            break;
+          case "back":
+          case "biceps":
+          case "delts_rear":
+          case "traps":
+            sessions.sessions["pull"] = sessions.sessions["pull"] + weight;
+            break;
+          case "chest":
+          case "triceps":
+          case "delts_side":
+          case "delts_front":
+            sessions.sessions["push"] = sessions.sessions["push"] + weight;
+            break;
+          case "abs":
+          case "forearms":
+            sessions.sessions["full"] = sessions.sessions["full"] + weight;
+            break;
+          default:
+            break;
+        }
+        console.log(sessions, opt_splits, "OPT");
+        break;
+      default:
+        break;
+    }
+  }
+  return sessions;
+};
 
 export function getSplitFromWeights(
   frequency: [number, number],
@@ -19,8 +216,9 @@ export function getSplitFromWeights(
   let lower = 0;
 
   for (let i = 0; i < muscle_priority_list.length; i++) {
-    const rank = muscle_priority_list[i].rank;
+    // const rank = muscle_priority_list[i].rank;
     const muscle = muscle_priority_list[i].muscle;
+    const rank = original(i, muscle);
     const split = getOptimizedSplitForWeights(muscle);
     switch (split) {
       case "both":

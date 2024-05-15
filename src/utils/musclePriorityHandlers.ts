@@ -1,5 +1,8 @@
-import { MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
-import { VolumeLandmarkType } from "~/hooks/useTrainingProgram/reducer/trainingProgramUtils";
+import {
+  type MusclePriorityType,
+  type VolumeLandmarkType,
+} from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
+
 import { getMuscleData } from "./getMuscleData";
 
 export const updateMusclePriorityVolume = (
@@ -10,11 +13,11 @@ export const updateMusclePriorityVolume = (
   const updateList = [...list];
   for (let i = 0; i < updateList.length; i++) {
     if (i < mrv_breakpoint) {
-      updateList[i].volume_landmark = "MRV";
+      updateList[i].volume.landmark = "MRV";
     } else if (i >= mrv_breakpoint && i < mev_breakpoint) {
-      updateList[i].volume_landmark = "MEV";
+      updateList[i].volume.landmark = "MEV";
     } else {
-      updateList[i].volume_landmark = "MV";
+      updateList[i].volume.landmark = "MV";
     }
   }
   return updateList;

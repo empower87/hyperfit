@@ -1,7 +1,14 @@
 import {
+  BROSessionKeys,
+  OPTSessionKeys,
+  PPLSessionKeys,
+  PPLULSessionKeys,
+  ReturnValidSessionKeys,
   SplitSessionsNameType,
   SplitSessionsType,
   SplitType,
+  ULSessionKeys,
+  type OPTSessionsType,
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { includes } from "~/utils/readOnlyArrayIncludes";
 
@@ -160,8 +167,8 @@ export const getGroupList = (split: SplitType) => {
   }
 };
 
-const getPPLULSplit = (muscle: MuscleType) => {
-  const allSplits: ("pull" | "push" | "lower" | "legs" | "upper")[] = [];
+export const getPPLULSplit = (muscle: MuscleType): PPLULSessionKeys[] => {
+  const allSplits: PPLULSessionKeys[] = [];
   if (includes(PULL_MUSCLES, muscle)) {
     allSplits.push("pull", "upper");
   } else if (includes(LOWER_MUSCLES, muscle) || muscle === "abs") {
@@ -172,26 +179,13 @@ const getPPLULSplit = (muscle: MuscleType) => {
   return allSplits;
 };
 
-const getOPTSplit = (muscle: MuscleType) => {
-  const allSplits: ("pull" | "push" | "lower" | "upper" | "full")[] = ["full"];
-  if (includes(PUSH_AND_PULL_MUSCLES, muscle)) {
-    allSplits.push("push", "pull", "upper");
-  } else if (includes(PULL_MUSCLES, muscle)) {
-    allSplits.push("pull", "upper");
-  } else if (includes(PUSH_MUSCLES, muscle)) {
-    allSplits.push("push", "upper");
-  } else {
-    allSplits.push("lower");
-  }
-  return allSplits;
-};
-
 export const getMusclesSplit = (
   split: SplitSessionsNameType,
   muscle: MuscleType
 ): SplitType[] => {
   switch (split) {
     case "OPT":
+      const what = getOPTSplit(muscle);
       return getOPTSplit(muscle);
     case "PPL":
       return [getPushPullLegsSplit(muscle)];
@@ -216,7 +210,8 @@ export const getMusclesMaxFrequency = (
 ): number => {
   switch (split_sessions.split) {
     case "OPT":
-      const opt = getOPTSplit(muscle);
+      const opt: ReturnValidSessionKeys<OPTSessionsType>[] =
+        getOPTSplit(muscle);
       return opt.reduce(
         (acc, split) => acc + split_sessions.sessions[split],
         0
@@ -255,7 +250,7 @@ export const getOptimizedSplitForWeights = (muscle: MuscleType) => {
   }
 };
 
-export const getBroSplit = (muscle: MuscleType) => {
+export const getBroSplit = (muscle: MuscleType): BROSessionKeys => {
   if (includes(SHOULDERS_MUSCLES, muscle)) {
     return "shoulders";
   } else if (includes(ARMS_MUSCLES, muscle)) {
@@ -269,36 +264,31 @@ export const getBroSplit = (muscle: MuscleType) => {
   }
 };
 
-export const getPushPullLegsSplit = (muscle: MuscleType) => {
-  if (includes(PUSH_AND_PULL_MUSCLES, muscle)) {
+export const getPushPullLegsSplit = (muscle: MuscleType): PPLSessionKeys => {
+  if (includes(PUSH_MUSCLES, muscle) || muscle === "delts_side") {
     return "push";
-  } else if (includes(PUSH_MUSCLES, muscle)) {
-    return "push";
-  } else if (includes(PULL_MUSCLES, muscle)) {
+  } else if (includes(PULL_MUSCLES, muscle) || muscle === "traps") {
     return "pull";
   } else {
     return "legs";
   }
 };
 
-export const getUpperLowerSplit = (muscle: MuscleType) => {
+export const getUpperLowerSplit = (muscle: MuscleType): ULSessionKeys => {
   if (includes(UPPER_MUSCLES, muscle)) return "upper";
   else return "lower";
 };
 
-export const getOptimizedSplit = (muscle: MuscleType) => {
-  const all: ("upper" | "lower" | "push" | "pull" | "full")[] = [];
-
+export const getOPTSplit = (muscle: MuscleType): OPTSessionKeys[] => {
+  const allSplits: ReturnValidSessionKeys<OPTSessionsType>[] = ["full"];
   if (includes(PUSH_AND_PULL_MUSCLES, muscle)) {
-    all.push("push", "pull", "upper");
-  } else if (includes(PUSH_MUSCLES, muscle)) {
-    all.push("push", "upper");
+    allSplits.push("push", "pull", "upper");
   } else if (includes(PULL_MUSCLES, muscle)) {
-    all.push("pull", "upper");
-  } else if (includes(LOWER_MUSCLES, muscle)) {
-    all.push("lower");
+    allSplits.push("pull", "upper");
+  } else if (includes(PUSH_MUSCLES, muscle)) {
+    allSplits.push("push", "upper");
+  } else {
+    allSplits.push("lower");
   }
-
-  all.push("full");
-  return all;
+  return allSplits;
 };

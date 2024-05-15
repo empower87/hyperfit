@@ -3,11 +3,12 @@ import {
   MRV_PROGRESSION_MATRIX_TWO,
   getMatrixWithAdjustedInitialSets,
 } from "~/constants/volumeProgressionMatrices";
+import { MUSCLE_WEIGHTS } from "~/constants/weighting/muscles";
 import {
   MuscleType,
   UPPER_MUSCLES,
   getBroSplit,
-  getOptimizedSplit,
+  getOPTSplit,
   getPushPullLegsSplit,
 } from "~/constants/workoutSplits";
 import { getTotalExercisesForMuscleGroup } from "~/utils/getExercises";
@@ -15,21 +16,20 @@ import { getMuscleData } from "~/utils/getMuscleData";
 import { includes } from "~/utils/readOnlyArrayIncludes";
 import { getSplitFromWeights } from "../reducer/getSplitFromPriorityWeighting";
 import {
-  MusclePriorityType,
-  SplitSessionsType,
+  type MusclePriorityType,
+  type SplitSessionsType,
+  type VolumeLandmarkType,
 } from "../reducer/trainingProgramReducer";
-import { VolumeLandmarkType } from "../reducer/trainingProgramUtils";
 
 const SYSTEMIC_FATIGUE_MODIFIER = 2;
 const LOWER_MODIFIER = 1.15;
 const RANK_WEIGHTS = [14, 12, 10, 8, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0];
+
 export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
   {
     id: "back-002",
-    rank: RANK_WEIGHTS[0],
+    rank: MUSCLE_WEIGHTS.back,
     muscle: "back",
-    volume_landmark: "MRV",
-    mesoProgression: [0, 0, 0],
     exercises: [],
     volume: {
       landmark: "MRV",
@@ -40,10 +40,8 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
   },
   {
     id: "delts_side-008",
-    rank: RANK_WEIGHTS[1],
+    rank: MUSCLE_WEIGHTS.delts_side,
     muscle: "delts_side",
-    volume_landmark: "MRV",
-    mesoProgression: [0, 0, 0],
     exercises: [],
     volume: {
       landmark: "MRV",
@@ -54,10 +52,8 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
   },
   {
     id: "triceps-014",
-    rank: RANK_WEIGHTS[2],
+    rank: MUSCLE_WEIGHTS.triceps,
     muscle: "triceps",
-    volume_landmark: "MRV",
-    mesoProgression: [0, 0, 0],
     exercises: [],
     volume: {
       landmark: "MRV",
@@ -68,10 +64,8 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
   },
   {
     id: "hamstrings-011",
-    rank: RANK_WEIGHTS[3],
+    rank: MUSCLE_WEIGHTS.hamstrings,
     muscle: "hamstrings",
-    volume_landmark: "MRV",
-    mesoProgression: [0, 0, 0],
     exercises: [],
     volume: {
       landmark: "MRV",
@@ -82,10 +76,8 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
   },
   {
     id: "quads-012",
-    rank: RANK_WEIGHTS[4],
+    rank: MUSCLE_WEIGHTS.quads,
     muscle: "quads",
-    volume_landmark: "MEV",
-    mesoProgression: [0, 0, 0],
     exercises: [],
     volume: {
       landmark: "MEV",
@@ -96,10 +88,8 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
   },
   {
     id: "delts_rear-007",
-    rank: RANK_WEIGHTS[5],
+    rank: MUSCLE_WEIGHTS.delts_rear,
     muscle: "delts_rear",
-    volume_landmark: "MEV",
-    mesoProgression: [0, 0, 0],
     exercises: [],
     volume: {
       landmark: "MEV",
@@ -110,10 +100,8 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
   },
   {
     id: "forearms-009",
-    rank: RANK_WEIGHTS[6],
+    rank: MUSCLE_WEIGHTS.forearms,
     muscle: "forearms",
-    volume_landmark: "MEV",
-    mesoProgression: [0, 0, 0],
     exercises: [],
     volume: {
       landmark: "MEV",
@@ -124,10 +112,8 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
   },
   {
     id: "traps-013",
-    rank: RANK_WEIGHTS[7],
+    rank: MUSCLE_WEIGHTS.traps,
     muscle: "traps",
-    volume_landmark: "MEV",
-    mesoProgression: [0, 0, 0],
     exercises: [],
     volume: {
       landmark: "MEV",
@@ -138,10 +124,8 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
   },
   {
     id: "biceps-003",
-    rank: RANK_WEIGHTS[8],
+    rank: MUSCLE_WEIGHTS.biceps,
     muscle: "biceps",
-    volume_landmark: "MEV",
-    mesoProgression: [0, 0, 0],
     exercises: [],
     volume: {
       landmark: "MEV",
@@ -153,10 +137,8 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
 
   {
     id: "chest-005",
-    rank: RANK_WEIGHTS[9],
+    rank: MUSCLE_WEIGHTS.chest,
     muscle: "chest",
-    volume_landmark: "MV",
-    mesoProgression: [0, 0, 0],
     exercises: [],
     volume: {
       landmark: "MV",
@@ -167,10 +149,8 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
   },
   {
     id: "calves-004",
-    rank: RANK_WEIGHTS[10],
+    rank: MUSCLE_WEIGHTS.calves,
     muscle: "calves",
-    volume_landmark: "MV",
-    mesoProgression: [0, 0, 0],
     exercises: [],
     volume: {
       landmark: "MV",
@@ -182,10 +162,8 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
 
   {
     id: "delts_front-006",
-    rank: RANK_WEIGHTS[11],
+    rank: MUSCLE_WEIGHTS.delts_front,
     muscle: "delts_front",
-    volume_landmark: "MV",
-    mesoProgression: [0, 0, 0],
     exercises: [],
     volume: {
       landmark: "MV",
@@ -196,10 +174,8 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
   },
   {
     id: "abs-001",
-    rank: RANK_WEIGHTS[12],
+    rank: MUSCLE_WEIGHTS.abs,
     muscle: "abs",
-    volume_landmark: "MV",
-    mesoProgression: [0, 0, 0],
     exercises: [],
     volume: {
       landmark: "MV",
@@ -210,10 +186,8 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
   },
   {
     id: "glutes-010",
-    rank: RANK_WEIGHTS[13],
+    rank: MUSCLE_WEIGHTS.glutes,
     muscle: "glutes",
-    volume_landmark: "MV",
-    mesoProgression: [0, 0, 0],
     exercises: [],
     volume: {
       landmark: "MV",
@@ -242,7 +216,7 @@ export const getVolumeLandmarkForMuscle = (
     return "MV";
   }
 };
-const getRankWeightForMuscle = (index: number, muscle: MuscleType) => {
+export const getRankWeightForMuscle = (index: number, muscle: MuscleType) => {
   let muscle_rank = 0;
   switch (muscle) {
     case "hamstrings":
@@ -289,7 +263,6 @@ export const onReorderUpdateMusclePriorityList = (
 
     updated_list[i].rank = muscle_rank;
     updated_list[i].volume.landmark = volume_landmark;
-    updated_list[i].volume_landmark = volume_landmark;
   }
   return updated_list;
 };
@@ -487,7 +460,7 @@ const attachMesocycleFrequencyProgression = (
 
   switch (split_sessions.split) {
     case "OPT":
-      const keys = getOptimizedSplit(muscle);
+      const keys = getOPTSplit(muscle);
 
       for (let i = 0; i < keys.length; i++) {
         sessions = sessions + split_sessions.sessions[keys[i]];

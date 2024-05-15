@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
 import { MuscleType } from "~/constants/workoutSplits";
 import {
-  ExerciseType,
-  MusclePriorityType,
+  type ExerciseType,
+  type MusclePriorityType,
+  type VolumeLandmarkType,
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
-import { VolumeLandmarkType } from "~/hooks/useTrainingProgram/reducer/trainingProgramUtils";
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
 import {
   Exercise,

@@ -1,4 +1,4 @@
-import { VolumeLandmarkType } from "~/hooks/useTrainingProgram/reducer/trainingProgramUtils";
+import { VolumeLandmarkType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 
 export const MRV_PROGRESSION_MATRIX_ONE = [
   [[2]],

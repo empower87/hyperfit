@@ -19,7 +19,8 @@
     "mv_progression_matrix": [["2"], ["2", "2"], ["2", "1", "1"]],
     "restPeriod": 1,
     "systemicallyFatiguing": false,
-    "localSystemicFatigue": ["back"]
+    "localSystemicFatigue": ["back"],
+    "new_data": "mv: 0-4, mev: 4-8 mav: 8-20 mrv: 20-26 mav-p: 20-26 mrv-p: 26-34+"
   },
   {
     "name": "abs",
@@ -41,7 +42,8 @@
     "mv_progression_matrix": [],
     "restPeriod": 1,
     "systemicallyFatiguing": false,
-    "localSystemicFatigue": []
+    "localSystemicFatigue": [],
+    "new_data": "mv: 0-4, mev: 0-4 mav: 4-12 mrv: 12-20 mav-p: 16-24 mrv-p: 24-32+"
   },
   {
     "name": "back",
@@ -63,7 +65,8 @@
     "mv_progression_matrix": [["2-2"], ["2-3", "2"], ["2-2", "2", "1"]],
     "restPeriod": 2,
     "systemicallyFatiguing": true,
-    "localSystemicFatigue": ["biceps"]
+    "localSystemicFatigue": ["biceps"],
+    "new_data": "mv: 2-6, mev: 6-8 mav: 8-20 mrv: 20-26 mav-p: 20-26 mrv-p: 26-34+"
   },
   {
     "name": "traps",
@@ -85,7 +88,8 @@
     "mv_progression_matrix": [],
     "restPeriod": 1,
     "systemicallyFatiguing": false,
-    "localSystemicFatigue": ["delts_rear", "delts_side", "delts_front"]
+    "localSystemicFatigue": ["delts_rear", "delts_side", "delts_front"],
+    "new_data": "mv: 0-4, mev: 0-4 mav: 4-12 mrv: 12-20 mav-p: 16-24 mrv-p: 24-32+"
   },
   {
     "name": "triceps",
@@ -107,7 +111,8 @@
     "mv_progression_matrix": [["2"], ["2", "2"], ["2", "2", "2"]],
     "restPeriod": 1,
     "systemicallyFatiguing": false,
-    "localSystemicFatigue": ["chest"]
+    "localSystemicFatigue": ["chest"],
+    "new_data": "mv: 0-4, mev: 4-6 mav: 6-16 mrv: 16-20 mav-p: 16-20 mrv-p: 20-26+"
   },
   {
     "name": "chest",
@@ -129,7 +134,8 @@
     "mv_progression_matrix": [["2"], ["2", "2"]],
     "restPeriod": 2,
     "systemicallyFatiguing": true,
-    "localSystemicFatigue": ["triceps", "delts_front"]
+    "localSystemicFatigue": ["triceps", "delts_front"],
+    "new_data": "mv: 2-4, mev: 4-6 mav: 6-16 mrv: 16-24 mav-p: 16-24 mrv-p: 24-32+"
   },
   {
     "name": "quads",
@@ -151,7 +157,8 @@
     "mv_progression_matrix": [["2"], ["2", "2"]],
     "restPeriod": 2,
     "systemicallyFatiguing": true,
-    "localSystemicFatigue": ["hamstrings", "glutes"]
+    "localSystemicFatigue": ["hamstrings", "glutes"],
+    "new_data": "mv: 2-4, mev: 4-6 mav: 6-14 mrv: 14-18 mav-p: 10-18 mrv-p: 18-24+"
   },
   {
     "name": "hamstrings",
@@ -173,7 +180,8 @@
     "mv_progression_matrix": [["2"]],
     "restPeriod": 2,
     "systemicallyFatiguing": true,
-    "localSystemicFatigue": ["quads", "hamstrings"]
+    "localSystemicFatigue": ["quads", "hamstrings"],
+    "new_data": "mv: 2-4, mev: 4-6 mav: 6-12 mrv: 12-16 mav-p: 12-16 mrv-p: 16-20+"
   },
   {
     "name": "glutes",
@@ -195,7 +203,8 @@
     "mv_progression_matrix": [],
     "restPeriod": 2,
     "systemicallyFatiguing": true,
-    "localSystemicFatigue": ["hamstrings", "quads"]
+    "localSystemicFatigue": ["hamstrings", "quads"],
+    "new_data": "mv: 2-6, mev: 6-8 mav: 8-24 mrv: 24-30 mav-p: 24-30 mrv-p: 30-40+"
   },
   {
     "name": "delts_front",
@@ -217,7 +226,8 @@
     "mv_progression_matrix": [],
     "restPeriod": 2,
     "systemicallyFatiguing": false,
-    "localSystemicFatigue": ["chest"]
+    "localSystemicFatigue": ["chest"],
+    "new_data": "mv: 0-2, mev: 0-2 mav: 4-8 mrv: 8-12 mav-p: 12-16 mrv-p: 16-20+"
   },
   {
     "name": "delts_side",
@@ -240,7 +250,8 @@
     "restPeriod": 1,
     "frequency": "3-5",
     "systemicallyFatiguing": false,
-    "localSystemicFatigue": ["delts_rear", "delts_front"]
+    "localSystemicFatigue": ["delts_rear", "delts_front"],
+    "new_data": "mv: 2-6, mev: 6-8 mav: 8-24 mrv: 24-30 mav-p: 24-30 mrv-p: 30-40+"
   },
   {
     "name": "delts_rear",
@@ -262,7 +273,8 @@
     "mv_progression_matrix": [],
     "restPeriod": 1,
     "systemicallyFatiguing": false,
-    "localSystemicFatigue": ["back", "delts_side", "delts_front"]
+    "localSystemicFatigue": ["back", "delts_side", "delts_front"],
+    "new_data": "mv: 0-4, mev: 0-4 mav: 4-12 mrv: 12-20 mav-p: 24-30 mrv-p: 30-40+"
   },
   {
     "name": "calves",
@@ -284,7 +296,8 @@
     "mv_progression_matrix": [["3"], ["2", "2"], ["2", "2", "2"]],
     "restPeriod": 1,
     "systemicallyFatiguing": false,
-    "localSystemicFatigue": ["hamstrings"]
+    "localSystemicFatigue": ["hamstrings"],
+    "new_data": "mv: 2-4, mev: 4-6 mav: 6-16 mrv: 16-24 mav-p: 16-24 mrv-p: 24-32+"
   },
   {
     "name": "forearms",
@@ -306,6 +319,7 @@
     "mv_progression_matrix": [],
     "restPeriod": 1,
     "systemicallyFatiguing": false,
-    "localSystemicFatigue": ["biceps"]
+    "localSystemicFatigue": ["biceps"],
+    "new_data": "mv: 0-4, mev: 0-8 mav: 8-24 mrv: 24-30 mav-p: 24-30 mrv-p: 30-40+"
   }
 ]

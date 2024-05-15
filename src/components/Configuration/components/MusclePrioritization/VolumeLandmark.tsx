@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { BG_COLOR_M5, BG_COLOR_M6 } from "~/constants/themes";
-import { VolumeLandmarkType } from "~/hooks/useTrainingProgram/reducer/trainingProgramUtils";
+import { VolumeLandmarkType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { cn } from "~/lib/clsx";
 import { useProgramConfigContext } from "../../hooks/useProgramConfig";
 

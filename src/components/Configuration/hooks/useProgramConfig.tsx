@@ -7,23 +7,30 @@ import {
   useState,
 } from "react";
 import { DropResult } from "react-beautiful-dnd";
-import { getSplitFromWeights } from "~/hooks/useTrainingProgram/reducer/getSplitFromPriorityWeighting";
-import { distributeSplitAcrossWeek } from "~/hooks/useTrainingProgram/reducer/splitSessionHandler";
+import { MUSCLE_WEIGHTS_MODIFIERS } from "~/constants/weighting/muscles";
+import {
+  getRankWeightsBySplit,
+  getSplitFromWeights,
+  maths,
+} from "~/hooks/useTrainingProgram/reducer/getSplitFromPriorityWeighting";
 
 import {
   INITIAL_STATE,
   INITIAL_WEEK,
-  MusclePriorityType,
   State as ProgramConfigState,
-  SplitSessionsNameType,
   TrainingDayType,
+  type MusclePriorityType,
+  type SplitSessionsNameType,
+  type VolumeLandmarkType,
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
-import { VolumeLandmarkType } from "~/hooks/useTrainingProgram/reducer/trainingProgramUtils";
+
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
+import { distributeSplitAcrossWeek } from "~/hooks/useTrainingProgram/utils/distributeSplitAcrossTrainingWeek";
 import {
   onReorderUpdateMusclePriorityList,
   reorderListByVolumeBreakpoints,
 } from "~/hooks/useTrainingProgram/utils/musclePriorityListHandlers";
+import { RANK_WEIGHTS_TEST } from "~/hooks/useTrainingProgram/utils/prioritizationWeightingHandlers";
 
 function useProgramConfig() {
   const {
@@ -45,12 +52,14 @@ function useProgramConfig() {
     mrv_breakpoint,
     mev_breakpoint,
   ]);
+  const [sessionsTest, setSessionsTest] = useState<
+    { session: string; modifiers: number[] }[]
+  >([]);
+  const [priorityListTest, setPriorityListTest] = useState<
+    { muscle: MusclePriorityType; index: number; modifiers: number[] }[]
+  >([]);
 
   useEffect(() => {
-    // const new_training_week = distributeSplitAcrossWeek(
-    //   frequency,
-    //   split_sessions
-    // );
     setProgramConfig({
       muscle_priority_list: prioritized_muscle_list,
       mrv_breakpoint: mrv_breakpoint,
@@ -98,7 +107,12 @@ function useProgramConfig() {
   const onSplitChange = useCallback(
     (split: SplitSessionsNameType) => {
       // setSplit(split);
-      const { frequency, muscle_priority_list } = programConfig;
+      const {
+        frequency,
+        muscle_priority_list,
+        mrv_breakpoint,
+        mev_breakpoint,
+      } = programConfig;
       const new_split_sessions = getSplitFromWeights(
         frequency,
         muscle_priority_list,
@@ -108,7 +122,31 @@ function useProgramConfig() {
         frequency,
         new_split_sessions
       );
-      console.log(new_split_sessions, new_training_week, "ARE THESE CHANGING?");
+
+      const sesh = getRankWeightsBySplit(
+        muscle_priority_list,
+        new_split_sessions.split,
+        [mrv_breakpoint, mev_breakpoint]
+      );
+      const mathss = maths(sesh, frequency[0] + frequency[1]);
+
+      const priorityListTests = muscle_priority_list.map((each, index) => {
+        const optFreq = MUSCLE_WEIGHTS_MODIFIERS[each.muscle].optimalFrequency;
+        const volume = MUSCLE_WEIGHTS_MODIFIERS[each.muscle].muscleVolume;
+        const rankWeight = RANK_WEIGHTS_TEST[index];
+        return {
+          muscle: each,
+          index: index + 1,
+          modifiers: [
+            optFreq,
+            volume,
+            rankWeight,
+            Math.round(optFreq * volume * rankWeight * 100) / 100,
+          ],
+        };
+      });
+      setSessionsTest(mathss);
+      setPriorityListTest(priorityListTests);
       setProgramConfig((prev) => ({
         ...prev,
         split_sessions: new_split_sessions,
@@ -270,6 +308,8 @@ function useProgramConfig() {
 
   return {
     muscle_priority_list: programConfig.muscle_priority_list,
+    sessionsTest,
+    priorityListTest,
     volumeBreakpoints,
     trainingWeek: programConfig.training_week,
     split_sessions: programConfig.split_sessions,
@@ -291,6 +331,8 @@ type ProgramConfigType = ReturnType<typeof useProgramConfig>;
 
 const ProgramConfigContext = createContext<ProgramConfigType>({
   muscle_priority_list: INITIAL_STATE.muscle_priority_list,
+  sessionsTest: [],
+  priorityListTest: [],
   volumeBreakpoints: [4, 9],
   trainingWeek: INITIAL_WEEK,
   split_sessions: INITIAL_STATE.split_sessions,

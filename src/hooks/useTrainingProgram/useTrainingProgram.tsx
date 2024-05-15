@@ -59,7 +59,7 @@ const useTrainingProgramContext = () => {
 
 const STORAGE_KEY = "TRAINING_PROGRAM_STATE";
 
-function isMyType(obj: any): obj is State {
+function isValidState(obj: any): obj is State {
   return (
     "frequency" in obj &&
     "training_program_params" in obj &&
@@ -80,8 +80,7 @@ function parseState(stateString: string | null): State | null {
   try {
     const parsedState: unknown = JSON.parse(stateString);
 
-    // Type guard to ensure the parsed object matches the State type
-    if (isMyType(parsedState)) {
+    if (isValidState(parsedState)) {
       return parsedState;
     } else {
       console.error("Invalid state data in localStorage");
@@ -99,9 +98,11 @@ function useTrainingProgram() {
 
   useEffect(() => {
     const raw = window.localStorage.getItem(STORAGE_KEY);
+
     if (raw) {
       const state = parseState(raw);
       if (!state) return;
+
       dispatch({
         type: "INIT_STORED",
         payload: { value: state },
