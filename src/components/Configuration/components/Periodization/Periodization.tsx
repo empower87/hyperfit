@@ -14,8 +14,8 @@ const TRAINING_BLOCKS = [1, 2, 3, 4];
 export default function Periodization() {
   return (
     <Card title="PERIODIZATION" className={"h-full"}>
-      <div className="flex">
-        <div className={`flex flex-col space-x-1`}>
+      <div className="flex flex-col">
+        <div className={`flex space-x-1`}>
           <Frequency />
           <OtherParams />
         </div>
@@ -84,7 +84,8 @@ function MuscleItem({
   );
 }
 function PriorityRankingTest() {
-  const { priorityListTest, sessionsTest } = useProgramConfigContext();
+  const { priorityListTest, sessionsTest, avgFrequencies } =
+    useProgramConfigContext();
   return (
     <div className={`flex space-x-1`}>
       <ul>
@@ -98,16 +99,66 @@ function PriorityRankingTest() {
           return (
             <li className="flex space-x-1">
               <div className={`flex w-10`}>{each.session}</div>
-              {each.modifiers.map((each) => {
+              {each.modifiers.map((ea, index) => {
+                const text =
+                  (index === 0 || index === each.modifiers.length - 1) && ea > 0
+                    ? "text-red-500 font-semi-bold"
+                    : "text-white";
                 return (
-                  <div className={`flex w-6 items-center justify-center`}>
-                    {each}
+                  <div
+                    className={`flex w-7 items-center justify-center ${text}`}
+                  >
+                    {ea > 0 ? ea : "-"}
                   </div>
                 );
               })}
             </li>
           );
         })}
+      </ul>
+
+      <ul className={`flex flex-col text-xs text-white`}>
+        <li className={`flex space-x-1`}>
+          <div className={`w-10`}>push</div>
+          <div className={`w-6`}>{avgFrequencies.push[0]}</div>
+          <div className={`w-6`}>{avgFrequencies.push[1]}</div>
+          <div className={`w-6 text-blue-400`}>
+            {(avgFrequencies.push[0] + avgFrequencies.push[1]) / 2}
+          </div>
+        </li>
+        <li className={`flex space-x-1`}>
+          <div className={`w-10`}>pull</div>
+          <div className={`w-6`}>{avgFrequencies.pull[0]}</div>
+          <div className={`w-6`}>{avgFrequencies.pull[1]}</div>
+          <div className={`w-6 text-blue-400`}>
+            {(avgFrequencies.pull[0] + avgFrequencies.pull[1]) / 2}
+          </div>
+        </li>
+
+        <li className={`flex space-x-1`}>
+          <div className={`w-10`}>upper</div>
+          <div className={`w-6`}>
+            {avgFrequencies.pull[0] + avgFrequencies.push[0]}
+          </div>
+          <div className={`w-6`}>
+            {avgFrequencies.pull[1] + avgFrequencies.push[1]}
+          </div>
+          <div className={`w-6 text-red-500`}>
+            {(avgFrequencies.pull[0] +
+              avgFrequencies.pull[1] +
+              avgFrequencies.push[0] +
+              avgFrequencies.push[1]) /
+              4}
+          </div>
+        </li>
+        <li className={`flex space-x-1`}>
+          <div className={`w-10`}>legs</div>
+          <div className={`w-6`}>{avgFrequencies.legs[0]}</div>
+          <div className={`w-6`}>{avgFrequencies.legs[1]}</div>
+          <div className={`w-6 text-red-500`}>
+            {(avgFrequencies.legs[0] + avgFrequencies.legs[1]) / 2}
+          </div>
+        </li>
       </ul>
     </div>
   );

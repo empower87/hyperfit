@@ -7,10 +7,14 @@ import {
   useState,
 } from "react";
 import { DropResult } from "react-beautiful-dnd";
-import { MUSCLE_WEIGHTS_MODIFIERS } from "~/constants/weighting/muscles";
+import {
+  MUSCLE_WEIGHTS_MODIFIERS,
+  RANK_WEIGHTS,
+} from "~/constants/weighting/muscles";
 import {
   getRankWeightsBySplit,
   getSplitFromWeights,
+  handleDistribution,
   maths,
 } from "~/hooks/useTrainingProgram/reducer/getSplitFromPriorityWeighting";
 
@@ -30,7 +34,6 @@ import {
   onReorderUpdateMusclePriorityList,
   reorderListByVolumeBreakpoints,
 } from "~/hooks/useTrainingProgram/utils/musclePriorityListHandlers";
-import { RANK_WEIGHTS_TEST } from "~/hooks/useTrainingProgram/utils/prioritizationWeightingHandlers";
 
 function useProgramConfig() {
   const {
@@ -58,6 +61,15 @@ function useProgramConfig() {
   const [priorityListTest, setPriorityListTest] = useState<
     { muscle: MusclePriorityType; index: number; modifiers: number[] }[]
   >([]);
+  const [avgFrequencies, setAvgFrequencies] = useState<{
+    push: number[];
+    pull: number[];
+    legs: number[];
+  }>({
+    push: [],
+    pull: [],
+    legs: [],
+  });
 
   useEffect(() => {
     setProgramConfig({
@@ -131,20 +143,25 @@ function useProgramConfig() {
       const mathss = maths(sesh, frequency[0] + frequency[1]);
 
       const priorityListTests = muscle_priority_list.map((each, index) => {
+        const weight = MUSCLE_WEIGHTS_MODIFIERS[each.muscle].weight;
         const optFreq = MUSCLE_WEIGHTS_MODIFIERS[each.muscle].optimalFrequency;
         const volume = MUSCLE_WEIGHTS_MODIFIERS[each.muscle].muscleVolume;
-        const rankWeight = RANK_WEIGHTS_TEST[index];
+        const rankWeight = RANK_WEIGHTS[index];
         return {
           muscle: each,
           index: index + 1,
           modifiers: [
             optFreq,
+            weight,
             volume,
             rankWeight,
             Math.round(optFreq * volume * rankWeight * 100) / 100,
           ],
         };
       });
+      const lol = handleDistribution(muscle_priority_list, mathss);
+      setAvgFrequencies(lol);
+      console.log(lol, "WHAT HTIS LOOK LIKE?");
       setSessionsTest(mathss);
       setPriorityListTest(priorityListTests);
       setProgramConfig((prev) => ({
@@ -310,6 +327,7 @@ function useProgramConfig() {
     muscle_priority_list: programConfig.muscle_priority_list,
     sessionsTest,
     priorityListTest,
+    avgFrequencies,
     volumeBreakpoints,
     trainingWeek: programConfig.training_week,
     split_sessions: programConfig.split_sessions,
@@ -333,6 +351,7 @@ const ProgramConfigContext = createContext<ProgramConfigType>({
   muscle_priority_list: INITIAL_STATE.muscle_priority_list,
   sessionsTest: [],
   priorityListTest: [],
+  avgFrequencies: { push: [], pull: [], legs: [] },
   volumeBreakpoints: [4, 9],
   trainingWeek: INITIAL_WEEK,
   split_sessions: INITIAL_STATE.split_sessions,

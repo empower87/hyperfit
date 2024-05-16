@@ -8,13 +8,13 @@ import {
 } from "~/constants/workoutSplits";
 import { getKeyWithHighestValue } from "~/utils/getKeyWithHighestValue";
 
-import { MUSCLE_WEIGHTS_MODIFIERS } from "~/constants/weighting/muscles";
+import {
+  MUSCLE_WEIGHTS_MODIFIERS,
+  RANK_WEIGHTS,
+} from "~/constants/weighting/muscles";
 import { isKey } from "~/utils/typeHelpers/isKey";
 import { getRankWeightForMuscle as original } from "../utils/musclePriorityListHandlers";
-import {
-  RANK_WEIGHTS_TEST,
-  getWeightedList,
-} from "../utils/prioritizationWeightingHandlers";
+import { getWeightedList } from "../utils/prioritizationWeightingHandlers";
 import { initSplitSessions } from "./splitSessionHandler";
 import {
   MusclePriorityType,
@@ -41,6 +41,91 @@ const getWeightRanking_BRO = (
       case "UL":
     }
   }
+};
+
+export const handleDistribution = (
+  muscle_priority_list: MusclePriorityType[],
+  sessions: {
+    session: string;
+    modifiers: number[];
+  }[]
+) => {
+  // FIND UPPER MRVS
+  // FIND LOWER MRVS if none check MEVS and return 2 if none in MEVS return 1
+  let pushTracker = 0;
+  let pushCount = [];
+  let pullTracker = 0;
+  let pullCount = [];
+  let legsTracker = 0;
+  let legsCount = [];
+  for (let i = 0; i < muscle_priority_list.length; i++) {
+    const muscle = muscle_priority_list[i].muscle;
+    const split = getPushPullLegsSplit(muscle);
+    if (muscle_priority_list[i].volume.landmark === "MRV") {
+      switch (split) {
+        case "push":
+          if (pushTracker < 2) {
+            const muscleWeight =
+              MUSCLE_WEIGHTS_MODIFIERS[muscle].optimalFrequency;
+            pushCount.push(muscleWeight);
+            pushTracker++;
+          }
+          break;
+        case "pull":
+          if (pullTracker < 2) {
+            const muscleWeight =
+              MUSCLE_WEIGHTS_MODIFIERS[muscle].optimalFrequency;
+            pullCount.push(muscleWeight);
+            pullTracker++;
+          }
+          break;
+        case "legs":
+          if (legsTracker < 2) {
+            const muscleWeight =
+              MUSCLE_WEIGHTS_MODIFIERS[muscle].optimalFrequency;
+            legsCount.push(muscleWeight);
+            legsTracker++;
+          }
+          break;
+        default:
+          break;
+      }
+    } else if (muscle_priority_list[i].volume.landmark === "MEV") {
+      switch (split) {
+        case "push":
+          if (pushTracker < 2) {
+            const muscleWeight =
+              MUSCLE_WEIGHTS_MODIFIERS[muscle].optimalFrequency;
+            pushCount.push(muscleWeight - 1);
+            pushTracker++;
+          }
+          break;
+        case "pull":
+          if (pullTracker < 2) {
+            const muscleWeight =
+              MUSCLE_WEIGHTS_MODIFIERS[muscle].optimalFrequency;
+            pullCount.push(muscleWeight - 1);
+            pullTracker++;
+          }
+          break;
+        case "legs":
+          if (legsTracker < 2) {
+            const muscleWeight =
+              MUSCLE_WEIGHTS_MODIFIERS[muscle].optimalFrequency;
+            legsCount.push(muscleWeight - 1);
+            legsTracker++;
+          }
+          break;
+        default:
+          break;
+      }
+    }
+  }
+  return {
+    push: pushCount,
+    pull: pullCount,
+    legs: legsCount,
+  };
 };
 
 const roundHalf = (num: number) => {
@@ -82,11 +167,75 @@ export const maths = (
       const roundedVal = Math.round(val * 100) / 100;
       sessionsTest.push({
         session: key,
-        modifiers: [roundedVal, integer, rounded, roundHalf(remainder)],
+        modifiers: [integer, roundedVal, rounded, roundHalf(remainder)],
       });
     }
   }
+  const sortedSessionsTest = sessionsTest.sort(
+    (a, b) => b.modifiers[3] - a.modifiers[3]
+  );
+  const evenOutRounders = sessionsTest.map((each) => {});
+  let lower: [string, number] = ["lower", 0];
+  let full: [string, number] = ["full", 0];
+  let push: [string, number] = ["push", 0];
+  let pull: [string, number] = ["pull", 0];
+  let upper: [string, number] = ["upper", 0];
 
+  for (let i = 0; i < sessionsTest.length; i++) {
+    const getRemainder = sessionsTest[i].modifiers[3];
+    if (getRemainder > 0) {
+      switch (sessionsTest[i].session) {
+        case "lower":
+          if (lower[1] >= 0) {
+            lower[1] = lower[1] + getRemainder;
+            full[1] = full[1] - 1;
+          } else {
+            full[1] = full[1] + getRemainder;
+            lower[1] = lower[1] - 1;
+          }
+          break;
+        case "full":
+          if (full[1] >= 0) {
+            full[1] = full[1] + getRemainder;
+            lower[1] = lower[1] - 1;
+          } else {
+            lower[1] = lower[1] + getRemainder;
+            full[1] = full[1] - 1;
+          }
+          break;
+        case "pull":
+        case "push":
+          upper[1] = upper[1] + getRemainder;
+          break;
+        case "upper":
+          upper[1] = upper[1] + getRemainder;
+          break;
+        default:
+          break;
+      }
+    }
+  }
+
+  for (let j = 0; j < sessionsTest.length; j++) {
+    const jv = sessionsTest[j];
+    switch (jv.session) {
+      case "upper":
+        if (upper[1] <= 0) continue;
+        sessionsTest[j].modifiers[0] = sessionsTest[j].modifiers[0] + upper[1];
+        break;
+      case "lower":
+        if (lower[1] <= 0) continue;
+        sessionsTest[j].modifiers[0] = sessionsTest[j].modifiers[0] + lower[1];
+        break;
+      case "full":
+        if (full[1] <= 0) continue;
+        sessionsTest[j].modifiers[0] = sessionsTest[j].modifiers[0] + full[1];
+        break;
+      default:
+        break;
+    }
+  }
+  console.log(lower, full, push, pull, upper, sortedSessionsTest, "LOL TES");
   return sessionsTest;
 };
 
@@ -116,7 +265,7 @@ export const getRankWeightsBySplit = (
     // );
     const rank = muscleWeight * muscleVolume;
     // const weight1 = getRankWeightForMuscle(i, muscle, weights) * rank;
-    const weight1 = RANK_WEIGHTS_TEST[i];
+    const weight1 = RANK_WEIGHTS[i];
     // const floatedWeight = parseFloat(`1.${Math.round(weight1)}`);
     const weight = rank * weight1;
 
@@ -191,8 +340,11 @@ export const getRankWeightsBySplit = (
             sessions.sessions["push"] = sessions.sessions["push"] + weight;
             break;
           case "abs":
+            sessions.sessions["lower"] = sessions.sessions["lower"] + weight;
           case "forearms":
-            sessions.sessions["full"] = sessions.sessions["full"] + weight;
+            const split = Math.round(weight / 2);
+            sessions.sessions["push"] = sessions.sessions["push"] + split;
+            sessions.sessions["pull"] = sessions.sessions["pull"] + split;
             break;
           default:
             break;

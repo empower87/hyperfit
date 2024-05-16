@@ -10,9 +10,9 @@ const INITIAL_MEV_BREAKPOINT = 9;
 const RANK_TEST = [26, 24, 22, 20, 16, 15, 14, 13, 12, 6, 5, 4, 3, 2];
 
 const RANK_WEIGHTS = [14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1];
-export const RANK_WEIGHTS_TEST = [
-  3, 2.8, 2.6, 2.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1, 1, 1, 1, 1,
-];
+// export const RANK_WEIGHTS_TEST = [
+//   3, 2.8, 2.6, 2.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1, 1, 1, 1, 1,
+// ];
 // export const RANK_WEIGHTS_TEST = [
 //   2, 1.9, 1.8, 1.7, 1.2, 1.2, 1.2, 1.2, 1.05, 1.05, 1.05, 1.05, 1.05, 1,
 // ];
