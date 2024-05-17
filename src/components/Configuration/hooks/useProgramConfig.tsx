@@ -11,6 +11,7 @@ import {
   MUSCLE_WEIGHTS_MODIFIERS,
   RANK_WEIGHTS,
 } from "~/constants/weighting/muscles";
+import { distributeWeightsIntoSessions } from "~/hooks/useTrainingProgram/reducer/distributeWeightsIntoSessions";
 import {
   getRankWeightsBySplit,
   getSplitFromWeights,
@@ -160,6 +161,10 @@ function useProgramConfig() {
         };
       });
       const lol = handleDistribution(muscle_priority_list, mathss);
+      const TEST = distributeWeightsIntoSessions(
+        programConfig.frequency[0] + programConfig.frequency[1],
+        lol
+      );
       setAvgFrequencies(lol);
       console.log(lol, "WHAT HTIS LOOK LIKE?");
       setSessionsTest(mathss);

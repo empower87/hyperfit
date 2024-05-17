@@ -14,7 +14,6 @@ import {
 } from "~/constants/weighting/muscles";
 import { isKey } from "~/utils/typeHelpers/isKey";
 import { getRankWeightForMuscle as original } from "../utils/musclePriorityListHandlers";
-import { getWeightedList } from "../utils/prioritizationWeightingHandlers";
 import { initSplitSessions } from "./splitSessionHandler";
 import {
   MusclePriorityType,
@@ -122,9 +121,9 @@ export const handleDistribution = (
     }
   }
   return {
-    push: pushCount,
-    pull: pullCount,
-    legs: legsCount,
+    push: pushCount.sort((a, b) => a - b),
+    pull: pullCount.sort((a, b) => a - b),
+    legs: legsCount.sort((a, b) => a - b),
   };
 };
 
@@ -244,37 +243,22 @@ export const getRankWeightsBySplit = (
   split: SplitSessionsType["split"],
   breakpoints: [number, number]
 ) => {
-  // const sessions = structuredClone(split_sessions);
-  // const sessions_mapped = Object.fromEntries(
-  //   Object.entries(split_sessions.sessions).map(([key, val]) => [key, 0])
-  // );
-  // const sessions = { ...split_sessions };
   const sessions = initSplitSessions(split);
-  // const sessions = { split: split_sessions.split, sessions: sessions_mapped };
-  const weights = getWeightedList(breakpoints);
 
   for (let i = 0; i < muscle_priority_list.length; i++) {
     const muscle = muscle_priority_list[i].muscle;
-    // const rank = parseFloat(`1.${MUSCLE_WEIGHTS[muscle]}`);
 
     const muscleWeight = MUSCLE_WEIGHTS_MODIFIERS[muscle].optimalFrequency;
     const muscleVolume = MUSCLE_WEIGHTS_MODIFIERS[muscle].muscleVolume;
-
-    // const muscleVolume = parseFloat(
-    //   `1.${MUSCLE_WEIGHTS_MODIFIERS[muscle].muscleVolume}`
-    // );
     const rank = muscleWeight * muscleVolume;
-    // const weight1 = getRankWeightForMuscle(i, muscle, weights) * rank;
-    const weight1 = RANK_WEIGHTS[i];
-    // const floatedWeight = parseFloat(`1.${Math.round(weight1)}`);
-    const weight = rank * weight1;
+
+    const weight = rank * RANK_WEIGHTS[i];
 
     console.log(
       `${muscle} : `,
       muscleWeight,
       muscleVolume,
       rank,
-      weight1,
       weight,
       sessions,
       "YO WHAT IS GOING ON HERE?"
@@ -341,6 +325,7 @@ export const getRankWeightsBySplit = (
             break;
           case "abs":
             sessions.sessions["lower"] = sessions.sessions["lower"] + weight;
+            break;
           case "forearms":
             const split = Math.round(weight / 2);
             sessions.sessions["push"] = sessions.sessions["push"] + split;
