@@ -88,6 +88,7 @@ export const distributeWeightsIntoSessions = (
   let upperTracker = 0;
   let subtractor = 1;
 
+  // combine enough push and pulls to get within total_frequency
   while (overSessions > 0 || subtractor <= 0) {
     const val = canCombinePushAndPull(pullMinCount, pushMinCount, subtractor);
     if (!val) {
@@ -99,5 +100,182 @@ export const distributeWeightsIntoSessions = (
       overSessions -= subtractor;
     }
   }
-  console.log(pushMinCount, pullMinCount, upperTracker, "OK WHAT THESE?");
+
+  let remaining_push_pulls =
+    pushMinCount !== pullMinCount && (pushMinCount > 0 || pullMinCount > 0);
+  while (remaining_push_pulls) {
+    const val = canCombinePushAndPull(pullMinCount, pushMinCount, subtractor);
+    if (!val) {
+      break;
+    } else {
+      upperTracker += subtractor;
+      pushMinCount -= subtractor;
+      pullMinCount -= subtractor;
+    }
+  }
+
+  const maxes = {
+    push: 1, // curr: 3, desired: 5
+    pull: 2, // curr: 4, desired: 4
+    upper: 2,
+    legs: 1, // curr: 1, desired: 2
+    full: 0,
+  };
+  // if push and pulls remain then combine them
+  const maxes_after_push_pull = {
+    push: 0, // curr: 3, desired: 5
+    pull: 1, // curr: 4, desired: 4
+    upper: 3,
+    legs: 1, // curr: 1, desired: 2
+    full: 0,
+  };
+
+  // if push || pull remain turn into a full
+  const maxes_after_push_pull_into_full = {
+    push: 0, // curr: 4, desired: 4
+    pull: 0, // curr: 4, desired: 5
+    upper: 3,
+    legs: 1, // curr: 2, desired: 2
+    full: 1,
+  };
+  // if total_sessions < total add to highest priority
+  const maxes_after_push_pull_into_full_after_session_check = {
+    push: 0, // curr: 4, desired: 4
+    pull: 1, // curr: 5, desired: 5
+    upper: 3,
+    legs: 1, // curr: 2, desired: 2
+    full: 1,
+  };
+
+  console.log(
+    "push:",
+    pushMinCount,
+    "pull:",
+    pullMinCount,
+    "upper:",
+    upperTracker,
+    "legs:",
+    freq_limits.legs.min,
+    subtractor,
+    overSessions,
+    "OK WHAT THESE?"
+  );
 };
+
+export const getMaxFrequencyByMatrix = (
+  range: string,
+  rank: number,
+  mrv_breakpoint: number
+) => {
+  switch (range) {
+    case "3,6":
+      return THREE_SIX[mrv_breakpoint][rank];
+    case "3,4":
+      return THREE_FOUR[mrv_breakpoint][rank];
+    case "2,4":
+      return TWO_FOUR[mrv_breakpoint][rank];
+    case "2,5":
+      return TWO_FIVE[mrv_breakpoint][rank];
+    default:
+      return THREE_SIX[3][0];
+  }
+};
+
+// export const getMaxFrequencyByMatrix = (
+//   range: string,
+//   rank: number,
+//   mrv_breakpoint: number
+// ) => {
+//   switch (range) {
+//     case "3,6":
+//       return [THREE_SIX_MIN[mrv_breakpoint][rank], THREE_SIX[mrv_breakpoint][rank]]
+//     case "3,4":
+//       return [THREE_FOUR_MIN[mrv_breakpoint][rank], THREE_FOUR[mrv_breakpoint][rank]]
+//     case "2,4":
+//       return [TWO_FOUR_MIN[mrv_breakpoint][rank], TWO_FOUR[mrv_breakpoint][rank]]
+//     case "2,5":
+//       return [TWO_FIVE_MIN[mrv_breakpoint][rank], TWO_FIVE[mrv_breakpoint][rank]]
+//     default:
+//       return [THREE_SIX_MIN[3][0], THREE_SIX[3][0]]
+//   }
+// };
+const THREE_SIX = [
+  [6],
+  [6, 6],
+  [6, 6, 5],
+  [6, 5, 5, 4],
+  [5, 5, 4, 3, 3],
+  [5, 4, 3, 3, 3, 3],
+  [4, 3, 3, 3, 3, 3, 3],
+  [3, 3, 3, 3, 3, 3, 3, 3],
+];
+const THREE_SIX_MIN = [
+  [5],
+  [5, 5],
+  [5, 5, 4],
+  [4, 4, 3, 3],
+  [4, 3, 3, 3, 3],
+  [3, 3, 3, 3, 3, 3],
+  [3, 3, 3, 3, 3, 3, 3],
+  [3, 3, 3, 3, 3, 3, 3, 3],
+];
+const THREE_FOUR = [
+  [4],
+  [4, 4],
+  [4, 4, 4],
+  [4, 4, 4, 3],
+  [4, 4, 3, 3, 3],
+  [4, 3, 3, 3, 3, 3],
+  [3, 3, 3, 3, 3, 3, 3],
+  [3, 3, 3, 3, 3, 3, 3, 3],
+];
+const THREE_FOUR_MIN = [
+  [4],
+  [4, 4],
+  [4, 4, 4],
+  [3, 3, 3, 3],
+  [3, 3, 3, 3, 3],
+  [3, 3, 3, 3, 3, 3],
+  [3, 3, 3, 3, 3, 3, 3],
+  [3, 3, 3, 3, 3, 3, 3, 3],
+];
+const TWO_FOUR = [
+  [4],
+  [4, 4],
+  [4, 4, 4],
+  [4, 4, 3, 3],
+  [4, 4, 3, 3, 2],
+  [4, 3, 3, 2, 2, 2],
+  [3, 3, 2, 2, 2, 2, 2],
+  [3, 2, 2, 2, 2, 2, 2, 2],
+];
+const TWO_FOUR_MIN = [
+  [4],
+  [4, 4],
+  [4, 4, 3],
+  [3, 3, 3, 2],
+  [3, 3, 2, 2, 2],
+  [3, 2, 2, 2, 2, 2],
+  [2, 2, 2, 2, 2, 2, 2],
+  [2, 2, 2, 2, 2, 2, 2, 2],
+];
+const TWO_FIVE = [
+  [5],
+  [5, 5],
+  [5, 5, 5],
+  [5, 5, 4, 4],
+  [5, 4, 4, 3, 3],
+  [4, 4, 3, 3, 2, 2],
+  [4, 3, 3, 2, 2, 2, 2],
+  [3, 3, 2, 2, 2, 2, 2, 2],
+];
+const TWO_FIVE_MIN = [
+  [5],
+  [5, 5],
+  [5, 5, 4],
+  [4, 3, 3, 2],
+  [3, 3, 2, 2, 2],
+  [3, 2, 2, 2, 2, 2],
+  [2, 2, 2, 2, 2, 2, 2],
+  [2, 2, 2, 2, 2, 2, 2, 2],
+];

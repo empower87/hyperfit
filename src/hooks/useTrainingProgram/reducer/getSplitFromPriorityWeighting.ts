@@ -14,6 +14,7 @@ import {
 } from "~/constants/weighting/muscles";
 import { isKey } from "~/utils/typeHelpers/isKey";
 import { getRankWeightForMuscle as original } from "../utils/musclePriorityListHandlers";
+import { getMaxFrequencyByMatrix } from "./distributeWeightsIntoSessions";
 import { initSplitSessions } from "./splitSessionHandler";
 import {
   MusclePriorityType,
@@ -66,7 +67,10 @@ export const handleDistribution = (
           if (pushTracker < 2) {
             const muscleWeight =
               MUSCLE_WEIGHTS_MODIFIERS[muscle].optimalFrequency;
-            pushCount.push(muscleWeight);
+            const freq_string =
+              MUSCLE_WEIGHTS_MODIFIERS[muscle].frequencyRange.toString();
+            const muscle_max = getMaxFrequencyByMatrix(freq_string, i, 3);
+            pushCount.push(muscle_max);
             pushTracker++;
           }
           break;
@@ -74,7 +78,10 @@ export const handleDistribution = (
           if (pullTracker < 2) {
             const muscleWeight =
               MUSCLE_WEIGHTS_MODIFIERS[muscle].optimalFrequency;
-            pullCount.push(muscleWeight);
+            const freq_string =
+              MUSCLE_WEIGHTS_MODIFIERS[muscle].frequencyRange.toString();
+            const muscle_max = getMaxFrequencyByMatrix(freq_string, i, 3);
+            pullCount.push(muscle_max);
             pullTracker++;
           }
           break;
@@ -82,7 +89,10 @@ export const handleDistribution = (
           if (legsTracker < 2) {
             const muscleWeight =
               MUSCLE_WEIGHTS_MODIFIERS[muscle].optimalFrequency;
-            legsCount.push(muscleWeight);
+            const freq_string =
+              MUSCLE_WEIGHTS_MODIFIERS[muscle].frequencyRange.toString();
+            const muscle_max = getMaxFrequencyByMatrix(freq_string, i, 3);
+            legsCount.push(muscle_max);
             legsTracker++;
           }
           break;
@@ -95,7 +105,7 @@ export const handleDistribution = (
           if (pushTracker < 2) {
             const muscleWeight =
               MUSCLE_WEIGHTS_MODIFIERS[muscle].optimalFrequency;
-            pushCount.push(muscleWeight - 1);
+            pushCount.push(2);
             pushTracker++;
           }
           break;
@@ -103,15 +113,20 @@ export const handleDistribution = (
           if (pullTracker < 2) {
             const muscleWeight =
               MUSCLE_WEIGHTS_MODIFIERS[muscle].optimalFrequency;
-            pullCount.push(muscleWeight - 1);
+            pullCount.push(2);
             pullTracker++;
           }
           break;
         case "legs":
-          if (legsTracker < 2) {
+          if (legsTracker < 2 && legsTracker >= 1) {
             const muscleWeight =
               MUSCLE_WEIGHTS_MODIFIERS[muscle].optimalFrequency;
-            legsCount.push(muscleWeight - 1);
+            legsCount.push(1);
+            legsTracker++;
+          } else {
+            const muscleWeight =
+              MUSCLE_WEIGHTS_MODIFIERS[muscle].optimalFrequency;
+            legsCount.push(2);
             legsTracker++;
           }
           break;

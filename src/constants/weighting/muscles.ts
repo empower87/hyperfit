@@ -86,71 +86,85 @@ const getMultiplier = (num: number, num_total: number) => {
 export const MUSCLE_WEIGHTS_MODIFIERS = {
   abs: {
     muscleVolume: getMultiplier(ABS, TOTAL_MUSCLE_VOLUME),
+    frequencyRange: [3, 6],
     optimalFrequency: 4.5, // 3-6
     weight: 7 - 6,
   },
   back: {
     muscleVolume: getMultiplier(BACK, TOTAL_MUSCLE_VOLUME),
+    frequencyRange: [3, 4],
     optimalFrequency: 3.5, // 3-4
     weight: 7 - 3,
   },
   traps: {
     muscleVolume: getMultiplier(TRAPS, TOTAL_MUSCLE_VOLUME),
+    frequencyRange: [2, 4],
     optimalFrequency: 3, // 2-4
     weight: 7 - 3.5,
   },
   biceps: {
     muscleVolume: getMultiplier(BICEPS, TOTAL_MUSCLE_VOLUME),
+    frequencyRange: [3, 6],
     optimalFrequency: 4.5, // 3-6
     weight: 7 - 4,
   },
   calves: {
     muscleVolume: getMultiplier(CALVES, TOTAL_MUSCLE_VOLUME),
+    frequencyRange: [3, 6],
     optimalFrequency: 4.5, // 3-6
     weight: 7 - 3,
   },
   chest: {
     muscleVolume: getMultiplier(CHEST, TOTAL_MUSCLE_VOLUME),
+    frequencyRange: [2,4],
     optimalFrequency: 3.5, // 2-4
     weight: 7 - 3.5,
   },
   delts_front: {
     muscleVolume: getMultiplier(DELTS_FRONT, TOTAL_MUSCLE_VOLUME),
+    frequencyRange: [2, 3],
     optimalFrequency: 2.5, // 2-3
     weight: 7 - 3,
   },
   delts_rear: {
     muscleVolume: getMultiplier(DELTS_REAR, TOTAL_MUSCLE_VOLUME),
+    frequencyRange: [3, 6],
     optimalFrequency: 4.5, // 3-6
     weight: 7 - 4,
   },
   delts_side: {
     muscleVolume: getMultiplier(DELTS_SIDE, TOTAL_MUSCLE_VOLUME),
+    frequencyRange: [3, 6],
     optimalFrequency: 4.5, // 3-6
     weight: 7 - 4,
   },
   forearms: {
     muscleVolume: getMultiplier(FOREARMS, TOTAL_MUSCLE_VOLUME),
+    frequencyRange: [3, 6],
     optimalFrequency: 4.5, // 3-6
     weight: 7 - 4.5,
   },
   glutes: {
     muscleVolume: getMultiplier(GLUTES_MAX, TOTAL_MUSCLE_VOLUME),
+    frequencyRange: [2, 5],
     optimalFrequency: 3.5, // 2-5
     weight: 7 - 2,
   },
   hamstrings: {
     muscleVolume: getMultiplier(HAMSTRINGS, TOTAL_MUSCLE_VOLUME),
+    frequencyRange: [2, 3],
     optimalFrequency: 2.5, // 2-3
     weight: 7 - 2,
   },
   quads: {
     muscleVolume: getMultiplier(QUADS, TOTAL_MUSCLE_VOLUME),
+    frequencyRange: [2, 5],
     optimalFrequency: 3.5, // 2-5
     weight: 7 - 2,
   },
   triceps: {
     muscleVolume: getMultiplier(TRICEPS, TOTAL_MUSCLE_VOLUME),
+    frequencyRange: [2, 4],
     optimalFrequency: 3, // 2-4
     weight: 7 - 3,
   },
