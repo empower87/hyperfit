@@ -55,14 +55,6 @@ export const distributeWeightsIntoSessions = (
     full: 0,
   };
 
-  const current = {
-    push: 0,
-    pull: 0,
-    legs: 0,
-    upper: 0,
-    full: 0,
-  };
-
   const freq_limits = freqLimitsHandler(limits.push, limits.pull, limits.legs);
 
   const min_sessions_totaled =
@@ -76,41 +68,70 @@ export const distributeWeightsIntoSessions = (
     pullMin: number,
     pushMin: number,
     subVal: number
-  ) => {
+  ): [string, number] | null => {
     const canSubBoth = pullMin >= subVal && pushMin >= subVal;
-
-    if (canSubBoth) return subVal;
-    return null;
+    const canSubPull = pullMin >= subVal;
+    const canSubPush = pushMin >= subVal;
+    if (canSubBoth) return ["both", subVal];
+    else if (canSubPull) return ["pull", pullMin];
+    else if (canSubPush) return ["push", pushMin];
+    else return null;
   };
 
-  let pushMinCount = freq_limits.push.min;
-  let pullMinCount = freq_limits.pull.min;
-  let upperTracker = 0;
+  const current = {
+    push: 0,
+    pull: 0,
+    legs: 0,
+    upper: 0,
+    full: 0,
+  };
+
+  let push = freq_limits.push.min;
+  let pull = freq_limits.pull.min;
+  let upper = 0;
   let subtractor = 1;
 
   // combine enough push and pulls to get within total_frequency
   while (overSessions > 0 || subtractor <= 0) {
-    const val = canCombinePushAndPull(pullMinCount, pushMinCount, subtractor);
+    const val = canCombinePushAndPull(pull, push, subtractor);
     if (!val) {
       subtractor -= 0.5;
-    } else {
-      upperTracker += subtractor;
-      pushMinCount -= subtractor;
-      pullMinCount -= subtractor;
+    } else if (val[0] === "both") {
+      upper += subtractor;
+      push -= subtractor;
+      pull -= subtractor;
       overSessions -= subtractor;
+    } else if (val[0] === "pull") {
+      upper += subtractor;
+      pull -= subtractor;
+      overSessions -= subtractor;
+    } else if (val[0] === "push") {
+      upper += subtractor;
+      push -= subtractor;
+      overSessions -= subtractor;
+    } else {
+      break;
     }
   }
 
-  let remaining_push_pulls =
-    pushMinCount !== pullMinCount && (pushMinCount > 0 || pullMinCount > 0);
+  subtractor = 1;
+  let remaining_push_pulls = push !== pull && (push > 0 || pull > 0);
   while (remaining_push_pulls) {
-    const val = canCombinePushAndPull(pullMinCount, pushMinCount, subtractor);
+    const val = canCombinePushAndPull(pull, push, subtractor);
     if (!val) {
       break;
+    } else if (val[0] === "both") {
+      upper += subtractor;
+      pull -= subtractor;
+      push -= subtractor;
+    } else if (val[0] === "push") {
+      upper += subtractor;
+      push -= subtractor;
+    } else if (val[0] === "pull") {
+      upper += subtractor;
+      pull -= subtractor;
     } else {
-      upperTracker += subtractor;
-      pushMinCount -= subtractor;
-      pullMinCount -= subtractor;
+      break;
     }
   }
 
@@ -123,19 +144,23 @@ export const distributeWeightsIntoSessions = (
   };
   // if push and pulls remain then combine them
   const maxes_after_push_pull = {
-    push: 0, // curr: 3, desired: 5
-    pull: 1, // curr: 4, desired: 4
-    upper: 3,
-    legs: 1, // curr: 1, desired: 2
+    push: 0, // curr: 4, desired: 5
+    pull: 0, // curr: 4, desired: 5
+    upper: 4,
+    legs: 2, // curr: 1, desired: 2
     full: 0,
   };
 
+  // remainder of 1
+  // [4, 5]  [4, 5] [2, 2]
+  // add an upper
+
   // if push || pull remain turn into a full
   const maxes_after_push_pull_into_full = {
-    push: 0, // curr: 4, desired: 4
-    pull: 0, // curr: 4, desired: 5
+    push: 0, // curr: 4, desired: 5, min: 3
+    pull: 0, // curr: 4, desired: 5, min: 4
     upper: 3,
-    legs: 1, // curr: 2, desired: 2
+    legs: 1, // curr: 2, desired: 2, min: 1
     full: 1,
   };
   // if total_sessions < total add to highest priority
@@ -147,17 +172,28 @@ export const distributeWeightsIntoSessions = (
     full: 1,
   };
 
+  const min_max = [
+    [3, 2],
+    [4, 3],
+    [2, 5],
+  ];
+
+  // 1. combine min of push/pull into upper and min of lower
+  // 2. for each split subtract current from max and get a value to determine next step.
+  // 3.
+
   console.log(
     "push:",
-    pushMinCount,
+    push,
     "pull:",
-    pullMinCount,
+    pull,
     "upper:",
-    upperTracker,
+    upper,
     "legs:",
     freq_limits.legs.min,
     subtractor,
     overSessions,
+    // remaining_push_pulls,
     "OK WHAT THESE?"
   );
 };
