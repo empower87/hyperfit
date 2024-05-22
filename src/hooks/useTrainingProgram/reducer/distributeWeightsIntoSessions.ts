@@ -29,6 +29,83 @@ const freqLimitsHandler = (push: number[], pull: number[], legs: number[]) => {
   };
 };
 
+type MaxSessionsPerSplit = {
+  push: {
+    min: number;
+    max: number;
+    avg: number;
+  };
+  pull: {
+    min: number;
+    max: number;
+    avg: number;
+  };
+  legs: {
+    min: number;
+    max: number;
+    avg: number;
+  };
+  upper: {
+    min: number;
+    max: number;
+    avg: number;
+  };
+};
+
+function distributeTotalSessionsIntoSplits(
+  totalSessions: number,
+  maxFullSessions: number,
+  minMaxPerSplit: MaxSessionsPerSplit,
+  prioritizedSplits: ("push" | "pull" | "legs")[]
+): { push: number; pull: number; legs: number; upper: number; full: number } {
+  const distributedSessions = {
+    push: 0,
+    pull: 0,
+    legs: 0,
+    upper: 0,
+    full: 0,
+  };
+
+  // Sort the prioritized splits based on the minimum required sessions
+  const sortedPrioritizedSplits = prioritizedSplits.sort(
+    (a, b) => minMaxPerSplit[a].min - minMaxPerSplit[b].min
+  );
+
+  // Assign the minimum required sessions for each prioritized split
+  for (const split of sortedPrioritizedSplits) {
+    distributedSessions[split] = minMaxPerSplit[split].min;
+    totalSessions -= minMaxPerSplit[split].min;
+  }
+
+  // Assign any remaining sessions to the prioritized splits, up to their maximum allowed sessions
+  while (totalSessions > 0) {
+    for (const split of sortedPrioritizedSplits) {
+      if (
+        distributedSessions[split] < minMaxPerSplit[split].max &&
+        totalSessions > 0
+      ) {
+        distributedSessions[split]++;
+        totalSessions--;
+      }
+    }
+  }
+
+  // Assign any remaining sessions to full sessions, up to the maximum allowed
+  distributedSessions.full = Math.min(totalSessions, maxFullSessions);
+
+  // Assign any remaining sessions to upper sessions
+  distributedSessions.upper = totalSessions - distributedSessions.full;
+
+  // Update push and pull sessions based on upper and full sessions
+  distributedSessions.push +=
+    distributedSessions.upper + distributedSessions.full;
+  distributedSessions.pull +=
+    distributedSessions.upper + distributedSessions.full;
+  distributedSessions.legs += distributedSessions.full;
+
+  return distributedSessions;
+}
+
 export const distributeWeightsIntoSessions = (
   total_sessions: number,
   limits: {
@@ -64,6 +141,14 @@ export const distributeWeightsIntoSessions = (
 
   let overSessions = remainder;
 
+  const freq_limits_2 = {
+    upper: Math.max(freq_limits.push.max, freq_limits.pull.max),
+    full: 2,
+    push: freq_limits.push.max,
+    pull: freq_limits.pull.max,
+    legs: freq_limits.legs.max,
+  };
+
   const canCombinePushAndPull = (
     pullMin: number,
     pushMin: number,
@@ -78,18 +163,27 @@ export const distributeWeightsIntoSessions = (
     else return null;
   };
 
-  const current = {
-    push: 0,
-    pull: 0,
-    legs: 0,
-    upper: 0,
-    full: 0,
-  };
-
+  // current
   let push = freq_limits.push.min;
   let pull = freq_limits.pull.min;
+  let legs = 0;
   let upper = 0;
+  let full = 2;
+
+  let full_limit = 2;
   let subtractor = 1;
+
+  const current = {
+    push: push + upper + full,
+    pull: pull + upper + full,
+    legs: legs + full,
+  };
+
+  const desired = {
+    push: freq_limits.push.max,
+    pull: freq_limits.pull.max,
+    legs: freq_limits.legs.max,
+  };
 
   // combine enough push and pulls to get within total_frequency
   while (overSessions > 0 || subtractor <= 0) {
@@ -134,6 +228,64 @@ export const distributeWeightsIntoSessions = (
       break;
     }
   }
+  const curr = {
+    upper: upper,
+    push: push,
+    pull: pull,
+    legs: legs,
+    full: full,
+  };
+
+  // const result = distributeTotalSessionsIntoSplits(
+  //   total_sessions,
+  //   2,
+  //   freq_limits,
+  //   ["pull", "push", "legs"]
+  // );
+
+  // 1. DISTRIBUTE ALL UPPERS TO MAX and FULLS TO MAX OF LOWER
+  // 2. subtract fulls to reach min of lower/upper || fulls at 2
+  // 3. subtract
+
+  const rough_total = upper + legs + full;
+  if (rough_total > total_sessions) {
+    // subtract all remaining uppers into legs
+    const remainder = rough_total - total_sessions;
+    legs = legs + remainder;
+  } else if (rough_total < total_sessions) {
+    // add all remaining uppers into legs
+    const remainder = total_sessions - upper;
+    legs = legs + remainder;
+  } else {
+    console.log(push, pull, legs, upper, full, "YO YO WE ON TO SOMETHING?");
+  }
+
+  let breaker = false;
+  while (!breaker) {
+    let desired = [
+      freq_limits.push.max,
+      freq_limits.pull.max,
+      freq_limits.legs.max,
+    ];
+    let currents = [current.push, current.pull, current.legs];
+    let results = [
+      desired[0] - currents[0],
+      desired[1] - currents[1],
+      desired[2] - currents[2],
+    ];
+
+    let fullTracker = 0;
+    for (let i = 0; i < results.length; i++) {
+      const result = results[i];
+      if (result > 0) {
+        fullTracker += 1;
+      }
+    }
+
+    let canAddFull = fullTracker === results.length && full_limit > 0;
+
+    breaker = true;
+  }
 
   const maxes = {
     push: 1, // curr: 3, desired: 5
@@ -142,13 +294,14 @@ export const distributeWeightsIntoSessions = (
     legs: 1, // curr: 1, desired: 2
     full: 0,
   };
+
   // if push and pulls remain then combine them
   const maxes_after_push_pull = {
-    push: 0, // curr: 4, desired: 5
-    pull: 0, // curr: 4, desired: 5
+    push: 0, // curr: 5, desired: 5
+    pull: 0, // curr: 5, desired: 5
     upper: 4,
-    legs: 2, // curr: 1, desired: 2
-    full: 0,
+    legs: 1, // curr: 2, desired: 2
+    full: 1,
   };
 
   // remainder of 1
@@ -178,6 +331,10 @@ export const distributeWeightsIntoSessions = (
     [2, 5],
   ];
 
+  // push / legs = full
+  // pull / legs = full
+  // push / pull = upper
+
   // 1. combine min of push/pull into upper and min of lower
   // 2. for each split subtract current from max and get a value to determine next step.
   // 3.
@@ -190,7 +347,9 @@ export const distributeWeightsIntoSessions = (
     "upper:",
     upper,
     "legs:",
-    freq_limits.legs.min,
+    legs,
+    "full:",
+    full,
     subtractor,
     overSessions,
     // remaining_push_pulls,
