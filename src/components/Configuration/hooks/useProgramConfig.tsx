@@ -72,6 +72,13 @@ function useProgramConfig() {
     legs: [],
   });
 
+  const [testSessions, setTestSessions] = useState<{
+    push: number;
+    pull: number;
+    upper: number;
+    legs: number;
+    full: number;
+  }>({ push: 0, pull: 0, upper: 0, legs: 0, full: 0 });
   useEffect(() => {
     setProgramConfig({
       muscle_priority_list: prioritized_muscle_list,
@@ -165,6 +172,7 @@ function useProgramConfig() {
         programConfig.frequency[0] + programConfig.frequency[1],
         lol
       );
+      setTestSessions(TEST);
       setAvgFrequencies(lol);
       console.log(lol, "WHAT HTIS LOOK LIKE?");
       setSessionsTest(mathss);
@@ -347,6 +355,7 @@ function useProgramConfig() {
     onToggleBreakpoints,
     onRearrangedWeek,
     onSelectVolumeLandmarkChange,
+    testSessions,
   };
 }
 
@@ -371,6 +380,7 @@ const ProgramConfigContext = createContext<ProgramConfigType>({
   onToggleBreakpoints: () => null,
   onRearrangedWeek: () => null,
   onSelectVolumeLandmarkChange: () => null,
+  testSessions: { push: 0, pull: 0, upper: 0, legs: 0, full: 0 },
 });
 
 const ProgramConfigProvider = ({ children }: { children: ReactNode }) => {

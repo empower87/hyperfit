@@ -119,18 +119,10 @@ export const distributeWeightsIntoSessions = (
     pull: 32.14,
     legs: 25.14,
   };
-  const weight_order = Object.keys(weight).sort(
+  const weight_order = Object.keys(limits).sort(
     (a, b) =>
-      weight[b as keyof typeof weight] - weight[a as keyof typeof weight]
+      limits[b as keyof typeof weight][1] - limits[a as keyof typeof weight][1]
   );
-
-  const count = {
-    push: 2,
-    pull: 2,
-    legs: 1,
-    upper: 0,
-    full: 0,
-  };
 
   const freq_limits = freqLimitsHandler(limits.push, limits.pull, limits.legs);
 
@@ -140,14 +132,6 @@ export const distributeWeightsIntoSessions = (
   // min_sessions_totaled = 8.5
 
   let overSessions = remainder;
-
-  const freq_limits_2 = {
-    upper: Math.max(freq_limits.push.max, freq_limits.pull.max),
-    full: 2,
-    push: freq_limits.push.max,
-    pull: freq_limits.pull.max,
-    legs: freq_limits.legs.max,
-  };
 
   const canCombinePushAndPull = (
     pullMin: number,
@@ -170,76 +154,13 @@ export const distributeWeightsIntoSessions = (
   let upper = 0;
   let full = 2;
 
-  let full_limit = 2;
   let subtractor = 1;
-
-  const current = {
-    push: push + upper + full,
-    pull: pull + upper + full,
-    legs: legs + full,
-  };
-
-  // combine enough push and pulls to get within total_frequency
-  while (overSessions > 0 || subtractor <= 0) {
-    const val = canCombinePushAndPull(pull, push, subtractor);
-    if (!val) {
-      subtractor -= 0.5;
-    } else if (val[0] === "both") {
-      upper += subtractor;
-      push -= subtractor;
-      pull -= subtractor;
-      overSessions -= subtractor;
-    } else if (val[0] === "pull") {
-      upper += subtractor;
-      pull -= subtractor;
-      overSessions -= subtractor;
-    } else if (val[0] === "push") {
-      upper += subtractor;
-      push -= subtractor;
-      overSessions -= subtractor;
-    } else {
-      break;
-    }
-  }
-
-  subtractor = 1;
-  let remaining_push_pulls = push !== pull && (push > 0 || pull > 0);
-  while (remaining_push_pulls) {
-    const val = canCombinePushAndPull(pull, push, subtractor);
-    if (!val) {
-      break;
-    } else if (val[0] === "both") {
-      upper += subtractor;
-      pull -= subtractor;
-      push -= subtractor;
-    } else if (val[0] === "push") {
-      upper += subtractor;
-      push -= subtractor;
-    } else if (val[0] === "pull") {
-      upper += subtractor;
-      pull -= subtractor;
-    } else {
-      break;
-    }
-  }
-
-  full = 2;
-  upper = total_sessions - full;
-
-  const prioritizedSplits = ["legs", "pull", "push"];
-  let unloop = false;
-
-  let pushAdd = true;
-  let pushSub = true;
-  let pullAdd = true;
-  let pullSub = true;
-  let legsAdd = true;
-  let legsSub = true;
 
   const sortSessions = (
     pull: number,
     push: number,
     legs: number,
+    full: number,
     type: "current" | "distFromMax"
   ) => {
     let pushPullLegsTuple: [string, number][] = [
@@ -252,9 +173,9 @@ export const distributeWeightsIntoSessions = (
       pushPullLegsTuple.sort((a, b) => b[1] - a[1]);
     } else {
       const distFromMax: [string, number][] = [
-        ["push", freq_limits.push.max - push],
-        ["pull", freq_limits.pull.max - pull],
-        ["legs", freq_limits.legs.max - legs],
+        ["push", freq_limits.push.max - push - full],
+        ["pull", freq_limits.pull.max - pull - full],
+        ["legs", freq_limits.legs.max - legs - full],
       ];
       pushPullLegsTuple = distFromMax.sort((a, b) => b[1] - a[1]);
     }
@@ -291,25 +212,61 @@ export const distributeWeightsIntoSessions = (
     }
     return targetIndex < checkIndex;
   };
+
+  full = 2;
+  upper = total_sessions - full;
+
+  const prioritizedSplits = weight_order;
+  let unloop = false;
+
+  let pushAdd = true;
+  let pushSub = true;
+  let pullAdd = true;
+  let pullSub = true;
+  let legsAdd = true;
+  let legsSub = true;
+
   while (!unloop) {
-    console.log(push, pull, upper, legs, full, "beginning of while loop");
+    console.log(
+      push,
+      pull,
+      upper,
+      legs,
+      full,
+      prioritizedSplits,
+      "beginning of while loop"
+    );
     for (const split of prioritizedSplits) {
       if (split === "push") {
         const { min, max } = freq_limits.push;
         if (max === upper + full) {
           pushAdd = false;
-          if (upper > min) {
+          if (upper + full > min) {
             pushSub = true;
           } else {
             pushSub = false;
           }
         } else if (max < upper + full) {
-          const first = sortSessions(pull, push, legs, "distFromMax")[0];
+          const first = sortSessions(
+            upper,
+            upper,
+            legs,
+            full,
+            "distFromMax"
+          )[0];
+
           if (first[0] === "legs") {
-            legs++;
-            upper--;
+            if (first[1] < 1) {
+              if (full > 0) {
+                legs++;
+                full--;
+              }
+            } else {
+              legs++;
+              upper--;
+            }
           } else {
-            console.log(upper, full, legs, "got a pull in my push");
+            console.log(first, upper, full, legs, "got a pull in my push");
           }
 
           if (upper + full - 1 > max) {
@@ -350,18 +307,32 @@ export const distributeWeightsIntoSessions = (
         const { min, max } = freq_limits.pull;
         if (max === upper + full) {
           pullAdd = false;
-          if (upper > min) {
+          if (upper + full > min) {
             pullSub = true;
           } else {
             pullSub = false;
           }
         } else if (max < upper + full) {
-          const first = sortSessions(pull, push, legs, "distFromMax")[0];
+          const first = sortSessions(
+            upper,
+            upper,
+            legs,
+            full,
+            "distFromMax"
+          )[0];
+
           if (first[0] === "legs") {
-            legs++;
-            upper--;
+            if (first[1] < 1) {
+              if (full > 0) {
+                legs++;
+                full--;
+              }
+            } else {
+              legs++;
+              upper--;
+            }
           } else {
-            console.log(upper, full, legs, "got a push in my pull");
+            console.log(first, upper, full, legs, "got a push in my pull");
           }
 
           if (upper + full - 1 > max) {
@@ -401,13 +372,13 @@ export const distributeWeightsIntoSessions = (
         const { min, max } = freq_limits.legs;
         if (max === legs + full) {
           legsAdd = false;
-          if (legs > min) {
+          if (legs + full > min) {
             legsSub = true;
           } else {
             legsSub = false;
           }
         } else if (max < legs + full) {
-          const first = sortSessions(pull, push, legs, "distFromMax")[0];
+          const first = sortSessions(pull, push, legs, full, "distFromMax")[0];
           if (first[0] === "push" || first[0] === "pull") {
             upper++;
             legs--;
@@ -427,6 +398,31 @@ export const distributeWeightsIntoSessions = (
           const canSubFromPull = canSubtractFromSplit("pull", upper + full);
           const canSubFromPush = canSubtractFromSplit("push", upper + full);
 
+          // if subtracting 1 from max >
+          const pushOrPullMax = Math.max(
+            freq_limits.push.max,
+            freq_limits.pull.max
+          );
+          const subtractedCurrent = upper + full - 1;
+          const addedLegsCurrent = legs + full + 1;
+          console.log(
+            pushOrPullMax,
+            subtractedCurrent,
+            legs,
+            upper,
+            full,
+            "WTF AM I HERE EVEN?"
+          );
+          if (
+            pushOrPullMax - subtractedCurrent >
+            freq_limits.legs.max - addedLegsCurrent
+          ) {
+            console.log("AM I HEREE VEN?");
+            legsAdd = false;
+            pushAdd = false;
+            pullAdd = false;
+            break;
+          }
           if (canSubFromPull || canSubFromPush) {
             upper--;
             // possilby check whether i should add to push vs. upper
@@ -474,61 +470,8 @@ export const distributeWeightsIntoSessions = (
     if (!pushAdd && !pullAdd && !legsAdd) {
       unloop = true;
     }
-    unloop = true;
+    // unloop = true;
   }
-
-  // console.log(upper, full, legs, total_sessions, "OH BOY");
-
-  // const result = distributeTotalSessionsIntoSplits(
-  //   total_sessions,
-  //   2,
-  //   freq_limits,
-  //   ["pull", "push", "legs"]
-  // );
-
-  // 1. DISTRIBUTE ALL UPPERS TO MAX and FULLS TO MAX OF LOWER
-  // 2. subtract fulls to reach min of lower/upper || fulls at 2
-  // 3. subtract
-
-  // const rough_total = upper + legs + full;
-  // if (rough_total > total_sessions) {
-  //   // subtract all remaining uppers into legs
-  //   const remainder = rough_total - total_sessions;
-  //   legs = legs + remainder;
-  // } else if (rough_total < total_sessions) {
-  //   // add all remaining uppers into legs
-  //   const remainder = total_sessions - upper;
-  //   legs = legs + remainder;
-  // } else {
-  //   console.log(push, pull, legs, upper, full, "YO YO WE ON TO SOMETHING?");
-  // }
-
-  // let breaker = false;
-  // while (!breaker) {
-  //   let desired = [
-  //     freq_limits.push.max,
-  //     freq_limits.pull.max,
-  //     freq_limits.legs.max,
-  //   ];
-  //   let currents = [current.push, current.pull, current.legs];
-  //   let results = [
-  //     desired[0] - currents[0],
-  //     desired[1] - currents[1],
-  //     desired[2] - currents[2],
-  //   ];
-
-  //   let fullTracker = 0;
-  //   for (let i = 0; i < results.length; i++) {
-  //     const result = results[i];
-  //     if (result > 0) {
-  //       fullTracker += 1;
-  //     }
-  //   }
-
-  //   let canAddFull = fullTracker === results.length && full_limit > 0;
-
-  //   breaker = true;
-  // }
 
   console.log(
     "push:",
@@ -545,6 +488,13 @@ export const distributeWeightsIntoSessions = (
     overSessions,
     "OK WHAT THESE?"
   );
+  return {
+    push: 0,
+    pull: 0,
+    upper: upper,
+    legs: legs,
+    full: full,
+  };
 };
 
 export const getMaxFrequencyByMatrix = (
@@ -559,6 +509,8 @@ export const getMaxFrequencyByMatrix = (
       return THREE_FOUR[mrv_breakpoint][rank];
     case "2,4":
       return TWO_FOUR[mrv_breakpoint][rank];
+    case "2,3":
+      return TWO_THREE[mrv_breakpoint][rank];
     case "2,5":
       return TWO_FIVE[mrv_breakpoint][rank];
     default:
@@ -624,6 +576,16 @@ const THREE_FOUR_MIN = [
   [3, 3, 3, 3, 3, 3, 3],
   [3, 3, 3, 3, 3, 3, 3, 3],
 ];
+const TWO_THREE = [
+  [3],
+  [3, 3],
+  [3, 3, 3],
+  [3, 3, 3, 3],
+  [3, 3, 3, 2, 2],
+  [3, 3, 2, 2, 2, 2],
+  [3, 2, 2, 2, 2, 2, 2],
+  [2, 2, 2, 2, 2, 2, 2, 2],
+];
 const TWO_FOUR = [
   [4],
   [4, 4],
@@ -664,3 +626,391 @@ const TWO_FIVE_MIN = [
   [2, 2, 2, 2, 2, 2, 2],
   [2, 2, 2, 2, 2, 2, 2, 2],
 ];
+
+// export const distributeWeightsIntoSessions = (
+//   total_sessions: number,
+//   limits: {
+//     push: number[];
+//     pull: number[];
+//     legs: number[];
+//   }
+// ) => {
+//   const weight = {
+//     push: 29.02,
+//     pull: 32.14,
+//     legs: 25.14,
+//   };
+//   const weight_order = Object.keys(weight).sort(
+//     (a, b) =>
+//       weight[b as keyof typeof weight] - weight[a as keyof typeof weight]
+//   );
+
+//   const count = {
+//     push: 2,
+//     pull: 2,
+//     legs: 1,
+//     upper: 0,
+//     full: 0,
+//   };
+
+//   const freq_limits = freqLimitsHandler(limits.push, limits.pull, limits.legs);
+
+//   const min_sessions_totaled =
+//     freq_limits.push.min + freq_limits.pull.min + freq_limits.legs.min;
+//   const remainder = min_sessions_totaled - total_sessions;
+//   // min_sessions_totaled = 8.5
+
+//   let overSessions = remainder;
+
+//   const freq_limits_2 = {
+//     upper: Math.max(freq_limits.push.max, freq_limits.pull.max),
+//     full: 2,
+//     push: freq_limits.push.max,
+//     pull: freq_limits.pull.max,
+//     legs: freq_limits.legs.max,
+//   };
+
+//   const canCombinePushAndPull = (
+//     pullMin: number,
+//     pushMin: number,
+//     subVal: number
+//   ): [string, number] | null => {
+//     const canSubBoth = pullMin >= subVal && pushMin >= subVal;
+//     const canSubPull = pullMin >= subVal;
+//     const canSubPush = pushMin >= subVal;
+//     if (canSubBoth) return ["both", subVal];
+//     else if (canSubPull) return ["pull", pullMin];
+//     else if (canSubPush) return ["push", pushMin];
+//     else return null;
+//   };
+
+//   // current
+//   let push = freq_limits.push.min;
+//   let pull = freq_limits.pull.min;
+//   let legs = 0;
+//   let upper = 0;
+//   let full = 2;
+
+//   let full_limit = 2;
+//   let subtractor = 1;
+
+//   const current = {
+//     push: push + upper + full,
+//     pull: pull + upper + full,
+//     legs: legs + full,
+//   };
+
+//   // combine enough push and pulls to get within total_frequency
+//   while (overSessions > 0 || subtractor <= 0) {
+//     const val = canCombinePushAndPull(pull, push, subtractor);
+//     if (!val) {
+//       subtractor -= 0.5;
+//     } else if (val[0] === "both") {
+//       upper += subtractor;
+//       push -= subtractor;
+//       pull -= subtractor;
+//       overSessions -= subtractor;
+//     } else if (val[0] === "pull") {
+//       upper += subtractor;
+//       pull -= subtractor;
+//       overSessions -= subtractor;
+//     } else if (val[0] === "push") {
+//       upper += subtractor;
+//       push -= subtractor;
+//       overSessions -= subtractor;
+//     } else {
+//       break;
+//     }
+//   }
+
+//   subtractor = 1;
+//   let remaining_push_pulls = push !== pull && (push > 0 || pull > 0);
+//   while (remaining_push_pulls) {
+//     const val = canCombinePushAndPull(pull, push, subtractor);
+//     if (!val) {
+//       break;
+//     } else if (val[0] === "both") {
+//       upper += subtractor;
+//       pull -= subtractor;
+//       push -= subtractor;
+//     } else if (val[0] === "push") {
+//       upper += subtractor;
+//       push -= subtractor;
+//     } else if (val[0] === "pull") {
+//       upper += subtractor;
+//       pull -= subtractor;
+//     } else {
+//       break;
+//     }
+//   }
+
+//   const sortSessions = (
+//     pull: number,
+//     push: number,
+//     legs: number,
+//     type: "current" | "distFromMax"
+//   ) => {
+//     let pushPullLegsTuple: [string, number][] = [
+//       ["push", push],
+//       ["pull", pull],
+//       ["legs", legs],
+//     ];
+
+//     if (type === "current") {
+//       pushPullLegsTuple.sort((a, b) => b[1] - a[1]);
+//     } else {
+//       const distFromMax: [string, number][] = [
+//         ["push", freq_limits.push.max - push],
+//         ["pull", freq_limits.pull.max - pull],
+//         ["legs", freq_limits.legs.max - legs],
+//       ];
+//       pushPullLegsTuple = distFromMax.sort((a, b) => b[1] - a[1]);
+//     }
+//     return pushPullLegsTuple;
+//   };
+
+//   const canSubtractFromSplit = (
+//     type: "push" | "pull" | "legs",
+//     curr: number
+//   ) => {
+//     const { min, max } = freq_limits[type];
+//     if (curr > max) {
+//       return true;
+//     } else if (curr - 1 >= min) {
+//       return true;
+//     } else {
+//       return false;
+//     }
+//   };
+
+//   const isSplitHigherPriority = (
+//     target: "push" | "pull" | "legs",
+//     check: "push" | "pull" | "legs"
+//   ) => {
+//     let targetIndex = 0;
+//     let checkIndex = 0;
+//     for (let i = 0; i < prioritizedSplits.length; i++) {
+//       if (prioritizedSplits[i] === target) {
+//         targetIndex = i;
+//       }
+//       if (prioritizedSplits[i] === check) {
+//         checkIndex = i;
+//       }
+//     }
+//     return targetIndex < checkIndex;
+//   };
+
+//   full = 2;
+//   upper = total_sessions - full;
+
+//   const prioritizedSplits = ["legs", "pull", "push"];
+//   let unloop = false;
+
+//   let pushAdd = true;
+//   let pushSub = true;
+//   let pullAdd = true;
+//   let pullSub = true;
+//   let legsAdd = true;
+//   let legsSub = true;
+//   while (!unloop) {
+//     console.log(push, pull, upper, legs, full, "beginning of while loop");
+//     for (const split of prioritizedSplits) {
+//       if (split === "push") {
+//         const { min, max } = freq_limits.push;
+//         if (max === upper + full) {
+//           pushAdd = false;
+//           if (upper > min) {
+//             pushSub = true;
+//           } else {
+//             pushSub = false;
+//           }
+//         } else if (max < upper + full) {
+//           const first = sortSessions(pull, push, legs, "distFromMax")[0];
+//           if (first[0] === "legs") {
+//             legs++;
+//             upper--;
+//           } else {
+//             console.log(upper, full, legs, "got a pull in my push");
+//           }
+
+//           if (upper + full - 1 > max) {
+//             pushSub = true;
+//             pushAdd = false;
+//           } else {
+//             pushSub = false;
+//             pushAdd = false;
+//           }
+//         } else {
+//           // push is not maxed -- only thing i can pull from is legs || full
+//           const canSub = canSubtractFromSplit("legs", legs + full);
+//           if (canSub) {
+//             legs--;
+//             // possibly check whether i should add to push vs. upper
+//             upper++;
+//           }
+//           if (upper + full === max) {
+//             pushAdd = false;
+//             pushSub = false;
+//           } else {
+//             // gotta check if pushAdd is possible
+//             if (full < 1) {
+//               pushAdd = true;
+//             }
+//             if (
+//               isSplitHigherPriority("push", "legs") &&
+//               legs + full > freq_limits.legs.min
+//             ) {
+//               pushAdd = true;
+//             } else {
+//               pushAdd = false;
+//             }
+//             pushSub = false;
+//           }
+//         }
+//       } else if (split === "pull") {
+//         const { min, max } = freq_limits.pull;
+//         if (max === upper + full) {
+//           pullAdd = false;
+//           if (upper > min) {
+//             pullSub = true;
+//           } else {
+//             pullSub = false;
+//           }
+//         } else if (max < upper + full) {
+//           const first = sortSessions(pull, push, legs, "distFromMax")[0];
+//           if (first[0] === "legs") {
+//             legs++;
+//             upper--;
+//           } else {
+//             console.log(upper, full, legs, "got a push in my pull");
+//           }
+
+//           if (upper + full - 1 > max) {
+//             pullSub = true;
+//             pullAdd = false;
+//           } else {
+//             pullSub = false;
+//             pullAdd = false;
+//           }
+//         } else {
+//           // push is not maxed -- only thing i can pull from is legs || full
+//           const canSub = canSubtractFromSplit("legs", legs + full);
+//           if (canSub) {
+//             legs--;
+//             // possilby check whether i should add to push vs. upper
+//             upper++;
+//           }
+//           if (upper + full === max) {
+//             pullAdd = false;
+//             pullSub = false;
+//           } else {
+//             if (full < 1) {
+//               pullAdd = true;
+//             }
+//             if (
+//               isSplitHigherPriority("pull", "legs") &&
+//               legs + full > freq_limits.legs.min
+//             ) {
+//               pullAdd = true;
+//             } else {
+//               pullAdd = false;
+//             }
+//             pullSub = false;
+//           }
+//         }
+//       } else {
+//         const { min, max } = freq_limits.legs;
+//         if (max === legs + full) {
+//           legsAdd = false;
+//           if (legs > min) {
+//             legsSub = true;
+//           } else {
+//             legsSub = false;
+//           }
+//         } else if (max < legs + full) {
+//           const first = sortSessions(pull, push, legs, "distFromMax")[0];
+//           if (first[0] === "push" || first[0] === "pull") {
+//             upper++;
+//             legs--;
+//           } else {
+//             console.log(upper, full, legs, "got a leg in my legs");
+//           }
+
+//           if (legs + full - 1 > max) {
+//             legsSub = true;
+//             legsAdd = false;
+//           } else {
+//             legsSub = false;
+//             legsAdd = false;
+//           }
+//         } else {
+//           // push is not maxed -- only thing i can pull from is legs || full
+//           const canSubFromPull = canSubtractFromSplit("pull", upper + full);
+//           const canSubFromPush = canSubtractFromSplit("push", upper + full);
+
+//           if (canSubFromPull || canSubFromPush) {
+//             upper--;
+//             // possilby check whether i should add to push vs. upper
+//             legs++;
+//           }
+//           if (legs + full === max) {
+//             legsAdd = false;
+//             legsSub = false;
+//           } else {
+//             const higherThanPull = isSplitHigherPriority("legs", "pull");
+//             const higherThanPush = isSplitHigherPriority("legs", "push");
+//             const upperHigherThanPull = upper + full > freq_limits.pull.min;
+//             const upperHigherThanPush = upper + full > freq_limits.push.min;
+//             if (full < 1) {
+//               legsAdd = true;
+//             }
+//             if (
+//               higherThanPull &&
+//               higherThanPush &&
+//               upperHigherThanPull &&
+//               upperHigherThanPush
+//             ) {
+//               legsAdd = true;
+//             } else {
+//               legsAdd = false;
+//             }
+//             legsSub = false;
+//           }
+//         }
+//       }
+//     }
+
+//     console.log(
+//       pushAdd,
+//       pullAdd,
+//       legsAdd,
+//       push,
+//       pull,
+//       upper,
+//       legs,
+//       full,
+//       "end of while loop"
+//     );
+
+//     if (!pushAdd && !pullAdd && !legsAdd) {
+//       unloop = true;
+//     }
+//     // unloop = true;
+//   }
+
+//   console.log(
+//     "push:",
+//     push,
+//     "pull:",
+//     pull,
+//     "upper:",
+//     upper,
+//     "legs:",
+//     legs,
+//     "full:",
+//     full,
+//     subtractor,
+//     overSessions,
+//     "OK WHAT THESE?"
+//   );
+// };
