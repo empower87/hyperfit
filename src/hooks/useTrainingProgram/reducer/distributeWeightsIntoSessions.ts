@@ -148,8 +148,8 @@ export const distributeWeightsIntoSessions = (
   };
 
   // current
-  let push = freq_limits.push.min;
-  let pull = freq_limits.pull.min;
+  let push = 0;
+  let pull = 0;
   let legs = 0;
   let upper = 0;
   let full = 2;
@@ -238,18 +238,19 @@ export const distributeWeightsIntoSessions = (
     );
     for (const split of prioritizedSplits) {
       if (split === "push") {
+        const totalPush = push + pull + legs;
         const { min, max } = freq_limits.push;
-        if (max === upper + full) {
+        if (max === upper + full + push) {
           pushAdd = false;
           if (upper + full > min) {
             pushSub = true;
           } else {
             pushSub = false;
           }
-        } else if (max < upper + full) {
+        } else if (max < upper + full + push) {
           const first = sortSessions(
-            upper,
-            upper,
+            upper + pull,
+            upper + push,
             legs,
             full,
             "distFromMax"
@@ -266,12 +267,19 @@ export const distributeWeightsIntoSessions = (
               upper--;
             }
           } else {
+            const pullMax = freq_limits.pull;
+            if (upper + full === pullMax.max) {
+              pull++;
+              upper--;
+            }
             console.log(first, upper, full, legs, "got a pull in my push");
           }
 
-          if (upper + full - 1 > max) {
+          if (upper + full + push - 1 > max) {
             pushSub = true;
             pushAdd = false;
+          } else if (upper + full + push > max) {
+            pushAdd = true;
           } else {
             pushSub = false;
             pushAdd = false;
@@ -284,7 +292,7 @@ export const distributeWeightsIntoSessions = (
             // possibly check whether i should add to push vs. upper
             upper++;
           }
-          if (upper + full === max) {
+          if (upper + full + push === max) {
             pushAdd = false;
             pushSub = false;
           } else {
@@ -305,17 +313,17 @@ export const distributeWeightsIntoSessions = (
         }
       } else if (split === "pull") {
         const { min, max } = freq_limits.pull;
-        if (max === upper + full) {
+        if (max === upper + full + pull) {
           pullAdd = false;
-          if (upper + full > min) {
+          if (upper + full + pull > min) {
             pullSub = true;
           } else {
             pullSub = false;
           }
-        } else if (max < upper + full) {
+        } else if (max < upper + full + pull) {
           const first = sortSessions(
-            upper,
-            upper,
+            upper + pull,
+            upper + push,
             legs,
             full,
             "distFromMax"
@@ -332,12 +340,19 @@ export const distributeWeightsIntoSessions = (
               upper--;
             }
           } else {
+            const pushMax = freq_limits.push;
+            if (upper + full + push === pushMax.max) {
+              push++;
+              upper--;
+            }
             console.log(first, upper, full, legs, "got a push in my pull");
           }
 
-          if (upper + full - 1 > max) {
+          if (upper + full + pull - 1 > max) {
             pullSub = true;
             pullAdd = false;
+          } else if (upper + full > max) {
+            pullAdd = true;
           } else {
             pullSub = false;
             pullAdd = false;
@@ -489,8 +504,8 @@ export const distributeWeightsIntoSessions = (
     "OK WHAT THESE?"
   );
   return {
-    push: 0,
-    pull: 0,
+    push: push,
+    pull: pull,
     upper: upper,
     legs: legs,
     full: full,
