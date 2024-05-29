@@ -140,7 +140,30 @@ export const handleDistribution = (
         default:
           break;
       }
-    } else break;
+    } else {
+      switch (split) {
+        case "push":
+          if (pushTracker < 2) {
+            pushCount.push(1)
+            pushTracker++
+          }
+          break;
+        case "pull":
+          if (pullTracker < 2) {
+            pullCount.push(1)
+            pullTracker++
+          }
+          break;
+        case "legs":
+          if (legsTracker < 2) {
+            legsCount.push(1)
+            legsTracker++
+          }
+          break;
+        default:
+          break;
+      }
+    };
   }
   return {
     push: pushCount.sort((a, b) => a - b),
@@ -809,5 +832,5 @@ function divideRatioIntoSessionsOPT(push: number, legs: number, pull: number) {
     }
   }
 
-  return OPT;
+  return OPT
 }

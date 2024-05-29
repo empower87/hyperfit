@@ -398,3 +398,425 @@ const useProgramConfigContext = () => {
 };
 
 export { ProgramConfigProvider, useProgramConfigContext };
+
+type MaxSessionsPerSplit = {
+  push: {
+    min: number;
+    max: number;
+    avg: number;
+  };
+  pull: {
+    min: number;
+    max: number;
+    avg: number;
+  };
+  legs: {
+    min: number;
+    max: number;
+    avg: number;
+  };
+  upper: {
+    min: number;
+    max: number;
+    avg: number;
+  };
+};
+
+type OPTTotalType = {
+  push: number;
+  pull: number;
+  legs: number;
+  upper: number;
+  full: number;
+};
+
+export const distributeOverflow_legs = (
+  freq_limits: MaxSessionsPerSplit,
+  totals: OPTTotalType
+) => {
+  const pullLimit = freq_limits.pull;
+  const pushLimit = freq_limits.push;
+
+  const legsLimit = freq_limits.legs;
+
+  const pullTotal = totals.pull + totals.upper + totals.full;
+  const pushTotal = totals.push + totals.upper + totals.full;
+
+  const pushDistFromMax = pushLimit.max - pushTotal;
+  const pullDistFromMax = pullLimit.max - pullTotal;
+  console.log(totals, "BEFORE OVERFLOW DISTRIBUTION LEGS");
+
+  // PUSH: at max
+  if (pushDistFromMax === 0) {
+    if (pullDistFromMax === 0) {
+      if (totals.full > 0) {
+        totals.full--;
+        totals.upper++;
+      } else {
+        // BREAK POINT HERE
+      }
+    } else if (pullDistFromMax > 0) {
+      totals.legs--;
+      totals.pull++;
+    }
+    // PUSH: at max; PULL: over max; LEGS: over max
+    else {
+      if (totals.full > 0) {
+        totals.full--;
+        totals.push++;
+      } else {
+        // BREAK POINT HERE
+      }
+    }
+  }
+  // PUSH: under max
+  else if (pushDistFromMax > 0) {
+    // PUSH: under max; PULL: at max; LEGS: over max
+    if (pullDistFromMax === 0) {
+      if (totals.legs > 0) {
+        totals.legs--;
+        totals.push++;
+      } else {
+        totals.full--;
+        totals.upper++;
+        // BREAK POINT HERE
+      }
+    }
+    // PUSH: under max; PULL: under max; LEGS: over max
+    else if (pullDistFromMax > 0) {
+      if (totals.legs > 0) {
+        totals.legs--;
+        totals.upper++;
+      } else {
+        totals.full--;
+        totals.upper++;
+      }
+    }
+    // PUSH: under max; PULL: over max; LEGS: over max
+    else {
+      if (totals.full > 0) {
+        totals.full--;
+        totals.push++;
+      } else {
+        if (legsLimit.max < pullLimit.max) {
+          totals.legs--;
+          totals.push++;
+        } else {
+          // BREAK POINT HERE
+        }
+      }
+    }
+  }
+  // PUSH: over max
+  else {
+    // PUSH: over max; PULL: at max; LEGS: over max
+    if (pullDistFromMax === 0) {
+      if (totals.full > 0) {
+        totals.full--;
+        totals.upper++;
+      } else {
+        // BREAK POINT HERE
+      }
+    }
+    // PUSH: over max; PULL: under max; LEGS: over max
+    else if (pullDistFromMax > 0) {
+      if (totals.legs > 0) {
+        totals.legs--;
+        totals.pull++;
+      } else {
+        totals.full--;
+        totals.pull++;
+      }
+    }
+    // PUSH: over max; PULL: over max; LEGS: over max
+    else {
+      // BREAK POINT HERE
+    }
+  }
+  console.log(totals, "AFTER OVERFLOW DISTRIBUTION LEGS");
+  return totals;
+};
+// I HAVE AN OVERFLOW OF PULLS SO I NEED TO SUB A PULL OR UPPER || MAYBE A FULL
+export const distributeOverflow_pull = (
+  freq_limits: MaxSessionsPerSplit,
+  totals: OPTTotalType
+) => {
+  const pullLimit = freq_limits.pull;
+  const pushLimit = freq_limits.push;
+
+  const legsLimit = freq_limits.legs;
+
+  const pullTotal = totals.pull + totals.upper + totals.full;
+  const pushTotal = totals.push + totals.upper + totals.full;
+  const legsTotal = totals.legs + totals.full;
+
+  const legsDistFromMax = legsLimit.max - legsTotal;
+  const pushDistFromMax = pushLimit.max - pushTotal;
+  console.log(totals, "BEFORE OVERFLOW DISTRIBUTION");
+
+  // LEGS: at max
+  if (legsDistFromMax === 0) {
+    // LEGS: at max; PUSH: at max; PULL: over max
+    if (pushDistFromMax === 0) {
+      if (totals.upper > 0) {
+        totals.upper -= 1;
+        totals.push += 1;
+      }
+    }
+    // LEGS: at max; PUSH: under max; PULL: over max
+    else if (pushDistFromMax > 0) {
+      if (totals.pull > 0) {
+        totals.pull--;
+        totals.push++;
+      } else if (totals.upper > 0) {
+        totals.upper--;
+        totals.push++;
+      } else {
+        if (legsLimit.max >= pushLimit.max) {
+          // BREAK POINT HERE
+        } else {
+          totals.legs--;
+          totals.push++;
+        }
+      }
+    }
+    // LEGS: at max; PUSH: over max; PULL: over max
+    else {
+      // push and pull are overflowing and legs is at max
+      if (totals.full > 0) {
+        totals.full--;
+        totals.legs++;
+      } else {
+        // BREAK POINT HERE
+      }
+    }
+  }
+  // LEGS: under max
+  else if (legsDistFromMax > 0) {
+    // LEGS: under max; PUSH: at max; PULL: over max
+    if (pushDistFromMax === 0) {
+      if (totals.pull > 0) {
+        totals.pull--;
+        totals.legs++;
+      } else if (totals.full < 2) {
+        totals.full++;
+        totals.upper--;
+      } else {
+        // ASYMMETRY will occur here. So if legs > push
+        if (legsLimit.max > pushLimit.max) {
+          totals.upper--;
+          totals.legs++;
+        } else {
+          // BREAK POINT HERE
+        }
+      }
+    }
+    // LEGS: under max; PUSH: under max: PULL: over max
+    else if (pushDistFromMax > 0) {
+      if (totals.pull > 0) {
+        totals.pull--;
+        if (totals.full < 2) {
+          totals.full++;
+        } else {
+          if (legsLimit.max > pushLimit.max) {
+            totals.legs++;
+          } else {
+            totals.push++;
+          }
+        }
+      } else if (totals.full < 2) {
+        totals.upper--;
+        totals.full++;
+      } else {
+        // FULL IS MAXED AND NO PULLS
+        if (legsLimit.max > pushLimit.max) {
+          totals.upper--;
+          totals.legs++;
+        } else {
+          // BREAK POINT HERE
+        }
+      }
+    }
+    // LEGS: under max; PUSH: over max; PULL: over max
+    else {
+      totals.upper--;
+      totals.legs++;
+    }
+  }
+  // LEGS: over max
+  else {
+    // LEGS: over max; PUSH: at max; PULL: over max
+    if (pushDistFromMax === 0) {
+      // BREAK POINT HERE
+    }
+    // LEGS: over max; PUSH: under max: PULL: over max
+    else if (pushDistFromMax > 0) {
+      if (totals.full > 0) {
+        totals.full--;
+        totals.push++;
+      } else {
+        if (legsLimit.max < pushLimit.max) {
+          totals.legs--;
+          totals.push++;
+        } else if (pushLimit.max > pullLimit.max) {
+          if (totals.pull > 0) {
+            totals.pull--;
+            totals.push++;
+          } else {
+            // BREAK POINT HERE
+          }
+        } else {
+          // BREAK POINT HERE
+        }
+      }
+    }
+    // LEGS: over max; PUSH: over max; PULL: over max
+    else {
+      // BREAK POINT HERE
+    }
+  }
+  console.log(totals, "AFTER OVERFLOW DISTRIBUTION");
+  return totals;
+};
+
+export const distributeOverflow_push = (
+  freq_limits: MaxSessionsPerSplit,
+  totals: OPTTotalType
+) => {
+  const pullLimit = freq_limits.pull;
+  const pushLimit = freq_limits.push;
+
+  const legsLimit = freq_limits.legs;
+
+  const pullTotal = totals.pull + totals.upper + totals.full;
+  const pushTotal = totals.push + totals.upper + totals.full;
+  const legsTotal = totals.legs + totals.full;
+
+  const legsDistFromMax = legsLimit.max - legsTotal;
+  const pullDistFromMax = pullLimit.max - pullTotal;
+  console.log(totals, "BEFORE OVERFLOW DISTRIBUTION PUSH");
+
+  // LEGS: at max
+  if (legsDistFromMax === 0) {
+    // LEGS: at max; PULL: at max; PUSH: over max
+    if (pullDistFromMax === 0) {
+      if (totals.upper > 0) {
+        totals.upper -= 1;
+        totals.pull += 1;
+      }
+    }
+    // LEGS: at max; PULL: under max; PUSH: over max
+    else if (pullDistFromMax > 0) {
+      if (totals.push > 0) {
+        totals.push--;
+        totals.pull++;
+      } else if (totals.upper > 0) {
+        totals.upper--;
+        totals.pull++;
+      } else {
+        if (legsLimit.max >= pullLimit.max) {
+          // BREAK POINT HERE
+        } else {
+          totals.legs--;
+          totals.pull++;
+        }
+      }
+    }
+    // LEGS: at max; PULL: over max; PUSH: over max
+    else {
+      // push and pull are overflowing and legs is at max
+      if (totals.full > 0) {
+        totals.full--;
+        totals.legs++;
+      } else {
+        // BREAK POINT HERE
+      }
+    }
+  }
+  // LEGS: under max
+  else if (legsDistFromMax > 0) {
+    // LEGS: under max; PULL: at max; PUSH: over max
+    if (pullDistFromMax === 0) {
+      if (totals.push > 0) {
+        totals.push--;
+        totals.legs++;
+      } else if (totals.full < 2) {
+        totals.full++;
+        totals.upper--;
+      } else {
+        // ASYMMETRY will occur here. So if legs > push
+        if (legsLimit.max > pullLimit.max) {
+          totals.upper--;
+          totals.legs++;
+        } else {
+          // BREAK POINT HERE
+        }
+      }
+    }
+    // LEGS: under max; PULL: under max: PUSH: over max
+    else if (pullDistFromMax > 0) {
+      if (totals.push > 0) {
+        totals.push--;
+        if (totals.full < 2) {
+          totals.full++;
+        } else {
+          if (legsLimit.max > pullLimit.max) {
+            totals.legs++;
+          } else {
+            totals.pull++;
+          }
+        }
+      } else if (totals.full < 2) {
+        totals.upper--;
+        totals.full++;
+      } else {
+        // FULL IS MAXED AND NO PULLS
+        if (legsLimit.max > pullLimit.max) {
+          totals.upper--;
+          totals.legs++;
+        } else {
+          // BREAK POINT HERE
+        }
+      }
+    }
+    // LEGS: under max; PULL: over max; PUSH: over max
+    else {
+      totals.upper--;
+      totals.legs++;
+    }
+  }
+  // LEGS: over max
+  else {
+    // LEGS: over max; PULL: at max; PUSH: over max
+    if (pullDistFromMax === 0) {
+      // BREAK POINT HERE
+    }
+    // LEGS: over max; PULL: under max: PUSH: over max
+    else if (pullDistFromMax > 0) {
+      if (totals.full > 0) {
+        totals.full--;
+        totals.pull++;
+      } else {
+        if (legsLimit.max < pushLimit.max) {
+          totals.legs--;
+          totals.pull++;
+        } else if (pushLimit.max > pullLimit.max) {
+          if (totals.push > 0) {
+            totals.push--;
+            totals.pull++;
+          } else {
+            // BREAK POINT HERE
+          }
+        } else {
+          // BREAK POINT HERE
+        }
+      }
+    }
+    // LEGS: over max; PULL: over max; PUSH: over max
+    else {
+      // BREAK POINT HERE
+    }
+  }
+  console.log(totals, "AFTER OVERFLOW DISTRIBUTION PUSH");
+  return totals;
+};

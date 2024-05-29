@@ -1,3 +1,9 @@
+import {
+  distributeOverflow_legs,
+  distributeOverflow_pull,
+  distributeOverflow_push,
+} from "~/components/Configuration/hooks/useProgramConfig";
+
 const freqLimitsHandler = (push: number[], pull: number[], legs: number[]) => {
   const pushAvg = Math.round(push[0] + push[1] / 2);
   const pullAvg = Math.round(pull[0] + pull[1] / 2);
@@ -236,9 +242,9 @@ export const distributeWeightsIntoSessions = (
       prioritizedSplits,
       "beginning of while loop"
     );
+
     for (const split of prioritizedSplits) {
       if (split === "push") {
-        const totalPush = push + pull + legs;
         const { min, max } = freq_limits.push;
         if (max === upper + full + push) {
           pushAdd = false;
@@ -248,6 +254,14 @@ export const distributeWeightsIntoSessions = (
             pushSub = false;
           }
         } else if (max < upper + full + push) {
+          const totals = {
+            upper: upper,
+            full: full,
+            legs: legs,
+            push: push,
+            pull: pull,
+          };
+          const lolpush = distributeOverflow_push(freq_limits, totals);
           const first = sortSessions(
             upper + pull,
             upper + push,
@@ -321,6 +335,14 @@ export const distributeWeightsIntoSessions = (
             pullSub = false;
           }
         } else if (max < upper + full + pull) {
+          const totals = {
+            upper: upper,
+            full: full,
+            legs: legs,
+            push: push,
+            pull: pull,
+          };
+          const lolpush = distributeOverflow_pull(freq_limits, totals);
           const first = sortSessions(
             upper + pull,
             upper + push,
@@ -393,6 +415,14 @@ export const distributeWeightsIntoSessions = (
             legsSub = false;
           }
         } else if (max < legs + full) {
+          const totals = {
+            upper: upper,
+            full: full,
+            legs: legs,
+            push: push,
+            pull: pull,
+          };
+          const lolpush = distributeOverflow_legs(freq_limits, totals);
           const first = sortSessions(pull, push, legs, full, "distFromMax")[0];
           if (first[0] === "push" || first[0] === "pull") {
             upper++;
