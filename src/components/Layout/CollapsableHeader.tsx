@@ -28,6 +28,7 @@ function CollapseButton({ isCollapsed, onCollapse }: CollapseButtonProps) {
     </div>
   );
 }
+
 interface CollapsableHeaderProps extends HTMLAttributes<HTMLDivElement> {
   children: ReactNode;
 }
