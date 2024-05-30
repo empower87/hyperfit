@@ -1194,6 +1194,331 @@ export const underflowDistribution_pull = (
   };
 };
 
+const canOperateFull = (type: "add" | "sub", _totals: OPTTotalType) => {
+  if (type === "add") {
+    return;
+  } else {
+  }
+};
+
+const isSplitHigherPriority = (
+  target: "push" | "pull" | "legs",
+  check: "push" | "pull" | "legs",
+  prioritizedSplits: string[]
+) => {
+  let targetIndex = 0;
+  let checkIndex = 0;
+  for (let i = 0; i < prioritizedSplits.length; i++) {
+    if (prioritizedSplits[i] === target) {
+      targetIndex = i;
+    }
+    if (prioritizedSplits[i] === check) {
+      checkIndex = i;
+    }
+  }
+  return targetIndex < checkIndex;
+};
+
+export const legsDistribution = (
+  over_under: "over" | "under",
+  freq_limits: MaxSessionsPerSplit,
+  _totals: OPTTotalType,
+  prioritizedSplits: string[]
+) => {
+  let totals = { ..._totals };
+
+  const pullLimit = freq_limits.pull;
+  const pushLimit = freq_limits.push;
+  const pullTotal = totals.pull + totals.upper + totals.full;
+  const pushTotal = totals.push + totals.upper + totals.full;
+  const legsTotal = totals.legs + totals.full;
+  const pullDistFromMax = pullLimit.max - pullTotal;
+  const pushDistFromMax = pushLimit.max - pushTotal;
+
+  let isNotBroken = true;
+  console.log(
+    _totals,
+    totals,
+    isNotBroken,
+    over_under,
+    "LEGS DISTRIBUTION BEFORE"
+  );
+  if (pushDistFromMax > 0) {
+    // LEGS: under | over max && PUSH: under max && PULL under max
+    if (pullDistFromMax > 0) {
+      if (over_under === "over") {
+        totals.legs--;
+        totals.upper++;
+      } else {
+        // NOTE: should probably check distance each is from max
+        isNotBroken = false;
+      }
+    }
+    // LEGS: under | over max && PUSH: under max && PULL over max
+    else if (pullDistFromMax < 0) {
+      if (over_under === "over") {
+        if (totals.legs > 0) {
+          totals.legs--;
+          totals.push++;
+        } else {
+          totals.full--;
+          totals.push++;
+        }
+      } else {
+        if (totals.pull > 0) {
+          totals.pull--;
+          totals.legs++;
+        } else {
+          if (isSplitHigherPriority("legs", "push", prioritizedSplits)) {
+            totals.upper--;
+            totals.legs++;
+          } else {
+            isNotBroken = false;
+          }
+        }
+      }
+    }
+    // LEGS: under | over max && PUSH: under max && PULL at max
+    else {
+      if (over_under === "over") {
+        if (totals.legs > 0) {
+          totals.legs--;
+          totals.push++;
+        } else {
+          totals.full--;
+          totals.upper++;
+        }
+      } else {
+        const higherThanPush = isSplitHigherPriority(
+          "legs",
+          "push",
+          prioritizedSplits
+        );
+        const higherThanPull = isSplitHigherPriority(
+          "legs",
+          "pull",
+          prioritizedSplits
+        );
+
+        if (totals.pull > 0) {
+          if (higherThanPull) {
+            totals.pull--;
+            totals.legs++;
+          } else {
+            isNotBroken = false;
+          }
+        } else {
+          if (higherThanPull && higherThanPush) {
+            totals.upper--;
+            totals.legs++;
+          } else {
+            isNotBroken = false;
+          }
+        }
+      }
+    }
+  } else if (pushDistFromMax < 0) {
+    // LEGS: under | over max && PUSH: over max && PULL under max
+    if (pullDistFromMax > 0) {
+      if (over_under === "over") {
+        totals.legs--;
+        totals.pull++;
+      } else {
+        if (totals.push > 0) {
+          totals.push--;
+          totals.legs++;
+        } else {
+          const higherThanPull = isSplitHigherPriority(
+            "legs",
+            "pull",
+            prioritizedSplits
+          );
+          if (higherThanPull) {
+            totals.upper--;
+            totals.legs++;
+          } else {
+            isNotBroken = false;
+          }
+        }
+      }
+    }
+    // LEGS: under | over max && PUSH: over max && PULL over max
+    else if (pullDistFromMax < 0) {
+      if (over_under === "over") {
+        if (totals.full > 0) {
+          totals.full--;
+          const pushHigherThanPull = isSplitHigherPriority(
+            "push",
+            "pull",
+            prioritizedSplits
+          );
+          if (pushHigherThanPull) {
+            totals.push++;
+          } else {
+            totals.pull++;
+          }
+        } else {
+          isNotBroken = false;
+        }
+      } else {
+        totals.upper--;
+        totals.legs++;
+      }
+    }
+    // LEGS: under | over max && PUSH: over max && PULL at max
+    else {
+      if (over_under === "over") {
+        if (totals.full > 0) {
+          totals.full--;
+          totals.pull++;
+        } else {
+          isNotBroken = false;
+        }
+      } else {
+        if (totals.push > 0) {
+          totals.push--;
+          totals.legs++;
+        } else {
+          const higherThanPull = isSplitHigherPriority(
+            "legs",
+            "pull",
+            prioritizedSplits
+          );
+          if (higherThanPull) {
+            totals.upper--;
+            totals.legs++;
+          } else {
+            isNotBroken = false;
+          }
+        }
+      }
+    }
+  } else {
+    // LEGS: under | over max && PUSH: at max && PULL under max
+    if (pullDistFromMax > 0) {
+      if (over_under === "over") {
+        if (totals.legs > 0) {
+          totals.legs--;
+          totals.pull++;
+        } else {
+          totals.full--;
+          totals.upper++;
+        }
+      } else {
+        const higherThanPull = isSplitHigherPriority(
+          "legs",
+          "pull",
+          prioritizedSplits
+        );
+        const higherThanPush = isSplitHigherPriority(
+          "legs",
+          "push",
+          prioritizedSplits
+        );
+        if (higherThanPull && higherThanPush) {
+          totals.upper--;
+          totals.legs++;
+        } else {
+          isNotBroken = false;
+        }
+      }
+    }
+    // LEGS: under | over max && PUSH: at max && PULL over max
+    else if (pullDistFromMax < 0) {
+      if (over_under === "over") {
+        if (totals.legs > 0) {
+          isNotBroken = false;
+        } else {
+          totals.full--;
+          totals.push++;
+        }
+      } else {
+        if (totals.pull > 0) {
+          totals.pull--;
+          totals.legs++;
+        } else {
+          const higherThanPush = isSplitHigherPriority(
+            "legs",
+            "push",
+            prioritizedSplits
+          );
+          if (higherThanPush) {
+            totals.upper--;
+            totals.legs++;
+            if (pushLimit.max - 1 === legsTotal + 1) {
+              isNotBroken = false;
+            }
+          } else {
+            isNotBroken = false;
+          }
+        }
+      }
+    }
+    // LEGS: under | over max && PUSH: at max && PULL at max
+    else {
+      if (over_under === "over") {
+        if (totals.legs > 0) {
+          isNotBroken = false;
+        } else {
+          totals.full--;
+          totals.upper++;
+        }
+      } else {
+        if (totals.full < 2) {
+          totals.upper--;
+          totals.full++;
+        } else {
+          const higherThanPush = isSplitHigherPriority(
+            "legs",
+            "push",
+            prioritizedSplits
+          );
+          const higherThanPull = isSplitHigherPriority(
+            "legs",
+            "pull",
+            prioritizedSplits
+          );
+          if (higherThanPush) {
+            if (totals.push > 0) {
+              totals.push--;
+              totals.legs++;
+            } else {
+              if (higherThanPull) {
+                totals.upper--;
+                totals.legs++;
+              } else {
+                isNotBroken = false;
+              }
+            }
+          } else {
+            if (higherThanPull) {
+              if (totals.pull > 0) {
+                totals.pull--;
+                totals.legs++;
+              } else {
+                isNotBroken = false;
+              }
+            } else {
+              isNotBroken = false;
+            }
+          }
+        }
+      }
+    }
+  }
+  console.log(
+    _totals,
+    totals,
+    isNotBroken,
+    over_under,
+    "LEGS DISTRIBUTION BEFORE"
+  );
+  return {
+    canAdd: isNotBroken,
+    totals: totals,
+  };
+};
+
 export const underflowDistribution_legs = (
   freq_limits: MaxSessionsPerSplit,
   totals: OPTTotalType
@@ -1209,17 +1534,27 @@ export const underflowDistribution_legs = (
   const pullDistFromMax = pullLimit.max - pullTotal;
   const pushDistFromMax = pushLimit.max - pushTotal;
   let canAdd = true;
-  console.log(totals, canAdd, "BEFORE UNDERFLOW DISTRIBUTION PULL");
+  console.log(totals, canAdd, "BEFORE UNDERFLOW DISTRIBUTION LEGS");
 
   if (pullDistFromMax === 0) {
     // LEGS: under max; PULL: at max; PUSH: at max
     if (pushDistFromMax === 0) {
-      if (totals.push > 0) {
+      if (totals.push > 0 && totals.pull > 0) {
         totals.push--;
+        totals.pull--;
         totals.upper++;
+        totals.legs++;
       } else {
-        // BREAK POINT HERE
-        canAdd = false;
+        if (legsLimit.max >= pullLimit.max && legsLimit.max >= pushLimit.max) {
+          totals.upper--;
+          totals.legs++;
+          if (legsLimit.max - legsTotal + 1 >= 1) {
+            canAdd = false;
+          }
+        } else {
+          // BREAK POINT HERE
+          canAdd = false;
+        }
       }
     }
     // LEGS: under max; PULL: at max; PUSH: under max
@@ -1236,6 +1571,8 @@ export const underflowDistribution_legs = (
             // BREAK POINT HERE
             canAdd = false;
           }
+        } else {
+          canAdd = false;
         }
       }
     }
@@ -1243,19 +1580,14 @@ export const underflowDistribution_legs = (
     else {
       if (totals.push > 0) {
         totals.push--;
-        totals.pull++;
+        totals.legs++;
       } else {
-        if (pullLimit.max > legsLimit.max) {
-          if (totals.legs > 0) {
-            totals.legs--;
-            totals.pull++;
-          } else {
-            // BREAK POINT HERE
-            canAdd = false;
-          }
-        } else {
+        if (legsLimit.max >= pullLimit.max) {
           totals.upper--;
-          totals.pull++;
+          totals.legs++;
+        } else {
+          // BREAK POINT HERE
+          canAdd = false;
         }
       }
     }
@@ -1271,7 +1603,7 @@ export const underflowDistribution_legs = (
           totals.full++;
         }
       } else {
-        if (legsLimit.max > pullLimit.max && legsLimit.max > pushLimit.max) {
+        if (legsLimit.max >= pullLimit.max && legsLimit.max >= pushLimit.max) {
           totals.upper--;
           totals.legs++;
         } else {
@@ -1323,9 +1655,12 @@ export const underflowDistribution_legs = (
         totals.upper--;
         totals.full++;
       } else {
-        if (legsLimit.max > pushLimit.max) {
+        if (legsLimit.max >= pushLimit.max) {
           totals.upper--;
           totals.legs++;
+          if (pushLimit.max - 1 === legsTotal + 1) {
+            canAdd = false;
+          }
         } else {
           // BREAK POINT HERE
           canAdd = false;
@@ -1359,13 +1694,22 @@ export const underflowDistribution_legs = (
       if (totals.upper > 0) {
         totals.upper--;
         totals.legs++;
+      } else {
+        // BREAK POINT HERE
+        canAdd = false;
       }
     }
   }
 
-  console.log(totals, canAdd, "AFTER UNDERFLOW DISTRIBUTION PULL");
+  console.log(totals, canAdd, "AFTER UNDERFLOW DISTRIBUTION LEGS");
   return {
     canAdd: canAdd,
     totals: totals,
   };
 };
+// 2-5
+// 3-5
+// 3-5
+
+// 4 - 2
+// 3 - 2 - 1

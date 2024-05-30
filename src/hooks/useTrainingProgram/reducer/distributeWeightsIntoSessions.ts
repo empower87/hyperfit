@@ -1,8 +1,7 @@
 import {
-  distributeOverflow_legs,
   distributeOverflow_pull,
   distributeOverflow_push,
-  underflowDistribution_legs,
+  legsDistribution,
   underflowDistribution_pull,
   underflowDistribution_push,
 } from "~/components/Configuration/hooks/useProgramConfig";
@@ -480,17 +479,26 @@ export const distributeWeightsIntoSessions = (
             push: push,
             pull: pull,
           };
-          const lollegs = distributeOverflow_legs(freq_limits, totals);
+          // const lollegs = distributeOverflow_legs(freq_limits, totals);
+          const legDistribution = legsDistribution(
+            "over",
+            freq_limits,
+            totals,
+            prioritizedSplits
+          );
 
-          upper = lollegs.totals.upper;
-          full = lollegs.totals.full;
-          legs = lollegs.totals.legs;
-          push = lollegs.totals.push;
-          pull = lollegs.totals.pull;
+          upper = legDistribution.totals.upper;
+          full = legDistribution.totals.full;
+          legs = legDistribution.totals.legs;
+          push = legDistribution.totals.push;
+          pull = legDistribution.totals.pull;
 
-          if (!lollegs.canAdd) {
+          if (!legDistribution.canAdd) {
             legsAdd = false;
-          } else if (lollegs.totals.legs + lollegs.totals.full === max) {
+          } else if (
+            legDistribution.totals.legs + legDistribution.totals.full ===
+            max
+          ) {
             legsAdd = false;
           } else {
             legsAdd = true;
@@ -519,16 +527,26 @@ export const distributeWeightsIntoSessions = (
             push: push,
             pull: pull,
           };
-          const lollegs = underflowDistribution_legs(freq_limits, totals);
+          // const lollegs = distributeOverflow_legs(freq_limits, totals);
+          const legDistribution = legsDistribution(
+            "under",
+            freq_limits,
+            totals,
+            prioritizedSplits
+          );
 
-          upper = lollegs.totals.upper;
-          full = lollegs.totals.full;
-          legs = lollegs.totals.legs;
-          push = lollegs.totals.push;
-          pull = lollegs.totals.pull;
-          if (!lollegs.canAdd) {
+          upper = legDistribution.totals.upper;
+          full = legDistribution.totals.full;
+          legs = legDistribution.totals.legs;
+          push = legDistribution.totals.push;
+          pull = legDistribution.totals.pull;
+
+          if (!legDistribution.canAdd) {
             legsAdd = false;
-          } else if (lollegs.totals.legs + lollegs.totals.full === max) {
+          } else if (
+            legDistribution.totals.legs + legDistribution.totals.full ===
+            max
+          ) {
             legsAdd = false;
           } else {
             legsAdd = true;
