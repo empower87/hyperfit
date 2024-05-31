@@ -1,5 +1,6 @@
 import {
   BROSessionKeys,
+  MusclePriorityType,
   OPTSessionKeys,
   PPLSessionKeys,
   PPLULSessionKeys,
@@ -291,4 +292,20 @@ export const getOPTSplit = (muscle: MuscleType): OPTSessionKeys[] => {
     allSplits.push("lower");
   }
   return allSplits;
+};
+
+export const getPrioritizedPPL = (
+  muscle_priority_list: MusclePriorityType[]
+) => {
+  let prio: ("push" | "pull" | "legs")[] = [];
+
+  for (let i = 0; i < muscle_priority_list.length; i++) {
+    const muscle = muscle_priority_list[i].muscle;
+    const split = getPushPullLegsSplit(muscle);
+    if (!prio.includes(split)) {
+      prio.push(split);
+    }
+    if (prio.length === 3) break;
+  }
+  return prio;
 };

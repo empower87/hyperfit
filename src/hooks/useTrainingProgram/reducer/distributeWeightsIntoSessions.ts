@@ -1,9 +1,6 @@
 import {
-  distributeOverflow_pull,
-  distributeOverflow_push,
   legsDistribution,
-  underflowDistribution_pull,
-  underflowDistribution_push,
+  pushPullDistribution,
 } from "~/components/Configuration/hooks/useProgramConfig";
 
 const freqLimitsHandler = (push: number[], pull: number[], legs: number[]) => {
@@ -120,7 +117,8 @@ export const distributeWeightsIntoSessions = (
     push: number[];
     pull: number[];
     legs: number[];
-  }
+  },
+  prioritizedSplits: ("push" | "pull" | "legs")[]
 ) => {
   const weight = {
     push: 29.02,
@@ -224,7 +222,6 @@ export const distributeWeightsIntoSessions = (
   full = 2;
   upper = total_sessions - full;
 
-  const prioritizedSplits = weight_order;
   let unloop = false;
 
   let pushAdd = true;
@@ -258,19 +255,28 @@ export const distributeWeightsIntoSessions = (
             push: push,
             pull: pull,
           };
+          const pushDistribution = pushPullDistribution(
+            "push",
+            "over",
+            freq_limits,
+            totals,
+            prioritizedSplits
+          );
 
-          const lolpush = distributeOverflow_push(freq_limits, totals);
+          // const lolpush = distributeOverflow_push(freq_limits, totals);
 
-          upper = lolpush.totals.upper;
-          full = lolpush.totals.full;
-          push = lolpush.totals.push;
-          pull = lolpush.totals.pull;
-          legs = lolpush.totals.legs;
+          upper = pushDistribution.totals.upper;
+          full = pushDistribution.totals.full;
+          push = pushDistribution.totals.push;
+          pull = pushDistribution.totals.pull;
+          legs = pushDistribution.totals.legs;
 
-          if (!lolpush.canAdd) {
+          if (!pushDistribution.canAdd) {
             pushAdd = false;
           } else if (
-            lolpush.totals.upper + lolpush.totals.full + lolpush.totals.push ===
+            pushDistribution.totals.upper +
+              pushDistribution.totals.full +
+              pushDistribution.totals.push ===
             max
           ) {
             pushAdd = false;
@@ -311,12 +317,21 @@ export const distributeWeightsIntoSessions = (
             push: push,
             pull: pull,
           };
-          const lolpush = underflowDistribution_push(freq_limits, totals);
+          const pushDistribution = pushPullDistribution(
+            "push",
+            "under",
+            freq_limits,
+            totals,
+            prioritizedSplits
+          );
+          // const lolpush = underflowDistribution_push(freq_limits, totals);
 
-          if (!lolpush.canAdd) {
+          if (!pushDistribution.canAdd) {
             pushAdd = false;
           } else if (
-            lolpush.totals.upper + lolpush.totals.full + lolpush.totals.push ===
+            pushDistribution.totals.upper +
+              pushDistribution.totals.full +
+              pushDistribution.totals.push ===
             max
           ) {
             pushAdd = false;
@@ -361,18 +376,27 @@ export const distributeWeightsIntoSessions = (
             push: push,
             pull: pull,
           };
-          const lolpull = distributeOverflow_pull(freq_limits, totals);
+          // const lolpull = distributeOverflow_pull(freq_limits, totals);
+          const pullDistribution = pushPullDistribution(
+            "pull",
+            "over",
+            freq_limits,
+            totals,
+            prioritizedSplits
+          );
 
-          upper = lolpull.totals.upper;
-          full = lolpull.totals.full;
-          legs = lolpull.totals.legs;
-          push = lolpull.totals.push;
-          pull = lolpull.totals.pull;
+          upper = pullDistribution.totals.upper;
+          full = pullDistribution.totals.full;
+          legs = pullDistribution.totals.legs;
+          push = pullDistribution.totals.push;
+          pull = pullDistribution.totals.pull;
 
-          if (!lolpull.canAdd) {
-            pushAdd = false;
+          if (!pullDistribution.canAdd) {
+            pullAdd = false;
           } else if (
-            lolpull.totals.upper + lolpull.totals.full + lolpull.totals.pull ===
+            pullDistribution.totals.upper +
+              pullDistribution.totals.full +
+              pullDistribution.totals.pull ===
             max
           ) {
             pullAdd = false;
@@ -424,18 +448,26 @@ export const distributeWeightsIntoSessions = (
             push: push,
             pull: pull,
           };
-          const lolpull = underflowDistribution_pull(freq_limits, totals);
+          const pullDistribution = pushPullDistribution(
+            "pull",
+            "under",
+            freq_limits,
+            totals,
+            prioritizedSplits
+          );
 
-          upper = lolpull.totals.upper;
-          full = lolpull.totals.full;
-          legs = lolpull.totals.legs;
-          push = lolpull.totals.push;
-          pull = lolpull.totals.pull;
+          upper = pullDistribution.totals.upper;
+          full = pullDistribution.totals.full;
+          legs = pullDistribution.totals.legs;
+          push = pullDistribution.totals.push;
+          pull = pullDistribution.totals.pull;
 
-          if (!lolpull.canAdd) {
+          if (!pullDistribution.canAdd) {
             pullAdd = false;
           } else if (
-            lolpull.totals.upper + lolpull.totals.full + lolpull.totals.pull ===
+            pullDistribution.totals.upper +
+              pullDistribution.totals.full +
+              pullDistribution.totals.pull ===
             max
           ) {
             pullAdd = false;

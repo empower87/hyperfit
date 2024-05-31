@@ -11,6 +11,7 @@ import {
   MUSCLE_WEIGHTS_MODIFIERS,
   RANK_WEIGHTS,
 } from "~/constants/weighting/muscles";
+import { getPrioritizedPPL } from "~/constants/workoutSplits";
 import { distributeWeightsIntoSessions } from "~/hooks/useTrainingProgram/reducer/distributeWeightsIntoSessions";
 import {
   getRankWeightsBySplit,
@@ -168,9 +169,11 @@ function useProgramConfig() {
         };
       });
       const lol = handleDistribution(muscle_priority_list, mathss);
+      const prioritizedSplits = getPrioritizedPPL(muscle_priority_list);
       const TEST = distributeWeightsIntoSessions(
         programConfig.frequency[0] + programConfig.frequency[1],
-        lol
+        lol,
+        prioritizedSplits
       );
       setTestSessions(TEST);
       setAvgFrequencies(lol);
@@ -430,777 +433,6 @@ type OPTTotalType = {
   full: number;
 };
 
-export const distributeOverflow_legs = (
-  freq_limits: MaxSessionsPerSplit,
-  totals: OPTTotalType
-) => {
-  const pullLimit = freq_limits.pull;
-  const pushLimit = freq_limits.push;
-
-  const legsLimit = freq_limits.legs;
-
-  const pullTotal = totals.pull + totals.upper + totals.full;
-  const pushTotal = totals.push + totals.upper + totals.full;
-
-  const pushDistFromMax = pushLimit.max - pushTotal;
-  const pullDistFromMax = pullLimit.max - pullTotal;
-
-  let canAdd = true;
-
-  console.log(totals, canAdd, "BEFORE OVERFLOW DISTRIBUTION LEGS");
-
-  // PUSH: at max
-  if (pushDistFromMax === 0) {
-    if (pullDistFromMax === 0) {
-      if (totals.full > 0) {
-        totals.full--;
-        totals.upper++;
-      } else {
-        // BREAK POINT HERE
-        canAdd = false;
-      }
-    } else if (pullDistFromMax > 0) {
-      totals.legs--;
-      totals.pull++;
-    }
-    // PUSH: at max; PULL: over max; LEGS: over max
-    else {
-      if (totals.full > 0) {
-        totals.full--;
-        totals.push++;
-      } else {
-        // BREAK POINT HERE
-        canAdd = false;
-      }
-    }
-  }
-  // PUSH: under max
-  else if (pushDistFromMax > 0) {
-    // PUSH: under max; PULL: at max; LEGS: over max
-    if (pullDistFromMax === 0) {
-      if (totals.legs > 0) {
-        totals.legs--;
-        totals.push++;
-      } else {
-        totals.full--;
-        totals.upper++;
-        // BREAK POINT HERE
-        canAdd = false;
-      }
-    }
-    // PUSH: under max; PULL: under max; LEGS: over max
-    else if (pullDistFromMax > 0) {
-      if (totals.legs > 0) {
-        totals.legs--;
-        totals.upper++;
-      } else {
-        totals.full--;
-        totals.upper++;
-      }
-    }
-    // PUSH: under max; PULL: over max; LEGS: over max
-    else {
-      if (totals.full > 0) {
-        totals.full--;
-        totals.push++;
-      } else {
-        if (legsLimit.max < pullLimit.max) {
-          totals.legs--;
-          totals.push++;
-        } else {
-          // BREAK POINT HERE
-          canAdd = false;
-        }
-      }
-    }
-  }
-  // PUSH: over max
-  else {
-    // PUSH: over max; PULL: at max; LEGS: over max
-    if (pullDistFromMax === 0) {
-      if (totals.full > 0) {
-        totals.full--;
-        totals.upper++;
-      } else {
-        // BREAK POINT HERE
-        canAdd = false;
-      }
-    }
-    // PUSH: over max; PULL: under max; LEGS: over max
-    else if (pullDistFromMax > 0) {
-      if (totals.legs > 0) {
-        totals.legs--;
-        totals.pull++;
-      } else {
-        totals.full--;
-        totals.pull++;
-      }
-    }
-    // PUSH: over max; PULL: over max; LEGS: over max
-    else {
-      // BREAK POINT HERE
-      canAdd = false;
-    }
-  }
-  console.log(totals, canAdd, "AFTER OVERFLOW DISTRIBUTION LEGS");
-  return {
-    canAdd: canAdd,
-    totals: totals,
-  };
-};
-// I HAVE AN OVERFLOW OF PULLS SO I NEED TO SUB A PULL OR UPPER || MAYBE A FULL
-export const distributeOverflow_pull = (
-  freq_limits: MaxSessionsPerSplit,
-  totals: OPTTotalType
-) => {
-  const pullLimit = freq_limits.pull;
-  const pushLimit = freq_limits.push;
-
-  const legsLimit = freq_limits.legs;
-
-  const pullTotal = totals.pull + totals.upper + totals.full;
-  const pushTotal = totals.push + totals.upper + totals.full;
-  const legsTotal = totals.legs + totals.full;
-
-  const legsDistFromMax = legsLimit.max - legsTotal;
-  const pushDistFromMax = pushLimit.max - pushTotal;
-
-  let canAdd = true;
-  console.log(totals, canAdd, "BEFORE OVERFLOW DISTRIBUTION PULL");
-
-  // LEGS: at max
-  if (legsDistFromMax === 0) {
-    // LEGS: at max; PUSH: at max; PULL: over max
-    if (pushDistFromMax === 0) {
-      if (totals.upper > 0) {
-        totals.upper -= 1;
-        totals.push += 1;
-      } else {
-        // BREAK POINT HERE
-        canAdd = false;
-      }
-    }
-    // LEGS: at max; PUSH: under max; PULL: over max
-    else if (pushDistFromMax > 0) {
-      if (totals.pull > 0) {
-        totals.pull--;
-        totals.push++;
-      } else if (totals.upper > 0) {
-        totals.upper--;
-        totals.push++;
-      } else {
-        if (legsLimit.max >= pushLimit.max) {
-          // BREAK POINT HERE
-          canAdd = false;
-        } else {
-          totals.legs--;
-          totals.push++;
-        }
-      }
-    }
-    // LEGS: at max; PUSH: over max; PULL: over max
-    else {
-      // push and pull are overflowing and legs is at max
-      if (totals.full > 0) {
-        totals.full--;
-        totals.legs++;
-      } else {
-        // BREAK POINT HERE
-        canAdd = false;
-      }
-    }
-  }
-  // LEGS: under max
-  else if (legsDistFromMax > 0) {
-    // LEGS: under max; PUSH: at max; PULL: over max
-    if (pushDistFromMax === 0) {
-      if (totals.pull > 0) {
-        totals.pull--;
-        totals.legs++;
-      } else if (totals.full < 2) {
-        totals.full++;
-        totals.upper--;
-      } else {
-        // ASYMMETRY will occur here. So if legs > push
-        if (legsLimit.max > pushLimit.max) {
-          totals.upper--;
-          totals.legs++;
-        } else {
-          // BREAK POINT HERE
-          canAdd = false;
-        }
-      }
-    }
-    // LEGS: under max; PUSH: under max: PULL: over max
-    else if (pushDistFromMax > 0) {
-      if (totals.pull > 0) {
-        totals.pull--;
-        if (totals.full < 2) {
-          totals.full++;
-        } else {
-          if (legsLimit.max > pushLimit.max) {
-            totals.legs++;
-          } else {
-            totals.push++;
-          }
-        }
-      } else if (totals.full < 2) {
-        totals.upper--;
-        totals.full++;
-      } else {
-        // FULL IS MAXED AND NO PULLS
-        if (legsLimit.max > pushLimit.max) {
-          totals.upper--;
-          totals.legs++;
-        } else {
-          // BREAK POINT HERE
-          canAdd = false;
-        }
-      }
-    }
-    // LEGS: under max; PUSH: over max; PULL: over max
-    else {
-      totals.upper--;
-      totals.legs++;
-    }
-  }
-  // LEGS: over max
-  else {
-    // LEGS: over max; PUSH: at max; PULL: over max
-    if (pushDistFromMax === 0) {
-      if (totals.full > 0) {
-        totals.full--;
-        totals.push++;
-      } else {
-        // BREAK POINT HERE
-        canAdd = false;
-      }
-    }
-    // LEGS: over max; PUSH: under max: PULL: over max
-    else if (pushDistFromMax > 0) {
-      if (totals.full > 0) {
-        totals.full--;
-        totals.push++;
-      } else {
-        if (legsLimit.max < pushLimit.max) {
-          totals.legs--;
-          totals.push++;
-        } else if (pushLimit.max > pullLimit.max) {
-          if (totals.pull > 0) {
-            totals.pull--;
-            totals.push++;
-          } else {
-            // BREAK POINT HERE
-            canAdd = false;
-          }
-        } else {
-          // BREAK POINT HERE
-          canAdd = false;
-        }
-      }
-    }
-    // LEGS: over max; PUSH: over max; PULL: over max
-    else {
-      // BREAK POINT HERE
-      canAdd = false;
-    }
-  }
-  console.log(totals, canAdd, "AFTER OVERFLOW DISTRIBUTION PULL");
-  return {
-    canAdd: canAdd,
-    totals: totals,
-  };
-};
-
-export const distributeOverflow_push = (
-  freq_limits: MaxSessionsPerSplit,
-  totals: OPTTotalType
-) => {
-  const pullLimit = freq_limits.pull;
-  const pushLimit = freq_limits.push;
-
-  const legsLimit = freq_limits.legs;
-
-  const pullTotal = totals.pull + totals.upper + totals.full;
-  const pushTotal = totals.push + totals.upper + totals.full;
-  const legsTotal = totals.legs + totals.full;
-
-  const legsDistFromMax = legsLimit.max - legsTotal;
-  const pullDistFromMax = pullLimit.max - pullTotal;
-  let canAdd = true;
-  console.log(totals, canAdd, "BEFORE OVERFLOW DISTRIBUTION PUSH");
-
-  // LEGS: at max
-  if (legsDistFromMax === 0) {
-    // LEGS: at max; PULL: at max; PUSH: over max
-    if (pullDistFromMax === 0) {
-      if (totals.upper > 0) {
-        totals.upper -= 1;
-        totals.pull += 1;
-      } else {
-        // BREAK POINT HERE
-        canAdd = false;
-      }
-    }
-    // LEGS: at max; PULL: under max; PUSH: over max
-    else if (pullDistFromMax > 0) {
-      if (totals.push > 0) {
-        totals.push--;
-        totals.pull++;
-      } else if (totals.upper > 0) {
-        totals.upper--;
-        totals.pull++;
-      } else {
-        if (legsLimit.max >= pullLimit.max) {
-          // BREAK POINT HERE
-          canAdd = false;
-        } else {
-          totals.legs--;
-          totals.pull++;
-        }
-      }
-    }
-    // LEGS: at max; PULL: over max; PUSH: over max
-    else {
-      // push and pull are overflowing and legs is at max
-      if (totals.full > 0) {
-        totals.full--;
-        totals.legs++;
-      } else {
-        // BREAK POINT HERE
-        canAdd = false;
-      }
-    }
-  }
-  // LEGS: under max
-  else if (legsDistFromMax > 0) {
-    // LEGS: under max; PULL: at max; PUSH: over max
-    if (pullDistFromMax === 0) {
-      if (totals.push > 0) {
-        totals.push--;
-        totals.legs++;
-      } else if (totals.full < 2) {
-        totals.full++;
-        totals.upper--;
-      } else {
-        // ASYMMETRY will occur here. So if legs > push
-        if (legsLimit.max > pullLimit.max) {
-          totals.upper--;
-          totals.legs++;
-        } else {
-          // BREAK POINT HERE
-          canAdd = false;
-        }
-      }
-    }
-    // LEGS: under max; PULL: under max: PUSH: over max
-    else if (pullDistFromMax > 0) {
-      if (totals.push > 0) {
-        totals.push--;
-        if (totals.full < 2) {
-          totals.full++;
-        } else {
-          if (legsLimit.max > pullLimit.max) {
-            totals.legs++;
-          } else {
-            totals.pull++;
-          }
-        }
-      } else if (totals.full < 2) {
-        totals.upper--;
-        totals.full++;
-      } else {
-        // FULL IS MAXED AND NO PULLS
-        if (legsLimit.max > pullLimit.max) {
-          totals.upper--;
-          totals.legs++;
-        } else {
-          // BREAK POINT HERE
-          canAdd = false;
-        }
-      }
-    }
-    // LEGS: under max; PULL: over max; PUSH: over max
-    else {
-      totals.upper--;
-      totals.legs++;
-    }
-  }
-  // LEGS: over max
-  else {
-    // LEGS: over max; PULL: at max; PUSH: over max
-    if (pullDistFromMax === 0) {
-      // BREAK POINT HERE
-      canAdd = false;
-    }
-    // LEGS: over max; PULL: under max: PUSH: over max
-    else if (pullDistFromMax > 0) {
-      if (totals.full > 0) {
-        totals.full--;
-        totals.pull++;
-      } else {
-        if (legsLimit.max < pushLimit.max) {
-          totals.legs--;
-          totals.pull++;
-        } else if (pushLimit.max > pullLimit.max) {
-          if (totals.push > 0) {
-            totals.push--;
-            totals.pull++;
-          } else {
-            // BREAK POINT HERE
-            canAdd = false;
-          }
-        } else {
-          // BREAK POINT HERE
-          canAdd = false;
-        }
-      }
-    }
-    // LEGS: over max; PULL: over max; PUSH: over max
-    else {
-      // BREAK POINT HERE
-      canAdd = false;
-    }
-  }
-  console.log(totals, canAdd, "AFTER OVERFLOW DISTRIBUTION PUSH");
-  return {
-    canAdd: canAdd,
-    totals: totals,
-  };
-};
-
-export const underflowDistribution_push = (
-  freq_limits: MaxSessionsPerSplit,
-  _totals: OPTTotalType
-) => {
-  const pullLimit = freq_limits.pull;
-  const pushLimit = freq_limits.push;
-  const legsLimit = freq_limits.legs;
-
-  let totals = { ..._totals };
-  const pullTotal = totals.pull + totals.upper + totals.full;
-  const pushTotal = totals.push + totals.upper + totals.full;
-  const legsTotal = totals.legs + totals.full;
-
-  const legsDistFromMax = legsLimit.max - legsTotal;
-  const pullDistFromMax = pullLimit.max - pullTotal;
-
-  let canAdd = true;
-
-  console.log(totals, canAdd, "BEFORE UNDERFLOW DISTRIBUTION PUSH");
-  if (legsDistFromMax === 0) {
-    // PUSH: under max; LEGS: at max; PULL: at max
-    if (pullDistFromMax === 0) {
-      if (totals.pull > 0) {
-        totals.pull--;
-        totals.upper++;
-      } else {
-        // BREAK POINT HERE
-        canAdd = false;
-      }
-    }
-    // PUSH: under max; LEGS: at max; PULL: under max
-    else if (pullDistFromMax > 0) {
-      if (totals.full > 0) {
-        totals.full--;
-        totals.upper++;
-      } else {
-        if (pushLimit.max > legsLimit.max || pullLimit.max > legsLimit.max) {
-          if (totals.legs > 0) {
-            totals.legs--;
-            totals.upper++;
-          } else {
-            // BREAK POINT HERE
-            canAdd = false;
-          }
-        }
-      }
-    }
-    // PUSH: under max; LEGS: at max; PULL: over max
-    else {
-      if (totals.pull > 0) {
-        totals.pull--;
-        totals.push++;
-      } else {
-        if (pushLimit.max > legsLimit.max) {
-          if (totals.legs > 0) {
-            totals.legs--;
-            totals.push++;
-          } else {
-            // BREAK POINT HERE
-            canAdd = false;
-          }
-        } else {
-          totals.upper--;
-          totals.push++;
-        }
-      }
-    }
-  } else if (legsDistFromMax > 0) {
-    // PUSH: under max; LEGS: under max; PULL: at max
-    if (pullDistFromMax === 0) {
-      if (totals.pull > 0) {
-        if (totals.full < 2) {
-          totals.pull--;
-          totals.full++;
-        } else {
-          totals.pull--;
-          totals.upper++;
-        }
-      } else {
-        // BREAK POINT HERE
-        canAdd = false;
-      }
-    }
-    // PUSH: under max; LEGS: under max; PULL: under max
-    else if (pullDistFromMax > 0) {
-      if (totals.full < 2) {
-        if (totals.push > 0) {
-          totals.push--;
-          totals.full++;
-        } else if (totals.pull > 0) {
-          totals.pull--;
-          totals.full++;
-        } else if (totals.legs > 0) {
-          totals.legs--;
-          totals.full++;
-        } else if (totals.upper > 0) {
-          totals.upper--;
-          totals.full++;
-        } else {
-          // BREAK POINT HERE
-          canAdd = false;
-        }
-      } else {
-        // BREAK POINT HERE
-        canAdd = false;
-      }
-    }
-    // PUSH: under max; LEGS: under max; PULL: over max
-    else {
-      if (totals.full < 2) {
-        if (totals.pull > 0) {
-          totals.pull--;
-          totals.full++;
-        } else {
-          if (pushLimit.max > legsLimit.max) {
-            if (totals.legs > 0) {
-              totals.legs--;
-              totals.full++;
-            } else {
-              totals.upper--;
-              totals.full++;
-            }
-          } else {
-            totals.upper--;
-            totals.full++;
-          }
-        }
-      } else {
-        totals.upper--;
-        totals.push++;
-      }
-    }
-  } else {
-    // PUSH: under max; LEGS: over max; PULL: at max
-    if (pullDistFromMax === 0) {
-      if (totals.legs > 0) {
-        totals.legs--;
-        totals.push++;
-      } else if (totals.pull > 0) {
-        totals.pull--;
-        totals.upper++;
-      } else {
-        totals.full--;
-        totals.upper++;
-      }
-    }
-    // PUSH: under max; LEGS: over max; PULL: under max
-    else if (pullDistFromMax > 0) {
-      if (totals.legs > 0) {
-        totals.legs--;
-        totals.upper++;
-      } else {
-        totals.full--;
-        totals.upper++;
-      }
-    }
-    // PUSH: under max; LEGS: over max; PULL: over max
-    else {
-      if (totals.pull > 0) {
-        totals.pull--;
-        totals.push++;
-      } else if (totals.legs > 0) {
-        totals.legs--;
-        totals.push++;
-      } else if (totals.upper > 0) {
-        totals.upper--;
-        totals.push++;
-      } else if (totals.full > 0) {
-        totals.full--;
-        totals.push++;
-      } else {
-        // BREAK POINT HERE
-        canAdd = false;
-      }
-    }
-  }
-  console.log(totals, canAdd, "AFTER UNDERFLOW DISTRIBUTION PUSH");
-  return {
-    canAdd: canAdd,
-    totals: totals,
-  };
-  // return totals;
-};
-
-export const underflowDistribution_pull = (
-  freq_limits: MaxSessionsPerSplit,
-  totals: OPTTotalType
-) => {
-  const pullLimit = freq_limits.pull;
-  const pushLimit = freq_limits.push;
-  const legsLimit = freq_limits.legs;
-
-  const pullTotal = totals.pull + totals.upper + totals.full;
-  const pushTotal = totals.push + totals.upper + totals.full;
-  const legsTotal = totals.legs + totals.full;
-
-  const legsDistFromMax = legsLimit.max - legsTotal;
-  const pushDistFromMax = pushLimit.max - pushTotal;
-
-  let canAdd = true;
-  console.log(totals, canAdd, "BEFORE UNDERFLOW DISTRIBUTION PULL");
-
-  if (legsDistFromMax === 0) {
-    // PULL: under max; LEGS: at max; PUSH: at max
-    if (pushDistFromMax === 0) {
-      if (totals.push > 0) {
-        totals.push--;
-        totals.upper++;
-      } else {
-        // BREAK POINT HERE
-        canAdd = false;
-      }
-    }
-    // PULL: under max; LEGS: at max; PUSH: under max
-    else if (pushDistFromMax > 0) {
-      if (totals.full > 0) {
-        totals.full--;
-        totals.upper++;
-      } else {
-        if (pullLimit.max > legsLimit.max || pushLimit.max > legsLimit.max) {
-          if (totals.legs > 0) {
-            totals.legs--;
-            totals.upper++;
-          } else {
-            // BREAK POINT HERE
-            canAdd = false;
-          }
-        }
-      }
-    }
-    // PULL: under max; LEGS: at max; PUSH: over max
-    else {
-      if (totals.push > 0) {
-        totals.push--;
-        totals.pull++;
-      } else {
-        if (pullLimit.max > legsLimit.max) {
-          if (totals.legs > 0) {
-            totals.legs--;
-            totals.pull++;
-          } else {
-            // BREAK POINT HERE
-            canAdd = false;
-          }
-        } else {
-          totals.upper--;
-          totals.pull++;
-        }
-      }
-    }
-  } else if (legsDistFromMax > 0) {
-    // PULL: under max; LEGS: under max; PUSH: at max
-    if (pushDistFromMax === 0) {
-      if (totals.push > 0) {
-        totals.push--;
-        totals.upper++;
-      } else {
-        // BREAK POINT HERE
-        canAdd = false;
-      }
-    }
-    // PULL: under max; LEGS: under max; PUSH: under max
-    else if (pushDistFromMax > 0) {
-      // BREAK POINT HERE
-      canAdd = false;
-    }
-    // PULL: under max; LEGS: under max; PUSH: over max
-    else {
-      if (totals.push > 0) {
-        if (totals.full < 2) {
-          totals.push--;
-          totals.full++;
-        } else {
-          if (legsLimit.max >= pullLimit.max) {
-            totals.push--;
-            totals.legs++;
-          } else {
-            totals.push--;
-            totals.pull++;
-          }
-        }
-      } else {
-        totals.upper--;
-        totals.pull++;
-      }
-    }
-  } else {
-    // PULL: under max; LEGS: over max; PUSH: at max
-    if (pushDistFromMax === 0) {
-      if (totals.legs > 0) {
-        totals.legs--;
-        totals.push++;
-      } else {
-        totals.full--;
-        totals.upper++;
-      }
-    }
-    // PULL: under max; LEGS: over max; PUSH: under max
-    else if (pushDistFromMax > 0) {
-      if (totals.legs > 0) {
-        totals.legs--;
-        totals.upper++;
-      } else {
-        totals.full--;
-        totals.upper++;
-      }
-    }
-    // PULL: under max; LEGS: over max; PUSH: over max
-    else {
-      if (totals.legs > 0) {
-        totals.legs--;
-        totals.push++;
-      } else {
-        totals.full--;
-        totals.push++;
-      }
-    }
-  }
-  console.log(totals, canAdd, "AFTER UNDERFLOW DISTRIBUTION PULL");
-  return {
-    canAdd: canAdd,
-    totals: totals,
-  };
-};
-
-const canOperateFull = (type: "add" | "sub", _totals: OPTTotalType) => {
-  if (type === "add") {
-    return;
-  } else {
-  }
-};
-
 const isSplitHigherPriority = (
   target: "push" | "pull" | "legs",
   check: "push" | "pull" | "legs",
@@ -1219,6 +451,401 @@ const isSplitHigherPriority = (
   return targetIndex < checkIndex;
 };
 
+export const pushPullDistribution = (
+  type: "push" | "pull",
+  over_under: "over" | "under",
+  freq_limits: MaxSessionsPerSplit,
+  _totals: OPTTotalType,
+  prioritizedSplits: string[]
+) => {
+  let totals = { ..._totals };
+  let tarType: "push" | "pull" = "push";
+  let altType: "push" | "pull" = "pull";
+
+  let pushLimit = freq_limits.push;
+  let pullLimit = freq_limits.pull;
+  const legsLimit = freq_limits.legs;
+
+  let pullTotal = totals.pull + totals.upper + totals.full;
+  let pushTotal = totals.push + totals.upper + totals.full;
+  const legsTotal = totals.legs + totals.full;
+
+  let pullDistFromMax = pullLimit.max - pullTotal;
+  let pushDistFromMax = pushLimit.max - pushTotal;
+  const legsDistFromMax = legsLimit.max - legsTotal;
+
+  if (type === "pull") {
+    tarType = "pull";
+    altType = "push";
+    pushLimit = freq_limits.pull;
+    pullLimit = freq_limits.push;
+    pushTotal = totals.pull + totals.upper + totals.full;
+    pullTotal = totals.push + totals.upper + totals.full;
+    pushDistFromMax = pullLimit.max - pullTotal;
+    pullDistFromMax = pushLimit.max - pushTotal;
+  }
+
+  let isNotBroken = true;
+  console.log(
+    _totals,
+    totals,
+    isNotBroken,
+    over_under,
+    `${type} DISTRIBUTION BEFORE`
+  );
+
+  if (pullDistFromMax > 0) {
+    // LEGS: under max && PUSH || PULL: under max
+    if (legsDistFromMax > 0) {
+      if (over_under === "over") {
+        const legsHigher = isSplitHigherPriority(
+          "legs",
+          altType,
+          prioritizedSplits
+        );
+
+        if (totals[tarType] > 0) {
+          totals[tarType]--;
+          if (legsHigher) {
+            totals.legs++;
+          } else {
+            totals[altType]++;
+          }
+        } else {
+          if (legsHigher) {
+            totals.upper--;
+            totals.legs++;
+          } else {
+            totals.upper--;
+            totals[altType]++;
+          }
+        }
+      } else {
+        // NOTE: should probably check distance each is from max
+        isNotBroken = false;
+      }
+    }
+    // LEGS: over max && PUSH || PULL: under max
+    else if (legsDistFromMax < 0) {
+      if (over_under === "over") {
+        if (totals[tarType] > 0) {
+          totals[tarType]--;
+          totals[altType]++;
+        } else if (totals.full > 0) {
+          totals.full--;
+          totals[altType]++;
+        } else {
+          totals.upper--;
+          totals[altType]++;
+        }
+      } else {
+        if (totals.legs > 0) {
+          totals.legs--;
+          totals.upper++;
+        } else {
+          totals.full--;
+          totals.upper++;
+        }
+      }
+    }
+    // LEGS: at max && PUSH || PULL: under max
+    else {
+      if (over_under === "over") {
+        if (totals[tarType] > 0) {
+          totals[tarType]--;
+          totals[altType]++;
+        } else {
+          totals.upper--;
+          totals[altType]++;
+        }
+      } else {
+        const higherThanPush = isSplitHigherPriority(
+          "legs",
+          "push",
+          prioritizedSplits
+        );
+        const higherThanPull = isSplitHigherPriority(
+          "legs",
+          "pull",
+          prioritizedSplits
+        );
+
+        if (higherThanPush && higherThanPull) {
+          isNotBroken = false;
+        } else {
+          totals.legs--;
+          totals.upper++;
+        }
+      }
+    }
+  } else if (pullDistFromMax < 0) {
+    // LEGS: under max && PUSH || PULL: over max
+    if (legsDistFromMax > 0) {
+      if (over_under === "over") {
+        totals.upper--;
+        totals.legs++;
+      } else {
+        if (totals[altType] > 0) {
+          totals[altType]--;
+          totals[tarType]++;
+        } else {
+          totals.upper--;
+          totals[tarType]++;
+        }
+      }
+    }
+    // LEGS: over max && PUSH || PULL: over max
+    else if (legsDistFromMax < 0) {
+      if (over_under === "over") {
+        if (totals.full > 0) {
+          totals.full--;
+          const pushHigherThanPush = isSplitHigherPriority(
+            "push",
+            "legs",
+            prioritizedSplits
+          );
+          const pushHigherThanPull = isSplitHigherPriority(
+            "pull",
+            "legs",
+            prioritizedSplits
+          );
+
+          if (pushHigherThanPull && pushHigherThanPush) {
+            totals[altType]++;
+          } else {
+            totals.legs++;
+          }
+        } else {
+          isNotBroken = false;
+        }
+      } else {
+        if (totals.legs > 0) {
+          totals.legs--;
+          totals[tarType]++;
+        } else {
+          totals.full--;
+          totals[tarType]++;
+        }
+      }
+    }
+    // LEGS: at max && PUSH || PULL: over max
+    else {
+      if (over_under === "over") {
+        if (totals.full > 0) {
+          totals.full--;
+          totals.legs++;
+        } else {
+          isNotBroken = false;
+        }
+      } else {
+        if (totals[altType] > 0) {
+          totals[altType]--;
+          totals[tarType]++;
+        } else {
+          totals.upper--;
+          totals[tarType]++;
+        }
+      }
+    }
+  } else {
+    // LEGS: under max && PUSH || PULL: at max
+    if (legsDistFromMax > 0) {
+      if (over_under === "over") {
+        if (totals[tarType] > 0) {
+          totals[tarType]--;
+          totals.legs++;
+        } else {
+          // lots of potential here
+          const pushDist =
+            pushLimit.max - (totals.push + totals.upper + totals.full - 1);
+          const pullDist =
+            pullLimit.max - (totals.pull + totals.upper + totals.full - 1);
+          const legsDist = legsLimit.max - (totals.legs + totals.full + 1);
+
+          if (pushDist <= 1 && pullDist <= 1 && legsDist <= 1) {
+            totals.upper--;
+            totals.legs++;
+            isNotBroken = false;
+          } else {
+            isNotBroken = false;
+            console.log(pushDist, pullDist, legsDist, "BROKE DISTRIBUTION LOL");
+          }
+        }
+      } else {
+        // INIFITE LOOP HERE - 1. rear_delts 2. side_delts 3. quads 4. glutes
+        // pull 6
+        // push 5
+        // legs 4
+
+        const twoUnderOneAt = (
+          maxed: "legs" | "push" | "pull",
+          totals: OPTTotalType,
+          freq_limits: MaxSessionsPerSplit,
+          prioritySplits: ("push" | "pull" | "legs")[]
+        ) => {
+          const newTotals = { ...totals };
+          const legsDistFromMax =
+            freq_limits.legs.max - totals.legs + totals.full;
+          const pushDistFromMax =
+            freq_limits.push.max - totals.upper + totals.push + totals.full;
+          const pullDistFromMax =
+            freq_limits.pull.max - totals.upper + totals.pull + totals.full;
+
+          let notExhausted = true;
+          switch (maxed) {
+            case "legs":
+              if (pushDistFromMax >= 2 || pullDistFromMax >= 2) {
+                if (pushDistFromMax + 1 < 2 || pullDistFromMax + 1 < 2) {
+                  newTotals.legs--;
+                  newTotals.upper++;
+                  notExhausted = false;
+                } else {
+                  notExhausted = false;
+                }
+              } else {
+                notExhausted = false;
+              }
+
+              if (prioritySplits[0] === "legs") {
+                if (pushDistFromMax >= 2 || pullDistFromMax >= 2) {
+                  newTotals.legs--;
+                  newTotals.upper++;
+                } else {
+                }
+              } else if (prioritizedSplits[1] === "legs") {
+              } else {
+              }
+
+              if (pushDistFromMax >= 2 || pullDistFromMax >= 2) {
+                newTotals.legs--;
+                newTotals.upper++;
+              } else {
+              }
+              break;
+            case "pull":
+              if (prioritySplits[0] === "pull") notExhausted = false;
+              if (pushDistFromMax >= 2 || legsDistFromMax >= 2) {
+              }
+              break;
+            case "push":
+              if (prioritySplits[0] === "push") notExhausted = false;
+              if (pullDistFromMax >= 2 || legsDistFromMax >= 2) {
+              }
+              break;
+            default:
+              break;
+          }
+
+          return {
+            notExhausted: notExhausted,
+            totals: newTotals,
+          };
+        };
+
+        const altHigherThanTar = isSplitHigherPriority(
+          tarType,
+          altType,
+          prioritizedSplits
+        );
+
+        if (altHigherThanTar) {
+          isNotBroken = false;
+        } else {
+          if (totals[altType] > 0) {
+            totals[altType]--;
+            totals.upper++;
+          } else {
+            totals.upper--;
+            totals[tarType]++;
+          }
+        }
+      }
+    }
+    // LEGS: over max && PUSH || PULL: at max
+    else if (legsDistFromMax < 0) {
+      if (over_under === "over") {
+        if (totals.full > 0) {
+          totals.full--;
+          totals[altType]++;
+        } else {
+          totals[tarType]--;
+          totals[altType]++;
+        }
+      } else {
+        if (totals.legs > 0) {
+          totals.legs--;
+          totals[tarType]++;
+        } else {
+          totals.full--;
+          totals.upper++;
+        }
+      }
+    }
+    // LEGS: at max && PUSH || PULL: at max
+    else {
+      if (over_under === "over") {
+        if (totals[tarType] > 0) {
+          isNotBroken = false;
+        } else {
+          totals.upper--;
+          totals[altType]++;
+        }
+      } else {
+        const altHigherThanTar = isSplitHigherPriority(
+          altType,
+          tarType,
+          prioritizedSplits
+        );
+        const legsHigherThanTar = isSplitHigherPriority(
+          "legs",
+          tarType,
+          prioritizedSplits
+        );
+        if (altHigherThanTar) {
+          if (legsHigherThanTar) {
+            isNotBroken = false;
+          } else {
+            if (totals.legs > 0) {
+              totals.legs--;
+              totals[tarType]++;
+            } else {
+              isNotBroken = false;
+            }
+          }
+        } else {
+          if (legsHigherThanTar) {
+            if (totals[altType] > 0) {
+              totals[altType]--;
+              totals.upper++;
+            } else {
+              isNotBroken = false;
+            }
+          } else {
+            if (totals.legs > 0) {
+              totals.legs--;
+              totals[tarType]++;
+            } else {
+              isNotBroken = false;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  console.log(
+    _totals,
+    totals,
+    isNotBroken,
+    over_under,
+    `${type} DISTRIBUTION AFTER`
+  );
+  return {
+    canAdd: isNotBroken,
+    totals: totals,
+  };
+};
+
 export const legsDistribution = (
   over_under: "over" | "under",
   freq_limits: MaxSessionsPerSplit,
@@ -1229,11 +856,13 @@ export const legsDistribution = (
 
   const pullLimit = freq_limits.pull;
   const pushLimit = freq_limits.push;
+  const legsLimit = freq_limits.legs;
   const pullTotal = totals.pull + totals.upper + totals.full;
   const pushTotal = totals.push + totals.upper + totals.full;
   const legsTotal = totals.legs + totals.full;
   const pullDistFromMax = pullLimit.max - pullTotal;
   const pushDistFromMax = pushLimit.max - pushTotal;
+  const legsDistFromMax = legsLimit.max - legsTotal;
 
   let isNotBroken = true;
   console.log(
@@ -1415,7 +1044,11 @@ export const legsDistribution = (
           "push",
           prioritizedSplits
         );
-        if (higherThanPull && higherThanPush) {
+        if (
+          higherThanPull &&
+          higherThanPush &&
+          legsDistFromMax > pullDistFromMax
+        ) {
           totals.upper--;
           totals.legs++;
         } else {
@@ -1506,6 +1139,7 @@ export const legsDistribution = (
       }
     }
   }
+
   console.log(
     _totals,
     totals,
@@ -1518,198 +1152,3 @@ export const legsDistribution = (
     totals: totals,
   };
 };
-
-export const underflowDistribution_legs = (
-  freq_limits: MaxSessionsPerSplit,
-  totals: OPTTotalType
-) => {
-  const pullLimit = freq_limits.pull;
-  const pushLimit = freq_limits.push;
-  const legsLimit = freq_limits.legs;
-
-  const pullTotal = totals.pull + totals.upper + totals.full;
-  const pushTotal = totals.push + totals.upper + totals.full;
-  const legsTotal = totals.legs + totals.full;
-
-  const pullDistFromMax = pullLimit.max - pullTotal;
-  const pushDistFromMax = pushLimit.max - pushTotal;
-  let canAdd = true;
-  console.log(totals, canAdd, "BEFORE UNDERFLOW DISTRIBUTION LEGS");
-
-  if (pullDistFromMax === 0) {
-    // LEGS: under max; PULL: at max; PUSH: at max
-    if (pushDistFromMax === 0) {
-      if (totals.push > 0 && totals.pull > 0) {
-        totals.push--;
-        totals.pull--;
-        totals.upper++;
-        totals.legs++;
-      } else {
-        if (legsLimit.max >= pullLimit.max && legsLimit.max >= pushLimit.max) {
-          totals.upper--;
-          totals.legs++;
-          if (legsLimit.max - legsTotal + 1 >= 1) {
-            canAdd = false;
-          }
-        } else {
-          // BREAK POINT HERE
-          canAdd = false;
-        }
-      }
-    }
-    // LEGS: under max; PULL: at max; PUSH: under max
-    else if (pushDistFromMax > 0) {
-      if (totals.full > 0) {
-        totals.full--;
-        totals.upper++;
-      } else {
-        if (pullLimit.max > legsLimit.max || pushLimit.max > legsLimit.max) {
-          if (totals.legs > 0) {
-            totals.legs--;
-            totals.upper++;
-          } else {
-            // BREAK POINT HERE
-            canAdd = false;
-          }
-        } else {
-          canAdd = false;
-        }
-      }
-    }
-    // LEGS: under max; PULL: at max; PUSH: over max
-    else {
-      if (totals.push > 0) {
-        totals.push--;
-        totals.legs++;
-      } else {
-        if (legsLimit.max >= pullLimit.max) {
-          totals.upper--;
-          totals.legs++;
-        } else {
-          // BREAK POINT HERE
-          canAdd = false;
-        }
-      }
-    }
-  } else if (pullDistFromMax > 0) {
-    // LEGS: under max; PULL: under max; PUSH: at max
-    if (pushDistFromMax === 0) {
-      if (totals.full < 2) {
-        if (totals.push > 0) {
-          totals.push--;
-          totals.full++;
-        } else {
-          totals.upper--;
-          totals.full++;
-        }
-      } else {
-        if (legsLimit.max >= pullLimit.max && legsLimit.max >= pushLimit.max) {
-          totals.upper--;
-          totals.legs++;
-        } else {
-          // BREAK POINT HERE POSSIBLE
-          canAdd = false;
-        }
-      }
-    }
-    // LEGS: under max; PULL: under max; PUSH: under max
-    else if (pushDistFromMax > 0) {
-      if (totals.full < 2) {
-        totals.upper--;
-        totals.full++;
-      } else {
-        // BREAK POINT HERE
-        canAdd = false;
-      }
-    }
-    // LEGS: under max; PULL: under max; PUSH: over max
-    else {
-      if (totals.pull > 0) {
-        totals.pull--;
-        if (totals.full < 2) {
-          totals.full++;
-        } else {
-          if (legsLimit.max > pullLimit.max) {
-            totals.legs++;
-          } else {
-            totals.push++;
-          }
-        }
-      } else {
-        if (legsLimit.max > pullLimit.max) {
-          totals.upper--;
-          totals.legs++;
-        } else {
-          totals.upper--;
-          totals.pull++;
-        }
-      }
-    }
-  } else {
-    // LEGS: under max; PULL: over max; PUSH: at max
-    if (pushDistFromMax === 0) {
-      if (totals.pull > 0) {
-        totals.pull--;
-        totals.legs++;
-      } else if (totals.full < 2) {
-        totals.upper--;
-        totals.full++;
-      } else {
-        if (legsLimit.max >= pushLimit.max) {
-          totals.upper--;
-          totals.legs++;
-          if (pushLimit.max - 1 === legsTotal + 1) {
-            canAdd = false;
-          }
-        } else {
-          // BREAK POINT HERE
-          canAdd = false;
-        }
-      }
-    }
-    // LEGS: under max; PULL: over max; PUSH: under max
-    else if (pushDistFromMax > 0) {
-      if (totals.pull > 0) {
-        totals.pull--;
-        if (totals.full < 2) {
-          totals.full++;
-        } else {
-          totals.legs++;
-        }
-      } else if (totals.full < 2) {
-        totals.upper--;
-        totals.full++;
-      } else {
-        if (legsLimit.max > pushLimit.max) {
-          totals.upper--;
-          totals.legs++;
-        } else {
-          // BREAK POINT HERE
-          canAdd = false;
-        }
-      }
-    }
-    // LEGS: under max; PULL: over max; PUSH: over max
-    else {
-      if (totals.upper > 0) {
-        totals.upper--;
-        totals.legs++;
-      } else {
-        // BREAK POINT HERE
-        canAdd = false;
-      }
-    }
-  }
-
-  console.log(totals, canAdd, "AFTER UNDERFLOW DISTRIBUTION LEGS");
-  return {
-    canAdd: canAdd,
-    totals: totals,
-  };
-};
-// 2-5
-// 3-5
-// 3-5
-
-// 4 - 2
-// 3 - 2 - 1
