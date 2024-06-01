@@ -150,7 +150,7 @@ function useProgramConfig() {
         [mrv_breakpoint, mev_breakpoint]
       );
       const mathss = maths(sesh, frequency[0] + frequency[1]);
-
+      const total = programConfig.frequency[0] + programConfig.frequency[1];
       const priorityListTests = muscle_priority_list.map((each, index) => {
         const weight = MUSCLE_WEIGHTS_MODIFIERS[each.muscle].weight;
         const optFreq = MUSCLE_WEIGHTS_MODIFIERS[each.muscle].optimalFrequency;
@@ -168,13 +168,9 @@ function useProgramConfig() {
           ],
         };
       });
-      const lol = handleDistribution(muscle_priority_list, mathss);
+      const lol = handleDistribution(total, muscle_priority_list, mathss);
       const prioritizedSplits = getPrioritizedPPL(muscle_priority_list);
-      const TEST = distributeWeightsIntoSessions(
-        programConfig.frequency[0] + programConfig.frequency[1],
-        lol,
-        prioritizedSplits
-      );
+      const TEST = distributeWeightsIntoSessions(total, lol, prioritizedSplits);
       setTestSessions(TEST);
       setAvgFrequencies(lol);
       console.log(lol, "WHAT HTIS LOOK LIKE?");
@@ -481,8 +477,8 @@ export const pushPullDistribution = (
     pullLimit = freq_limits.push;
     pushTotal = totals.pull + totals.upper + totals.full;
     pullTotal = totals.push + totals.upper + totals.full;
-    pushDistFromMax = pullLimit.max - pullTotal;
-    pullDistFromMax = pushLimit.max - pushTotal;
+    pushDistFromMax = freq_limits.pull.max - pullTotal;
+    pullDistFromMax = freq_limits.push.max - pushTotal;
   }
 
   let isNotBroken = true;
@@ -676,71 +672,6 @@ export const pushPullDistribution = (
         // pull 6
         // push 5
         // legs 4
-
-        const twoUnderOneAt = (
-          maxed: "legs" | "push" | "pull",
-          totals: OPTTotalType,
-          freq_limits: MaxSessionsPerSplit,
-          prioritySplits: ("push" | "pull" | "legs")[]
-        ) => {
-          const newTotals = { ...totals };
-          const legsDistFromMax =
-            freq_limits.legs.max - totals.legs + totals.full;
-          const pushDistFromMax =
-            freq_limits.push.max - totals.upper + totals.push + totals.full;
-          const pullDistFromMax =
-            freq_limits.pull.max - totals.upper + totals.pull + totals.full;
-
-          let notExhausted = true;
-          switch (maxed) {
-            case "legs":
-              if (pushDistFromMax >= 2 || pullDistFromMax >= 2) {
-                if (pushDistFromMax + 1 < 2 || pullDistFromMax + 1 < 2) {
-                  newTotals.legs--;
-                  newTotals.upper++;
-                  notExhausted = false;
-                } else {
-                  notExhausted = false;
-                }
-              } else {
-                notExhausted = false;
-              }
-
-              if (prioritySplits[0] === "legs") {
-                if (pushDistFromMax >= 2 || pullDistFromMax >= 2) {
-                  newTotals.legs--;
-                  newTotals.upper++;
-                } else {
-                }
-              } else if (prioritizedSplits[1] === "legs") {
-              } else {
-              }
-
-              if (pushDistFromMax >= 2 || pullDistFromMax >= 2) {
-                newTotals.legs--;
-                newTotals.upper++;
-              } else {
-              }
-              break;
-            case "pull":
-              if (prioritySplits[0] === "pull") notExhausted = false;
-              if (pushDistFromMax >= 2 || legsDistFromMax >= 2) {
-              }
-              break;
-            case "push":
-              if (prioritySplits[0] === "push") notExhausted = false;
-              if (pullDistFromMax >= 2 || legsDistFromMax >= 2) {
-              }
-              break;
-            default:
-              break;
-          }
-
-          return {
-            notExhausted: notExhausted,
-            totals: newTotals,
-          };
-        };
 
         const altHigherThanTar = isSplitHigherPriority(
           tarType,
@@ -1150,5 +1081,72 @@ export const legsDistribution = (
   return {
     canAdd: isNotBroken,
     totals: totals,
+  };
+};
+
+// push or pull will be at or above max
+// legs will be at or under max
+
+const twoUnderOneAt = (
+  maxed: "legs" | "push" | "pull",
+  totals: OPTTotalType,
+  freq_limits: MaxSessionsPerSplit,
+  prioritySplits: ("push" | "pull" | "legs")[]
+) => {
+  const newTotals = { ...totals };
+  const legsDistFromMax = freq_limits.legs.max - totals.legs + totals.full;
+  const pushDistFromMax =
+    freq_limits.push.max - totals.upper + totals.push + totals.full;
+  const pullDistFromMax =
+    freq_limits.pull.max - totals.upper + totals.pull + totals.full;
+
+  let notExhausted = true;
+  switch (maxed) {
+    case "legs":
+      if (pushDistFromMax >= 2 || pullDistFromMax >= 2) {
+        if (pushDistFromMax + 1 < 2 || pullDistFromMax + 1 < 2) {
+          newTotals.legs--;
+          newTotals.upper++;
+          notExhausted = false;
+        } else {
+          notExhausted = false;
+        }
+      } else {
+        notExhausted = false;
+      }
+
+      if (prioritySplits[0] === "legs") {
+        if (pushDistFromMax >= 2 || pullDistFromMax >= 2) {
+          newTotals.legs--;
+          newTotals.upper++;
+        } else {
+        }
+      } else if (prioritySplits[1] === "legs") {
+      } else {
+      }
+
+      if (pushDistFromMax >= 2 || pullDistFromMax >= 2) {
+        newTotals.legs--;
+        newTotals.upper++;
+      } else {
+      }
+      break;
+    case "pull":
+      if (prioritySplits[0] === "pull") notExhausted = false;
+      if (pushDistFromMax >= 2 || legsDistFromMax >= 2) {
+      }
+      break;
+    case "push":
+      if (prioritySplits[0] === "push") notExhausted = false;
+      if (pullDistFromMax >= 2 || legsDistFromMax >= 2) {
+      }
+      break;
+    default:
+      break;
+  }
+
+  return {
+    notExhausted: notExhausted,
+    totals: newTotals,
   };
 };

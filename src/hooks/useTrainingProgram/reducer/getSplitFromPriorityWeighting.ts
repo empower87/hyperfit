@@ -43,7 +43,19 @@ const getWeightRanking_BRO = (
   }
 };
 
+const getFrequencyLimit = (
+  isTopPriority: boolean,
+  total_sessions: number,
+  min: number,
+  max: number
+) => {
+  const total = isTopPriority ? total_sessions : total_sessions - 1;
+  const capped = Math.max(min, Math.min(max, total));
+  return capped;
+};
+
 export const handleDistribution = (
+  total_sessions: number,
   muscle_priority_list: MusclePriorityType[],
   sessions: {
     session: string;
@@ -61,7 +73,9 @@ export const handleDistribution = (
   let legsTracker = 0;
   let legsCount = [];
   let legsPosTracker = "MRV";
+
   for (let i = 0; i < muscle_priority_list.length; i++) {
+    const isTopPriority = i === 0;
     const muscle = muscle_priority_list[i].muscle;
     const split = getPushPullLegsSplit(muscle);
     if (muscle_priority_list[i].volume.landmark === "MRV") {
@@ -71,7 +85,18 @@ export const handleDistribution = (
             const freq_string =
               MUSCLE_WEIGHTS_MODIFIERS[muscle].frequencyRange.toString();
             const muscle_max = getMaxFrequencyByMatrix(freq_string, i, 3);
-            pushCount.push(muscle_max);
+            const muscle_max_adj = getFrequencyLimit(
+              isTopPriority,
+              total_sessions,
+              MUSCLE_WEIGHTS_MODIFIERS[muscle].frequencyRange[0],
+              muscle_max
+            );
+            console.log(
+              muscle_max,
+              muscle_max_adj,
+              "TEST THI SHIT DISTRIBUTION "
+            );
+            pushCount.push(muscle_max_adj);
             pushTracker++;
             pushPosTracker = "MRV";
           }
@@ -81,7 +106,13 @@ export const handleDistribution = (
             const freq_string =
               MUSCLE_WEIGHTS_MODIFIERS[muscle].frequencyRange.toString();
             const muscle_max = getMaxFrequencyByMatrix(freq_string, i, 3);
-            pullCount.push(muscle_max);
+            const muscle_max_adj = getFrequencyLimit(
+              isTopPriority,
+              total_sessions,
+              MUSCLE_WEIGHTS_MODIFIERS[muscle].frequencyRange[0],
+              muscle_max
+            );
+            pullCount.push(muscle_max_adj);
             pullTracker++;
             pullPosTracker = "MRV";
           }
@@ -91,7 +122,13 @@ export const handleDistribution = (
             const freq_string =
               MUSCLE_WEIGHTS_MODIFIERS[muscle].frequencyRange.toString();
             const muscle_max = getMaxFrequencyByMatrix(freq_string, i, 3);
-            legsCount.push(muscle_max);
+            const muscle_max_adj = getFrequencyLimit(
+              isTopPriority,
+              total_sessions,
+              MUSCLE_WEIGHTS_MODIFIERS[muscle].frequencyRange[0],
+              muscle_max
+            );
+            legsCount.push(muscle_max_adj);
             legsTracker++;
             legsPosTracker = "MRV";
           }
@@ -144,26 +181,26 @@ export const handleDistribution = (
       switch (split) {
         case "push":
           if (pushTracker < 2) {
-            pushCount.push(1)
-            pushTracker++
+            pushCount.push(1);
+            pushTracker++;
           }
           break;
         case "pull":
           if (pullTracker < 2) {
-            pullCount.push(1)
-            pullTracker++
+            pullCount.push(1);
+            pullTracker++;
           }
           break;
         case "legs":
           if (legsTracker < 2) {
-            legsCount.push(1)
-            legsTracker++
+            legsCount.push(1);
+            legsTracker++;
           }
           break;
         default:
           break;
       }
-    };
+    }
   }
   return {
     push: pushCount.sort((a, b) => a - b),
@@ -832,5 +869,5 @@ function divideRatioIntoSessionsOPT(push: number, legs: number, pull: number) {
     }
   }
 
-  return OPT
+  return OPT;
 }

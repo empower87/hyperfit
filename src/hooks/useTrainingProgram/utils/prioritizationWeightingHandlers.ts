@@ -16,11 +16,7 @@ const RANK_WEIGHTS = [14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1];
 // export const RANK_WEIGHTS_TEST = [
 //   2, 1.9, 1.8, 1.7, 1.2, 1.2, 1.2, 1.2, 1.05, 1.05, 1.05, 1.05, 1.05, 1,
 // ];
-const INITIAL_WEIGHTS = {
-  mrv: 2,
-  mev: 2,
-  mv: 2,
-};
+
 
 // CURRENT ALGO:
 // 1. starting at 14 (FULL_BODY_MUSCLES.length) * 2 for MRV then - 4/2
