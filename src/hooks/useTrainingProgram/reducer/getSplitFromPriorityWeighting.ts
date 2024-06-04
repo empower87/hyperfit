@@ -22,26 +22,11 @@ import {
   SplitSessionsType,
 } from "./trainingProgramReducer";
 
-const getWeightRanking_BRO = (
-  muscle_priority_list: MusclePriorityType[],
-  sessions: SplitSessionsType
-) => {
-  type BROKeys = keyof typeof sessions.sessions;
-  const sessions_float = { ...sessions };
-
-  for (let i = 0; i < muscle_priority_list.length; i++) {
-    const bro_muscle = muscle_priority_list[i].muscle;
-    const bro_rank = muscle_priority_list[i].rank;
-    switch (sessions_float.split) {
-      case "BRO":
-        const bro_split = getBroSplit(bro_muscle);
-        sessions_float.sessions[bro_split] =
-          sessions_float.sessions[bro_split] + bro_rank;
-        break;
-      case "UL":
-    }
-  }
-};
+const filterPriority = () => {
+  // if #1 then take that and next group in split Math.max()
+  // if #2 then take that and the next group in split and avg round up
+  // if #3 then take that and the next group in split and avg round down
+}
 
 const getFrequencyLimit = (
   isTopPriority: boolean,
@@ -871,3 +856,111 @@ function divideRatioIntoSessionsOPT(push: number, legs: number, pull: number) {
 
   return OPT;
 }
+
+const generateBalls = (push: number, pull: number, legs: number) => {
+    
+}
+type Basket = {
+  push: number,
+  pull: number,
+  legs: number,
+  upper: number,
+  full: number
+}
+
+ // total: 6
+ // legs: 5
+ // pull: 5
+ // push: 4
+ // tots: 14
+ 
+ // total: 6
+ // upper: 4
+ // pull:  1
+ // push:  0
+ // legs:  5
+ // tots:  10
+
+ // total: 6
+ // upper: 3
+ // pull:  0
+ // push:  0
+ // legs:  3
+ // full:  2
+ // tots:  8
+
+// total: 7
+// legs 6
+// pull 5
+// push 5
+
+// upper 5
+// legs 6
+
+// upper 3
+// legs 4
+// full 2
+
+// upper 4
+// legs 5
+
+// upper 2
+// full 3
+// legs 2
+
+// total: 
+const removeBalls = (
+  totals: Basket,
+  total_frequency: number,
+) => {
+
+  const remainder = (totals.full + totals.upper + totals.legs + totals.push + totals.pull) - total_frequency
+
+  let remove: "upper" | "legs" = "upper"
+  if (remainder > 0) {
+
+    const isEven = remainder % 2 === 0
+
+    if (isEven) {
+      remove = "legs"
+    }
+
+    for (let i = 0; i < remainder; i++) {
+      totals[remove]--
+      remove = remove === "upper" ? "legs" : "upper"
+    }
+  } 
+  return totals
+}
+
+export const mutateBasket = (bas: Basket, total_frequency: number) => {
+  switch (true) {
+    case (bas.push > 0 && bas.pull > 0): 
+      return { ...bas, push: bas.push--, pull: bas.pull--, upper: bas.upper++ }
+    case (bas.full < 2 && bas.pull > 0 && bas.legs > 0):
+      return { ...bas, pull: bas.pull--, legs: bas.legs--, full: bas.full++ }
+    case (bas.full < 2 && bas.push > 0 && bas.legs > 0):
+      return { ...bas, pull: bas.push--, legs: bas.legs--, full: bas.full++ }
+    case (bas.full < 2 && bas.upper > 0 && bas.legs > 0):
+      return { ...bas, pull: bas.upper--, legs: bas.legs--, full: bas.full++ }
+    default:
+      return removeBalls(bas, total_frequency)
+  }
+}
+
+// 7x
+// 2 full
+// 5 upper
+
+// 7x a week
+
+// PULL - 6
+// PUSH - 5
+// LOWER - 2
+
+// 1 pull
+// 4 upper
+// 1 full
+// 1 lower
+
+// 7 total
