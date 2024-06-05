@@ -12,7 +12,10 @@ import {
   RANK_WEIGHTS,
 } from "~/constants/weighting/muscles";
 import { getPrioritizedPPL } from "~/constants/workoutSplits";
-import { distributeWeightsIntoSessions } from "~/hooks/useTrainingProgram/reducer/distributeWeightsIntoSessions";
+import {
+  distributeSessionsIntoSplits,
+  getNGroupOccurrences,
+} from "~/hooks/useTrainingProgram/reducer/distributeSessionsIntoSplits";
 import {
   getRankWeightsBySplit,
   getSplitFromWeights,
@@ -170,9 +173,24 @@ function useProgramConfig() {
       });
       const lol = handleDistribution(total, muscle_priority_list, mathss);
       const prioritizedSplits = getPrioritizedPPL(muscle_priority_list);
-      const TEST = distributeWeightsIntoSessions(total, lol, prioritizedSplits);
+      // const TEST = distributeWeightsIntoSessions(total, lol, prioritizedSplits);
+      const getNGroup = getNGroupOccurrences(
+        2,
+        muscle_priority_list,
+        [mrv_breakpoint, mev_breakpoint],
+        total
+      );
+      const TEST = distributeSessionsIntoSplits(
+        total,
+        getNGroup,
+        prioritizedSplits
+      );
       setTestSessions(TEST);
-      setAvgFrequencies(lol);
+      setAvgFrequencies({
+        push: [1, getNGroup.push[1]],
+        pull: [1, getNGroup.pull[1]],
+        legs: [1, getNGroup.legs[1]],
+      });
       console.log(lol, "WHAT HTIS LOOK LIKE?");
       setSessionsTest(mathss);
       setPriorityListTest(priorityListTests);
@@ -398,7 +416,7 @@ const useProgramConfigContext = () => {
 
 export { ProgramConfigProvider, useProgramConfigContext };
 
-type MaxSessionsPerSplit = {
+export type MaxSessionsPerSplit = {
   push: {
     min: number;
     max: number;
@@ -1081,72 +1099,5 @@ export const legsDistribution = (
   return {
     canAdd: isNotBroken,
     totals: totals,
-  };
-};
-
-// push or pull will be at or above max
-// legs will be at or under max
-
-const twoUnderOneAt = (
-  maxed: "legs" | "push" | "pull",
-  totals: OPTTotalType,
-  freq_limits: MaxSessionsPerSplit,
-  prioritySplits: ("push" | "pull" | "legs")[]
-) => {
-  const newTotals = { ...totals };
-  const legsDistFromMax = freq_limits.legs.max - totals.legs + totals.full;
-  const pushDistFromMax =
-    freq_limits.push.max - totals.upper + totals.push + totals.full;
-  const pullDistFromMax =
-    freq_limits.pull.max - totals.upper + totals.pull + totals.full;
-
-  let notExhausted = true;
-  switch (maxed) {
-    case "legs":
-      if (pushDistFromMax >= 2 || pullDistFromMax >= 2) {
-        if (pushDistFromMax + 1 < 2 || pullDistFromMax + 1 < 2) {
-          newTotals.legs--;
-          newTotals.upper++;
-          notExhausted = false;
-        } else {
-          notExhausted = false;
-        }
-      } else {
-        notExhausted = false;
-      }
-
-      if (prioritySplits[0] === "legs") {
-        if (pushDistFromMax >= 2 || pullDistFromMax >= 2) {
-          newTotals.legs--;
-          newTotals.upper++;
-        } else {
-        }
-      } else if (prioritySplits[1] === "legs") {
-      } else {
-      }
-
-      if (pushDistFromMax >= 2 || pullDistFromMax >= 2) {
-        newTotals.legs--;
-        newTotals.upper++;
-      } else {
-      }
-      break;
-    case "pull":
-      if (prioritySplits[0] === "pull") notExhausted = false;
-      if (pushDistFromMax >= 2 || legsDistFromMax >= 2) {
-      }
-      break;
-    case "push":
-      if (prioritySplits[0] === "push") notExhausted = false;
-      if (pullDistFromMax >= 2 || legsDistFromMax >= 2) {
-      }
-      break;
-    default:
-      break;
-  }
-
-  return {
-    notExhausted: notExhausted,
-    totals: newTotals,
   };
 };

@@ -3,7 +3,11 @@ import {
   pushPullDistribution,
 } from "~/components/Configuration/hooks/useProgramConfig";
 
-const freqLimitsHandler = (push: number[], pull: number[], legs: number[]) => {
+export const freqLimitsHandler = (
+  push: number[],
+  pull: number[],
+  legs: number[]
+) => {
   const pushAvg = Math.round(push[0] + push[1] / 2);
   const pullAvg = Math.round(pull[0] + pull[1] / 2);
   const legsAvg = Math.round(legs[0] + legs[1] / 2);
