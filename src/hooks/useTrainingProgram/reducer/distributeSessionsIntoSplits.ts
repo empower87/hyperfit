@@ -1,7 +1,10 @@
 import { MUSCLE_WEIGHTS_MODIFIERS } from "~/constants/weighting/muscles";
 import { getPushPullLegsSplit } from "~/constants/workoutSplits";
 import { getMaxFrequencyByMatrix } from "./distributeWeightsIntoSessions";
-import { MusclePriorityType } from "./trainingProgramReducer";
+import {
+  MusclePriorityType,
+  SplitSessionsNameType,
+} from "./trainingProgramReducer";
 
 type Basket = {
   push: number;
@@ -78,6 +81,32 @@ const mutateBasket = (basket: Basket, total_frequency: number) => {
 };
 
 export const distributeSessionsIntoSplits = (
+  split: SplitSessionsNameType,
+  total_sessions: number,
+  freq_limits: SplitMaxes,
+  prioritizedSplits: ("push" | "pull" | "legs")[]
+) => {
+  switch (split) {
+    case "PPL":
+      return distributeSessionsIntoSplits_ppl(total_sessions, freq_limits);
+    case "PPLUL":
+      return distributeSessionsIntoSplits_pplul(total_sessions, freq_limits);
+    case "OPT":
+      return distributeSessionsIntoSplits_opt(
+        total_sessions,
+        freq_limits,
+        prioritizedSplits
+      );
+    default:
+      return distributeSessionsIntoSplits_opt(
+        total_sessions,
+        freq_limits,
+        prioritizedSplits
+      );
+  }
+};
+
+const distributeSessionsIntoSplits_opt = (
   total_sessions: number,
   freq_limits: SplitMaxes,
   prioritizedSplits: ("push" | "pull" | "legs")[]
@@ -127,7 +156,7 @@ const getFrequencyLimit = (
   return capped;
 };
 
-export const getNGroupOccurrences = (
+export const getFrequencyMaxes = (
   many: number,
   muscle_priority_list: MusclePriorityType[],
   breakpoints: [number, number],
@@ -204,4 +233,74 @@ export const getNGroupOccurrences = (
     ],
   };
   return freq_maxes;
+};
+
+// ppl - opt / ppl / pplul / ul
+// ?? - cus / bro
+
+const distributeSessionsIntoSplits_ppl = (
+  total_frequency: number,
+  freq_limits: SplitMaxes
+) => {
+  const prioritizedSplits = Object.keys(freq_limits).sort(
+    (a, b) =>
+      freq_limits[a as keyof typeof freq_limits][0] -
+      freq_limits[b as keyof typeof freq_limits][0]
+  );
+  const totals = {
+    push: 1,
+    pull: 1,
+    legs: 1,
+  };
+  const remainder = total_frequency - (totals.push + totals.pull + totals.legs);
+  console.log(prioritizedSplits, "WHAT HTIS");
+  let counter = 0;
+  for (let i = 0; i < remainder; i++) {
+    const key = prioritizedSplits[counter] as keyof typeof totals;
+    totals[key]++;
+    counter = counter === prioritizedSplits.length - 1 ? 0 : counter + 1;
+  }
+  return totals;
+};
+
+const distributeSessionsIntoSplits_pplul = (
+  total_frequency: number,
+  freq_limits: SplitMaxes
+) => {
+  const prioritizedSplits = Object.keys(freq_limits).sort(
+    (a, b) =>
+      freq_limits[a as keyof typeof freq_limits][0] -
+      freq_limits[b as keyof typeof freq_limits][0]
+  );
+  const totals = {
+    push: 1,
+    pull: 1,
+    legs: 1,
+    upper: 1,
+    lower: 1,
+  };
+  const remainder =
+    totals.push +
+    totals.pull +
+    totals.legs +
+    totals.upper +
+    totals.lower -
+    total_frequency;
+  const remainderAbsVal = Math.abs(remainder);
+  const operation = remainder >= 0 ? "subtract" : "add";
+
+  let addTracker: "upper" | "lower" =
+    prioritizedSplits[0] === "legs" ? "lower" : "upper";
+  for (let i = 0; i < remainderAbsVal; i++) {
+    if (operation === "add") {
+      totals[addTracker]++;
+      addTracker = addTracker === "lower" ? "upper" : "lower";
+    } else {
+      const lastIndex = prioritizedSplits.length - 1;
+      const removalIndex = lastIndex - i;
+      const removalKey = prioritizedSplits[removalIndex];
+      totals[removalKey as keyof typeof totals]--;
+    }
+  }
+  return totals;
 };
