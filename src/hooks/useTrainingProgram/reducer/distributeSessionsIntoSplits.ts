@@ -2,6 +2,7 @@ import { MUSCLE_WEIGHTS_MODIFIERS } from "~/constants/weighting/muscles";
 import { getPushPullLegsSplit } from "~/constants/workoutSplits";
 import { getMaxFrequencyByMatrix } from "./distributeWeightsIntoSessions";
 import {
+  BROSessionKeys,
   MusclePriorityType,
   SplitSessionsNameType,
 } from "./trainingProgramReducer";
@@ -84,7 +85,7 @@ export const distributeSessionsIntoSplits = (
   split: SplitSessionsNameType,
   total_sessions: number,
   freq_limits: SplitMaxes,
-  prioritizedSplits: ("push" | "pull" | "legs")[]
+  bro_freq_limits?: BROSessionKeys[]
 ) => {
   switch (split) {
     case "PPL":
@@ -92,57 +93,22 @@ export const distributeSessionsIntoSplits = (
     case "PPLUL":
       return distributeSessionsIntoSplits_pplul(total_sessions, freq_limits);
     case "OPT":
-      return distributeSessionsIntoSplits_opt(
-        total_sessions,
-        freq_limits,
-        prioritizedSplits
-      );
+      return distributeSessionsIntoSplits_opt(total_sessions, freq_limits);
+    case "BRO":
+      if (bro_freq_limits === undefined) {
+        throw new Error("BRO frequency limits are undefined");
+      }
+      return distributeSessionsIntoSplits_bro(total_sessions, bro_freq_limits);
+    case "UL":
+      return distributeSessionsIntoSplits_opt(total_sessions, freq_limits);
+    case "FB":
+      return { full: total_sessions };
+    case "CUS":
+      return distributeSessionsIntoSplits_opt(total_sessions, freq_limits);
     default:
-      return distributeSessionsIntoSplits_opt(
-        total_sessions,
-        freq_limits,
-        prioritizedSplits
-      );
+      const _exhaustiveCheck: never = split;
+      return _exhaustiveCheck;
   }
-};
-
-const distributeSessionsIntoSplits_opt = (
-  total_sessions: number,
-  freq_limits: SplitMaxes,
-  prioritizedSplits: ("push" | "pull" | "legs")[]
-) => {
-  const basket = {
-    push: freq_limits.push[1],
-    pull: freq_limits.pull[1],
-    legs: freq_limits.legs[1],
-    upper: 0,
-    full: 0,
-  };
-
-  while (
-    total_sessions !==
-    basket.full + basket.legs + basket.upper + basket.push + basket.pull
-  ) {
-    console.log(
-      basket,
-      basket.full + basket.legs + basket.upper + basket.push + basket.pull,
-      total_sessions,
-      prioritizedSplits,
-      "beginning of while loop"
-    );
-
-    mutateBasket(basket, total_sessions);
-
-    console.log(
-      basket,
-      basket.full + basket.legs + basket.upper + basket.push + basket.pull,
-      total_sessions,
-      prioritizedSplits,
-      "end of while loop"
-    );
-  }
-
-  return basket;
 };
 
 const getFrequencyLimit = (
@@ -235,8 +201,41 @@ export const getFrequencyMaxes = (
   return freq_maxes;
 };
 
-// ppl - opt / ppl / pplul / ul
-// ?? - cus / bro
+const distributeSessionsIntoSplits_opt = (
+  total_sessions: number,
+  freq_limits: SplitMaxes
+) => {
+  const basket = {
+    push: freq_limits.push[1],
+    pull: freq_limits.pull[1],
+    legs: freq_limits.legs[1],
+    upper: 0,
+    full: 0,
+  };
+
+  while (
+    total_sessions !==
+    basket.full + basket.legs + basket.upper + basket.push + basket.pull
+  ) {
+    console.log(
+      basket,
+      basket.full + basket.legs + basket.upper + basket.push + basket.pull,
+      total_sessions,
+      "beginning of while loop"
+    );
+
+    mutateBasket(basket, total_sessions);
+
+    console.log(
+      basket,
+      basket.full + basket.legs + basket.upper + basket.push + basket.pull,
+      total_sessions,
+      "end of while loop"
+    );
+  }
+
+  return basket;
+};
 
 const distributeSessionsIntoSplits_ppl = (
   total_frequency: number,
@@ -253,7 +252,6 @@ const distributeSessionsIntoSplits_ppl = (
     legs: 1,
   };
   const remainder = total_frequency - (totals.push + totals.pull + totals.legs);
-  console.log(prioritizedSplits, "WHAT HTIS");
   let counter = 0;
   for (let i = 0; i < remainder; i++) {
     const key = prioritizedSplits[counter] as keyof typeof totals;
@@ -303,4 +301,42 @@ const distributeSessionsIntoSplits_pplul = (
     }
   }
   return totals;
+};
+
+const distributeSessionsIntoSplits_bro = (
+  total_sessions: number,
+  broSplitSorted: BROSessionKeys[]
+) => {
+  const sessions = {
+    back: 1,
+    chest: 1,
+    legs: 1,
+    arms: 1,
+    shoulders: 1,
+  };
+  const remainder =
+    total_sessions -
+    (sessions.back +
+      sessions.chest +
+      sessions.legs +
+      sessions.arms +
+      sessions.shoulders);
+  const remainderAbsVal = Math.abs(remainder);
+  if (remainder === 0) return sessions;
+  const operation = remainder > 0 ? "add" : "subtract";
+
+  let counter = operation === "add" ? 0 : broSplitSorted.length - 1;
+  for (let i = 0; i < remainderAbsVal; i++) {
+    const key = broSplitSorted[counter] as keyof typeof sessions;
+    if (operation === "add") {
+      sessions[key]++;
+      counter++;
+    } else {
+      sessions[key]--;
+      counter--;
+    }
+    if (counter > broSplitSorted.length - 1) counter = 0;
+    if (counter < 0) counter = broSplitSorted.length - 1;
+  }
+  return sessions;
 };

@@ -11,7 +11,7 @@ import {
   MUSCLE_WEIGHTS_MODIFIERS,
   RANK_WEIGHTS,
 } from "~/constants/weighting/muscles";
-import { getPrioritizedPPL } from "~/constants/workoutSplits";
+import { getBroSplit } from "~/constants/workoutSplits";
 import {
   distributeSessionsIntoSplits,
   getFrequencyMaxes,
@@ -19,11 +19,11 @@ import {
 import {
   getRankWeightsBySplit,
   getSplitFromWeights,
-  handleDistribution,
   maths,
 } from "~/hooks/useTrainingProgram/reducer/getSplitFromPriorityWeighting";
 
 import {
+  BROSessionKeys,
   INITIAL_STATE,
   INITIAL_WEEK,
   State as ProgramConfigState,
@@ -171,29 +171,34 @@ function useProgramConfig() {
           ],
         };
       });
-      const lol = handleDistribution(total, muscle_priority_list, mathss);
-      const prioritizedSplits = getPrioritizedPPL(muscle_priority_list);
+      // const lol = handleDistribution(total, muscle_priority_list, mathss);
+      // const prioritizedSplits = getPrioritizedPPL(muscle_priority_list);
       // const TEST = distributeWeightsIntoSessions(total, lol, prioritizedSplits);
+
       const getNGroup = getFrequencyMaxes(
-        2,
+        2, // this will be determined via mrv_breakpoint
         muscle_priority_list,
         [mrv_breakpoint, mev_breakpoint],
         total
       );
-      const TEST = distributeSessionsIntoSplits(
-        "OPT",
-        total,
-        getNGroup,
-        prioritizedSplits
-      );
+
+      const broSplitSorted =
+        split === "BRO"
+          ? muscle_priority_list.reduce((acc: BROSessionKeys[], curr) => {
+              const split = getBroSplit(curr.muscle);
+              if (!acc.includes(split)) return [...acc, split];
+              return acc;
+            }, [])
+          : undefined;
+
       const TEST2 = distributeSessionsIntoSplits(
         split,
         total,
         getNGroup,
-        prioritizedSplits
+        broSplitSorted
       );
 
-      setTestSessions(TEST);
+      setTestSessions(TEST2);
       setAvgFrequencies({
         push: [1, getNGroup.push[1]],
         pull: [1, getNGroup.pull[1]],

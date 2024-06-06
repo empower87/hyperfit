@@ -165,69 +165,43 @@ function PriorityRankingTest() {
         </div>
 
         <ul className={"space-y-0.5"}>
-          <li className={`flex space-x-1 text-xs text-white`}>
-            <div
-              className={`w-12 rounded bg-red-500 px-1 py-0.5 font-semibold`}
-            >
-              push:{" "}
-            </div>
-            <div className={`w-12`}>
-              | {avgFrequencies.push[0]} - {avgFrequencies.push[1]} |{" "}
-            </div>
-            <div>{testSessions.push}</div>
-          </li>
-          <li className={`flex space-x-1 text-xs text-white`}>
-            <div
-              className={`w-12 rounded bg-red-500 px-1 py-0.5 font-semibold`}
-            >
-              pull:{" "}
-            </div>
-            <div className={`w-12`}>
-              | {avgFrequencies.pull[0]} - {avgFrequencies.pull[1]} |{" "}
-            </div>
-            <div>{testSessions.pull}</div>
-          </li>
-          <li className={`flex space-x-1 text-xs text-white`}>
-            <div
-              className={`w-12 rounded bg-red-500 px-1 py-0.5 font-semibold`}
-            >
-              upper:{" "}
-            </div>
-            <div className={`w-12`}>
-              |{" "}
-              {Math.floor(
-                (avgFrequencies.pull[0] + avgFrequencies.push[0]) / 2
-              )}{" "}
-              -{" "}
-              {Math.round(
-                (avgFrequencies.pull[1] + avgFrequencies.push[1]) / 2
-              )}{" "}
-              |{" "}
-            </div>
-            <div>{testSessions.upper}</div>
-          </li>
-          <li className={`flex space-x-1 text-xs text-white`}>
-            <div
-              className={`w-12 rounded bg-red-500 px-1 py-0.5 font-semibold`}
-            >
-              legs:{" "}
-            </div>
-            <div className={`w-12`}>
-              | {avgFrequencies.legs[0]} - {avgFrequencies.legs[1]} |{" "}
-            </div>
-            <div>{testSessions.legs}</div>
-          </li>
-          <li className={`flex space-x-1 text-xs text-white`}>
-            <div
-              className={`w-12 rounded bg-red-500 px-1 py-0.5 font-semibold`}
-            >
-              full:{" "}
-            </div>
-            <div className={`w-12`}>| 0 - 2 | </div>
-            <div>{testSessions.full}</div>
-          </li>
+          {Object.entries(testSessions).map(([key, val]) => {
+            const range = avgFrequencies[key as keyof typeof avgFrequencies]
+              ? avgFrequencies[key as keyof typeof avgFrequencies]
+              : [0, 0];
+            return (
+              <TestItem
+                key={`${key}_TESTITEM_${val}`}
+                title={key}
+                data={val}
+                range={range}
+              />
+            );
+          })}
         </ul>
       </div>
     </div>
   );
 }
+
+const TestItem = ({
+  title,
+  data,
+  range,
+}: {
+  title: string;
+  data: number;
+  range: number[];
+}) => {
+  return (
+    <li className={`flex space-x-1 text-xs text-white`}>
+      <div className={`w-16 rounded bg-red-500 px-1 py-0.5 font-semibold`}>
+        {title}
+      </div>
+      <div className={`w-12`}>
+        {range[0]} - {range[1]}
+      </div>
+      <div>{data}</div>
+    </li>
+  );
+};
