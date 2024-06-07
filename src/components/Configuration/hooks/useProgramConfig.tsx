@@ -16,11 +16,7 @@ import {
   distributeSessionsIntoSplits,
   getFrequencyMaxes,
 } from "~/hooks/useTrainingProgram/reducer/distributeSessionsIntoSplits";
-import {
-  getRankWeightsBySplit,
-  getSplitFromWeights,
-  maths,
-} from "~/hooks/useTrainingProgram/reducer/getSplitFromPriorityWeighting";
+import { getSplitFromWeights } from "~/hooks/useTrainingProgram/reducer/getSplitFromPriorityWeighting";
 
 import {
   BROSessionKeys,
@@ -137,22 +133,22 @@ function useProgramConfig() {
         mrv_breakpoint,
         mev_breakpoint,
       } = programConfig;
-      const new_split_sessions = getSplitFromWeights(
-        frequency,
-        muscle_priority_list,
-        split
-      );
-      const new_training_week = distributeSplitAcrossWeek(
-        frequency,
-        new_split_sessions
-      );
+      // const new_split_sessions = getSplitFromWeights(
+      //   frequency,
+      //   muscle_priority_list,
+      //   split
+      // );
+      // const new_training_week = distributeSplitAcrossWeek(
+      //   frequency,
+      //   new_split_sessions
+      // );
 
-      const sesh = getRankWeightsBySplit(
-        muscle_priority_list,
-        new_split_sessions.split,
-        [mrv_breakpoint, mev_breakpoint]
-      );
-      const mathss = maths(sesh, frequency[0] + frequency[1]);
+      // const sesh = getRankWeightsBySplit(
+      //   muscle_priority_list,
+      //   new_split_sessions.split,
+      //   [mrv_breakpoint, mev_breakpoint]
+      // );
+      // const mathss = maths(sesh, frequency[0] + frequency[1]);
       const total = programConfig.frequency[0] + programConfig.frequency[1];
       const priorityListTests = muscle_priority_list.map((each, index) => {
         const weight = MUSCLE_WEIGHTS_MODIFIERS[each.muscle].weight;
@@ -191,21 +187,24 @@ function useProgramConfig() {
             }, [])
           : undefined;
 
-      const TEST2 = distributeSessionsIntoSplits(
+      const new_split_sessions = distributeSessionsIntoSplits(
         split,
         total,
         getNGroup,
         broSplitSorted
       );
-
-      setTestSessions(TEST2);
+      const new_training_week = distributeSplitAcrossWeek(
+        frequency,
+        new_split_sessions
+      );
+      setTestSessions(new_split_sessions.sessions);
       setAvgFrequencies({
         push: [1, getNGroup.push[1]],
         pull: [1, getNGroup.pull[1]],
         legs: [1, getNGroup.legs[1]],
       });
-      console.log(TEST2, "WHAT HTIS LOOK LIKE?");
-      setSessionsTest(mathss);
+      console.log(new_split_sessions, "WHAT HTIS LOOK LIKE?");
+      // setSessionsTest(mathss);
       setPriorityListTest(priorityListTests);
       setProgramConfig((prev) => ({
         ...prev,

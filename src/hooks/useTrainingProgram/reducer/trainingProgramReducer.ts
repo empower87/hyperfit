@@ -1,4 +1,4 @@
-import { MuscleType } from "~/constants/workoutSplits";
+import { MuscleType, getBroSplit } from "~/constants/workoutSplits";
 import { buildTrainingBlockHandler } from "../utils/buildTrainingBlockHandlers";
 import {
   MUSCLE_PRIORITY_LIST,
@@ -8,10 +8,13 @@ import {
 import {
   getRankWeightsBySplit,
   getSplitFromWeights,
-  maths,
 } from "./getSplitFromPriorityWeighting";
 
 import { distributeSplitAcrossWeek } from "../utils/distributeSplitAcrossTrainingWeek";
+import {
+  distributeSessionsIntoSplits,
+  getFrequencyMaxes,
+} from "./distributeSessionsIntoSplits";
 import {
   determineSplitHandler,
   redistributeSessionsIntoNewSplit,
@@ -532,17 +535,39 @@ export default function trainingProgramReducer(state: State, action: Action) {
   switch (action.type) {
     case "UPDATE_PROGRAM_CONFIG":
       const frequencyPayload = action.payload.frequency;
+      const freqPayloadTotal = frequencyPayload[0] + frequencyPayload[1];
       const split = action.payload.split;
       const list = action.payload.muscle_priority_list;
       const params = action.payload.training_program_config;
       const trainingWeek = action.payload.training_week;
+
+      const freq_maxes = getFrequencyMaxes(
+        2,
+        list,
+        breakpoints,
+        freqPayloadTotal
+      );
+      const broSplitSorted =
+        split === "BRO"
+          ? muscle_priority_list.reduce((acc: BROSessionKeys[], curr) => {
+              const split = getBroSplit(curr.muscle);
+              if (!acc.includes(split)) return [...acc, split];
+              return acc;
+            }, [])
+          : undefined;
+
+      const sessions = distributeSessionsIntoSplits(
+        split,
+        freqPayloadTotal,
+        freq_maxes,
+        broSplitSorted
+      );
 
       const sesh = getRankWeightsBySplit(
         list,
         split_sessions.split,
         breakpoints
       );
-      const mathss = maths(sesh, frequencyPayload[0] + frequencyPayload[1]);
 
       const reorderedList = onReorderUpdateMusclePriorityList(
         list,
@@ -557,28 +582,28 @@ export default function trainingProgramReducer(state: State, action: Action) {
 
       const finalizedMuscleList = onSplitChangeUpdateMusclePriorityList(
         reorderedList,
-        weightedSplit,
+        sessions,
         params.mesocycles,
         params.microcycles
       );
 
       const distributedAcrossWeek = distributeSplitAcrossWeek(
         frequencyPayload,
-        weightedSplit
+        sessions
       );
 
       const distributedAcrossMesocycles = buildTrainingBlockHandler(
         finalizedMuscleList,
-        weightedSplit,
-        trainingWeek,
+        sessions,
+        distributedAcrossWeek,
         mesocycles
       );
       return {
         ...state,
         frequency: frequencyPayload,
         muscle_priority_list: finalizedMuscleList,
-        split_sessions: weightedSplit,
-        training_week: trainingWeek,
+        split_sessions: sessions,
+        training_week: distributedAcrossWeek,
         training_block: distributedAcrossMesocycles,
       };
     case "UPDATE_FREQUENCY":

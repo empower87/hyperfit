@@ -106,17 +106,17 @@
     "tips": "",
     "movement_type": "compound",
     "hypertrophy_criteria": {
-      "target_function": 9,
+      "target_function": 5,
       "stability": 5,
-      "limiting_factor": 5,
+      "limiting_factor": 4,
       "time_efficiency": 5,
-      "loadability": 9,
+      "loadability": 5,
       "stretch": {
-        "lengthened": 10,
-        "challenging": 10,
-        "partial_friendly": 10
+        "lengthened": 5,
+        "challenging": 5,
+        "partial_friendly": 5
       },
-      "fatigue": 7
+      "fatigue": 4
     }
   },
   {

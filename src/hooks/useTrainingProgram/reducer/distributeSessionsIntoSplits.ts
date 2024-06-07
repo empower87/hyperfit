@@ -5,12 +5,13 @@ import {
   BROSessionKeys,
   MusclePriorityType,
   SplitSessionsNameType,
+  SplitSessionsType,
 } from "./trainingProgramReducer";
 
 type Basket = {
   push: number;
   pull: number;
-  legs: number;
+  lower: number;
   upper: number;
   full: number;
 };
@@ -25,22 +26,22 @@ const removeRemaining = (totals: Basket, total_frequency: number) => {
   const remainder =
     totals.full +
     totals.upper +
-    totals.legs +
+    totals.lower +
     totals.push +
     totals.pull -
     total_frequency;
 
-  let remove: "upper" | "legs" = "upper";
+  let remove: "upper" | "lower" = "upper";
   if (remainder > 0) {
     const isEven = remainder % 2 === 0;
 
     if (isEven) {
-      remove = "legs";
+      remove = "lower";
     }
 
     for (let i = 0; i < remainder; i++) {
       totals[remove]--;
-      remove = remove === "upper" ? "legs" : "upper";
+      remove = remove === "upper" ? "lower" : "upper";
     }
   }
   return totals;
@@ -55,25 +56,25 @@ const mutateBasket = (basket: Basket, total_frequency: number) => {
         pull: basket.pull--,
         upper: basket.upper++,
       };
-    case basket.full < 2 && basket.pull > 0 && basket.legs > 0:
+    case basket.full < 2 && basket.pull > 0 && basket.lower > 0:
       return {
         ...basket,
         pull: basket.pull--,
-        legs: basket.legs--,
+        lower: basket.lower--,
         full: basket.full++,
       };
-    case basket.full < 2 && basket.push > 0 && basket.legs > 0:
+    case basket.full < 2 && basket.push > 0 && basket.lower > 0:
       return {
         ...basket,
         pull: basket.push--,
-        legs: basket.legs--,
+        lower: basket.lower--,
         full: basket.full++,
       };
-    case basket.full < 2 && basket.upper > 0 && basket.legs > 0:
+    case basket.full < 2 && basket.upper > 0 && basket.lower > 0:
       return {
         ...basket,
         pull: basket.upper--,
-        legs: basket.legs--,
+        lower: basket.lower--,
         full: basket.full++,
       };
     default:
@@ -86,25 +87,64 @@ export const distributeSessionsIntoSplits = (
   total_sessions: number,
   freq_limits: SplitMaxes,
   bro_freq_limits?: BROSessionKeys[]
-) => {
+): SplitSessionsType => {
   switch (split) {
     case "PPL":
-      return distributeSessionsIntoSplits_ppl(total_sessions, freq_limits);
+      const PPL = {
+        split: split,
+        sessions: distributeSessionsIntoSplits_ppl(total_sessions, freq_limits),
+      };
+      return PPL;
     case "PPLUL":
-      return distributeSessionsIntoSplits_pplul(total_sessions, freq_limits);
+      const PPLUL = {
+        split: split,
+        sessions: distributeSessionsIntoSplits_pplul(
+          total_sessions,
+          freq_limits
+        ),
+      };
+      return PPLUL;
     case "OPT":
-      return distributeSessionsIntoSplits_opt(total_sessions, freq_limits);
+      const OPT = {
+        split: split,
+        sessions: distributeSessionsIntoSplits_opt(total_sessions, freq_limits),
+      };
+      return OPT;
     case "BRO":
       if (bro_freq_limits === undefined) {
         throw new Error("BRO frequency limits are undefined");
       }
-      return distributeSessionsIntoSplits_bro(total_sessions, bro_freq_limits);
+      const BRO = {
+        split: split,
+        sessions: distributeSessionsIntoSplits_bro(
+          total_sessions,
+          bro_freq_limits
+        ),
+      };
+      return BRO;
     case "UL":
-      return distributeSessionsIntoSplits_opt(total_sessions, freq_limits);
+      const UL = {
+        split: split,
+        sessions: {
+          upper: Math.floor(total_sessions / 2),
+          lower: Math.ceil(total_sessions / 2),
+        },
+      };
+      return UL;
     case "FB":
-      return { full: total_sessions };
+      const FB = {
+        split: split,
+        sessions: {
+          full: total_sessions,
+        },
+      };
+      return FB;
     case "CUS":
-      return distributeSessionsIntoSplits_opt(total_sessions, freq_limits);
+      const CUS = {
+        split: split,
+        sessions: {},
+      };
+      return CUS;
     default:
       const _exhaustiveCheck: never = split;
       return _exhaustiveCheck;
@@ -208,18 +248,18 @@ const distributeSessionsIntoSplits_opt = (
   const basket = {
     push: freq_limits.push[1],
     pull: freq_limits.pull[1],
-    legs: freq_limits.legs[1],
+    lower: freq_limits.legs[1],
     upper: 0,
     full: 0,
   };
 
   while (
     total_sessions !==
-    basket.full + basket.legs + basket.upper + basket.push + basket.pull
+    basket.full + basket.lower + basket.upper + basket.push + basket.pull
   ) {
     console.log(
       basket,
-      basket.full + basket.legs + basket.upper + basket.push + basket.pull,
+      basket.full + basket.lower + basket.upper + basket.push + basket.pull,
       total_sessions,
       "beginning of while loop"
     );
@@ -228,7 +268,7 @@ const distributeSessionsIntoSplits_opt = (
 
     console.log(
       basket,
-      basket.full + basket.legs + basket.upper + basket.push + basket.pull,
+      basket.full + basket.lower + basket.upper + basket.push + basket.pull,
       total_sessions,
       "end of while loop"
     );
