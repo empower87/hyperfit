@@ -20,6 +20,7 @@ import {
   type SplitSessionsType,
   type VolumeLandmarkType,
 } from "../reducer/trainingProgramReducer";
+import { determineFrequencyByRange } from "./maximumFrequencyHandlers";
 
 const SYSTEMIC_FATIGUE_MODIFIER = 2;
 const LOWER_MODIFIER = 1.15;
@@ -37,6 +38,11 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
       exercisesPerSessionSchema: 2,
       setProgressionMatrix: [],
     },
+    frequency: {
+      range: [3, 4],
+      target: 0,
+      progression: [],
+    },
   },
   {
     id: "delts_side-008",
@@ -48,6 +54,11 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
       frequencyProgression: [],
       exercisesPerSessionSchema: 2,
       setProgressionMatrix: [],
+    },
+    frequency: {
+      range: [3, 6],
+      target: 0,
+      progression: [],
     },
   },
   {
@@ -61,6 +72,11 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
       exercisesPerSessionSchema: 1,
       setProgressionMatrix: [],
     },
+    frequency: {
+      range: [2, 4],
+      target: 0,
+      progression: [],
+    },
   },
   {
     id: "hamstrings-011",
@@ -72,6 +88,11 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
       frequencyProgression: [],
       exercisesPerSessionSchema: 1,
       setProgressionMatrix: [],
+    },
+    frequency: {
+      range: [2, 3],
+      target: 0,
+      progression: [],
     },
   },
   {
@@ -85,6 +106,11 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
       exercisesPerSessionSchema: 2,
       setProgressionMatrix: [],
     },
+    frequency: {
+      range: [2, 5],
+      target: 0,
+      progression: [],
+    },
   },
   {
     id: "delts_rear-007",
@@ -96,6 +122,11 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
       frequencyProgression: [],
       exercisesPerSessionSchema: 1,
       setProgressionMatrix: [],
+    },
+    frequency: {
+      range: [3, 6],
+      target: 0,
+      progression: [],
     },
   },
   {
@@ -109,6 +140,11 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
       exercisesPerSessionSchema: 1,
       setProgressionMatrix: [],
     },
+    frequency: {
+      range: [3, 6],
+      target: 0,
+      progression: [],
+    },
   },
   {
     id: "traps-013",
@@ -121,6 +157,11 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
       exercisesPerSessionSchema: 1,
       setProgressionMatrix: [],
     },
+    frequency: {
+      range: [2, 4],
+      target: 0,
+      progression: [],
+    },
   },
   {
     id: "biceps-003",
@@ -132,6 +173,11 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
       frequencyProgression: [],
       exercisesPerSessionSchema: 1,
       setProgressionMatrix: [],
+    },
+    frequency: {
+      range: [3, 6],
+      target: 0,
+      progression: [],
     },
   },
 
@@ -146,6 +192,11 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
       exercisesPerSessionSchema: 2,
       setProgressionMatrix: [],
     },
+    frequency: {
+      range: [2, 4],
+      target: 0,
+      progression: [],
+    },
   },
   {
     id: "calves-004",
@@ -157,6 +208,11 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
       frequencyProgression: [],
       exercisesPerSessionSchema: 1,
       setProgressionMatrix: [],
+    },
+    frequency: {
+      range: [3, 6],
+      target: 0,
+      progression: [],
     },
   },
 
@@ -171,6 +227,11 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
       exercisesPerSessionSchema: 1,
       setProgressionMatrix: [],
     },
+    frequency: {
+      range: [2, 3],
+      target: 0,
+      progression: [],
+    },
   },
   {
     id: "abs-001",
@@ -183,6 +244,11 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
       exercisesPerSessionSchema: 1,
       setProgressionMatrix: [],
     },
+    frequency: {
+      range: [3, 6],
+      target: 0,
+      progression: [],
+    },
   },
   {
     id: "glutes-010",
@@ -194,6 +260,11 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
       frequencyProgression: [],
       exercisesPerSessionSchema: 1,
       setProgressionMatrix: [],
+    },
+    frequency: {
+      range: [2, 5],
+      target: 0,
+      progression: [],
     },
   },
 ];
@@ -245,6 +316,24 @@ export const getRankWeightForMuscle = (index: number, muscle: MuscleType) => {
   return muscle_rank;
 };
 
+export const attachTargetFrequency = (
+  muscle_priority_list: MusclePriorityType[],
+  total_sessions: number,
+  breakpoints: [number, number]
+) => {
+  const updated_list = structuredClone(muscle_priority_list);
+  for (let i = 0; i < updated_list.length; i++) {
+    const target = determineFrequencyByRange(
+      updated_list[i].frequency.range,
+      i,
+      breakpoints,
+      total_sessions
+    );
+    updated_list[i].frequency.target = target;
+  }
+  return updated_list;
+};
+
 export const onReorderUpdateMusclePriorityList = (
   muscle_priority_list: MusclePriorityType[],
   volume_breakpoints?: [number, number]
@@ -260,7 +349,15 @@ export const onReorderUpdateMusclePriorityList = (
       current_volume_landmark,
       volume_breakpoints
     );
+    const target = updated_list[i].frequency.range[1];
 
+    if (volume_landmark === "MRV") {
+      updated_list[i].frequency.target = target;
+    } else if (volume_landmark === "MEV") {
+      updated_list[i].frequency.target = 2;
+    } else {
+      updated_list[i].frequency.target = 1;
+    }
     updated_list[i].rank = muscle_rank;
     updated_list[i].volume.landmark = volume_landmark;
   }
@@ -378,7 +475,7 @@ export const onSplitChangeUpdateMusclePriorityList = (
   microcycles: number,
   update_frequency?: [MusclePriorityType["id"], "add" | "subtract"]
 ) => {
-  const updated_list = [...muscle_priority_list];
+  const updated_list = structuredClone(muscle_priority_list);
 
   for (let i = 0; i < updated_list.length; i++) {
     const muscle = updated_list[i].muscle;

@@ -32,6 +32,7 @@ import {
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
 import { distributeSplitAcrossWeek } from "~/hooks/useTrainingProgram/utils/distributeSplitAcrossTrainingWeek";
 import {
+  attachTargetFrequency,
   onReorderUpdateMusclePriorityList,
   reorderListByVolumeBreakpoints,
 } from "~/hooks/useTrainingProgram/utils/musclePriorityListHandlers";
@@ -80,6 +81,7 @@ function useProgramConfig() {
     full: number;
   }>({ push: 0, pull: 0, upper: 0, legs: 0, full: 0 });
   useEffect(() => {
+    console.log(prioritized_muscle_list, "THIS CHANGE EVERYTIME??");
     setProgramConfig({
       muscle_priority_list: prioritized_muscle_list,
       mrv_breakpoint: mrv_breakpoint,
@@ -150,7 +152,14 @@ function useProgramConfig() {
       // );
       // const mathss = maths(sesh, frequency[0] + frequency[1]);
       const total = programConfig.frequency[0] + programConfig.frequency[1];
-      const priorityListTests = muscle_priority_list.map((each, index) => {
+      const breakpoints: [number, number] = [mrv_breakpoint, mev_breakpoint];
+
+      const freq_list = attachTargetFrequency(
+        muscle_priority_list,
+        total,
+        breakpoints
+      );
+      const priorityListTests = freq_list.map((each, index) => {
         const weight = MUSCLE_WEIGHTS_MODIFIERS[each.muscle].weight;
         const optFreq = MUSCLE_WEIGHTS_MODIFIERS[each.muscle].optimalFrequency;
         const volume = MUSCLE_WEIGHTS_MODIFIERS[each.muscle].muscleVolume;
@@ -159,9 +168,9 @@ function useProgramConfig() {
           muscle: each,
           index: index + 1,
           modifiers: [
-            optFreq,
-            weight,
-            volume,
+            each.frequency?.range[0],
+            each.frequency?.range[1],
+            each.frequency.target,
             rankWeight,
             Math.round(optFreq * volume * rankWeight * 100) / 100,
           ],
@@ -197,6 +206,8 @@ function useProgramConfig() {
         frequency,
         new_split_sessions
       );
+
+      console.log(freq_list, "OH MY GOD?");
       setTestSessions(new_split_sessions.sessions);
       setAvgFrequencies({
         push: [1, getNGroup.push[1]],
@@ -257,6 +268,7 @@ function useProgramConfig() {
 
   const onPriorityListDragEnd = useCallback(
     (result: DropResult) => {
+      const remove = localStorage.removeItem("TRAINING_PROGRAM_STATE");
       if (!result.destination) return;
       const items = [...programConfig.muscle_priority_list];
       const [removed] = items.splice(result.source.index, 1);

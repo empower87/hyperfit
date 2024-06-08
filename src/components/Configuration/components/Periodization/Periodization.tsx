@@ -71,7 +71,7 @@ function MuscleItem({
 }) {
   return (
     <li
-      className={`flex space-x-1 text-xxs text-white ${
+      className={`m-0.5 flex space-x-1 p-0.5 text-xxs text-white ${
         getRankColor(muscle.muscle.volume.landmark).bg
       }`}
     >

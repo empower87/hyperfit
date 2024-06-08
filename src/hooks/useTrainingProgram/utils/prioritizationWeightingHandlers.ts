@@ -1,5 +1,4 @@
 import { FULL_BODY_MUSCLES, MuscleType } from "~/constants/workoutSplits";
-import { MusclePriorityType } from "../reducer/trainingProgramReducer";
 
 const SYSTEMIC_FATIGUE_MODIFIER = 2;
 const LOWER_MODIFIER = 1.15;
@@ -16,7 +15,6 @@ const RANK_WEIGHTS = [14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1];
 // export const RANK_WEIGHTS_TEST = [
 //   2, 1.9, 1.8, 1.7, 1.2, 1.2, 1.2, 1.2, 1.05, 1.05, 1.05, 1.05, 1.05, 1,
 // ];
-
 
 // CURRENT ALGO:
 // 1. starting at 14 (FULL_BODY_MUSCLES.length) * 2 for MRV then - 4/2
@@ -52,16 +50,6 @@ export const getWeightedList = (breakpoints: [number, number]) => {
     }
   }
   return weights;
-};
-
-export const initializeWeightsIntoMusclePriority = (
-  muscle_priority_list: MusclePriorityType[],
-  weightedList: number[]
-) => {
-  for (let i = 0; i < muscle_priority_list.length; i++) {
-    const muscle = muscle_priority_list[i].muscle;
-    const rank = getRankWeightForMuscle(i, muscle, weightedList);
-  }
 };
 
 export const getRankWeightForMuscle = (

@@ -5,10 +5,7 @@ import {
   onReorderUpdateMusclePriorityList,
   onSplitChangeUpdateMusclePriorityList,
 } from "../utils/musclePriorityListHandlers";
-import {
-  getRankWeightsBySplit,
-  getSplitFromWeights,
-} from "./getSplitFromPriorityWeighting";
+import { getSplitFromWeights } from "./getSplitFromPriorityWeighting";
 
 import { distributeSplitAcrossWeek } from "../utils/distributeSplitAcrossTrainingWeek";
 import {
@@ -339,12 +336,18 @@ export type MusclePriorityVolumeType = {
   exercisesPerSessionSchema: number;
   setProgressionMatrix: number[][][][];
 };
+export type MusclePriorityFrequencyType = {
+  range: [number, number];
+  target: number;
+  progression: number[];
+};
 export type MusclePriorityType = {
   id: string;
   rank: number;
   muscle: MuscleType;
   exercises: ExerciseType[][];
   volume: MusclePriorityVolumeType;
+  frequency: MusclePriorityFrequencyType;
 };
 
 export type SessionSplitType = SplitType | "off";
@@ -513,7 +516,7 @@ const INITIAL_SPLIT_SESSIONS: SplitSessionsType = {
 export const INITIAL_STATE: State = {
   frequency: [3, 0],
   training_program_params: { ...INITIAL_TRAINING_PROGRAM_PARAMS },
-  muscle_priority_list: MUSCLE_PRIORITY_LIST,
+  muscle_priority_list: [...MUSCLE_PRIORITY_LIST],
   training_week: [...INITIAL_WEEK],
   training_block: [],
   split_sessions: { ...INITIAL_SPLIT_SESSIONS },
@@ -563,25 +566,25 @@ export default function trainingProgramReducer(state: State, action: Action) {
         broSplitSorted
       );
 
-      const sesh = getRankWeightsBySplit(
-        list,
-        split_sessions.split,
-        breakpoints
-      );
+      // const sesh = getRankWeightsBySplit(
+      //   list,
+      //   split_sessions.split,
+      //   breakpoints
+      // );
 
-      const reorderedList = onReorderUpdateMusclePriorityList(
-        list,
-        breakpoints
-      );
+      // const reorderedList = onReorderUpdateMusclePriorityList(
+      //   list,
+      //   breakpoints
+      // );
 
-      const weightedSplit = getSplitFromWeights(
-        frequencyPayload,
-        reorderedList,
-        split
-      );
+      // const weightedSplit = getSplitFromWeights(
+      //   frequencyPayload,
+      //   reorderedList,
+      //   split
+      // );
 
       const finalizedMuscleList = onSplitChangeUpdateMusclePriorityList(
-        reorderedList,
+        list,
         sessions,
         params.mesocycles,
         params.microcycles

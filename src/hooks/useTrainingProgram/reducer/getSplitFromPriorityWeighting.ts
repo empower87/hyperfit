@@ -22,12 +22,6 @@ import {
   SplitSessionsType,
 } from "./trainingProgramReducer";
 
-const filterPriority = () => {
-  // if #1 then take that and next group in split Math.max()
-  // if #2 then take that and the next group in split and avg round up
-  // if #3 then take that and the next group in split and avg round down
-};
-
 const getFrequencyLimit = (
   isTopPriority: boolean,
   total_sessions: number,
@@ -420,7 +414,6 @@ export function getSplitFromWeights(
   let lower = 0;
 
   for (let i = 0; i < muscle_priority_list.length; i++) {
-    // const rank = muscle_priority_list[i].rank;
     const muscle = muscle_priority_list[i].muscle;
     const rank = original(i, muscle);
     const split = getOptimizedSplitForWeights(muscle);

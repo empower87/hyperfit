@@ -98,17 +98,17 @@ function useTrainingProgram() {
 
   useEffect(() => {
     const raw = window.localStorage.getItem(STORAGE_KEY);
-
+    console.log(raw, "RAW");
     if (raw) {
-      const state = parseState(raw);
-      if (!state) return;
-
+      const localState = parseState(raw);
+      if (!localState) return;
+      console.log(state, localState, "LOCAL_STORAGE_STUFF");
       dispatch({
         type: "INIT_STORED",
-        payload: { value: state },
+        payload: { value: localState },
       });
 
-      prevState.current = state;
+      prevState.current = localState;
     }
   }, []);
 
