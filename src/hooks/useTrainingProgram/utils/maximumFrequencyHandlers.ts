@@ -45,7 +45,10 @@ export const determineFrequencyByRange = (
   else if (rank >= breakpoints[1]) return 1;
   else {
     const min = Math.max(range[0], MIN_MRV_FREQUENCY);
-    const max = Math.min(range[1] - rank, total_sessions);
+    const max = Math.max(
+      Math.min(range[1] - rank, total_sessions),
+      MIN_MRV_FREQUENCY
+    );
     const spread = max - min;
     const decrement = spread / breakpoints[0];
 
@@ -56,6 +59,72 @@ export const determineFrequencyByRange = (
       frequency = Math.floor(max - decrement * rank);
     }
 
+    console.log(
+      range,
+      rank,
+      min,
+      max,
+      spread,
+      decrement,
+      frequency,
+      "LOL FOR HAMMIES?"
+    );
     return frequency;
+  }
+};
+
+// mesocycles |  1  2  3
+// ----------------------
+// freqEnd  1 |  1  1  1
+// freqEnd  2 |  1  2  2
+// freqEnd  3 |  1  2  3
+// freqEnd  4 |  2  3  4
+// freqEnd  5 |  3  4  5
+// freqEnd  6 |  4  5  6
+
+// mesocycles |  1  2  3  4
+// -------------------------
+// freqEnd  1 |  1  1  1  1
+// freqEnd  2 |  1  1  2  2
+// freqEnd  3 |  1  2  2  3
+// freqEnd  4 |  1  2  3  4
+// freqEnd  5 |  2  3  4  5
+// freqEnd  6 |  3  4  5  6
+
+// mesocycles |  1  2  3  4  5
+// ----------------------------
+// freqEnd  1 |  1  1  1  1  1
+// freqEnd  2 |  1  1  2  2  2
+// TEST       |  2  1.8 1.6 1.4 1
+// freqEnd  3 |  1  2  2  3  3
+// TEST          3  2.6 2.2 1.8  1
+
+// freqEnd  4 |  1  2  3  3  4
+// TEST          4 3.3 2.7 2.1 1
+
+// freqEnd  5 |  1  2  3  4  5
+// freqEnd  6 |  2  3  4  5  6
+
+export const determineFrequencyProgression = (
+  mesocycles: number,
+  tar_frequency: number
+) => {
+  // if total mesocycles <= frequency then sub 1 into array and reverse
+  if (mesocycles <= tar_frequency) {
+    const freq_prog: number[] = [tar_frequency];
+    for (let i = 1; i < mesocycles; i++) {
+      freq_prog.push(tar_frequency - i);
+    }
+    return freq_prog.reverse();
+  } else if (tar_frequency === 1) {
+    return Array.from(Array(mesocycles), (e, i) => 1);
+  } else {
+    const spread = tar_frequency - 1;
+    const decrement = spread / mesocycles;
+    const freq_prog: number[] = [tar_frequency];
+    for (let i = 1; i < mesocycles; i++) {
+      freq_prog.push(Math.round(tar_frequency - decrement * i));
+    }
+    return freq_prog.reverse();
   }
 };

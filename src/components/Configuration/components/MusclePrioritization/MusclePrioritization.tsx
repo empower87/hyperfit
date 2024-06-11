@@ -45,6 +45,15 @@ function Item({ muscle, index, children }: ItemProps) {
           value={getMuscleTitleForUI(muscle.muscle)}
           className="w-20 justify-start"
         />
+
+        <Cell
+          value={`${muscle.frequency.range[0]} - ${muscle.frequency.range[1]}`}
+          className=""
+        />
+        <Cell
+          value={`${muscle.frequency.target}`}
+          className="px-1 font-bold text-slate-700"
+        />
       </div>
 
       <div className={`flex items-center justify-center pr-2`}>

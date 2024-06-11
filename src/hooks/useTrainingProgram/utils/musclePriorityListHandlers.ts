@@ -20,7 +20,10 @@ import {
   type SplitSessionsType,
   type VolumeLandmarkType,
 } from "../reducer/trainingProgramReducer";
-import { determineFrequencyByRange } from "./maximumFrequencyHandlers";
+import {
+  determineFrequencyByRange,
+  determineFrequencyProgression,
+} from "./maximumFrequencyHandlers";
 
 const SYSTEMIC_FATIGUE_MODIFIER = 2;
 const LOWER_MODIFIER = 1.15;
@@ -215,7 +218,6 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
       progression: [],
     },
   },
-
   {
     id: "delts_front-006",
     rank: MUSCLE_WEIGHTS.delts_front,
@@ -330,6 +332,10 @@ export const attachTargetFrequency = (
       total_sessions
     );
     updated_list[i].frequency.target = target;
+    updated_list[i].frequency.progression = determineFrequencyProgression(
+      3,
+      target
+    );
   }
   return updated_list;
 };
@@ -349,15 +355,15 @@ export const onReorderUpdateMusclePriorityList = (
       current_volume_landmark,
       volume_breakpoints
     );
-    const target = updated_list[i].frequency.range[1];
+    // const target = updated_list[i].frequency.range[1];
 
-    if (volume_landmark === "MRV") {
-      updated_list[i].frequency.target = target;
-    } else if (volume_landmark === "MEV") {
-      updated_list[i].frequency.target = 2;
-    } else {
-      updated_list[i].frequency.target = 1;
-    }
+    // if (volume_landmark === "MRV") {
+    //   updated_list[i].frequency.target = target;
+    // } else if (volume_landmark === "MEV") {
+    //   updated_list[i].frequency.target = 2;
+    // } else {
+    //   updated_list[i].frequency.target = 1;
+    // }
     updated_list[i].rank = muscle_rank;
     updated_list[i].volume.landmark = volume_landmark;
   }
