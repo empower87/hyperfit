@@ -355,15 +355,7 @@ export const onReorderUpdateMusclePriorityList = (
       current_volume_landmark,
       volume_breakpoints
     );
-    // const target = updated_list[i].frequency.range[1];
 
-    // if (volume_landmark === "MRV") {
-    //   updated_list[i].frequency.target = target;
-    // } else if (volume_landmark === "MEV") {
-    //   updated_list[i].frequency.target = 2;
-    // } else {
-    //   updated_list[i].frequency.target = 1;
-    // }
     updated_list[i].rank = muscle_rank;
     updated_list[i].volume.landmark = volume_landmark;
   }

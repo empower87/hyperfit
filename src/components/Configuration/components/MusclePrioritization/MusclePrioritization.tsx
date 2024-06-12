@@ -52,7 +52,11 @@ function Item({ muscle, index, children }: ItemProps) {
         />
         <Cell
           value={`${muscle.frequency.target}`}
-          className="px-1 font-bold text-slate-700"
+          className="mx-1 font-bold text-slate-700"
+        />
+        <Cell
+          value={`${muscle.frequency.progression}`}
+          className="mx-1 font-bold text-slate-700"
         />
       </div>
 

@@ -1,6 +1,5 @@
 import { MUSCLE_WEIGHTS_MODIFIERS } from "~/constants/weighting/muscles";
 import { getPushPullLegsSplit } from "~/constants/workoutSplits";
-import { getMaxFrequencyByMatrix } from "./distributeWeightsIntoSessions";
 import {
   BROSessionKeys,
   MusclePriorityType,
@@ -192,11 +191,12 @@ export const getFrequencyMaxes = (
       let muscle_max_adj = 2;
 
       if (i < breakpoints[0]) {
-        const muscle_max = getMaxFrequencyByMatrix(
-          freq_string,
-          i,
-          breakpoints[0] - 1
-        );
+        // const muscle_max = getMaxFrequencyByMatrix(
+        //   freq_string,
+        //   i,
+        //   breakpoints[0] - 1
+        // );
+        const muscle_max = muscle_priority_list[i].frequency.target;
         muscle_max_adj = getFrequencyLimit(
           tracker[split][0] === 1,
           total_sessions,

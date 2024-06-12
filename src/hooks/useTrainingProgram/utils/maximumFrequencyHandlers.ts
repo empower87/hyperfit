@@ -58,17 +58,6 @@ export const determineFrequencyByRange = (
     } else {
       frequency = Math.floor(max - decrement * rank);
     }
-
-    console.log(
-      range,
-      rank,
-      min,
-      max,
-      spread,
-      decrement,
-      frequency,
-      "LOL FOR HAMMIES?"
-    );
     return frequency;
   }
 };
@@ -105,26 +94,33 @@ export const determineFrequencyByRange = (
 // freqEnd  5 |  1  2  3  4  5
 // freqEnd  6 |  2  3  4  5  6
 
+// case where MV frequency is 0, needs to be factored in.
 export const determineFrequencyProgression = (
   mesocycles: number,
   tar_frequency: number
 ) => {
-  // if total mesocycles <= frequency then sub 1 into array and reverse
-  if (mesocycles <= tar_frequency) {
-    const freq_prog: number[] = [tar_frequency];
-    for (let i = 1; i < mesocycles; i++) {
-      freq_prog.push(tar_frequency - i);
-    }
-    return freq_prog.reverse();
-  } else if (tar_frequency === 1) {
-    return Array.from(Array(mesocycles), (e, i) => 1);
-  } else {
-    const spread = tar_frequency - 1;
-    const decrement = spread / mesocycles;
-    const freq_prog: number[] = [tar_frequency];
-    for (let i = 1; i < mesocycles; i++) {
-      freq_prog.push(Math.round(tar_frequency - decrement * i));
-    }
-    return freq_prog.reverse();
+  const freq_prog: number[] = [tar_frequency];
+  switch (true) {
+    case tar_frequency === 1:
+      return Array.from(Array(mesocycles), (e, i) => 1);
+    case mesocycles <= tar_frequency:
+      for (let i = 1; i < mesocycles; i++) {
+        freq_prog.push(tar_frequency - i);
+      }
+      return freq_prog.reverse();
+    default:
+      const spread = tar_frequency - 1;
+      const decrement = spread / mesocycles;
+
+      for (let i = 1; i < mesocycles; i++) {
+        freq_prog.push(Math.round(tar_frequency - decrement * i));
+      }
+      return freq_prog.reverse();
   }
 };
+
+// initialize exercise sets
+
+// -- [2, 2] [3, 2]
+
+

@@ -142,7 +142,7 @@ function useProgramConfig() {
         total_sessions,
         new_split_sessions
       );
-      console.log(reordered_items, "HAHA");
+      console.log(reordered_items, "Checking the muscle priority list");
       setProgramConfig((prev) => ({
         ...prev,
         frequency: total_sessions,
