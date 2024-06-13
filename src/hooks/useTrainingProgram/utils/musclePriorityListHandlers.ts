@@ -11,7 +11,10 @@ import {
   getOPTSplit,
   getPushPullLegsSplit,
 } from "~/constants/workoutSplits";
-import { getTotalExercisesForMuscleGroup } from "~/utils/getExercises";
+import {
+  getTotalExercisesForMuscleGroup,
+  initializeSetProgression,
+} from "~/utils/getExercises";
 import { getMuscleData } from "~/utils/getMuscleData";
 import { includes } from "~/utils/readOnlyArrayIncludes";
 import { getSplitFromWeights } from "../reducer/getSplitFromPriorityWeighting";
@@ -332,9 +335,12 @@ export const attachTargetFrequency = (
       total_sessions
     );
     updated_list[i].frequency.target = target;
-    updated_list[i].frequency.progression = determineFrequencyProgression(
-      3,
-      target
+    const frequencyProgression = determineFrequencyProgression(3, target);
+    updated_list[i].frequency.progression = frequencyProgression;
+    const setProgressionTEST = initializeSetProgression(
+      frequencyProgression,
+      32,
+      updated_list[i].muscle
     );
   }
   return updated_list;

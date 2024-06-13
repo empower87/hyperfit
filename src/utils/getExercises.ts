@@ -1,5 +1,6 @@
 import {
   MRV_PROGRESSION_MATRIX_ONE,
+  MRV_PROGRESSION_MATRIX_TWO_INIT,
   getVolumeProgressionMatrix,
 } from "~/constants/volumeProgressionMatrices";
 import { MuscleType } from "~/constants/workoutSplits";
@@ -173,6 +174,69 @@ export const getGroupList = (group: string): Exercise[] => {
     rank: getWeightedCriteriaTotal(each),
   }));
   return rankedExercises.sort((a, b) => b.rank - a.rank);
+};
+
+// get init
+const findLeastSetsIndex = (sessionSets: number[]) => {
+  let index = 0;
+  for (let i = 0; i < sessionSets.length; i++) {
+    index = sessionSets[i] < sessionSets[index] ? i : index;
+  }
+  return index;
+};
+
+const disperseAddedSets = (addedSets: number[], schema: number[][]) => {
+  const copiedSchema = structuredClone(schema);
+
+  for (let i = 0; i < addedSets.length; i++) {
+    let addCounter = addedSets[i];
+
+    for (let j = 0; j < copiedSchema.length; j++) {
+      const index = findLeastSetsIndex(copiedSchema[j]);
+      if (addCounter > 0) {
+        copiedSchema[j][index] = copiedSchema[j][index] + 1;
+        addCounter--;
+      }
+      console.log(addCounter, copiedSchema, "WTF IS GONIG ?");
+    }
+  }
+  console.log(addedSets, schema, copiedSchema, "LETS LOOK");
+  return copiedSchema;
+};
+
+export const initializeSetProgression = (
+  progression: number[],
+  targetSets: number,
+  muscle: MuscleType
+) => {
+  // const mesocycles = progression.length
+  // const firstMeso = progression[0]
+  // const schema = MRV_PROGRESSION_MATRIX_TWO_INIT[firstMeso - 1]
+  const mesoProgression: number[][][] = [];
+
+  let counter: number[] = [];
+  for (let i = 0; i < progression.length; i++) {
+    const meso = progression[i];
+    const schemaa = MRV_PROGRESSION_MATRIX_TWO_INIT[meso - 1];
+    const currentSchema = disperseAddedSets(counter, schemaa);
+    mesoProgression.push(currentSchema);
+    counter.push(meso);
+  }
+
+  console.log(counter, mesoProgression, muscle, "initializeSetProgression");
+  return mesoProgression;
+};
+
+const MESOCYCLE = {
+  sets: 2,
+  reps: [8, 10],
+  weight: 100,
+  weightIncrement: 5,
+};
+
+const EXERCISE = {
+  id: "",
+  name: "overhead press",
 };
 
 const INITIAL_EXERCISE: ExerciseType = {
@@ -367,106 +431,6 @@ export const initializeNewExerciseSetsPerMeso = (
     schemas: schemasToAdd,
   };
 };
-
-// export const getTotalExercisesForMuscleGroup = (
-//   group: MuscleType,
-//   rank: VolumeLandmarkType,
-//   frequencyProgression: number[],
-//   exercisesPerSessionSchema: number
-// ) => {
-//   const total_frequency = frequencyProgression[frequencyProgression.length - 1];
-//   const muscleData = getMuscleData(group);
-
-//   const allExercises = getGroupList(group);
-
-//   const exercise_list: ExerciseType[][] = [];
-//   let exercises_index = 0;
-
-//   if (rank === "MEV" || rank === "MV") {
-//     if (muscleData[rank] === 0) return exercise_list;
-//     const array = initializeSetsPerMeso_mev_mv(
-//       muscleData[rank],
-//       frequencyProgression
-//     );
-
-//     for (let e = 0; e < array.length; e++) {
-//       const session = array[e];
-//       const sessionExercises: ExerciseType[] = [];
-
-//       for (let f = 0; f < session.length; f++) {
-//         if (!allExercises[exercises_index]) {
-//           exercises_index = 0;
-//         }
-//         if (allExercises[exercises_index]) {
-//           const exercise = {
-//             ...INITIAL_EXERCISE,
-//             id: `${allExercises[exercises_index].id}_${exercises_index}`,
-//             exercise: allExercises[exercises_index].name,
-//             muscle: group,
-//             rank: rank,
-//             meso_progression: frequencyProgression,
-//             initializeSetsPerMeso: [],
-//             setProgressionnSchema: [],
-//           };
-//           const initSets = [];
-//           const setProgSchema: SetProgressionType[] = [];
-//           for (let g = 0; g < frequencyProgression.length; g++) {
-//             initSets.push(session[f]);
-//             setProgSchema.push("NO_ADD");
-//           }
-//           exercise.initialSetsPerMeso = initSets;
-//           exercise.setProgressionSchema = setProgSchema;
-//           sessionExercises.push(exercise);
-//           exercises_index++;
-//         }
-//       }
-//       exercise_list.push(sessionExercises);
-//     }
-//     return exercise_list;
-//   }
-
-//   const matrix = getVolumeProgressionMatrix(rank, exercisesPerSessionSchema);
-//   const final_meso_frequency = matrix[total_frequency - 1];
-
-//   if (!final_meso_frequency) {
-//     return exercise_list;
-//   }
-
-//   for (let i = 0; i < final_meso_frequency.length; i++) {
-//     const session = final_meso_frequency[i];
-
-//     const session_exercises: ExerciseType[] = [];
-//     for (let j = 0; j < session.length; j++) {
-//       if (session[j] === 0) continue;
-//       if (!allExercises[exercises_index]) {
-//         exercises_index = 0;
-//       }
-
-//       if (allExercises[exercises_index]) {
-//         const exercise = {
-//           ...INITIAL_EXERCISE,
-//           id: `${allExercises[exercises_index].id}_${exercises_index}`,
-//           exercise: allExercises[exercises_index].name,
-//           muscle: group,
-//           rank: rank,
-//           meso_progression: frequencyProgression,
-//         };
-
-//         // Initializes the set progression schema and initial sets per meso
-
-//         const toAdd = initializeSetsPerMeso(frequencyProgression, matrix, i, j);
-
-//         exercise.initialSetsPerMeso = toAdd.sets;
-//         exercise.setProgressionSchema = toAdd.schemas;
-
-//         session_exercises.push(exercise);
-//         exercises_index++;
-//       }
-//     }
-//     exercise_list.push(session_exercises);
-//   }
-//   return exercise_list;
-// };
 
 const getMevMvIncrement = (
   initialSet: number,
