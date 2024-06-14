@@ -303,11 +303,31 @@ export type SetProgressionType =
 export type ExerciseTrainingModality =
   (typeof EXERCISE_TRAINING_MODALITIES)[number];
 
+type ExerciseProgression = {
+  mesocycles: [[0, 2, "off"], [1, 2, "1_upper"], [1, 2, "1_upper"]];
+};
+export type ExerciseTypeT = {
+  id: string;
+  name: string;
+  muscle: MuscleType;
+  sessionId: string;
+  rank: VolumeLandmarkType;
+  sets: number;
+  reps: number;
+  weight: number;
+  rir: number;
+  weightIncrement: number;
+  trainingModality: ExerciseTrainingModality;
+  mesocycle_progression: ExerciseMesocycleProgressionType[];
+  supersetWith: ExerciseType["id"] | null;
+  initialSetsPerMeso: number[];
+  setProgressionSchema: SetProgressionType[];
+};
 export type ExerciseType = {
   id: string;
   exercise: string;
   muscle: MuscleType;
-  session: number;
+  sessionId: string;
   rank: VolumeLandmarkType;
   sets: number;
   reps: number;
@@ -340,6 +360,7 @@ export type MusclePriorityFrequencyType = {
   range: [number, number];
   target: number;
   progression: number[];
+  setProgression: number[][][];
 };
 export type MusclePriorityType = {
   id: string;

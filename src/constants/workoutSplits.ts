@@ -186,7 +186,6 @@ export const getMusclesSplit = (
 ): SplitType[] => {
   switch (split) {
     case "OPT":
-      const what = getOPTSplit(muscle);
       return getOPTSplit(muscle);
     case "PPL":
       return [getPushPullLegsSplit(muscle)];

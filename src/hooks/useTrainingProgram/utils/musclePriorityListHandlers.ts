@@ -48,6 +48,7 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
       range: [3, 4],
       target: 0,
       progression: [],
+      setProgression: [],
     },
   },
   {
@@ -65,6 +66,7 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
       range: [3, 6],
       target: 0,
       progression: [],
+      setProgression: [],
     },
   },
   {
@@ -82,6 +84,7 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
       range: [2, 4],
       target: 0,
       progression: [],
+      setProgression: [],
     },
   },
   {
@@ -99,6 +102,7 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
       range: [2, 3],
       target: 0,
       progression: [],
+      setProgression: [],
     },
   },
   {
@@ -116,6 +120,7 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
       range: [2, 5],
       target: 0,
       progression: [],
+      setProgression: [],
     },
   },
   {
@@ -133,6 +138,7 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
       range: [3, 6],
       target: 0,
       progression: [],
+      setProgression: [],
     },
   },
   {
@@ -150,6 +156,7 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
       range: [3, 6],
       target: 0,
       progression: [],
+      setProgression: [],
     },
   },
   {
@@ -167,6 +174,7 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
       range: [2, 4],
       target: 0,
       progression: [],
+      setProgression: [],
     },
   },
   {
@@ -184,6 +192,7 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
       range: [3, 6],
       target: 0,
       progression: [],
+      setProgression: [],
     },
   },
 
@@ -202,6 +211,7 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
       range: [2, 4],
       target: 0,
       progression: [],
+      setProgression: [],
     },
   },
   {
@@ -219,6 +229,7 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
       range: [3, 6],
       target: 0,
       progression: [],
+      setProgression: [],
     },
   },
   {
@@ -236,6 +247,7 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
       range: [2, 3],
       target: 0,
       progression: [],
+      setProgression: [],
     },
   },
   {
@@ -253,6 +265,7 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
       range: [3, 6],
       target: 0,
       progression: [],
+      setProgression: [],
     },
   },
   {
@@ -270,6 +283,7 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
       range: [2, 5],
       target: 0,
       progression: [],
+      setProgression: [],
     },
   },
 ];
@@ -342,6 +356,7 @@ export const attachTargetFrequency = (
       32,
       updated_list[i].muscle
     );
+    updated_list[i].frequency.setProgression = setProgressionTEST;
   }
   return updated_list;
 };

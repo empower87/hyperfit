@@ -209,9 +209,6 @@ export const initializeSetProgression = (
   targetSets: number,
   muscle: MuscleType
 ) => {
-  // const mesocycles = progression.length
-  // const firstMeso = progression[0]
-  // const schema = MRV_PROGRESSION_MATRIX_TWO_INIT[firstMeso - 1]
   const mesoProgression: number[][][] = [];
 
   let counter: number[] = [];
@@ -227,24 +224,12 @@ export const initializeSetProgression = (
   return mesoProgression;
 };
 
-const MESOCYCLE = {
-  sets: 2,
-  reps: [8, 10],
-  weight: 100,
-  weightIncrement: 5,
-};
-
-const EXERCISE = {
-  id: "",
-  name: "overhead press",
-};
-
 const INITIAL_EXERCISE: ExerciseType = {
   exercise: "Triceps Extension (cable, single-arm)",
   id: "001_Triceps Extension (cable, single-arm)",
   muscle: "back",
   rank: "MRV",
-  session: 0,
+  sessionId: "upper_1",
   sets: 2,
   reps: 10,
   weight: 0,
