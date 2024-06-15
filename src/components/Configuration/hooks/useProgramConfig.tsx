@@ -25,6 +25,7 @@ import {
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
+import { exerciseDispersion } from "~/hooks/useTrainingProgram/utils/buildTrainingBlockHandlers";
 import { distributeSplitAcrossWeek } from "~/hooks/useTrainingProgram/utils/distributeSplitAcrossTrainingWeek";
 import {
   attachTargetFrequency,
@@ -141,6 +142,11 @@ function useProgramConfig() {
       const new_training_week = distributeSplitAcrossWeek(
         total_sessions,
         new_split_sessions
+      );
+      const exerciseDispersionTest = exerciseDispersion(
+        new_split_sessions,
+        reordered_items,
+        new_training_week
       );
       console.log(reordered_items, "Checking the muscle priority list");
       setProgramConfig((prev) => ({

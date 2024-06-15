@@ -220,7 +220,6 @@ export const initializeSetProgression = (
     counter.push(meso);
   }
 
-  console.log(counter, mesoProgression, muscle, "initializeSetProgression");
   return mesoProgression;
 };
 
