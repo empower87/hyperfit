@@ -101,10 +101,20 @@ const attachMesocycleProgressionToExercise = (
   return updated_exercises;
 };
 
+const getTotalExercisesByMeso = (
+  exercises: ExerciseType[][],
+  mesoFrequency: number
+) => {
+  return [...exercises].slice(0, mesoFrequency);
+};
+
+const reduceFrequency = () => {};
+
 type MappedMuscleItem = {
   muscle: MuscleType;
   exercises: ExerciseType["id"][];
 };
+
 export const exerciseDispersion = (
   split_sessions: SplitSessionsType,
   muscle_priority_list: MusclePriorityType[],
@@ -113,32 +123,28 @@ export const exerciseDispersion = (
   const weekIds = training_week
     .map((ea) => ea.sessions.map((e) => e.id))
     .flat();
-
   const weekMap = new Map<string, MappedMuscleItem[]>(
-    weekIds.map((ea, i) => {
-      return [ea, []];
-    })
+    weekIds.map((ea, i) => [ea, []])
   );
 
   for (let i = 0; i < muscle_priority_list.length; i++) {
     const muscle = muscle_priority_list[i].muscle;
     const sessionExerciseLimit =
       muscle_priority_list[i].volume.exercisesPerSessionSchema;
-    const totalExercises = [...muscle_priority_list[i].exercises];
+    const totalExercises = muscle_priority_list[i].exercises;
     const possibleSplits = getMusclesSplit(split_sessions.split, muscle);
 
     for (let j = 0; j < totalExercises.length; j++) {
       const sortedMap = Array.from(weekMap)
         .filter((each) => {
-          if (possibleSplits.includes(each[0].split("_")[1] as SplitType)) {
+          if (possibleSplits.includes(each[0].split("_")[1] as SplitType))
             return each;
-          } else {
-            return null;
-          }
+          else return null;
         })
         .sort((a, b) => a[1].length - b[1].length);
 
       let ids = totalExercises[j].map((each) => each.id);
+
       for (let k = 0; k < sortedMap.length; k++) {
         if (!ids.length) continue;
         const key = sortedMap[k][0];
@@ -146,6 +152,7 @@ export const exerciseDispersion = (
 
         if (!Array.isArray(values)) continue;
         const findMuscle = values.filter((ea) => ea.muscle === muscle)[0];
+
         if (!findMuscle) {
           values.push({ muscle, exercises: ids });
           ids = [];
@@ -159,9 +166,7 @@ export const exerciseDispersion = (
               exercises: [...findMuscle.exercises, ...ids],
             };
             values.map((each) => {
-              if (each.muscle === muscle) {
-                return exerciseIds;
-              }
+              if (each.muscle === muscle) return exerciseIds;
               return each;
             });
             ids = [];
@@ -171,7 +176,27 @@ export const exerciseDispersion = (
       }
     }
   }
-  console.log(weekMap, "OH BOY THIS GONNA WORK?");
+
+  // from the weekMap disperse the Ids into exercises
+
+  for (let l = 0; l < muscle_priority_list.length; l++) {
+    const muscle = muscle_priority_list[l].muscle;
+    const totalExercises = muscle_priority_list[l].exercises.flat();
+
+    for (let m = 0; m < totalExercises.length; m++) {
+      for (let [key, value] of weekMap) {
+        const mappedMuscle = value.find((ea) => ea.muscle === muscle);
+        if (!mappedMuscle) continue;
+        const exerciseIds = mappedMuscle.exercises.find(
+          (ea) => ea === totalExercises[m].id
+        );
+        if (!exerciseIds) continue;
+        totalExercises[m].sessionId = key;
+      }
+    }
+
+    console.log(totalExercises, "WHAT DEEZ");
+  }
 };
 
 const distributeExercisesAmongSplit = (
