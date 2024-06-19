@@ -106,6 +106,7 @@ function useProgramConfig() {
       split: SplitSessionsNameType,
       muscle_priority_list: MusclePriorityType[]
     ) => {
+      const { mesocycles } = programConfig.training_program_params;
       const total = total_sessions[0] + total_sessions[1];
 
       const getNGroup = getFrequencyMaxes(
@@ -143,11 +144,14 @@ function useProgramConfig() {
         total_sessions,
         new_split_sessions
       );
-      const exerciseDispersionTest = exerciseDispersion(
-        new_split_sessions,
-        reordered_items,
-        new_training_week
-      );
+      for (let i = 0; i < mesocycles; i++) {
+        const exerciseDispersionTest = exerciseDispersion(
+          new_split_sessions,
+          reordered_items,
+          new_training_week,
+          i
+        );
+      }
       console.log(reordered_items, "Checking the muscle priority list");
       setProgramConfig((prev) => ({
         ...prev,
@@ -170,6 +174,7 @@ function useProgramConfig() {
 
   const onSplitChange = useCallback(
     (split: SplitSessionsNameType) => {
+      const remove = window.localStorage.removeItem("TRAINING_PROGRAM_STATE");
       const { frequency, muscle_priority_list } = programConfig;
 
       onChangeHandler(frequency, split, muscle_priority_list);

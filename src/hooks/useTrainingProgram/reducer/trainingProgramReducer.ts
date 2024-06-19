@@ -323,11 +323,13 @@ export type ExerciseTypeT = {
   initialSetsPerMeso: number[];
   setProgressionSchema: SetProgressionType[];
 };
+
 export type ExerciseType = {
   id: string;
   exercise: string;
   muscle: MuscleType;
-  sessionId: string;
+  session: number;
+  sessionIds: string[];
   rank: VolumeLandmarkType;
   sets: number;
   reps: number;

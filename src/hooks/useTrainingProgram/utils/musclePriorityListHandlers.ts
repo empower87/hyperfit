@@ -356,6 +356,17 @@ export const attachTargetFrequency = (
       32,
       updated_list[i].muscle
     );
+    const muscle = updated_list[i].muscle;
+    const landmark = updated_list[i].volume.landmark;
+    const exercisesPerSessionSchema =
+      updated_list[i].volume.exercisesPerSessionSchema;
+    const exercises = getTotalExercisesForMuscleGroup(
+      muscle,
+      landmark,
+      frequencyProgression,
+      exercisesPerSessionSchema
+    );
+    updated_list[i].exercises = exercises;
     updated_list[i].frequency.setProgression = setProgressionTEST;
   }
   return updated_list;
