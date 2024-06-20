@@ -1,11 +1,4 @@
-import {
-  LOWER_MUSCLES,
-  MuscleType,
-  PULL_MUSCLES,
-  PUSH_MUSCLES,
-  getMusclesSplit,
-} from "~/constants/workoutSplits";
-import { includes } from "~/utils/readOnlyArrayIncludes";
+import { MuscleType, getMusclesSplit } from "~/constants/workoutSplits";
 import {
   ExerciseMesocycleProgressionType,
   ExerciseType,
@@ -123,46 +116,64 @@ type MappedMuscleItem = {
   exercises: ExerciseType["id"][];
 };
 
-// TESTING
+// TESTING ------------
+// disperse into
 const buildPlaceholderTrainingBlock = (
   split_sessions: SplitSessionsType,
   muscle_priority_list: MusclePriorityType[],
-  training_week: TrainingDayType[],
-  mesocycles: number
+  total_frequency: number
 ) => {
-  for (let i = 0; i < mesocycles; i++) {
-    const pushMin = muscle_priority_list.reduce(
-      (acc, cur) =>
-        includes(PUSH_MUSCLES, cur.muscle) || cur.muscle === "delts_side"
-          ? Math.max(acc, cur.frequency.progression[i])
-          : acc,
-      0
-    );
-    const pullMin = muscle_priority_list.reduce(
-      (acc, cur) =>
-        includes(PULL_MUSCLES, cur.muscle) || cur.muscle === "traps"
-          ? Math.max(acc, cur.frequency.progression[i])
-          : acc,
-      0
-    );
-    const lowerMin = muscle_priority_list.reduce(
-      (acc, cur) =>
-        includes(LOWER_MUSCLES, cur.muscle) || cur.muscle === "abs"
-          ? Math.max(acc, cur.frequency.progression[i])
-          : acc,
-      0
-    );
-    console.log(
-      "PUSH: ",
-      pushMin,
-      "PULL: ",
-      pullMin,
-      "LOWER: ",
-      lowerMin,
-      "MESO: ",
-      i
-    );
+  const mesocycles = muscle_priority_list[0].frequency.progression;
+  const initArray = Array.from(Array(mesocycles.length), (e, i) => 0);
+  let pull = [...initArray];
+  let push = [...initArray];
+  let legs = [...initArray];
+
+  for (let i = 0; i < muscle_priority_list.length; i++) {
+    const muscle = muscle_priority_list[i].muscle;
+    const progression = muscle_priority_list[i].frequency.progression;
+
+    for (let j = 0; j < progression.length; j++) {
+      const split = getMusclesSplit("PPL", muscle)[0];
+
+      switch (split) {
+        case "push":
+          push[j] = Math.max(push[j], progression[j]);
+          break;
+        case "pull":
+          pull[j] = Math.max(pull[j], progression[j]);
+          break;
+        case "legs":
+          legs[j] = Math.max(legs[j], progression[j]);
+          break;
+        default:
+          break;
+      }
+    }
   }
+  const splits = Object.entries(split_sessions.sessions)
+    .map(([key, value]) => [...Array.from(Array(value), (e, i) => key)])
+    .flat();
+
+  const totalWeekFrequency = mesocycles
+    .map((e, i) => total_frequency - i)
+    .reverse();
+  for (let k = 0; k < pull.length; k++) {
+    const totals = pull[k] + push[k] + legs[k];
+  }
+
+  console.log(
+    "PUSH: ",
+    push,
+    "PULL: ",
+    pull,
+    "LOWER: ",
+    legs,
+    "SPLITS: ",
+    splits,
+    "TOTAL FREQUENCY LIMITS: ",
+    totalWeekFrequency
+  );
 };
 
 export const exerciseDispersion = (
@@ -174,16 +185,15 @@ export const exerciseDispersion = (
   const test = buildPlaceholderTrainingBlock(
     split_sessions,
     muscle_priority_list,
-    training_week,
-    3
+    6 // hardcoded test
   );
   const weekIds = training_week
     .map((ea) => ea.sessions.map((e) => e.id))
     .flat();
-  const weekMap = new Map<string, MappedMuscleItem[]>(
+  const weekMap = new Map<string, MuscleType[]>(
     weekIds.map((ea, i) => [ea, []])
   );
-  const updatedList = structuredClone(muscle_priority_list);
+  // const updatedList = structuredClone(muscle_priority_list);
 
   for (let i = 0; i < muscle_priority_list.length; i++) {
     const muscle = muscle_priority_list[i].muscle;
@@ -191,7 +201,7 @@ export const exerciseDispersion = (
       muscle_priority_list[i].volume.exercisesPerSessionSchema;
     const frequencyProgression = muscle_priority_list[i].frequency.progression;
     const limit = frequencyProgression[targetFrequency];
-    const totalExercises = updatedList[i].exercises.slice(0, limit);
+    const totalExercises = muscle_priority_list[i].exercises.slice(0, limit);
     const possibleSplits = getMusclesSplit(split_sessions.split, muscle);
 
     for (let j = 0; j < totalExercises.length; j++) {
@@ -203,62 +213,121 @@ export const exerciseDispersion = (
         })
         .sort((a, b) => a[1].length - b[1].length);
 
-      let ids = totalExercises[j].map((each) => each.id);
+      const total = totalExercises[j].length;
 
       for (let k = 0; k < sortedMap.length; k++) {
-        if (!ids.length) continue;
+        if (total === 0) continue;
         const key = sortedMap[k][0];
-        let values = weekMap.get(sortedMap[k][0]);
+        const values = weekMap.get(sortedMap[k][0]);
 
         if (!Array.isArray(values)) continue;
-        const findMuscle = values.filter((ea) => ea.muscle === muscle)[0];
+        const findMuscles = values.filter((ea) => ea === muscle);
 
-        if (!findMuscle) {
-          values.push({ muscle, exercises: ids });
-          updatedList[i] = {
-            ...updatedList[i],
-            exercises: updatedList[i].exercises.map((each) =>
-              each.map((ea) => {
-                if (ids.includes(ea.id)) {
-                  return { ...ea, sessionIds: [...ea.sessionIds, key] };
-                } else return ea;
-              })
-            ),
-          };
-          ids = [];
-        } else {
-          if (
-            findMuscle.exercises.length + ids.length <=
-            sessionExerciseLimit
-          ) {
-            const exerciseIds = {
-              ...findMuscle,
-              exercises: [...findMuscle.exercises, ...ids],
-            };
-            values = values.map((each) => {
-              if (each.muscle === muscle) return exerciseIds;
-              return each;
-            });
-            updatedList[i] = {
-              ...updatedList[i],
-              exercises: updatedList[i].exercises.map((each) =>
-                each.map((ea) => {
-                  if (ids.includes(ea.id)) {
-                    return { ...ea, sessionIds: [...ea.sessionIds, key] };
-                  } else return ea;
-                })
-              ),
-            };
-            ids = [];
-          }
+        if (findMuscles.length + total <= sessionExerciseLimit) {
+          values.push(muscle);
         }
+
         weekMap.set(key, values);
       }
     }
   }
 
-  console.log(updatedList, weekMap, "these good??");
+  console.log(weekMap, "these good??");
 };
+// export const exerciseDispersion = (
+//   split_sessions: SplitSessionsType,
+//   muscle_priority_list: MusclePriorityType[],
+//   training_week: TrainingDayType[],
+//   targetFrequency: number
+// ) => {
+//   const test = buildPlaceholderTrainingBlock(
+//     split_sessions,
+//     muscle_priority_list,
+//     training_week,
+//     3
+//   );
+//   const weekIds = training_week
+//     .map((ea) => ea.sessions.map((e) => e.id))
+//     .flat();
+//   const weekMap = new Map<string, MappedMuscleItem[]>(
+//     weekIds.map((ea, i) => [ea, []])
+//   );
+//   const updatedList = structuredClone(muscle_priority_list);
+
+//   for (let i = 0; i < muscle_priority_list.length; i++) {
+//     const muscle = muscle_priority_list[i].muscle;
+//     const sessionExerciseLimit =
+//       muscle_priority_list[i].volume.exercisesPerSessionSchema;
+//     const frequencyProgression = muscle_priority_list[i].frequency.progression;
+//     const limit = frequencyProgression[targetFrequency];
+//     const totalExercises = updatedList[i].exercises.slice(0, limit);
+//     const possibleSplits = getMusclesSplit(split_sessions.split, muscle);
+
+//     for (let j = 0; j < totalExercises.length; j++) {
+//       const sortedMap = Array.from(weekMap)
+//         .filter((each) => {
+//           if (possibleSplits.includes(each[0].split("_")[1] as SplitType))
+//             return each;
+//           else return null;
+//         })
+//         .sort((a, b) => a[1].length - b[1].length);
+
+//       let ids = totalExercises[j].map((each) => each.id);
+
+//       for (let k = 0; k < sortedMap.length; k++) {
+//         if (!ids.length) continue;
+//         const key = sortedMap[k][0];
+//         let values = weekMap.get(sortedMap[k][0]);
+
+//         if (!Array.isArray(values)) continue;
+//         const findMuscle = values.filter((ea) => ea.muscle === muscle)[0];
+
+//         if (!findMuscle) {
+//           values.push({ muscle, exercises: ids });
+//           updatedList[i] = {
+//             ...updatedList[i],
+//             exercises: updatedList[i].exercises.map((each) =>
+//               each.map((ea) => {
+//                 if (ids.includes(ea.id)) {
+//                   return { ...ea, sessionIds: [...ea.sessionIds, key] };
+//                 } else return ea;
+//               })
+//             ),
+//           };
+//           ids = [];
+//         } else {
+//           if (
+//             findMuscle.exercises.length + ids.length <=
+//             sessionExerciseLimit
+//           ) {
+//             const exerciseIds = {
+//               ...findMuscle,
+//               exercises: [...findMuscle.exercises, ...ids],
+//             };
+//             values = values.map((each) => {
+//               if (each.muscle === muscle) return exerciseIds;
+//               return each;
+//             });
+//             updatedList[i] = {
+//               ...updatedList[i],
+//               exercises: updatedList[i].exercises.map((each) =>
+//                 each.map((ea) => {
+//                   if (ids.includes(ea.id)) {
+//                     return { ...ea, sessionIds: [...ea.sessionIds, key] };
+//                   } else return ea;
+//                 })
+//               ),
+//             };
+//             ids = [];
+//           }
+//         }
+//         weekMap.set(key, values);
+//       }
+//     }
+//   }
+
+//   console.log(updatedList, weekMap, "these good??");
+// };
 
 const distributeExercisesAmongSplit = (
   _muscle_priority: MusclePriorityType[],

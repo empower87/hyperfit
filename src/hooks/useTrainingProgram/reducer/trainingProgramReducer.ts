@@ -263,7 +263,7 @@ export type SplitSessionsSplitsType =
   SplitSessionsGenericType<SplitSessionsNameType>["sessions"];
 
 export type SessionKeys<T> = T extends T ? keyof T : never;
-export type SplitType = SessionKeys<SplitSessionsSplitsType>;
+export type SplitType = SessionKeys<SplitSessionsSplitsType> & {};
 
 export type ExerciseDetails = {
   sets: number;
