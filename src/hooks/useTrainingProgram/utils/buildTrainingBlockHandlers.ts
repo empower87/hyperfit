@@ -1,5 +1,6 @@
 import { MuscleType, getMusclesSplit } from "~/constants/workoutSplits";
 import {
+  DayType,
   ExerciseMesocycleProgressionType,
   ExerciseType,
   MusclePriorityType,
@@ -151,6 +152,7 @@ const buildPlaceholderTrainingBlock = (
       }
     }
   }
+
   const splits = Object.entries(split_sessions.sessions)
     .map(([key, value]) => [...Array.from(Array(value), (e, i) => key)])
     .flat();
@@ -158,6 +160,7 @@ const buildPlaceholderTrainingBlock = (
   const totalWeekFrequency = mesocycles
     .map((e, i) => total_frequency - i)
     .reverse();
+
   for (let k = 0; k < pull.length; k++) {
     const totals = pull[k] + push[k] + legs[k];
   }
@@ -176,6 +179,16 @@ const buildPlaceholderTrainingBlock = (
   );
 };
 
+type NewTrainingWeek = {
+  day: DayType;
+  isTrainingDay: boolean;
+  sessions: {
+    id: string;
+    split: SessionSplitType;
+    exercises: [MuscleType, string][];
+  }[];
+};
+
 export const exerciseDispersion = (
   split_sessions: SplitSessionsType,
   muscle_priority_list: MusclePriorityType[],
@@ -187,13 +200,22 @@ export const exerciseDispersion = (
     muscle_priority_list,
     6 // hardcoded test
   );
-  const weekIds = training_week
+
+  const finalTrainingWeek: NewTrainingWeek[] = training_week.map((each) => {
+    const sessions = each.sessions.map((ea) => ({
+      ...ea,
+      exercises: [] as [MuscleType, string][],
+    }));
+    return { ...each, sessions: sessions };
+  });
+
+  const weekIds = finalTrainingWeek
     .map((ea) => ea.sessions.map((e) => e.id))
     .flat();
-  const weekMap = new Map<string, MuscleType[]>(
+
+  const finalTrainingWeekMap = new Map<string, [MuscleType, string][]>(
     weekIds.map((ea, i) => [ea, []])
   );
-  // const updatedList = structuredClone(muscle_priority_list);
 
   for (let i = 0; i < muscle_priority_list.length; i++) {
     const muscle = muscle_priority_list[i].muscle;
@@ -201,11 +223,11 @@ export const exerciseDispersion = (
       muscle_priority_list[i].volume.exercisesPerSessionSchema;
     const frequencyProgression = muscle_priority_list[i].frequency.progression;
     const limit = frequencyProgression[targetFrequency];
-    const totalExercises = muscle_priority_list[i].exercises.slice(0, limit);
+    const totalExercises = muscle_priority_list[i].exercises;
     const possibleSplits = getMusclesSplit(split_sessions.split, muscle);
 
     for (let j = 0; j < totalExercises.length; j++) {
-      const sortedMap = Array.from(weekMap)
+      const sortedMap = Array.from(finalTrainingWeekMap)
         .filter((each) => {
           if (possibleSplits.includes(each[0].split("_")[1] as SplitType))
             return each;
@@ -213,27 +235,104 @@ export const exerciseDispersion = (
         })
         .sort((a, b) => a[1].length - b[1].length);
 
-      const total = totalExercises[j].length;
+      let total = totalExercises[j].length;
 
       for (let k = 0; k < sortedMap.length; k++) {
         if (total === 0) continue;
         const key = sortedMap[k][0];
-        const values = weekMap.get(sortedMap[k][0]);
+        const values = finalTrainingWeekMap.get(sortedMap[k][0]);
 
-        if (!Array.isArray(values)) continue;
-        const findMuscles = values.filter((ea) => ea === muscle);
-
-        if (findMuscles.length + total <= sessionExerciseLimit) {
-          values.push(muscle);
+        if (Array.isArray(values)) {
+          const findMuscles = values.filter((ea) => ea[0] === muscle);
+          console.log(
+            findMuscles,
+            totalExercises[j],
+            "HMM WHAT GOING ON HERE?"
+          );
+          if (findMuscles.length + total <= sessionExerciseLimit) {
+            totalExercises[j].forEach((ea) => values.push([muscle, ea.id]));
+            total = 0;
+          }
+          finalTrainingWeekMap.set(key, values);
         }
-
-        weekMap.set(key, values);
       }
     }
   }
 
-  console.log(weekMap, "these good??");
+  for (let l = 0; l < finalTrainingWeek.length; l++) {
+    const sessions = finalTrainingWeek[l].sessions;
+    for (let m = 0; m < sessions.length; m++) {
+      const getValues = finalTrainingWeekMap.get(sessions[m].id);
+      if (!getValues) continue;
+      finalTrainingWeek[l].sessions[m].exercises = getValues;
+    }
+  }
+
+  const fullBlock: NewTrainingWeek[][] = [];
+  let counter = 0;
+  let updatedWeek = finalTrainingWeek;
+  for (let n = 3 - 1; n >= 0; n--) {
+    const precedingWeek = getPrecedingTrainingWeeks(
+      updatedWeek,
+      muscle_priority_list,
+      n
+    );
+    updatedWeek = precedingWeek;
+    fullBlock.push(updatedWeek);
+    counter++;
+    console.log(
+      precedingWeek.map((ea) => [
+        ea.day,
+        ea.sessions[0].id,
+        ea.sessions[0].exercises,
+      ]),
+      "OMFG COME ON??"
+    );
+  }
 };
+
+const getPrecedingTrainingWeeks = (
+  final_training_week: NewTrainingWeek[],
+  muscle_priority_list: MusclePriorityType[],
+  currentMesoIndex: number
+) => {
+  // remove
+
+  let copied = structuredClone(final_training_week);
+
+  for (let i = 0; i < muscle_priority_list.length; i++) {
+    const muscle = muscle_priority_list[i].muscle;
+    const exercises = muscle_priority_list[i].exercises;
+    // [2, 2], [2, 3], [3, 3], [2]
+    // [2, 3, 4]
+    const progression =
+      muscle_priority_list[i].frequency.progression[currentMesoIndex];
+    if (!exercises[progression]) continue;
+    const exercisesToRemove = exercises[progression].map(
+      (exercise) => exercise.id
+    );
+
+    console.log(currentMesoIndex, exercisesToRemove, "WHAT WE GOT HERE?");
+    const news = copied.map((each) => {
+      const cloned = structuredClone(each.sessions);
+      const validSessions = cloned.filter((ea) => {
+        const exercises = ea.exercises.filter(
+          (e) => !exercisesToRemove.includes(e[1])
+        );
+        console.log(ea.split, exercises, exercisesToRemove, "OK GETTING DEEP");
+        return {
+          ...ea,
+          exercises: exercises,
+        };
+      });
+      return { ...each, sessions: validSessions };
+    });
+    copied = news;
+  }
+  // console.log(final_training_week, copied, "ARE THESE DIFF??");
+  return copied;
+};
+
 // export const exerciseDispersion = (
 //   split_sessions: SplitSessionsType,
 //   muscle_priority_list: MusclePriorityType[],
