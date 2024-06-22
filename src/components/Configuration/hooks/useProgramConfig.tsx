@@ -182,6 +182,42 @@ function useProgramConfig() {
     [programConfig, onChangeHandler]
   );
 
+  // 2full -
+  //                    back ---6upper
+  //                    back ---6upper
+  //                    delts_side ---5upper
+  //                    delts_side ---5upper
+  //                    biceps ---5upper
+
+  // 3upper -
+  //        back
+  //        back
+  //        delts_side
+  //        delts_side
+  //        delts_rear
+  //        traps
+  //        chest
+  //        chest
+
+  // 5upper -
+  //        back
+  //        back
+  //  DELTS_SIDE ---2full
+  //  DELTS_SIDE ---2full
+  //        triceps
+  //        delts_rear
+  //        traps
+  //  BICEPS ---2full
+
+  // 6upper -
+  //  BACK ---2full
+  //  BACK ---2full
+  //        delts_side
+  //        delts_side
+  //        triceps
+  //        forearms
+  //        biceps
+
   const onRearrangedWeek = useCallback(
     (rearranged_week: TrainingDayType[]) => {
       // const updated_week = onRearrangeTrainingWeek(

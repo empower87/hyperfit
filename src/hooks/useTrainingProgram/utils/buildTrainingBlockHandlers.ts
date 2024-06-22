@@ -4,6 +4,7 @@ import {
   ExerciseMesocycleProgressionType,
   ExerciseType,
   MusclePriorityType,
+  OPTSessionsType,
   SessionSplitType,
   SplitSessionsType,
   SplitType,
@@ -177,6 +178,14 @@ const buildPlaceholderTrainingBlock = (
     "TOTAL FREQUENCY LIMITS: ",
     totalWeekFrequency
   );
+  return {
+    splits: {
+      push: push,
+      pull: pull,
+      legs: legs,
+    },
+    total: totalWeekFrequency,
+  };
 };
 
 type NewTrainingWeek = {
@@ -187,6 +196,69 @@ type NewTrainingWeek = {
     split: SessionSplitType;
     exercises: [MuscleType, string][];
   }[];
+};
+
+const removeSplitsFromFinalWeek = (
+  split_sessions: OPTSessionsType,
+  frequency_progression: number,
+  split_maxes: { push: number[]; pull: number[]; legs: number[] }
+) => {
+  let sessions = {
+    upper: split_sessions.upper,
+    lower: split_sessions.lower,
+    push: split_sessions.push,
+    pull: split_sessions.pull,
+    full: split_sessions.full,
+  };
+  const priorityRemoval = ["full", "push", "pull", "lower", "upper"];
+
+  let total: number = Object.values(sessions).reduce(
+    (acc, cur) => acc + cur,
+    0
+  );
+
+  let pushTotal = sessions.push + sessions.upper + sessions.full;
+  let pullTotal = sessions.pull + sessions.upper + sessions.full;
+  let legsTotal = sessions.lower + sessions.full;
+
+  let push = split_maxes.push[frequency_progression];
+  let pull = split_maxes.pull[frequency_progression];
+  let legs = split_maxes.legs[frequency_progression];
+
+  let tracker = 0;
+  let removedSplits = [];
+  while (total > frequency_progression) {
+    total = Object.values(sessions).reduce((acc, cur) => acc + cur, 0);
+
+    const key = priorityRemoval[tracker] as keyof typeof sessions;
+    const canSub = sessions[key] - 1 >= 0;
+
+    if (canSub) {
+      sessions[key]--;
+
+      if (sessions[key] - 1 === 0) tracker = tracker + 1;
+
+      let pushTotal = sessions.push + sessions.upper + sessions.full;
+      let pullTotal = sessions.pull + sessions.upper + sessions.full;
+      let legsTotal = sessions.lower + sessions.full;
+
+      let revert = false;
+      if (pushTotal <= push) {
+        revert = true;
+      }
+      if (pullTotal <= pull) {
+        revert = true;
+      }
+      if (legsTotal <= legs) {
+        revert = true;
+      }
+      if (revert) sessions[key] = sessions[key] + 1;
+      else removedSplits.push(key);
+    } else {
+      tracker++;
+    }
+  }
+  return removedSplits;
 };
 
 export const exerciseDispersion = (
@@ -270,24 +342,49 @@ export const exerciseDispersion = (
 
   const fullBlock: NewTrainingWeek[][] = [];
   let counter = 0;
-  let updatedWeek = finalTrainingWeek;
+  // let updatedWeek = finalTrainingWeek;
+  let initialWeek = structuredClone(finalTrainingWeek);
   for (let n = 3 - 1; n >= 0; n--) {
-    const precedingWeek = getPrecedingTrainingWeeks(
-      updatedWeek,
-      muscle_priority_list,
-      n
+    const ohboy = removeSplitsFromFinalWeek(
+      split_sessions.sessions as OPTSessionsType,
+      test.total[n],
+      test.splits
     );
-    updatedWeek = precedingWeek;
-    fullBlock.push(updatedWeek);
+
+    const ugh = getPrecedingTrainingWeeks(initialWeek, muscle_priority_list, n);
+    initialWeek = structuredClone(ugh);
+    fullBlock.push(initialWeek);
+
     counter++;
-    console.log(
-      precedingWeek.map((ea) => [
-        ea.day,
-        ea.sessions[0].id,
-        ea.sessions[0].exercises,
-      ]),
-      "OMFG COME ON??"
-    );
+
+    console.log(n, ohboy, "OMFG COME ON??");
+  }
+  console.log(fullBlock, "OMFG COME ON??");
+};
+
+const exerciseRedistribution = (
+  training_week: NewTrainingWeek[],
+  split_sessions: SplitSessionsType,
+  week_map: Map<string, [MuscleType, string][]>,
+  muscle_priority_list: MusclePriorityType[],
+  frequency_progression: number[],
+  mesocycle_index: number
+) => {
+  const total_frequency = frequency_progression[mesocycle_index];
+
+  for (let i = 0; i < muscle_priority_list.length; i++) {
+    const muscle = muscle_priority_list[i];
+    const muscle_frequency = muscle.frequency.progression[mesocycle_index];
+    const possibleSplits = getMusclesSplit(split_sessions.split, muscle.muscle);
+    const sortedMap = Array.from(week_map)
+      .filter((each) => {
+        if (possibleSplits.includes(each[0].split("_")[1] as SplitType))
+          return each;
+        else return null;
+      })
+      .sort((a, b) => a[1].length - b[1].length);
+    const longest = sortedMap[0];
+    const shortest = sortedMap[sortedMap.length - 1];
   }
 };
 
@@ -296,15 +393,14 @@ const getPrecedingTrainingWeeks = (
   muscle_priority_list: MusclePriorityType[],
   currentMesoIndex: number
 ) => {
-  // remove
-
-  let copied = structuredClone(final_training_week);
+  const cloned = structuredClone(final_training_week);
 
   for (let i = 0; i < muscle_priority_list.length; i++) {
     const muscle = muscle_priority_list[i].muscle;
     const exercises = muscle_priority_list[i].exercises;
     // [2, 2], [2, 3], [3, 3], [2]
     // [2, 3, 4]
+
     const progression =
       muscle_priority_list[i].frequency.progression[currentMesoIndex];
     if (!exercises[progression]) continue;
@@ -312,25 +408,43 @@ const getPrecedingTrainingWeeks = (
       (exercise) => exercise.id
     );
 
-    console.log(currentMesoIndex, exercisesToRemove, "WHAT WE GOT HERE?");
-    const news = copied.map((each) => {
-      const cloned = structuredClone(each.sessions);
-      const validSessions = cloned.filter((ea) => {
-        const exercises = ea.exercises.filter(
-          (e) => !exercisesToRemove.includes(e[1])
-        );
-        console.log(ea.split, exercises, exercisesToRemove, "OK GETTING DEEP");
-        return {
-          ...ea,
-          exercises: exercises,
-        };
-      });
-      return { ...each, sessions: validSessions };
-    });
-    copied = news;
+    for (let j = 0; j < cloned.length; j++) {
+      const sessions = cloned[j].sessions;
+
+      for (let k = 0; k < sessions.length; k++) {
+        const exercises = sessions[k].exercises;
+
+        for (let l = 0; l < exercises.length; l++) {
+          if (exercisesToRemove.includes(exercises[l][1])) {
+            exercises.splice(l, 1);
+            cloned[j].sessions[k].exercises = exercises;
+          }
+        }
+      }
+    }
+
+    // final_training_week = cloned.map((each) => {
+    //   const validSessions = each.sessions.filter((ea) => {
+    //     const exercises = ea.exercises.filter(
+    //       (e) => !exercisesToRemove.includes(e[1])
+    //     );
+    //     return {
+    //       ...ea,
+    //       exercises: [...exercises],
+    //     };
+    //   });
+    //   console.log(
+    //     each.day,
+    //     validSessions,
+    //     each.sessions,
+    //     exercisesToRemove,
+    //     "OMFG COME ON??"
+    //   );
+    //   return { ...each, sessions: validSessions };
+    // });
   }
   // console.log(final_training_week, copied, "ARE THESE DIFF??");
-  return copied;
+  return cloned;
 };
 
 // export const exerciseDispersion = (
