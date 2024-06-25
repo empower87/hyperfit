@@ -130,20 +130,24 @@ function useProgramConfig() {
         total,
         volumeBreakpoints
       );
+
       const reordered_items = onReorderUpdateMusclePriorityList(
         freq_list,
         volumeBreakpoints
       );
+
       const new_split_sessions = distributeSessionsIntoSplits(
         split,
         total,
         getNGroup,
         broSplitSorted
       );
+
       const new_training_week = distributeSplitAcrossWeek(
         total_sessions,
         new_split_sessions
       );
+
       for (let i = 0; i < mesocycles; i++) {
         const exerciseDispersionTest = exerciseDispersion(
           new_split_sessions,
@@ -152,6 +156,7 @@ function useProgramConfig() {
           i
         );
       }
+
       console.log(reordered_items, "Checking the muscle priority list");
       setProgramConfig((prev) => ({
         ...prev,
@@ -224,6 +229,7 @@ function useProgramConfig() {
       //   rearranged_week,
       //   programConfig.split_sessions
       // );
+
       // NOTE: updates training week's isTrainingDay boolean on UI change.
       //       may not need this boolean, but instead just check sessions.length
       //       to determine if a day is a training day or not.
