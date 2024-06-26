@@ -6,6 +6,7 @@ import {
   MusclePriorityType,
   OPTSessionsType,
   SessionSplitType,
+  SessionType,
   SplitSessionsType,
   SplitType,
   TrainingDayType,
@@ -120,6 +121,11 @@ type MappedMuscleItem = {
 
 // TESTING ------------
 // disperse into
+
+const getSessionsForTrainingBlock = () => {
+  //
+};
+
 const splitLimits = (
   split_sessions: SplitSessionsType,
   muscle_priority_list: MusclePriorityType[],
@@ -256,10 +262,45 @@ const removeSplitsFromFinalWeek = (
   return removedSplits;
 };
 
-const trainingBlockMain = (
+const filterOutSplitsFromWeek = (
+  toRemove: string[],
+  week: TrainingDayType[]
+) => {
+  if (!toRemove) return week;
+  let remove = [...toRemove];
+  const clonedWeek = structuredClone(week);
+
+  for (let i = clonedWeek.length - 1; i >= 0; i--) {
+    const sessions = clonedWeek[i].sessions;
+
+    for (let j = 0; j < sessions.length; j++) {
+      const curr = sessions[j];
+
+      if (remove.includes(curr.split)) {
+        const newSessions = sessions.filter((each) => each.id !== curr.id);
+        if (!newSessions.length) {
+          clonedWeek[i].isTrainingDay = false;
+          const OFF_DAY: SessionType = {
+            id: `${i}_off_session`,
+            split: "off",
+            exercises: [],
+          };
+          newSessions.push(OFF_DAY);
+        }
+        clonedWeek[i].sessions = newSessions;
+        const index = remove.findIndex((each) => each === curr.split);
+        remove.splice(index, 1);
+      }
+    }
+  }
+
+  return clonedWeek;
+};
+
+export const trainingBlockMain = (
   split_sessions: SplitSessionsType,
   muscle_priority_list: MusclePriorityType[],
-  training_week: NewTrainingWeek[],
+  training_week: TrainingDayType[],
   frequency: number
 ) => {
   const { splits, total } = splitLimits(
@@ -270,26 +311,33 @@ const trainingBlockMain = (
 
   const fullBlock: NewTrainingWeek[][] = [];
 
-  let initialWeek = structuredClone(training_week);
+  const initialWeek = structuredClone(training_week);
 
   for (let n = 3 - 1; n >= 0; n--) {
-    const ohboy = removeSplitsFromFinalWeek(
+    const toRemove = removeSplitsFromFinalWeek(
       split_sessions.sessions as OPTSessionsType,
       total[n],
       splits
     );
-
-    const ugh = getPrecedingTrainingWeeks(initialWeek, muscle_priority_list, n);
-    initialWeek = structuredClone(ugh);
-    fullBlock.push(initialWeek);
-
-    console.log(n, ohboy, "OMFG COME ON??");
+    const filteredWeek = filterOutSplitsFromWeek(toRemove, initialWeek);
+    const filledWeek = exerciseDispersion(
+      split_sessions,
+      muscle_priority_list,
+      filteredWeek,
+      n
+    );
+    fullBlock.push(filledWeek);
   }
 
+  const restructuredBlock = fullBlock.map((e, i) => [
+    i,
+    e.map((ee) => [ee.day, ee.sessions[0]?.id, ee.sessions[0]?.exercises]),
+  ]);
+  console.log(restructuredBlock, "OMFG COME ON??");
   return fullBlock;
 };
 
-export const exerciseDispersion = (
+const exerciseDispersion = (
   split_sessions: SplitSessionsType,
   muscle_priority_list: MusclePriorityType[],
   training_week: TrainingDayType[],
@@ -338,11 +386,7 @@ export const exerciseDispersion = (
 
         if (Array.isArray(values)) {
           const findMuscles = values.filter((ea) => ea[0] === muscle);
-          console.log(
-            findMuscles,
-            totalExercises[j],
-            "HMM WHAT GOING ON HERE?"
-          );
+
           if (findMuscles.length + total <= sessionExerciseLimit) {
             totalExercises[j].forEach((ea) => values.push([muscle, ea.id]));
             total = 0;
