@@ -33,6 +33,8 @@ import {
   reorderListByVolumeBreakpoints,
 } from "~/hooks/useTrainingProgram/utils/musclePriorityListHandlers";
 
+
+
 function useProgramConfig() {
   const {
     prioritized_muscle_list,
@@ -45,6 +47,9 @@ function useProgramConfig() {
     training_block,
     handleOnProgramConfigChange,
   } = useTrainingProgramContext();
+
+
+
   const [programConfig, setProgramConfig] = useState<ProgramConfigState>({
     ...INITIAL_STATE,
   });
@@ -53,6 +58,8 @@ function useProgramConfig() {
     mrv_breakpoint,
     mev_breakpoint,
   ]);
+
+
 
   const [sessionsTest, setSessionsTest] = useState<
     { session: string; modifiers: number[] }[]
@@ -70,7 +77,10 @@ function useProgramConfig() {
     legs: [],
   });
 
-  const [testSessions, setTestSessions] = useState<{
+  const [
+    testSessions,
+    setTestSessions
+  ] = useState<{
     push: number;
     pull: number;
     upper: number;
@@ -78,17 +88,19 @@ function useProgramConfig() {
     full: number;
   }>({ push: 0, pull: 0, upper: 0, legs: 0, full: 0 });
 
-  useEffect(() => {
-    setProgramConfig({
-      muscle_priority_list: prioritized_muscle_list,
-      mrv_breakpoint: mrv_breakpoint,
-      mev_breakpoint: mev_breakpoint,
-      training_week: training_week,
-      split_sessions: split_sessions,
-      training_program_params: training_program_params,
-      frequency: frequency,
-      training_block: training_block,
-    });
+
+  useEffect(
+    () => {
+      setProgramConfig({
+        muscle_priority_list: prioritized_muscle_list,
+        mrv_breakpoint: mrv_breakpoint,
+        mev_breakpoint: mev_breakpoint,
+        training_week: training_week,
+        split_sessions: split_sessions,
+        training_program_params: training_program_params,
+        frequency: frequency,
+        training_block: training_block,
+      });
   }, [
     frequency,
     prioritized_muscle_list,
@@ -366,9 +378,6 @@ function useProgramConfig() {
 
   return {
     muscle_priority_list: programConfig.muscle_priority_list,
-    sessionsTest,
-    priorityListTest,
-    avgFrequencies,
     volumeBreakpoints,
     trainingWeek: programConfig.training_week,
     split_sessions: programConfig.split_sessions,
@@ -383,7 +392,6 @@ function useProgramConfig() {
     onToggleBreakpoints,
     onRearrangedWeek,
     onSelectVolumeLandmarkChange,
-    testSessions,
   };
 }
 
@@ -391,9 +399,6 @@ type ProgramConfigType = ReturnType<typeof useProgramConfig>;
 
 const ProgramConfigContext = createContext<ProgramConfigType>({
   muscle_priority_list: INITIAL_STATE.muscle_priority_list,
-  sessionsTest: [],
-  priorityListTest: [],
-  avgFrequencies: { push: [], pull: [], legs: [] },
   volumeBreakpoints: [4, 9],
   trainingWeek: INITIAL_WEEK,
   split_sessions: INITIAL_STATE.split_sessions,
@@ -408,7 +413,6 @@ const ProgramConfigContext = createContext<ProgramConfigType>({
   onToggleBreakpoints: () => null,
   onRearrangedWeek: () => null,
   onSelectVolumeLandmarkChange: () => null,
-  testSessions: { push: 0, pull: 0, upper: 0, legs: 0, full: 0 },
 });
 
 const ProgramConfigProvider = ({ children }: { children: ReactNode }) => {
@@ -426,3 +430,4 @@ const useProgramConfigContext = () => {
 };
 
 export { ProgramConfigProvider, useProgramConfigContext };
+

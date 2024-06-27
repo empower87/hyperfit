@@ -3,7 +3,6 @@ import { Select, SelectLabel } from "~/components/Layout/Select";
 import { MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
 import { getRankColor } from "~/utils/getIndicatorColors";
-import { useProgramConfigContext } from "../../hooks/useProgramConfig";
 import Frequency from "./Frequency";
 
 const MACROCYCLES = [];
@@ -84,18 +83,19 @@ function MuscleItem({
   );
 }
 function PriorityRankingTest() {
-  const { priorityListTest, sessionsTest, avgFrequencies, testSessions } =
-    useProgramConfigContext();
+  // const { priorityListTest, sessionsTest, avgFrequencies, testSessions } =
+  //   useProgramConfigContext();
   return (
     <div className={`flex space-x-1`}>
-      <ul>
-        {priorityListTest.map((each, index) => {
-          return <MuscleItem muscle={each} />;
-        })}
-      </ul>
+      {/* <ul>
+            {priorityListTest.map((each, index) => {
+              return <MuscleItem muscle={each} />;
+            })}
+          </ul> */}
+
       <div className="flex flex-col">
         <div className="flex">
-          <ul className={`flex flex-col text-xs text-white`}>
+          {/* <ul className={`flex flex-col text-xs text-white`}>
             {sessionsTest.map((each) => {
               return (
                 <li className="flex space-x-1">
@@ -117,10 +117,10 @@ function PriorityRankingTest() {
                 </li>
               );
             })}
-          </ul>
+          </ul> */}
 
           <ul className={`flex flex-col text-xs text-white`}>
-            <li className={`flex space-x-1`}>
+            {/* <li className={`flex space-x-1`}>
               <div className={`w-10`}>push</div>
               <div className={`w-6`}>{avgFrequencies.push[0]}</div>
               <div className={`w-6`}>{avgFrequencies.push[1]}</div>
@@ -160,10 +160,11 @@ function PriorityRankingTest() {
               <div className={`w-6 text-red-500`}>
                 {(avgFrequencies.legs[0] + avgFrequencies.legs[1]) / 2}
               </div>
-            </li>
+            </li> */}
           </ul>
         </div>
 
+        {/* 
         <ul className={"space-y-0.5"}>
           {Object.entries(testSessions).map(([key, val]) => {
             const range = avgFrequencies[key as keyof typeof avgFrequencies]
@@ -178,7 +179,7 @@ function PriorityRankingTest() {
               />
             );
           })}
-        </ul>
+        </ul> */}
       </div>
     </div>
   );

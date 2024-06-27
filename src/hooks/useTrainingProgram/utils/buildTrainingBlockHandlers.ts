@@ -122,10 +122,6 @@ type MappedMuscleItem = {
 // TESTING ------------
 // disperse into
 
-const getSessionsForTrainingBlock = () => {
-  //
-};
-
 const splitLimits = (
   split_sessions: SplitSessionsType,
   muscle_priority_list: MusclePriorityType[],
@@ -326,13 +322,14 @@ export const trainingBlockMain = (
       filteredWeek,
       n
     );
-    fullBlock.push(filledWeek);
+    fullBlock.unshift(filledWeek);
   }
 
   const restructuredBlock = fullBlock.map((e, i) => [
     i,
     e.map((ee) => [ee.day, ee.sessions[0]?.id, ee.sessions[0]?.exercises]),
   ]);
+
   console.log(restructuredBlock, "OMFG COME ON??");
   return fullBlock;
 };
