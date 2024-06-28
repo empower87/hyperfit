@@ -25,15 +25,13 @@ import {
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
-import { trainingBlockMain } from "~/hooks/useTrainingProgram/utils/buildTrainingBlockHandlers";
 import { distributeSplitAcrossWeek } from "~/hooks/useTrainingProgram/utils/distributeSplitAcrossTrainingWeek";
 import {
   attachTargetFrequency,
   onReorderUpdateMusclePriorityList,
   reorderListByVolumeBreakpoints,
 } from "~/hooks/useTrainingProgram/utils/musclePriorityListHandlers";
-
-
+import { initializeTrainingBlock } from "~/hooks/useTrainingProgram/utils/trainingBlockHelpers";
 
 function useProgramConfig() {
   const {
@@ -48,8 +46,6 @@ function useProgramConfig() {
     handleOnProgramConfigChange,
   } = useTrainingProgramContext();
 
-
-
   const [programConfig, setProgramConfig] = useState<ProgramConfigState>({
     ...INITIAL_STATE,
   });
@@ -58,8 +54,6 @@ function useProgramConfig() {
     mrv_breakpoint,
     mev_breakpoint,
   ]);
-
-
 
   const [sessionsTest, setSessionsTest] = useState<
     { session: string; modifiers: number[] }[]
@@ -77,10 +71,7 @@ function useProgramConfig() {
     legs: [],
   });
 
-  const [
-    testSessions,
-    setTestSessions
-  ] = useState<{
+  const [testSessions, setTestSessions] = useState<{
     push: number;
     pull: number;
     upper: number;
@@ -88,19 +79,17 @@ function useProgramConfig() {
     full: number;
   }>({ push: 0, pull: 0, upper: 0, legs: 0, full: 0 });
 
-
-  useEffect(
-    () => {
-      setProgramConfig({
-        muscle_priority_list: prioritized_muscle_list,
-        mrv_breakpoint: mrv_breakpoint,
-        mev_breakpoint: mev_breakpoint,
-        training_week: training_week,
-        split_sessions: split_sessions,
-        training_program_params: training_program_params,
-        frequency: frequency,
-        training_block: training_block,
-      });
+  useEffect(() => {
+    setProgramConfig({
+      muscle_priority_list: prioritized_muscle_list,
+      mrv_breakpoint: mrv_breakpoint,
+      mev_breakpoint: mev_breakpoint,
+      training_week: training_week,
+      split_sessions: split_sessions,
+      training_program_params: training_program_params,
+      frequency: frequency,
+      training_block: training_block,
+    });
   }, [
     frequency,
     prioritized_muscle_list,
@@ -159,11 +148,12 @@ function useProgramConfig() {
         total_sessions,
         new_split_sessions
       );
-      const TESTIES = trainingBlockMain(
+      const TESTIES = initializeTrainingBlock(
         new_split_sessions,
         reordered_items,
         new_training_week,
-        total
+        total,
+        mesocycles
       );
 
       console.log(reordered_items, "Checking the muscle priority list");
@@ -430,4 +420,3 @@ const useProgramConfigContext = () => {
 };
 
 export { ProgramConfigProvider, useProgramConfigContext };
-

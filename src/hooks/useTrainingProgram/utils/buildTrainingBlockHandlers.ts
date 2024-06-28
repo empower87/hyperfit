@@ -293,7 +293,7 @@ const filterOutSplitsFromWeek = (
   return clonedWeek;
 };
 
-export const trainingBlockMain = (
+const trainingBlockMain = (
   split_sessions: SplitSessionsType,
   muscle_priority_list: MusclePriorityType[],
   training_week: TrainingDayType[],
