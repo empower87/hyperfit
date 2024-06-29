@@ -33,23 +33,21 @@ export const initializeTrainingBlock = (
   ).reverse();
 
   const splits = splitLimits(muscle_priority_list);
+  const splitSessions = structuredClone(split_sessions);
 
   const training_block: NewTrainingWeek[][] = [];
-
-  for (let n = 3 - 1; n >= 0; n--) {
-    let toRemove: string[] = [];
-    if (n !== mesocycles - 1) {
-      toRemove = removeSplitsFromFinalWeek(
-        split_sessions.sessions as OPTSessionsType,
-        totalWeekFrequency,
-        n,
-        splits
-      );
-    }
+  const lastIndex = mesocycles - 1;
+  for (let n = lastIndex; n >= 0; n--) {
+    const toRemove = removeSplitsFromFinalWeek(
+      splitSessions.sessions as OPTSessionsType,
+      totalWeekFrequency,
+      n,
+      splits
+    );
 
     const filteredWeek = filterOutSplitsFromWeek(toRemove, training_week);
     const filledWeek = exerciseDispersion(
-      split_sessions,
+      splitSessions,
       muscle_priority_list,
       filteredWeek,
       n
@@ -57,12 +55,17 @@ export const initializeTrainingBlock = (
     training_block.unshift(filledWeek);
   }
 
+  // --- for console.log testing purposes ---
   const restructuredBlock = training_block.map((e, i) => [
-    i,
-    e.map((ee) => [ee.day, ee.sessions[0]?.id, ee.sessions[0]?.exercises]),
+    [splits.push[i], splits.pull[i], splits.legs[i]],
+    e.map((ee) =>
+      ee.sessions[0]?.exercises.length
+        ? [ee.day, ee.sessions[0]?.id, ee.sessions[0]?.exercises]
+        : []
+    ),
   ]);
-
   console.log(restructuredBlock, totalWeekFrequency, "OMFG COME ON??");
+
   return training_block;
 };
 
@@ -96,8 +99,6 @@ const splitLimits = (muscle_priority_list: MusclePriorityType[]) => {
     }
   }
 
-  console.log("PUSH: ", push, "PULL: ", pull, "LOWER: ", legs);
-
   return {
     push: push,
     pull: pull,
@@ -111,32 +112,29 @@ const removeSplitsFromFinalWeek = (
   mesocycleIndex: number,
   split_maxes: { push: number[]; pull: number[]; legs: number[] }
 ) => {
-  let sessions = {
+  const priorityRemoval = ["full", "lower", "upper", "push", "pull"];
+
+  const maxes = {
+    push: split_maxes.push[mesocycleIndex],
+    pull: split_maxes.pull[mesocycleIndex],
+    legs: split_maxes.legs[mesocycleIndex],
+  };
+
+  const sessions = {
     upper: split_sessions.upper,
     lower: split_sessions.lower,
     push: split_sessions.push,
     pull: split_sessions.pull,
     full: split_sessions.full,
   };
-  const priorityRemoval = ["full", "lower", "upper", "push", "pull"];
 
-  let total: number = Object.values(sessions).reduce(
-    (acc, cur) => acc + cur,
-    0
-  );
   const selectedFrequency = frequency_progression[mesocycleIndex];
-
-  let push = split_maxes.push[mesocycleIndex];
-  let pull = split_maxes.pull[mesocycleIndex];
-  let legs = split_maxes.legs[mesocycleIndex];
+  const total = Object.values(sessions).reduce((acc, cur) => acc + cur, 0);
 
   let tracker = 0;
-  let removedSplits = [];
+  const removedSplits = [];
 
-  while (
-    Object.values(sessions).reduce((acc, cur) => acc + cur, 0) >=
-    selectedFrequency
-  ) {
+  while (total >= selectedFrequency) {
     const key = priorityRemoval[tracker] as keyof typeof sessions;
     const canSub = sessions[key] - 1 >= 0;
 
@@ -145,49 +143,31 @@ const removeSplitsFromFinalWeek = (
 
       if (sessions[key] - 1 === 0) tracker = tracker + 1;
 
-      let pushTotal = sessions.push + sessions.upper + sessions.full;
-      let pullTotal = sessions.pull + sessions.upper + sessions.full;
-      let legsTotal = sessions.lower + sessions.full;
+      const pushTotal = sessions.push + sessions.upper + sessions.full;
+      const pullTotal = sessions.pull + sessions.upper + sessions.full;
+      const legsTotal = sessions.lower + sessions.full;
 
       let revert = false;
-      if (pushTotal < push) {
+      if (pushTotal < maxes.push) {
         revert = true;
       }
-      if (pullTotal < pull) {
+      if (pullTotal < maxes.pull) {
         revert = true;
       }
-      if (legsTotal < legs) {
+      if (legsTotal < maxes.legs) {
         revert = true;
       }
-      console.log(
-        "frequencyProgression",
-        frequency_progression,
-        "mesocycleIndex: ",
-        mesocycleIndex,
-        "sessions: ",
-        sessions,
-        "pushMax: ",
-        push,
-        "pullMax: ",
-        pull,
-        "legsMax: ",
-        legs,
-        "push: ",
-        pushTotal,
-        "pull: ",
-        pullTotal,
-        "legs: ",
-        legsTotal,
-        "revert: ",
-        revert
-      );
+
       if (revert) {
-        sessions[key] = sessions[key] + 1;
-      } else removedSplits.push(key);
+        sessions[key]++;
+        tracker++;
+      } else {
+        removedSplits.push(key);
+      }
     } else {
-      if (tracker === priorityRemoval.length) tracker = 0;
       tracker++;
     }
+    if (tracker === priorityRemoval.length) break;
   }
 
   return removedSplits;

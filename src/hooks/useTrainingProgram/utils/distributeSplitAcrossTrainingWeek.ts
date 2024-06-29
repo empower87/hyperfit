@@ -6,6 +6,18 @@ import {
   TrainingDayType,
 } from "../reducer/trainingProgramReducer";
 
+export const createTrainingWeek = (
+  sessions: [number, number],
+  split_sessions: SplitSessionsType
+) => {
+  const week_sessions = sessions[0];
+  const off_days = 7 - week_sessions;
+
+  const counterMap = new Map<string, number>(
+    Object.entries(split_sessions.sessions).map(([key, val]) => [key, val])
+  );
+};
+
 export const distributeSplitAcrossWeek = (
   sessions: [number, number],
   split_sessions: SplitSessionsType
@@ -34,13 +46,29 @@ const getOffDayIndices = (number: number) => {
     case 2:
       return [0, 4];
     case 3:
-      return [0, 4, 6];
+      return [0, 3, 5];
     case 4:
       return [0, 2, 4, 6];
     default:
       return [];
   }
 };
+// const getOffDayIndices = (number: number) => {
+//   switch (number) {
+//     case 0:
+//       return [];
+//     case 1:
+//       return [0];
+//     case 2:
+//       return [0, 4];
+//     case 3:
+//       return [0, 4, 6];
+//     case 4:
+//       return [0, 2, 4, 6];
+//     default:
+//       return [];
+//   }
+// };
 
 const distributeSplitHandler = (
   week: TrainingDayType[],
