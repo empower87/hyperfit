@@ -43,6 +43,7 @@ function useProgramConfig() {
     training_program_params,
     frequency,
     training_block,
+    training_blocks,
     handleOnProgramConfigChange,
   } = useTrainingProgramContext();
 
@@ -89,6 +90,7 @@ function useProgramConfig() {
       training_program_params: training_program_params,
       frequency: frequency,
       training_block: training_block,
+      training_blocks: training_blocks,
     });
   }, [
     frequency,
@@ -99,6 +101,7 @@ function useProgramConfig() {
     split_sessions,
     training_program_params,
     training_block,
+    training_blocks,
   ]);
 
   const onChangeHandler = useCallback(

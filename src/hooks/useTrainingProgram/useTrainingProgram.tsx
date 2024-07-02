@@ -23,6 +23,7 @@ type TrainingProgramType = ReturnType<typeof useTrainingProgram>;
 const TrainingProgramContext = createContext<TrainingProgramType>({
   training_week: INITIAL_STATE.training_week,
   training_block: INITIAL_STATE.training_block,
+  training_blocks: INITIAL_STATE.training_blocks,
   split_sessions: INITIAL_STATE.split_sessions,
   frequency: INITIAL_STATE.frequency,
   training_program_params: INITIAL_STATE.training_program_params,
@@ -236,6 +237,7 @@ function useTrainingProgram() {
   return {
     training_week: state.training_week,
     training_block: state.training_block,
+    training_blocks: state.training_blocks,
     split_sessions: state.split_sessions,
     frequency: state.frequency,
     training_program_params: state.training_program_params,
@@ -257,5 +259,6 @@ function useTrainingProgram() {
 export {
   TrainingProgramProvider,
   useTrainingProgram,
-  useTrainingProgramContext,
+  useTrainingProgramContext
 };
+

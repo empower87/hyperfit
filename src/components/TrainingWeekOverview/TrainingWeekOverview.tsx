@@ -26,7 +26,6 @@ import {
   ExerciseType,
   SessionSplitType,
   SplitType,
-  TrainingDayType,
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
 import { cn } from "~/lib/clsx";
@@ -44,6 +43,7 @@ import {
 import useExerciseSelection, {
   DraggableExercises,
 } from "./components/hooks/useExerciseSelection";
+import useTrainingWeek from "./components/hooks/useTrainingWeek";
 import { getSupersetMap } from "./components/utils/exerciseSelectUtils";
 
 type PromptProps = {
@@ -305,8 +305,10 @@ function DaySessionItem({
   const mesocycle_progression = exercise.mesocycle_progression;
   // const sets = mesocycle_progression[selectedMicrocycleIndex].sets;
   const sets = setsOverWeek[selectedMicrocycleIndex];
-  const reps = mesocycle_progression[selectedMicrocycleIndex].reps;
-  const lbs = mesocycle_progression[selectedMicrocycleIndex].weight;
+  // const reps = mesocycle_progression[selectedMicrocycleIndex].reps;
+  const reps = 10;
+  // const lbs = mesocycle_progression[selectedMicrocycleIndex].weight;
+  const lbs = 100;
   const modality = exercise.trainingModality;
 
   const onItemClick = useCallback((exerciseOne: ExerciseType) => {
@@ -438,241 +440,8 @@ function DaySessionItem({
     </li>
   );
 }
-// function DaySessionItemHeaders() {
-//   return (
-//     <div className="flex text-white">
-//       <ItemCell
-//         className={`${BORDER_COLOR_M5} ${BG_COLOR_M5} ${ITEM_CELL_WIDTHS.index} text-xxxs`}
-//       >
-//         {" "}
-//       </ItemCell>
-//       <div className="flex w-full overflow-hidden rounded-sm">
-//         <ItemCell
-//           className={`${BORDER_COLOR_M5} ${BG_COLOR_M6} ${ITEM_CELL_WIDTHS.sets} justify-center text-xxxs`}
-//         >
-//           Sets
-//         </ItemCell>
-//         <ItemCell
-//           className={`${BORDER_COLOR_M5} ${BG_COLOR_M6} ${ITEM_CELL_WIDTHS.reps} justify-center text-xxxs`}
-//         >
-//           Reps
-//         </ItemCell>
-//         <ItemCell
-//           className={`${BORDER_COLOR_M5} ${BG_COLOR_M6} ${ITEM_CELL_WIDTHS.lbs} justify-center text-xxxs`}
-//         >
-//           Lbs
-//         </ItemCell>
-//         <div className="flex flex-col">
-//           <ItemCell
-//             className={`${BORDER_COLOR_M5} ${BG_COLOR_M6} ${ITEM_CELL_WIDTHS.exercise} text-xxxs`}
-//           >
-//             Exercise
-//           </ItemCell>
-//         </div>
-//         <ItemCell
-//           className={`${BORDER_COLOR_M6} ${BG_COLOR_M6} ${ITEM_CELL_WIDTHS.actions} rounded-r-sm text-xxxs`}
-//         >
-//           {" "}
-//         </ItemCell>
-//       </div>
-//     </div>
-//   );
-// }
 
-// type DaySessionItemProps = {
-//   index: number;
-//   exercise: ExerciseType;
-//   sessionId: string;
-//   exercises: ExerciseType[];
-//   selectedMicrocycleIndex: number;
-//   selectedMesocycleIndex: number;
-//   onSupersetUpdate: (
-//     _exercise: ExerciseType,
-//     exercise: ExerciseType,
-//     sessionId: string
-//   ) => void;
-// };
-
-// const ITEM_CELL_WIDTHS = {
-//   index: "w-4",
-//   sets: "w-6",
-//   reps: "w-6",
-//   lbs: "w-6",
-//   exercise: "w-36",
-//   actions: "w-4",
-//   modality: "w-14",
-// };
-
-// function DaySessionItem({
-//   index,
-//   exercise,
-//   sessionId,
-//   exercises,
-//   selectedMicrocycleIndex,
-//   selectedMesocycleIndex,
-//   onSupersetUpdate,
-// }: DaySessionItemProps) {
-//   const [bgColor, setBgColor] = useState<string>("");
-//   const [isOpen, setIsOpen] = useState<boolean>(false);
-//   const supersets = getSupersetMap(exercises);
-
-//   const allExercises = getGroupList(exercise.muscle).map((each) => each.name);
-
-//   const [selectedExerciseName, setSelectedExerciseName] = useState<string>(
-//     exercise.exercise
-//   );
-
-//   const setProgressionSchema =
-//     exercise.setProgressionSchema[selectedMesocycleIndex];
-//   const setsOverWeek = getSetProgressionForExercise(
-//     setProgressionSchema,
-//     selectedMesocycleIndex,
-//     exercise,
-//     4,
-//     2,
-//     0
-//   );
-
-//   const mesocycle_progression = exercise.mesocycle_progression;
-//   // const sets = mesocycle_progression[selectedMicrocycleIndex].sets;
-//   const sets = setsOverWeek[selectedMicrocycleIndex];
-//   const reps = mesocycle_progression[selectedMicrocycleIndex].reps;
-//   const lbs = mesocycle_progression[selectedMicrocycleIndex].weight;
-//   const modality = exercise.trainingModality;
-
-//   const onItemClick = useCallback((exerciseOne: ExerciseType) => {
-//     // sorts supersetted exercises by place in list
-//     const indexOne = exercises.findIndex((each) => each.id === exerciseOne.id);
-//     const indexTwo = exercises.findIndex((each) => each.id === exercise.id);
-
-//     if (indexOne === indexTwo) return;
-
-//     let one = exerciseOne;
-//     let two = exercise;
-//     if (indexOne > indexTwo) {
-//       one = exercise;
-//       two = exerciseOne;
-//     }
-//     onSupersetUpdate(one, two, sessionId);
-//   }, []);
-
-//   const onDropdownClick = () => {
-//     setIsOpen(true);
-//   };
-
-//   const onDropdownClose = () => {
-//     setIsOpen(false);
-//   };
-
-//   const [isModalOpen, setIsModalOpen] = useState(false);
-//   const onModalOpen = () => {
-//     setIsModalOpen(true);
-//     onDropdownClose();
-//   };
-//   const onModalClose = () => {
-//     setIsModalOpen(false);
-//   };
-
-//   useEffect(() => {
-//     const supersettedColor = supersets?.get(exercise.id);
-//     let bgColor = "";
-//     if (supersettedColor) {
-//       bgColor = supersettedColor;
-//     } else {
-//       const bgColorByRank = getRankColor(exercise.rank);
-//       bgColor = bgColorByRank.bg;
-//     }
-//     setBgColor(bgColor);
-//   }, [supersets, exercise]);
-
-//   const BORDER_COLOR = exercise.supersetWith ? "border-white" : BORDER_COLOR_M7;
-//   return (
-//     <li className={cn(`mb-0.5 flex text-white`)}>
-//       <ItemCell
-//         className={cn(
-//           `${BORDER_COLOR} ${ITEM_CELL_WIDTHS.index} justify-center`
-//         )}
-//       >
-//         {index}
-//       </ItemCell>
-
-//       <div
-//         className={cn(
-//           `${BORDER_COLOR} flex overflow-hidden rounded border-y-2 ${bgColor}`
-//         )}
-//       >
-//         <div className="flex flex-col">
-//           <div className={cn(`${BORDER_COLOR} flex border-b`)}>
-//             <ItemCell
-//               className={`${BORDER_COLOR} ${ITEM_CELL_WIDTHS.sets} justify-center border-r`}
-//             >
-//               {sets}
-//             </ItemCell>
-//             <ItemCell
-//               className={`${BORDER_COLOR} ${ITEM_CELL_WIDTHS.reps} justify-center border-r`}
-//             >
-//               {reps}
-//             </ItemCell>
-//             <ItemCell
-//               className={`${BORDER_COLOR} ${ITEM_CELL_WIDTHS.lbs} justify-center`}
-//             >
-//               {lbs}
-//             </ItemCell>
-//           </div>
-//           <ItemCell className={`${BORDER_COLOR}`}>
-//             <SelectDropdown
-//               options={[...EXERCISE_TRAINING_MODALITIES]}
-//               className={`${ITEM_CELL_WIDTHS.modality}`}
-//               selectedOption={modality}
-//             />
-//           </ItemCell>
-//         </div>
-
-//         <div className=" flex flex-col text-xxs">
-//           <ItemCell className={`${BORDER_COLOR} ${ITEM_CELL_WIDTHS.exercise}`}>
-//             <SelectDropdown
-//               className={`w-full truncate`}
-//               options={allExercises}
-//               selectedOption={selectedExerciseName}
-//             />
-//           </ItemCell>
-//           <ItemCell
-//             className={`${BORDER_COLOR} ${ITEM_CELL_WIDTHS.exercise} truncate border-t indent-1 text-slate-300`}
-//           >
-//             {exercise.muscle}
-//           </ItemCell>
-//         </div>
-
-//         <ItemCell
-//           className={`${BORDER_COLOR} ${ITEM_CELL_WIDTHS.actions} relative`}
-//         >
-//           <DropdownButton onDropdownClick={onDropdownClick} />
-//           {isOpen ? (
-//             <Dropdown onClose={onDropdownClose}>
-//               <Dropdown.Item onClick={onModalOpen}>
-//                 Create Superset
-//               </Dropdown.Item>
-//             </Dropdown>
-//           ) : null}
-//         </ItemCell>
-
-//         {isModalOpen ? (
-//           <Modal isOpen={isModalOpen} onClose={onModalClose}>
-//             <DropdownListModal
-//               items={exercises}
-//               supersets={supersets}
-//               selectedId={exercise.id}
-//               onClose={onDropdownClose}
-//               onItemClick={onItemClick}
-//             />
-//           </Modal>
-//         ) : null}
-//       </div>
-//     </li>
-//   );
-// }
-
-type DroppableDayProps = {
+type DroppableSessionProps = {
   split: SessionSplitType;
   droppableId: string;
   mesocycleIndex: number;
@@ -685,14 +454,14 @@ type DroppableDayProps = {
   ) => void;
 };
 
-function DroppableDay({
+function DroppableSession({
   split,
   droppableId,
   mesocycleIndex,
   exercises,
   selectedMicrocycleIndex,
   onSupersetUpdate,
-}: DroppableDayProps) {
+}: DroppableSessionProps) {
   const { sessionDurationCalculator, durationTimeConstants } =
     useSessionDurationVariablesContext();
 
@@ -842,7 +611,7 @@ function DayLayout({
             >
               {sessions.map((each, index) => {
                 return (
-                  <DroppableDay
+                  <DroppableSession
                     key={`${each.id}_${index}_${mesocycleIndex}`}
                     split={each.split}
                     mesocycleIndex={mesocycleIndex}
@@ -862,10 +631,27 @@ function DayLayout({
   );
 }
 
+// changes occur in muscle_list and training_week
+
 export default function TrainingWeekOverview() {
-  const { training_block, training_program_params } =
-    useTrainingProgramContext();
+  const {
+    training_block,
+    training_blocks,
+    training_program_params,
+    prioritized_muscle_list,
+  } = useTrainingProgramContext();
   const { microcycles, mesocycles } = training_program_params;
+
+  const [selectedMesocycleIndex, setSelectedMesocycleIndex] = useState<number>(
+    mesocycles - 1
+  );
+
+  const { hydratedTrainingBlock } = useTrainingWeek(
+    training_blocks,
+    prioritized_muscle_list,
+    selectedMesocycleIndex
+  );
+
   const mesocycleTitles = Array.from(
     Array(mesocycles),
     (e, i) => `Mesocycle ${i + 1}`
@@ -875,10 +661,16 @@ export default function TrainingWeekOverview() {
     (e, i) => `Week ${i + 1}`
   );
 
+  useEffect(() => {
+    console.log(
+      training_blocks,
+      hydratedTrainingBlock,
+      "IN TRAINING WEEK OVERVIEW"
+    );
+  }, [training_blocks, hydratedTrainingBlock]);
+
   const [selectedMicrocycleIndex, setSelectedMicrocycleIndex] =
-    useState<number>(0);
-  const [selectedMesocycleIndex, setSelectedMesocycleIndex] =
-    useState<number>(0);
+    useState<number>(microcycles - 1);
 
   const onClickHandler = (value: string) => {
     const type = value.split(" ");
@@ -905,7 +697,7 @@ export default function TrainingWeekOverview() {
       <WeekSessions
         selectedMesocycleIndex={selectedMesocycleIndex}
         selectedMicrocycleIndex={selectedMicrocycleIndex}
-        training_week={training_block[selectedMesocycleIndex]}
+        training_week={hydratedTrainingBlock[selectedMesocycleIndex]}
       />
     </div>
   );
@@ -914,7 +706,7 @@ export default function TrainingWeekOverview() {
 type WeekSessionsProps = {
   selectedMesocycleIndex: number;
   selectedMicrocycleIndex: number;
-  training_week: TrainingDayType[];
+  training_week: DraggableExercises[];
 };
 
 function WeekSessions({
@@ -947,10 +739,10 @@ function WeekSessions({
 
       <ul className="flex space-x-1 overflow-x-auto">
         <DragDropContext onDragEnd={onDragEnd}>
-          {draggableExercises?.map((each, index) => {
+          {training_week?.map((each, index) => {
             // NOTE: to not display days w/o any sessions
             const hasSessions = each.sessions.find((ea) => ea.exercises.length);
-            if (!hasSessions) return null;
+            // if (!hasSessions) return null;
             return (
               <DayLayout
                 key={`${each.day}_${selectedMesocycleIndex}_draggableExercisesObject_${index}`}

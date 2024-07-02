@@ -12,7 +12,7 @@ import {
   findOptimalSplit,
 } from "../utils/exerciseSelectUtils";
 
-type DraggableSessionType = Pick<SessionType, "id" | "split"> & {
+export type DraggableSessionType = Pick<SessionType, "id" | "split"> & {
   exercises: ExerciseType[];
 };
 export type DraggableExercises = Pick<
@@ -23,7 +23,7 @@ export type DraggableExercises = Pick<
 };
 
 export default function useExerciseSelection(
-  training_week: TrainingDayType[],
+  training_week: DraggableExercises[],
   mesocycle_index: number
 ) {
   const [draggableExercises, setDraggableExercises] = useState<
@@ -38,18 +38,19 @@ export default function useExerciseSelection(
 
   useEffect(() => {
     console.log(training_week, "OK LETS CHECK OUT THIS");
-    const cloned_week = structuredClone(training_week);
-    const draggableExercises: DraggableExercises[] = cloned_week?.map(
-      (each) => {
-        const sessions = each.sessions.map((e, i) => ({
-          ...e,
-          id: `${each.day}_${i}_${mesocycle_index}`,
-          exercises: e.exercises.flat(),
-        }));
-        return { ...each, sessions: sessions };
-      }
-    );
-    setDraggableExercises(draggableExercises);
+
+    // const cloned_week = structuredClone(training_week);
+    // const draggableExercises: DraggableExercises[] = training_week?.map(
+    //   (each) => {
+    //     const sessions = each.sessions.map((e, i) => ({
+    //       ...e,
+    //       id: `${each.day}_${i}_${mesocycle_index}`,
+    //       exercises: e.exercises.flat(),
+    //     }));
+    //     return { ...each, sessions: sessions };
+    //   }
+    // );
+    setDraggableExercises(training_week);
   }, [training_week]);
 
   const onSplitChange = useCallback(
@@ -275,42 +276,6 @@ export default function useExerciseSelection(
         exerciseIndex: innerSourceId,
       },
     });
-
-    // const items = structuredClone(draggableExercises);
-
-    // const sourceExercise =
-    //   items[outerSourceId].sessions[outerSourceSessionId].exercises[
-    //     innerSourceId
-    //   ];
-    // const targetSplit =
-    //   items[outerDestinationId].sessions[outerDestinationSessionId];
-    // const canAdd = canAddExerciseToSplit(
-    //   sourceExercise.muscle,
-    //   targetSplit.split
-    // );
-
-    // if (!canAdd) {
-    //   const splitOptions = findOptimalSplit(
-    //     sourceExercise.muscle,
-    //     targetSplit.exercises
-    //   );
-
-    //   setModalOptions({
-    //     id: targetSplit.id,
-    //     options: splitOptions,
-    //     isOpen: true,
-    //   });
-    // }
-
-    // const [removed] = items[outerSourceId].sessions[
-    //   outerSourceSessionId
-    // ].exercises.splice(innerSourceId, 1);
-
-    // items[outerDestinationId].sessions[
-    //   outerDestinationSessionId
-    // ].exercises.splice(outerDestinationExerciseIndex, 0, removed);
-
-    // setDraggableExercises(items);
   }, []);
 
   return {

@@ -9,6 +9,10 @@ import { getSplitFromWeights } from "./getSplitFromPriorityWeighting";
 
 import { distributeSplitAcrossWeek } from "../utils/distributeSplitAcrossTrainingWeek";
 import {
+  NewTrainingWeek,
+  initializeTrainingBlock,
+} from "../utils/trainingBlockHelpers";
+import {
   distributeSessionsIntoSplits,
   getFrequencyMaxes,
 } from "./distributeSessionsIntoSplits";
@@ -303,9 +307,6 @@ export type SetProgressionType =
 export type ExerciseTrainingModality =
   (typeof EXERCISE_TRAINING_MODALITIES)[number];
 
-type ExerciseProgression = {
-  mesocycles: [[0, 2, "off"], [1, 2, "1_upper"], [1, 2, "1_upper"]];
-};
 export type ExerciseTypeT = {
   id: string;
   name: string;
@@ -392,6 +393,7 @@ export type State = {
   muscle_priority_list: MusclePriorityType[];
   training_week: TrainingDayType[];
   training_block: TrainingDayType[][];
+  training_blocks: NewTrainingWeek[][];
   split_sessions: SplitSessionsType;
   mrv_breakpoint: number;
   mev_breakpoint: number;
@@ -542,6 +544,7 @@ export const INITIAL_STATE: State = {
   muscle_priority_list: [...MUSCLE_PRIORITY_LIST],
   training_week: [...INITIAL_WEEK],
   training_block: [],
+  training_blocks: [],
   split_sessions: { ...INITIAL_SPLIT_SESSIONS },
   mrv_breakpoint: INITIAL_MRV_BREAKPOINT,
   mev_breakpoint: INITIAL_MEV_BREAKPOINT,
@@ -624,6 +627,14 @@ export default function trainingProgramReducer(state: State, action: Action) {
         distributedAcrossWeek,
         mesocycles
       );
+
+      const training_blocks = initializeTrainingBlock(
+        sessions,
+        finalizedMuscleList,
+        distributedAcrossWeek,
+        freqPayloadTotal,
+        mesocycles
+      );
       return {
         ...state,
         frequency: frequencyPayload,
@@ -631,6 +642,7 @@ export default function trainingProgramReducer(state: State, action: Action) {
         split_sessions: sessions,
         training_week: distributedAcrossWeek,
         training_block: distributedAcrossMesocycles,
+        training_blocks: training_blocks,
       };
     case "UPDATE_FREQUENCY":
       const new_freq = action.payload.frequency;
