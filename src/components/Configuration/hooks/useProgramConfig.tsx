@@ -25,13 +25,12 @@ import {
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
-import { distributeSplitAcrossWeek } from "~/hooks/useTrainingProgram/utils/distributeSplitAcrossTrainingWeek";
 import {
   attachTargetFrequency,
-  onReorderUpdateMusclePriorityList,
   reorderListByVolumeBreakpoints,
 } from "~/hooks/useTrainingProgram/utils/musclePriorityListHandlers";
-import { initializeTrainingBlock } from "~/hooks/useTrainingProgram/utils/trainingBlockHelpers";
+import { distributeSplitAcrossWeek } from "~/hooks/useTrainingProgram/utils/training_block/distributeSplitAcrossTrainingWeek";
+import { initializeTrainingBlock } from "~/hooks/useTrainingProgram/utils/training_block/trainingBlockHelpers";
 
 function useProgramConfig() {
   const {
@@ -43,7 +42,6 @@ function useProgramConfig() {
     training_program_params,
     frequency,
     training_block,
-    training_blocks,
     handleOnProgramConfigChange,
   } = useTrainingProgramContext();
 
@@ -56,30 +54,6 @@ function useProgramConfig() {
     mev_breakpoint,
   ]);
 
-  const [sessionsTest, setSessionsTest] = useState<
-    { session: string; modifiers: number[] }[]
-  >([]);
-  const [priorityListTest, setPriorityListTest] = useState<
-    { muscle: MusclePriorityType; index: number; modifiers: number[] }[]
-  >([]);
-  const [avgFrequencies, setAvgFrequencies] = useState<{
-    push: number[];
-    pull: number[];
-    legs: number[];
-  }>({
-    push: [],
-    pull: [],
-    legs: [],
-  });
-
-  const [testSessions, setTestSessions] = useState<{
-    push: number;
-    pull: number;
-    upper: number;
-    legs: number;
-    full: number;
-  }>({ push: 0, pull: 0, upper: 0, legs: 0, full: 0 });
-
   useEffect(() => {
     setProgramConfig({
       muscle_priority_list: prioritized_muscle_list,
@@ -90,7 +64,6 @@ function useProgramConfig() {
       training_program_params: training_program_params,
       frequency: frequency,
       training_block: training_block,
-      training_blocks: training_blocks,
     });
   }, [
     frequency,
@@ -101,7 +74,6 @@ function useProgramConfig() {
     split_sessions,
     training_program_params,
     training_block,
-    training_blocks,
   ]);
 
   const onChangeHandler = useCallback(
@@ -129,14 +101,9 @@ function useProgramConfig() {
             }, [])
           : undefined;
 
-      const freq_list = attachTargetFrequency(
+      const reordered_items = attachTargetFrequency(
         muscle_priority_list,
         total,
-        volumeBreakpoints
-      );
-
-      const reordered_items = onReorderUpdateMusclePriorityList(
-        freq_list,
         volumeBreakpoints
       );
 
@@ -151,7 +118,8 @@ function useProgramConfig() {
         total_sessions,
         new_split_sessions
       );
-      const TESTIES = initializeTrainingBlock(
+
+      const new_training_block = initializeTrainingBlock(
         new_split_sessions,
         reordered_items,
         new_training_week,
@@ -165,6 +133,7 @@ function useProgramConfig() {
         frequency: total_sessions,
         split_sessions: new_split_sessions,
         training_week: new_training_week,
+        training_block: new_training_block,
         muscle_priority_list: reordered_items,
       }));
     },
@@ -188,42 +157,6 @@ function useProgramConfig() {
     },
     [programConfig, onChangeHandler]
   );
-
-  // 2full -
-  //                    back ---6upper
-  //                    back ---6upper
-  //                    delts_side ---5upper
-  //                    delts_side ---5upper
-  //                    biceps ---5upper
-
-  // 3upper -
-  //        back
-  //        back
-  //        delts_side
-  //        delts_side
-  //        delts_rear
-  //        traps
-  //        chest
-  //        chest
-
-  // 5upper -
-  //        back
-  //        back
-  //  DELTS_SIDE ---2full
-  //  DELTS_SIDE ---2full
-  //        triceps
-  //        delts_rear
-  //        traps
-  //  BICEPS ---2full
-
-  // 6upper -
-  //  BACK ---2full
-  //  BACK ---2full
-  //        delts_side
-  //        delts_side
-  //        triceps
-  //        forearms
-  //        biceps
 
   const onRearrangedWeek = useCallback(
     (rearranged_week: TrainingDayType[]) => {
@@ -302,11 +235,12 @@ function useProgramConfig() {
       setVolumeBreakpoints(new_breakpoints);
 
       const items = [...programConfig.muscle_priority_list];
-      const reordered_items = onReorderUpdateMusclePriorityList(
+
+      const reordered_items = attachTargetFrequency(
         items,
+        programConfig.frequency[0] + programConfig.frequency[1],
         new_breakpoints
       );
-
       setProgramConfig((prev) => ({
         ...prev,
         muscle_priority_list: reordered_items,
@@ -339,11 +273,11 @@ function useProgramConfig() {
       setVolumeBreakpoints(new_breakpoints);
       const items = [...programConfig.muscle_priority_list];
 
-      const reordered_items = onReorderUpdateMusclePriorityList(
+      const reordered_items = attachTargetFrequency(
         items,
+        programConfig.frequency[0] + programConfig.frequency[1],
         new_breakpoints
       );
-
       setProgramConfig((prev) => ({
         ...prev,
         muscle_priority_list: reordered_items,

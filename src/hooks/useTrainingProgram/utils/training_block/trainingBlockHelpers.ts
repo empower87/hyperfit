@@ -8,9 +8,9 @@ import {
   SplitSessionsType,
   SplitType,
   TrainingDayType,
-} from "../reducer/trainingProgramReducer";
+} from "../../reducer/trainingProgramReducer";
 
-type NewTrainingWeek = {
+export type NewTrainingWeek = {
   day: DayType;
   isTrainingDay: boolean;
   sessions: {
@@ -38,7 +38,7 @@ export const initializeTrainingBlock = (
   const training_block: NewTrainingWeek[][] = [];
   const lastIndex = mesocycles - 1;
   for (let n = lastIndex; n >= 0; n--) {
-    const toRemove = removeSplitsFromFinalWeek(
+    const toRemove = removeSplitsByMesocycle(
       splitSessions.sessions as OPTSessionsType,
       totalWeekFrequency,
       n,
@@ -106,7 +106,7 @@ const splitLimits = (muscle_priority_list: MusclePriorityType[]) => {
   };
 };
 
-const removeSplitsFromFinalWeek = (
+const removeSplitsByMesocycle = (
   split_sessions: OPTSessionsType,
   frequency_progression: number[],
   mesocycleIndex: number,

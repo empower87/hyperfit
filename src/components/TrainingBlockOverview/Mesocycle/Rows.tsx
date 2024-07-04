@@ -1,9 +1,7 @@
 import { ReactNode } from "react";
+import { DraggableExercises } from "~/components/TrainingWeekOverview/components/hooks/useExerciseSelection";
 import { BG_COLOR_M4, BG_COLOR_M6, BG_COLOR_M7 } from "~/constants/themes";
-import {
-  ExerciseType,
-  TrainingDayType,
-} from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
+import { ExerciseType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
 import { cn } from "~/lib/clsx";
 import { getRankColor } from "~/utils/getIndicatorColors";
@@ -15,7 +13,7 @@ type DataRowProps = {
   index: number;
 };
 function DataRow({ exercise, index }: DataRowProps) {
-  const details = exercise.mesocycle_progression.map((each) => {
+  const details = exercise.mesocycle_progression?.map((each) => {
     return [each.sets, each.reps, each.weight, each.rir];
   });
 
@@ -106,7 +104,7 @@ export function HeaderRow() {
 }
 
 type SessionSplitRowType = {
-  exercises: ExerciseType[][];
+  exercises: ExerciseType[];
   children: ReactNode;
 };
 
@@ -121,17 +119,14 @@ function SessionSplitRow({ exercises, children }: SessionSplitRowType) {
       {children}
 
       <ul className="flex flex-col space-y-0.5 overflow-hidden rounded">
-        {exercises.map((exerciseSet, index) => {
-          return exerciseSet.map((exercise, two) => {
-            count++;
-            return (
-              <DataRow
-                key={`${index}_exercises_training_block_${exercise.id}`}
-                exercise={exercise}
-                index={count}
-              />
-            );
-          });
+        {exercises.map((exercise, index) => {
+          return (
+            <DataRow
+              key={`${index}_exercises_training_block_${exercise.id}`}
+              exercise={exercise}
+              index={index}
+            />
+          );
         })}
       </ul>
     </div>
@@ -139,7 +134,7 @@ function SessionSplitRow({ exercises, children }: SessionSplitRowType) {
 }
 
 type SessionRowProps = {
-  training_day: TrainingDayType;
+  training_day: DraggableExercises;
   currentMesocycleIndex: number;
 };
 export function SessionRow({

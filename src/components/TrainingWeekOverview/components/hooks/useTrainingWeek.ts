@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
-import { NewTrainingWeek } from "~/hooks/useTrainingProgram/utils/trainingBlockHelpers";
+import { NewTrainingWeek } from "~/hooks/useTrainingProgram/utils/training_block/trainingBlockHelpers";
 import {
   DraggableExercises,
   DraggableSessionType,

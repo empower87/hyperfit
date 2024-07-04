@@ -2,8 +2,8 @@ import { MuscleType } from "~/constants/workoutSplits";
 import {
   ExerciseType,
   MusclePriorityType,
+  VolumeLandmarkType,
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
-import { VolumeLandmarkType } from "~/hooks/useTrainingProgram/reducer/trainingProgramUtils";
 import {
   Exercise,
   initializeNewExerciseSetsPerMeso,
@@ -68,12 +68,14 @@ type Action =
 export function muscleEditorReducer(state: MusclePriorityType, action: Action) {
   const exercises = state.exercises;
   const volume = state.volume;
-  const { frequencyProgression, landmark } = volume;
+  const frequency = state.frequency;
+  const { progression } = frequency;
+  const { landmark } = volume;
 
   switch (action.type) {
     case "COPY_NEXT_TRAINING_DAY":
       const payload1 = action.payload;
-      const copiedFrequencyProgression = [...frequencyProgression];
+      const copiedFrequencyProgression = [...progression];
       copiedFrequencyProgression[payload1.selectedMesocycleIndex]++;
 
       const nextFreq =
@@ -113,7 +115,7 @@ export function muscleEditorReducer(state: MusclePriorityType, action: Action) {
     case "ADD_TRAINING_DAY":
       const payload2 = action.payload;
       const cloned_exercises2 = structuredClone(exercises);
-      const freq = [...frequencyProgression];
+      const freq = [...progression];
       freq[freq.length - 1]++;
 
       const initial_exercise = getNewExercise(
@@ -135,7 +137,7 @@ export function muscleEditorReducer(state: MusclePriorityType, action: Action) {
       };
     case "REMOVE_TRAINING_DAY":
       const payload3 = action.payload;
-      const freq2 = [...frequencyProgression];
+      const freq2 = [...progression];
       freq2[payload3.selectedMesocycleIndex]--;
       const cloned_exercises3 = structuredClone(exercises);
       cloned_exercises3.splice(payload3.dayIndex, 1);
@@ -150,7 +152,7 @@ export function muscleEditorReducer(state: MusclePriorityType, action: Action) {
       const copyExercises = structuredClone(exercises);
       const new_exercise = getNewExercise(
         payload.exercise,
-        frequencyProgression,
+        progression,
         landmark,
         payload.dayIndex
       );

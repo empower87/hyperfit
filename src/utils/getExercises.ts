@@ -223,13 +223,12 @@ export const initializeSetProgression = (
   return mesoProgression;
 };
 
-const INITIAL_EXERCISE: ExerciseType = {
+export const INITIAL_EXERCISE: ExerciseType = {
   exercise: "Triceps Extension (cable, single-arm)",
   id: "001_Triceps Extension (cable, single-arm)",
   muscle: "back",
   rank: "MRV",
   session: 0,
-  sessionIds: [],
   sets: 2,
   reps: 10,
   weight: 0,

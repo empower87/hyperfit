@@ -1,12 +1,12 @@
 import { useState } from "react";
 import CollapsableHeader from "~/components/Layout/CollapsableHeader";
+import { DraggableExercises } from "~/components/TrainingWeekOverview/components/hooks/useExerciseSelection";
 import { BG_COLOR_M6 } from "~/constants/themes";
-import { TrainingDayType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { cn } from "~/lib/clsx";
 import { HeaderRow, SessionRow } from "./Rows";
 
 type MesocycleProps = {
-  split: TrainingDayType[];
+  split: DraggableExercises[];
   currentMesocycleIndex: number;
 };
 

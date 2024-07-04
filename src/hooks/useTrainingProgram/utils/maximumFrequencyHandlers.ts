@@ -118,9 +118,3 @@ export const determineFrequencyProgression = (
       return freq_prog.reverse();
   }
 };
-
-// initialize exercise sets
-
-// -- [2, 2] [3, 2]
-
-

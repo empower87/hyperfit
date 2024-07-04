@@ -1,17 +1,11 @@
-import { MuscleType, getBroSplit } from "~/constants/workoutSplits";
-import { buildTrainingBlockHandler } from "../utils/buildTrainingBlockHandlers";
+import { getBroSplit, MuscleType } from "~/constants/workoutSplits";
 import {
+  attachTargetFrequency,
   MUSCLE_PRIORITY_LIST,
-  onReorderUpdateMusclePriorityList,
-  onSplitChangeUpdateMusclePriorityList,
 } from "../utils/musclePriorityListHandlers";
-import { getSplitFromWeights } from "./getSplitFromPriorityWeighting";
 
-import { distributeSplitAcrossWeek } from "../utils/distributeSplitAcrossTrainingWeek";
-import {
-  NewTrainingWeek,
-  initializeTrainingBlock,
-} from "../utils/trainingBlockHelpers";
+import { distributeSplitAcrossWeek } from "../utils/training_block/distributeSplitAcrossTrainingWeek";
+import { initializeTrainingBlock } from "../utils/training_block/trainingBlockHelpers";
 import {
   distributeSessionsIntoSplits,
   getFrequencyMaxes,
@@ -29,85 +23,6 @@ export type DayType =
   | "Thursday"
   | "Friday"
   | "Saturday";
-
-// export type PPLSessionsType = {
-//   split: "PPL";
-//   sessions: {
-//     push: number;
-//     legs: number;
-//     pull: number;
-//   };
-// };
-// export type PPLULSessionsType = {
-//   split: "PPLUL";
-//   sessions: {
-//     push: number;
-//     legs: number;
-//     pull: number;
-//     lower: number;
-//     upper: number;
-//   };
-// };
-// export type BROSessionsType = {
-//   split: "BRO";
-//   sessions: {
-//     legs: number;
-//     back: number;
-//     chest: number;
-//     arms: number;
-//     shoulders: number;
-//   };
-// };
-// export type ULSessionsType = {
-//   split: "UL";
-//   sessions: {
-//     upper: number;
-//     lower: number;
-//   };
-// };
-// export type FBSessionsType = {
-//   split: "FB";
-//   sessions: {
-//     full: number;
-//   };
-// };
-// export type OPTSessionsType = {
-//   split: "OPT";
-//   sessions: {
-//     upper: number;
-//     lower: number;
-//     push: number;
-//     pull: number;
-//     full: number;
-//   };
-// };
-// export type CUSSessionsType = {
-//   split: "CUS";
-//   sessions: {
-//     upper?: number;
-//     lower?: number;
-//     push?: number;
-//     legs?: number;
-//     pull?: number;
-//     full?: number;
-//     back?: number;
-//     chest?: number;
-//     arms?: number;
-//     shoulders?: number;
-//   };
-// };
-type Sessions = {
-  upper?: never;
-  lower?: never;
-  full?: never;
-  push?: never;
-  pull?: never;
-  legs?: never;
-  chest?: never;
-  back?: never;
-  arms?: never;
-  shoulders?: never;
-};
 
 export type FBSessionsType = {
   upper?: never;
@@ -307,30 +222,11 @@ export type SetProgressionType =
 export type ExerciseTrainingModality =
   (typeof EXERCISE_TRAINING_MODALITIES)[number];
 
-export type ExerciseTypeT = {
-  id: string;
-  name: string;
-  muscle: MuscleType;
-  sessionId: string;
-  rank: VolumeLandmarkType;
-  sets: number;
-  reps: number;
-  weight: number;
-  rir: number;
-  weightIncrement: number;
-  trainingModality: ExerciseTrainingModality;
-  mesocycle_progression: ExerciseMesocycleProgressionType[];
-  supersetWith: ExerciseType["id"] | null;
-  initialSetsPerMeso: number[];
-  setProgressionSchema: SetProgressionType[];
-};
-
 export type ExerciseType = {
   id: string;
   exercise: string;
   muscle: MuscleType;
   session: number;
-  sessionIds: string[];
   rank: VolumeLandmarkType;
   sets: number;
   reps: number;
@@ -355,9 +251,7 @@ export type TrainingProgramParamsType = {
 
 export type MusclePriorityVolumeType = {
   landmark: VolumeLandmarkType;
-  frequencyProgression: number[];
   exercisesPerSessionSchema: number;
-  setProgressionMatrix: number[][][][];
 };
 export type MusclePriorityFrequencyType = {
   range: [number, number];
@@ -367,7 +261,6 @@ export type MusclePriorityFrequencyType = {
 };
 export type MusclePriorityType = {
   id: string;
-  rank: number;
   muscle: MuscleType;
   exercises: ExerciseType[][];
   volume: MusclePriorityVolumeType;
@@ -378,7 +271,7 @@ export type SessionSplitType = SplitType | "off";
 export type SessionType = {
   id: string;
   split: SessionSplitType;
-  exercises: ExerciseType[][];
+  exercises: [MuscleType, string][];
 };
 
 export type TrainingDayType = {
@@ -393,7 +286,6 @@ export type State = {
   muscle_priority_list: MusclePriorityType[];
   training_week: TrainingDayType[];
   training_block: TrainingDayType[][];
-  training_blocks: NewTrainingWeek[][];
   split_sessions: SplitSessionsType;
   mrv_breakpoint: number;
   mev_breakpoint: number;
@@ -544,7 +436,6 @@ export const INITIAL_STATE: State = {
   muscle_priority_list: [...MUSCLE_PRIORITY_LIST],
   training_week: [...INITIAL_WEEK],
   training_block: [],
-  training_blocks: [],
   split_sessions: { ...INITIAL_SPLIT_SESSIONS },
   mrv_breakpoint: INITIAL_MRV_BREAKPOINT,
   mev_breakpoint: INITIAL_MEV_BREAKPOINT,
@@ -552,6 +443,7 @@ export const INITIAL_STATE: State = {
 
 export default function trainingProgramReducer(state: State, action: Action) {
   const frequency = state.frequency;
+  const frequency_total = frequency[0] + frequency[1];
   const muscle_priority_list = state.muscle_priority_list;
   const split_sessions = state.split_sessions;
   const mesocycles = state.training_program_params.mesocycles;
@@ -576,6 +468,7 @@ export default function trainingProgramReducer(state: State, action: Action) {
         breakpoints,
         freqPayloadTotal
       );
+
       const broSplitSorted =
         split === "BRO"
           ? muscle_priority_list.reduce((acc: BROSessionKeys[], curr) => {
@@ -585,6 +478,12 @@ export default function trainingProgramReducer(state: State, action: Action) {
             }, [])
           : undefined;
 
+      const finalizedMuscleList = attachTargetFrequency(
+        muscle_priority_list,
+        frequency_total,
+        breakpoints
+      );
+
       const sessions = distributeSessionsIntoSplits(
         split,
         freqPayloadTotal,
@@ -592,43 +491,12 @@ export default function trainingProgramReducer(state: State, action: Action) {
         broSplitSorted
       );
 
-      // const sesh = getRankWeightsBySplit(
-      //   list,
-      //   split_sessions.split,
-      //   breakpoints
-      // );
-
-      // const reorderedList = onReorderUpdateMusclePriorityList(
-      //   list,
-      //   breakpoints
-      // );
-
-      // const weightedSplit = getSplitFromWeights(
-      //   frequencyPayload,
-      //   reorderedList,
-      //   split
-      // );
-
-      const finalizedMuscleList = onSplitChangeUpdateMusclePriorityList(
-        list,
-        sessions,
-        params.mesocycles,
-        params.microcycles
-      );
-
       const distributedAcrossWeek = distributeSplitAcrossWeek(
         frequencyPayload,
         sessions
       );
 
-      const distributedAcrossMesocycles = buildTrainingBlockHandler(
-        finalizedMuscleList,
-        sessions,
-        distributedAcrossWeek,
-        mesocycles
-      );
-
-      const training_blocks = initializeTrainingBlock(
+      const built_training_block = initializeTrainingBlock(
         sessions,
         finalizedMuscleList,
         distributedAcrossWeek,
@@ -641,27 +509,40 @@ export default function trainingProgramReducer(state: State, action: Action) {
         muscle_priority_list: finalizedMuscleList,
         split_sessions: sessions,
         training_week: distributedAcrossWeek,
-        training_block: distributedAcrossMesocycles,
-        training_blocks: training_blocks,
+        training_block: built_training_block,
       };
     case "UPDATE_FREQUENCY":
       const new_freq = action.payload.frequency;
+      const new_freq_total = new_freq[0] + new_freq[1];
       const new_split = action.payload?.split ?? split_sessions.split;
 
-      const reordered_list_freq =
-        onReorderUpdateMusclePriorityList(muscle_priority_list);
-
-      const update_split_sessions_freq = getSplitFromWeights(
-        new_freq,
-        reordered_list_freq,
-        new_split
+      const getNGroup = getFrequencyMaxes(
+        2, // this will be determined via mrv_breakpoint
+        muscle_priority_list,
+        breakpoints,
+        new_freq_total
       );
 
-      const updated_list_freq = onSplitChangeUpdateMusclePriorityList(
-        reordered_list_freq,
-        update_split_sessions_freq,
-        mesocycles,
-        microcycles
+      const broSplitSorted2 =
+        new_split === "BRO"
+          ? muscle_priority_list.reduce((acc: BROSessionKeys[], curr) => {
+              const split = getBroSplit(curr.muscle);
+              if (!acc.includes(split)) return [...acc, split];
+              return acc;
+            }, [])
+          : undefined;
+
+      const update_split_sessions_freq = distributeSessionsIntoSplits(
+        new_split,
+        new_freq_total,
+        getNGroup,
+        broSplitSorted2
+      );
+
+      const updated_list_freq = attachTargetFrequency(
+        muscle_priority_list,
+        frequency_total,
+        breakpoints
       );
 
       return {
@@ -672,21 +553,35 @@ export default function trainingProgramReducer(state: State, action: Action) {
       };
     case "UPDATE_MUSCLE_PRIORITY_LIST":
       const new_list = action.payload.priority_list;
+      const freq_total = frequency[0] + frequency[1];
 
-      const reordered_list = onReorderUpdateMusclePriorityList(
-        new_list,
+      const getNGroup2 = getFrequencyMaxes(
+        2, // this will be determined via mrv_breakpoint
+        muscle_priority_list,
+        breakpoints,
+        freq_total
+      );
+
+      const broSplitSorted3 =
+        split_sessions.split === "BRO"
+          ? muscle_priority_list.reduce((acc: BROSessionKeys[], curr) => {
+              const split = getBroSplit(curr.muscle);
+              if (!acc.includes(split)) return [...acc, split];
+              return acc;
+            }, [])
+          : undefined;
+
+      const update_split_sessions = distributeSessionsIntoSplits(
+        split_sessions.split,
+        freq_total,
+        getNGroup2,
+        broSplitSorted3
+      );
+
+      const updated_list = attachTargetFrequency(
+        muscle_priority_list,
+        frequency_total,
         breakpoints
-      );
-      const update_split_sessions = getSplitFromWeights(
-        state.frequency,
-        reordered_list,
-        split_sessions.split
-      );
-      const updated_list = onSplitChangeUpdateMusclePriorityList(
-        reordered_list,
-        update_split_sessions,
-        mesocycles,
-        microcycles
       );
 
       return {
@@ -708,21 +603,35 @@ export default function trainingProgramReducer(state: State, action: Action) {
       };
     case "ADJUST_FREQUENCY_PROGRESSION":
       const tuple = action.payload.update_frequency_tuple;
-      const reordered_list_2 = onReorderUpdateMusclePriorityList(
+
+      const freq_total_2 = frequency[0] + frequency[1];
+      const getNGroup3 = getFrequencyMaxes(
+        2, // this will be determined via mrv_breakpoint
         muscle_priority_list,
+        breakpoints,
+        freq_total_2
+      );
+
+      const broSplitSorted4 =
+        split_sessions.split === "BRO"
+          ? muscle_priority_list.reduce((acc: BROSessionKeys[], curr) => {
+              const split = getBroSplit(curr.muscle);
+              if (!acc.includes(split)) return [...acc, split];
+              return acc;
+            }, [])
+          : undefined;
+
+      const update_split_sessions_2 = distributeSessionsIntoSplits(
+        split_sessions.split,
+        freq_total_2,
+        getNGroup3,
+        broSplitSorted4
+      );
+
+      const updated_list_2 = attachTargetFrequency(
+        muscle_priority_list,
+        frequency_total,
         breakpoints
-      );
-      const update_split_sessions_2 = getSplitFromWeights(
-        state.frequency,
-        reordered_list_2,
-        split_sessions.split
-      );
-      const updated_list_2 = onSplitChangeUpdateMusclePriorityList(
-        reordered_list_2,
-        update_split_sessions_2,
-        mesocycles,
-        microcycles,
-        tuple
       );
 
       return {
@@ -733,17 +642,33 @@ export default function trainingProgramReducer(state: State, action: Action) {
     case "UPDATE_SPLIT_SESSIONS":
       const type = action.payload.split;
 
-      const splitSessions = getSplitFromWeights(
-        frequency,
+      const getNGroup4 = getFrequencyMaxes(
+        2, // this will be determined via mrv_breakpoint
         muscle_priority_list,
-        type
+        breakpoints,
+        frequency_total
       );
 
-      const updated_list_sessions = onSplitChangeUpdateMusclePriorityList(
+      const broSplitSorted5 =
+        type === "BRO"
+          ? muscle_priority_list.reduce((acc: BROSessionKeys[], curr) => {
+              const split = getBroSplit(curr.muscle);
+              if (!acc.includes(split)) return [...acc, split];
+              return acc;
+            }, [])
+          : undefined;
+
+      const splitSessions = distributeSessionsIntoSplits(
+        type,
+        frequency_total,
+        getNGroup4,
+        broSplitSorted5
+      );
+
+      const updated_list_sessions = attachTargetFrequency(
         muscle_priority_list,
-        splitSessions,
-        mesocycles,
-        microcycles
+        frequency_total,
+        breakpoints
       );
 
       return {
@@ -756,14 +681,13 @@ export default function trainingProgramReducer(state: State, action: Action) {
         frequency,
         split_sessions
       );
-
-      const get_training_block = buildTrainingBlockHandler(
-        muscle_priority_list,
+      const get_training_block = initializeTrainingBlock(
         split_sessions,
+        muscle_priority_list,
         new_training_week,
+        frequency[0] + frequency[1],
         mesocycles
       );
-
       return {
         ...state,
         training_week: new_training_week,
@@ -807,17 +731,17 @@ export default function trainingProgramReducer(state: State, action: Action) {
         };
       });
 
-      const update_muscle_list = onSplitChangeUpdateMusclePriorityList(
+      const update_muscle_list = attachTargetFrequency(
         muscle_priority_list,
-        new_sessions,
-        mesocycles,
-        microcycles
+        frequency_total,
+        breakpoints
       );
 
-      const rebuild_training_block = buildTrainingBlockHandler(
-        update_muscle_list,
+      const rebuild_training_block = initializeTrainingBlock(
         new_sessions,
+        update_muscle_list,
         filteredWeek,
+        frequency[0] + frequency[1],
         mesocycles
       );
 
@@ -833,8 +757,9 @@ export default function trainingProgramReducer(state: State, action: Action) {
       const s = state.split_sessions;
       const w = state.training_week;
       const m = state.training_program_params.mesocycles;
+      const t = state.frequency[0] + state.frequency[1];
 
-      const training_block = buildTrainingBlockHandler(l, s, w, m);
+      const training_block = initializeTrainingBlock(s, l, w, t, m);
 
       return {
         ...state,

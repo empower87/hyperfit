@@ -293,6 +293,7 @@ function DaySessionItem({
 
   const setProgressionSchema =
     exercise.setProgressionSchema[selectedMesocycleIndex];
+
   const setsOverWeek = getSetProgressionForExercise(
     setProgressionSchema,
     selectedMesocycleIndex,
@@ -634,12 +635,8 @@ function DayLayout({
 // changes occur in muscle_list and training_week
 
 export default function TrainingWeekOverview() {
-  const {
-    training_block,
-    training_blocks,
-    training_program_params,
-    prioritized_muscle_list,
-  } = useTrainingProgramContext();
+  const { training_block, training_program_params, prioritized_muscle_list } =
+    useTrainingProgramContext();
   const { microcycles, mesocycles } = training_program_params;
 
   const [selectedMesocycleIndex, setSelectedMesocycleIndex] = useState<number>(
@@ -647,7 +644,7 @@ export default function TrainingWeekOverview() {
   );
 
   const { hydratedTrainingBlock } = useTrainingWeek(
-    training_blocks,
+    training_block,
     prioritized_muscle_list,
     selectedMesocycleIndex
   );
@@ -660,14 +657,6 @@ export default function TrainingWeekOverview() {
     Array(microcycles),
     (e, i) => `Week ${i + 1}`
   );
-
-  useEffect(() => {
-    console.log(
-      training_blocks,
-      hydratedTrainingBlock,
-      "IN TRAINING WEEK OVERVIEW"
-    );
-  }, [training_blocks, hydratedTrainingBlock]);
 
   const [selectedMicrocycleIndex, setSelectedMicrocycleIndex] =
     useState<number>(microcycles - 1);
@@ -694,6 +683,7 @@ export default function TrainingWeekOverview() {
         selectedMicrocycleIndex={selectedMicrocycleIndex}
         onClickHandler={onClickHandler}
       />
+
       <WeekSessions
         selectedMesocycleIndex={selectedMesocycleIndex}
         selectedMicrocycleIndex={selectedMicrocycleIndex}
@@ -739,10 +729,10 @@ function WeekSessions({
 
       <ul className="flex space-x-1 overflow-x-auto">
         <DragDropContext onDragEnd={onDragEnd}>
-          {training_week?.map((each, index) => {
+          {draggableExercises?.map((each, index) => {
             // NOTE: to not display days w/o any sessions
             const hasSessions = each.sessions.find((ea) => ea.exercises.length);
-            // if (!hasSessions) return null;
+            if (!hasSessions) return null;
             return (
               <DayLayout
                 key={`${each.day}_${selectedMesocycleIndex}_draggableExercisesObject_${index}`}

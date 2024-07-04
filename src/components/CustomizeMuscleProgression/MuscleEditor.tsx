@@ -84,8 +84,8 @@ function Muscle({ rank }: MuscleProps) {
   const volumeSets =
     muscleGroup.volume.landmark === "MRV"
       ? muscleData["MRV"][
-          muscleGroup.volume.frequencyProgression[
-            muscleGroup.volume.frequencyProgression.length - 1
+          muscleGroup.frequency.progression[
+            muscleGroup.frequency.progression.length - 1
           ] - 1
         ]
       : muscleData[muscleGroup.volume.landmark];
@@ -165,35 +165,33 @@ function Muscle({ rank }: MuscleProps) {
                 }
                 frequency={
                   <div className={`flex justify-center p-0.5`}>
-                    {muscleGroup.volume.frequencyProgression.map(
-                      (each, index) => {
-                        const isSelected = index === selectedMesocycleIndex;
-                        return (
-                          <SideMenu.Cell
-                            key={`${each}_ToggleMesocycleFrequency_${index}`}
-                            selectedValue={isSelected}
+                    {muscleGroup.frequency.progression.map((each, index) => {
+                      const isSelected = index === selectedMesocycleIndex;
+                      return (
+                        <SideMenu.Cell
+                          key={`${each}_ToggleMesocycleFrequency_${index}`}
+                          selectedValue={isSelected}
+                        >
+                          <Button
+                            className={`${BG_COLOR_M7}`}
+                            onClick={() =>
+                              onFrequencyProgressionIncrement(index, "-")
+                            }
                           >
-                            <Button
-                              className={`${BG_COLOR_M7}`}
-                              onClick={() =>
-                                onFrequencyProgressionIncrement(index, "-")
-                              }
-                            >
-                              <SubtractIcon fill="white" />
-                            </Button>
-                            <div className={`px-1`}>{each}</div>
-                            <Button
-                              className={`${BG_COLOR_M7}`}
-                              onClick={() =>
-                                onFrequencyProgressionIncrement(index, "+")
-                              }
-                            >
-                              <AddIcon fill="white" />
-                            </Button>
-                          </SideMenu.Cell>
-                        );
-                      }
-                    )}
+                            <SubtractIcon fill="white" />
+                          </Button>
+                          <div className={`px-1`}>{each}</div>
+                          <Button
+                            className={`${BG_COLOR_M7}`}
+                            onClick={() =>
+                              onFrequencyProgressionIncrement(index, "+")
+                            }
+                          >
+                            <AddIcon fill="white" />
+                          </Button>
+                        </SideMenu.Cell>
+                      );
+                    })}
                   </div>
                 }
                 volume={
@@ -285,16 +283,16 @@ function Exercises() {
   const [isOpen, setIsOpen] = useState(false);
 
   const canAddSessionAtMesocycle =
-    !muscleGroup.volume.frequencyProgression[selectedMesocycleIndex + 1] ||
-    (muscleGroup.volume.frequencyProgression[selectedMesocycleIndex + 1] &&
-      muscleGroup.volume.frequencyProgression[selectedMesocycleIndex] <
-        muscleGroup.volume.frequencyProgression[selectedMesocycleIndex + 1])
+    !muscleGroup.frequency.progression[selectedMesocycleIndex + 1] ||
+    (muscleGroup.frequency.progression[selectedMesocycleIndex + 1] &&
+      muscleGroup.frequency.progression[selectedMesocycleIndex] <
+        muscleGroup.frequency.progression[selectedMesocycleIndex + 1])
       ? true
       : false;
 
   const isLastMesocycle = mesocycles - 1 === selectedMesocycleIndex;
   const totalExercisesByMeso =
-    muscleGroup.volume.frequencyProgression[selectedMesocycleIndex];
+    muscleGroup.frequency.progression[selectedMesocycleIndex];
   const exercisesByMeso = muscleGroup.exercises.slice(0, totalExercisesByMeso);
 
   const totalSessions = exercisesByMeso.length;

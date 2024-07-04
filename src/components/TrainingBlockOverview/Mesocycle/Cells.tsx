@@ -49,7 +49,7 @@ export function ExerciseCell({
 export function WeekCell({ data, widths, bgColor, fontSize }: RowCellProps) {
   return (
     <div className={cn(`flex space-x-0.5`)}>
-      {data.map((each, index) => {
+      {data?.map((each, index) => {
         return (
           <Cell
             key={`${each}_WeekCell_${index}`}

@@ -4,19 +4,7 @@ import {
   SplitSessionsSplitsType,
   SplitSessionsType,
   TrainingDayType,
-} from "../reducer/trainingProgramReducer";
-
-export const createTrainingWeek = (
-  sessions: [number, number],
-  split_sessions: SplitSessionsType
-) => {
-  const week_sessions = sessions[0];
-  const off_days = 7 - week_sessions;
-
-  const counterMap = new Map<string, number>(
-    Object.entries(split_sessions.sessions).map(([key, val]) => [key, val])
-  );
-};
+} from "../../reducer/trainingProgramReducer";
 
 export const distributeSplitAcrossWeek = (
   sessions: [number, number],
@@ -53,22 +41,6 @@ const getOffDayIndices = (number: number) => {
       return [];
   }
 };
-// const getOffDayIndices = (number: number) => {
-//   switch (number) {
-//     case 0:
-//       return [];
-//     case 1:
-//       return [0];
-//     case 2:
-//       return [0, 4];
-//     case 3:
-//       return [0, 4, 6];
-//     case 4:
-//       return [0, 2, 4, 6];
-//     default:
-//       return [];
-//   }
-// };
 
 const distributeSplitHandler = (
   week: TrainingDayType[],
@@ -118,23 +90,6 @@ const distributeSplitHandler = (
       lastIn = "off";
       week[i].sessions.push(session);
     }
-    // if (week[i].isTrainingDay && nextSession) {
-    //   const session: SessionType = {
-    //     id: `${i}_${nextSession}_session`,
-    //     split: nextSession as keyof SplitSessionsSplitsType,
-    //     exercises: [],
-    //   };
-
-    //   lastIn = nextSession;
-    //   week[i].sessions.push(session);
-
-    //   const value = counterMap.get(nextSession);
-    //   if (value && value >= 0) {
-    //     counterMap.set(nextSession, value - 1);
-    //   }
-    // } else {
-    //   lastIn = "off";
-    // }
   }
 
   return week;
