@@ -3,9 +3,10 @@ import { getPushPullLegsSplit } from "~/constants/workoutSplits";
 import {
   BROSessionKeys,
   MusclePriorityType,
+  SessionSplitType,
   SplitSessionsNameType,
   SplitSessionsType,
-} from "./trainingProgramReducer";
+} from "../../reducer/trainingProgramReducer";
 
 type Basket = {
   push: number;
@@ -257,21 +258,7 @@ const distributeSessionsIntoSplits_opt = (
     total_sessions !==
     basket.full + basket.lower + basket.upper + basket.push + basket.pull
   ) {
-    console.log(
-      basket,
-      basket.full + basket.lower + basket.upper + basket.push + basket.pull,
-      total_sessions,
-      "beginning of while loop"
-    );
-
     mutateBasket(basket, total_sessions);
-
-    console.log(
-      basket,
-      basket.full + basket.lower + basket.upper + basket.push + basket.pull,
-      total_sessions,
-      "end of while loop"
-    );
   }
 
   return basket;
@@ -379,4 +366,34 @@ const distributeSessionsIntoSplits_bro = (
     if (counter < 0) counter = broSplitSorted.length - 1;
   }
   return sessions;
+};
+
+// NOTE: not sure if this is useful yet
+const getPotentialSplits = (
+  splitType: SessionSplitType
+): SplitSessionsNameType[] => {
+  switch (splitType) {
+    case "arms":
+      return ["BRO", "CUS"];
+    case "back":
+      return ["BRO", "CUS"];
+    case "chest":
+      return ["BRO", "CUS"];
+    case "legs":
+      return ["PPL", "PPLUL", "BRO", "CUS"];
+    case "shoulders":
+      return ["BRO", "CUS"];
+    case "push":
+      return ["PPL", "PPLUL", "OPT", "CUS"];
+    case "pull":
+      return ["PPL", "PPLUL", "OPT", "CUS"];
+    case "upper":
+      return ["UL", "OPT", "PPLUL", "CUS"];
+    case "lower":
+      return ["UL", "OPT", "PPLUL", "CUS"];
+    case "full":
+      return ["FB", "OPT", "CUS"];
+    default:
+      return [];
+  }
 };

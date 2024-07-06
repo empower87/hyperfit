@@ -26,7 +26,7 @@ const getNewExercise = (
   const new_exercise: ExerciseType = {
     ...INITIAL_EXERCISE,
     id: newExercise.id,
-    exercise: newExercise.name,
+    name: newExercise.name,
     muscle: newExercise.group as MuscleType,
     session: dayIndex,
     rank: landmark,
@@ -41,8 +41,6 @@ const getNewExercise = (
   return new_exercise;
 };
 
-// waist: 35.5
-// thigh:
 const calculateTotalVolume = (
   exercises: ExerciseType[][],
   mesocycles: number,

@@ -136,7 +136,7 @@ function DropdownListModal({
               key={each.id}
               onClick={() => onItemClick(each)}
             >
-              {index + 1} {each.exercise}
+              {index + 1} {each.name}
             </li>
           );
         })}
@@ -288,7 +288,7 @@ function DaySessionItem({
   const allExercises = getGroupList(exercise.muscle).map((each) => each.name);
 
   const [selectedExerciseName, setSelectedExerciseName] = useState<string>(
-    exercise.exercise
+    exercise.name
   );
 
   const setProgressionSchema =

@@ -21,7 +21,6 @@ import trainingProgramReducer, {
 type TrainingProgramType = ReturnType<typeof useTrainingProgram>;
 
 const TrainingProgramContext = createContext<TrainingProgramType>({
-  training_week: INITIAL_STATE.training_week,
   training_block: INITIAL_STATE.training_block,
   split_sessions: INITIAL_STATE.split_sessions,
   frequency: INITIAL_STATE.frequency,
@@ -201,7 +200,7 @@ function useTrainingProgram() {
       _split: SplitSessionsNameType,
       _muscle_priority_list: MusclePriorityType[],
       _params: TrainingProgramParamsType,
-      _training_week: TrainingDayType[]
+      _training_block: TrainingDayType[][]
     ) => {
       dispatch({
         type: "UPDATE_PROGRAM_CONFIG",
@@ -210,7 +209,7 @@ function useTrainingProgram() {
           split: _split,
           muscle_priority_list: _muscle_priority_list,
           training_program_config: _params,
-          training_week: _training_week,
+          training_block: _training_block,
         },
       });
     },
@@ -223,18 +222,11 @@ function useTrainingProgram() {
       state.split_sessions,
       state.muscle_priority_list,
       state.training_block,
-      state.training_week,
       "ALL DATA"
     );
-  }, [
-    state.frequency,
-    state.split_sessions,
-    state.muscle_priority_list,
-    state.training_week,
-  ]);
+  }, [state.frequency, state.split_sessions, state.muscle_priority_list]);
 
   return {
-    training_week: state.training_week,
     training_block: state.training_block,
     split_sessions: state.split_sessions,
     frequency: state.frequency,

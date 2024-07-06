@@ -20,8 +20,8 @@ function DataRow({ exercise, index }: DataRowProps) {
   const exerciseData = [
     `${index}`,
     exercise.muscle,
-    exercise.exercise,
-    "dumbbell",
+    exercise.name,
+    exercise.data.requirements[0] ?? "bodyweight",
     exercise.trainingModality,
   ];
 
@@ -45,6 +45,7 @@ function DataRow({ exercise, index }: DataRowProps) {
         );
       })}
 
+      {/* -- for uncoded DELOAD section -- */}
       <WeekCell
         data={details[0]}
         widths={CELL_WIDTHS.week.widths}
@@ -144,24 +145,27 @@ export function SessionRow({
   const sessions = training_day.sessions;
   const day = training_day.day;
 
-  if (!sessions.length) return null;
+  if (!sessions.length || sessions[0].split === "off") return null;
   return (
-    <div className={cn(`flex flex-col`)}>
+    <div
+      className={cn(`flex flex-col rounded border border-primary-500 py-0.5`)}
+    >
+      <div
+        className={cn(
+          `flex justify-center pb-1 text-sm font-semibold text-primary-800`,
+          CELL_WIDTHS.day
+        )}
+      >
+        {day.slice(0, 3)}
+      </div>
+
       {sessions.map((each, index) => {
         return (
           <SessionSplitRow
             key={`${each.split}_${index}_session`}
             exercises={each.exercises}
           >
-            <SessionCell split={each.split}>
-              {index === 0 ? (
-                <div
-                  className={`flex items-start text-[10px] font-semibold text-slate-800`}
-                >
-                  {day.charAt(0) + day.charAt(1)}
-                </div>
-              ) : null}
-            </SessionCell>
+            <SessionCell split={each.split} />
           </SessionSplitRow>
         );
       })}

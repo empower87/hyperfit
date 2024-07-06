@@ -11,7 +11,7 @@ import { getBroSplit } from "~/constants/workoutSplits";
 import {
   distributeSessionsIntoSplits,
   getFrequencyMaxes,
-} from "~/hooks/useTrainingProgram/reducer/distributeSessionsIntoSplits";
+} from "~/hooks/useTrainingProgram/utils/split_sessions/distributeSessionsIntoSplits";
 
 import {
   BROSessionKeys,
@@ -28,7 +28,7 @@ import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainin
 import {
   attachTargetFrequency,
   reorderListByVolumeBreakpoints,
-} from "~/hooks/useTrainingProgram/utils/musclePriorityListHandlers";
+} from "~/hooks/useTrainingProgram/utils/prioritized_muscle_list/musclePriorityListHandlers";
 import { distributeSplitAcrossWeek } from "~/hooks/useTrainingProgram/utils/training_block/distributeSplitAcrossTrainingWeek";
 import { initializeTrainingBlock } from "~/hooks/useTrainingProgram/utils/training_block/trainingBlockHelpers";
 
@@ -37,7 +37,6 @@ function useProgramConfig() {
     prioritized_muscle_list,
     mrv_breakpoint,
     mev_breakpoint,
-    training_week,
     split_sessions,
     training_program_params,
     frequency,
@@ -55,11 +54,11 @@ function useProgramConfig() {
   ]);
 
   useEffect(() => {
+    const remove = window.localStorage.removeItem("TRAINING_PROGRAM_STATE");
     setProgramConfig({
       muscle_priority_list: prioritized_muscle_list,
       mrv_breakpoint: mrv_breakpoint,
       mev_breakpoint: mev_breakpoint,
-      training_week: training_week,
       split_sessions: split_sessions,
       training_program_params: training_program_params,
       frequency: frequency,
@@ -70,7 +69,6 @@ function useProgramConfig() {
     prioritized_muscle_list,
     mrv_breakpoint,
     mev_breakpoint,
-    training_week,
     split_sessions,
     training_program_params,
     training_block,
@@ -85,27 +83,27 @@ function useProgramConfig() {
       const { mesocycles } = programConfig.training_program_params;
       const total = total_sessions[0] + total_sessions[1];
 
+      const reordered_items = attachTargetFrequency(
+        muscle_priority_list,
+        total,
+        volumeBreakpoints
+      );
+
       const getNGroup = getFrequencyMaxes(
         2, // this will be determined via mrv_breakpoint
-        muscle_priority_list,
+        reordered_items,
         volumeBreakpoints,
         total
       );
 
       const broSplitSorted =
         split === "BRO"
-          ? muscle_priority_list.reduce((acc: BROSessionKeys[], curr) => {
+          ? reordered_items.reduce((acc: BROSessionKeys[], curr) => {
               const split = getBroSplit(curr.muscle);
               if (!acc.includes(split)) return [...acc, split];
               return acc;
             }, [])
           : undefined;
-
-      const reordered_items = attachTargetFrequency(
-        muscle_priority_list,
-        total,
-        volumeBreakpoints
-      );
 
       const new_split_sessions = distributeSessionsIntoSplits(
         split,
@@ -132,7 +130,6 @@ function useProgramConfig() {
         ...prev,
         frequency: total_sessions,
         split_sessions: new_split_sessions,
-        training_week: new_training_week,
         training_block: new_training_block,
         muscle_priority_list: reordered_items,
       }));
@@ -204,7 +201,7 @@ function useProgramConfig() {
       if (!result.destination) return;
       const { frequency, muscle_priority_list, split_sessions } = programConfig;
 
-      const items = [...muscle_priority_list];
+      const items = structuredClone(muscle_priority_list);
       const [removed] = items.splice(result.source.index, 1);
       items.splice(result.destination.index, 0, removed);
 
@@ -234,13 +231,12 @@ function useProgramConfig() {
       new_breakpoints[index] = value;
       setVolumeBreakpoints(new_breakpoints);
 
-      const items = [...programConfig.muscle_priority_list];
-
       const reordered_items = attachTargetFrequency(
-        items,
+        programConfig.muscle_priority_list,
         programConfig.frequency[0] + programConfig.frequency[1],
         new_breakpoints
       );
+
       setProgramConfig((prev) => ({
         ...prev,
         muscle_priority_list: reordered_items,
@@ -271,10 +267,9 @@ function useProgramConfig() {
       }
 
       setVolumeBreakpoints(new_breakpoints);
-      const items = [...programConfig.muscle_priority_list];
 
       const reordered_items = attachTargetFrequency(
-        items,
+        programConfig.muscle_priority_list,
         programConfig.frequency[0] + programConfig.frequency[1],
         new_breakpoints
       );
@@ -286,32 +281,54 @@ function useProgramConfig() {
     [volumeBreakpoints, programConfig]
   );
 
+  const onResetConfig = useCallback(() => {
+    setProgramConfig({
+      muscle_priority_list: prioritized_muscle_list,
+      mrv_breakpoint: mrv_breakpoint,
+      mev_breakpoint: mev_breakpoint,
+      split_sessions: split_sessions,
+      training_program_params: training_program_params,
+      frequency: frequency,
+      training_block: training_block,
+    });
+  }, [
+    frequency,
+    prioritized_muscle_list,
+    mrv_breakpoint,
+    mev_breakpoint,
+    split_sessions,
+    training_program_params,
+    training_block,
+  ]);
+
   const onSaveConfig = useCallback(() => {
     const {
       frequency,
       muscle_priority_list,
       training_program_params,
       split_sessions,
-      training_week,
+      training_block,
     } = programConfig;
     handleOnProgramConfigChange(
       frequency,
       split_sessions.split,
       muscle_priority_list,
       training_program_params,
-      training_week
+      training_block
     );
   }, [programConfig]);
 
   return {
     muscle_priority_list: programConfig.muscle_priority_list,
     volumeBreakpoints,
-    trainingWeek: programConfig.training_week,
+    trainingWeek:
+      programConfig.training_block[programConfig.training_block.length - 1],
     split_sessions: programConfig.split_sessions,
     training_program_params: programConfig.training_program_params,
     frequency: programConfig.frequency,
     split: programConfig.split_sessions.split,
     onSaveConfig,
+    onResetConfig,
     onSplitChange,
     onFrequencyChange,
     onPriorityListDragEnd,
@@ -333,6 +350,7 @@ const ProgramConfigContext = createContext<ProgramConfigType>({
   frequency: INITIAL_STATE.frequency,
   split: "OPT",
   onSaveConfig: () => null,
+  onResetConfig: () => null,
   onSplitChange: () => null,
   onFrequencyChange: () => null,
   onPriorityListDragEnd: () => null,
@@ -344,7 +362,7 @@ const ProgramConfigContext = createContext<ProgramConfigType>({
 
 const ProgramConfigProvider = ({ children }: { children: ReactNode }) => {
   const values = useProgramConfig();
-  // const contextValues = useMemo(() => values, [values]);
+
   return (
     <ProgramConfigContext.Provider value={values}>
       {children}

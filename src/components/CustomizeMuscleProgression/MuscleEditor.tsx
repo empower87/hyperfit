@@ -503,7 +503,7 @@ function ExerciseItem({
         onClick={onOpen}
         className={`flex w-32 cursor-pointer items-center truncate indent-0.5 hover:${BG_COLOR_M4}`}
       >
-        {exercise.exercise}
+        {exercise.name}
       </div>
 
       <div className={`flex`}>

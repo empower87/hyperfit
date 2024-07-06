@@ -2,18 +2,14 @@ import { getBroSplit, MuscleType } from "~/constants/workoutSplits";
 import {
   attachTargetFrequency,
   MUSCLE_PRIORITY_LIST,
-} from "../utils/musclePriorityListHandlers";
+} from "../utils/prioritized_muscle_list/musclePriorityListHandlers";
 
-import { distributeSplitAcrossWeek } from "../utils/training_block/distributeSplitAcrossTrainingWeek";
-import { initializeTrainingBlock } from "../utils/training_block/trainingBlockHelpers";
 import {
   distributeSessionsIntoSplits,
   getFrequencyMaxes,
-} from "./distributeSessionsIntoSplits";
-import {
-  determineSplitHandler,
-  redistributeSessionsIntoNewSplit,
-} from "./splitSessionHandler";
+} from "../utils/split_sessions/distributeSessionsIntoSplits";
+import { distributeSplitAcrossWeek } from "../utils/training_block/distributeSplitAcrossTrainingWeek";
+import { initializeTrainingBlock } from "../utils/training_block/trainingBlockHelpers";
 
 export type DayType =
   | "Sunday"
@@ -222,9 +218,14 @@ export type SetProgressionType =
 export type ExerciseTrainingModality =
   (typeof EXERCISE_TRAINING_MODALITIES)[number];
 
+export type ExerciseDataType = {
+  movement_type: string;
+  requirements: string[];
+};
+
 export type ExerciseType = {
   id: string;
-  exercise: string;
+  name: string;
   muscle: MuscleType;
   session: number;
   rank: VolumeLandmarkType;
@@ -238,6 +239,7 @@ export type ExerciseType = {
   supersetWith: ExerciseType["id"] | null;
   initialSetsPerMeso: number[];
   setProgressionSchema: SetProgressionType[];
+  data: ExerciseDataType;
 };
 
 export type TrainingProgramParamsType = {
@@ -284,7 +286,6 @@ export type State = {
   frequency: [number, number];
   training_program_params: TrainingProgramParamsType;
   muscle_priority_list: MusclePriorityType[];
-  training_week: TrainingDayType[];
   training_block: TrainingDayType[][];
   split_sessions: SplitSessionsType;
   mrv_breakpoint: number;
@@ -297,7 +298,7 @@ type UpdateProgramConfigAction = {
     split: SplitSessionsNameType;
     muscle_priority_list: MusclePriorityType[];
     training_program_config: TrainingProgramParamsType;
-    training_week: TrainingDayType[];
+    training_block: TrainingDayType[][];
   };
 };
 type UpdateFrequencyAction = {
@@ -434,7 +435,6 @@ export const INITIAL_STATE: State = {
   frequency: [3, 0],
   training_program_params: { ...INITIAL_TRAINING_PROGRAM_PARAMS },
   muscle_priority_list: [...MUSCLE_PRIORITY_LIST],
-  training_week: [...INITIAL_WEEK],
   training_block: [],
   split_sessions: { ...INITIAL_SPLIT_SESSIONS },
   mrv_breakpoint: INITIAL_MRV_BREAKPOINT,
@@ -460,7 +460,7 @@ export default function trainingProgramReducer(state: State, action: Action) {
       const split = action.payload.split;
       const list = action.payload.muscle_priority_list;
       const params = action.payload.training_program_config;
-      const trainingWeek = action.payload.training_week;
+      const trainingWeek = action.payload.training_block;
 
       const freq_maxes = getFrequencyMaxes(
         2,
@@ -706,19 +706,19 @@ export default function trainingProgramReducer(state: State, action: Action) {
         })
         .flat();
 
-      const getSplit = determineSplitHandler(splits);
-      const split_change = getSplit.includes(split_sessions.split);
+      // const getSplit = determineSplitHandler(splits);
+      // const split_change = getSplit.includes(split_sessions.split);
 
-      const new_sessions = redistributeSessionsIntoNewSplit(
-        getSplit[0],
-        splits
-      );
+      // const new_sessions = redistributeSessionsIntoNewSplit(
+      //   getSplit[0],
+      //   splits
+      // );
 
-      console.log(
-        splits,
-        new_sessions,
-        "what this look like? lets just have a looksie"
-      );
+      // console.log(
+      //   splits,
+      //   new_sessions,
+      //   "what this look like? lets just have a looksie"
+      // );
 
       const filteredWeek = rearranged_week.map((each) => {
         const sessions = each.sessions.filter(
@@ -738,7 +738,7 @@ export default function trainingProgramReducer(state: State, action: Action) {
       );
 
       const rebuild_training_block = initializeTrainingBlock(
-        new_sessions,
+        split_sessions,
         update_muscle_list,
         filteredWeek,
         frequency[0] + frequency[1],
@@ -749,13 +749,13 @@ export default function trainingProgramReducer(state: State, action: Action) {
         ...state,
         training_week: filteredWeek,
         training_block: rebuild_training_block,
-        split_sessions: new_sessions,
+        // split_sessions: new_sessions,
         muscle_priority_list: update_muscle_list,
       };
     case "GET_TRAINING_BLOCK":
       const l = state.muscle_priority_list;
       const s = state.split_sessions;
-      const w = state.training_week;
+      const w = [...INITIAL_WEEK];
       const m = state.training_program_params.mesocycles;
       const t = state.frequency[0] + state.frequency[1];
 

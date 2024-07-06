@@ -8,7 +8,7 @@ import { getMuscleData } from "~/utils/getMuscleData";
 import {
   type MusclePriorityType,
   type VolumeLandmarkType,
-} from "../reducer/trainingProgramReducer";
+} from "../../reducer/trainingProgramReducer";
 import {
   determineFrequencyByRange,
   determineFrequencyProgression,

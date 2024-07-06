@@ -84,7 +84,7 @@ type SessionCellProps = {
 };
 export function SessionCell({ split, children }: SessionCellProps) {
   return (
-    <div className={cn(`flex ${CELL_WIDTHS.day} justify-between`)}>
+    <div className={cn(`flex ${CELL_WIDTHS.day} justify-end`)}>
       {children}
 
       <div className={`flex items-start`}>
@@ -92,7 +92,7 @@ export function SessionCell({ split, children }: SessionCellProps) {
           className={cn(
             `${
               getSplitColor(split).bg
-            } rounded-sm px-1 text-[10px] font-semibold text-white`
+            } rounded-sm px-1.5 text-[10px] font-semibold text-white`
           )}
         >
           {split.charAt(0).toUpperCase() + split.slice(1)}

@@ -401,9 +401,7 @@ function SelectExerciseContents({
       <SelectExercise.List>
         {exercises.map((each) => {
           let isSelected = false;
-          const foundExercise = allExercises.find(
-            (e) => e.exercise === each.name
-          );
+          const foundExercise = allExercises.find((e) => e.name === each.name);
 
           if (foundExercise) {
             isSelected = true;

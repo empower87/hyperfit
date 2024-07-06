@@ -213,7 +213,7 @@ const getNewExercise = (
   );
   const new_exercise: ExerciseType = {
     id: newExercise.id,
-    exercise: newExercise.name,
+    name: newExercise.name,
     muscle: newExercise.group as MuscleType,
     session: dayIndex,
     rank: landmark,
@@ -227,6 +227,10 @@ const getNewExercise = (
     supersetWith: null,
     initialSetsPerMeso: setProgression.sets,
     setProgressionSchema: setProgression.schemas,
+    data: {
+      movement_type: newExercise.movement_type,
+      requirements: newExercise.requirements,
+    },
   };
   return new_exercise;
 };

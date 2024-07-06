@@ -224,7 +224,7 @@ export const initializeSetProgression = (
 };
 
 export const INITIAL_EXERCISE: ExerciseType = {
-  exercise: "Triceps Extension (cable, single-arm)",
+  name: "Triceps Extension (cable, single-arm)",
   id: "001_Triceps Extension (cable, single-arm)",
   muscle: "back",
   rank: "MRV",
@@ -239,6 +239,10 @@ export const INITIAL_EXERCISE: ExerciseType = {
   supersetWith: null,
   initialSetsPerMeso: [],
   setProgressionSchema: [],
+  data: {
+    movement_type: "isolation",
+    requirements: ["cable"],
+  },
 };
 
 export const getTotalExercisesForMuscleGroup = (
@@ -283,9 +287,13 @@ export const getTotalExercisesForMuscleGroup = (
       const exercise = {
         ...INITIAL_EXERCISE,
         id: `${allExercises[exercises_index].id}_${exercises_index}`,
-        exercise: allExercises[exercises_index].name,
+        name: allExercises[exercises_index].name,
         muscle: group,
         rank: rank,
+        data: {
+          movement_type: allExercises[exercises_index].movement_type,
+          requirements: allExercises[exercises_index].requirements,
+        },
       };
 
       // Initializes the set progression schema and initial sets per meso

@@ -3,10 +3,8 @@ import { BG_COLOR_M5, BG_COLOR_M7 } from "~/constants/themes";
 import { useProgramConfigContext } from "../hooks/useProgramConfig";
 
 export default function Actions() {
-  const { onSaveConfig } = useProgramConfigContext();
-  const onResetConfig = () => {
-    console.log("reset");
-  };
+  const { onSaveConfig, onResetConfig } = useProgramConfigContext();
+
   return (
     <div className={`flex justify-end space-x-1 rounded p-2 ${BG_COLOR_M7}`}>
       <Button
