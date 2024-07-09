@@ -197,10 +197,8 @@ const disperseAddedSets = (addedSets: number[], schema: number[][]) => {
         copiedSchema[j][index] = copiedSchema[j][index] + 1;
         addCounter--;
       }
-      console.log(addCounter, copiedSchema, "WTF IS GONIG ?");
     }
   }
-  console.log(addedSets, schema, copiedSchema, "LETS LOOK");
   return copiedSchema;
 };
 

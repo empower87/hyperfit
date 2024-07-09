@@ -293,13 +293,7 @@ export type State = {
 };
 type UpdateProgramConfigAction = {
   type: "UPDATE_PROGRAM_CONFIG";
-  payload: {
-    frequency: [number, number];
-    split: SplitSessionsNameType;
-    muscle_priority_list: MusclePriorityType[];
-    training_program_config: TrainingProgramParamsType;
-    training_block: TrainingDayType[][];
-  };
+  payload: { value: State };
 };
 type UpdateFrequencyAction = {
   type: "UPDATE_FREQUENCY";
@@ -345,6 +339,7 @@ type InitStoredAction = {
   type: "INIT_STORED";
   payload: { value: State };
 };
+
 type Action =
   | UpdateProgramConfigAction
   | UpdateFrequencyAction
@@ -455,62 +450,61 @@ export default function trainingProgramReducer(state: State, action: Action) {
 
   switch (action.type) {
     case "UPDATE_PROGRAM_CONFIG":
-      const frequencyPayload = action.payload.frequency;
-      const freqPayloadTotal = frequencyPayload[0] + frequencyPayload[1];
-      const split = action.payload.split;
-      const list = action.payload.muscle_priority_list;
-      const params = action.payload.training_program_config;
-      const trainingWeek = action.payload.training_block;
+      // const frequencyPayload = action.payload.frequency;
+      // const freqPayloadTotal = frequencyPayload[0] + frequencyPayload[1];
+      // const split = action.payload.split;
+      // const list = action.payload.muscle_priority_list;
 
-      const freq_maxes = getFrequencyMaxes(
-        2,
-        list,
-        breakpoints,
-        freqPayloadTotal
-      );
+      // const finalizedMuscleList = attachTargetFrequency(
+      //   list,
+      //   freqPayloadTotal,
+      //   breakpoints
+      // );
 
-      const broSplitSorted =
-        split === "BRO"
-          ? muscle_priority_list.reduce((acc: BROSessionKeys[], curr) => {
-              const split = getBroSplit(curr.muscle);
-              if (!acc.includes(split)) return [...acc, split];
-              return acc;
-            }, [])
-          : undefined;
+      // const freq_maxes = getFrequencyMaxes(
+      //   2,
+      //   finalizedMuscleList,
+      //   breakpoints,
+      //   freqPayloadTotal
+      // );
 
-      const finalizedMuscleList = attachTargetFrequency(
-        muscle_priority_list,
-        frequency_total,
-        breakpoints
-      );
+      // const broSplitSorted =
+      //   split === "BRO"
+      //     ? finalizedMuscleList.reduce((acc: BROSessionKeys[], curr) => {
+      //         const split = getBroSplit(curr.muscle);
+      //         if (!acc.includes(split)) return [...acc, split];
+      //         return acc;
+      //       }, [])
+      //     : undefined;
 
-      const sessions = distributeSessionsIntoSplits(
-        split,
-        freqPayloadTotal,
-        freq_maxes,
-        broSplitSorted
-      );
+      // const sessions = distributeSessionsIntoSplits(
+      //   split,
+      //   freqPayloadTotal,
+      //   freq_maxes,
+      //   broSplitSorted
+      // );
 
-      const distributedAcrossWeek = distributeSplitAcrossWeek(
-        frequencyPayload,
-        sessions
-      );
+      // const distributedAcrossWeek = distributeSplitAcrossWeek(
+      //   frequencyPayload,
+      //   sessions
+      // );
 
-      const built_training_block = initializeTrainingBlock(
-        sessions,
-        finalizedMuscleList,
-        distributedAcrossWeek,
-        freqPayloadTotal,
-        mesocycles
-      );
-      return {
-        ...state,
-        frequency: frequencyPayload,
-        muscle_priority_list: finalizedMuscleList,
-        split_sessions: sessions,
-        training_week: distributedAcrossWeek,
-        training_block: built_training_block,
-      };
+      // const built_training_block = initializeTrainingBlock(
+      //   sessions,
+      //   finalizedMuscleList,
+      //   distributedAcrossWeek,
+      //   freqPayloadTotal,
+      //   mesocycles
+      // );
+      // return {
+      //   ...state,
+      //   frequency: frequencyPayload,
+      //   muscle_priority_list: finalizedMuscleList,
+      //   split_sessions: sessions,
+      //   training_week: distributedAcrossWeek,
+      //   training_block: built_training_block,
+      // };
+      return action.payload.value;
     case "UPDATE_FREQUENCY":
       const new_freq = action.payload.frequency;
       const new_freq_total = new_freq[0] + new_freq[1];

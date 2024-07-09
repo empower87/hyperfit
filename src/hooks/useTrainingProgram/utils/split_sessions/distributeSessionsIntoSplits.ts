@@ -1,4 +1,3 @@
-import { MUSCLE_WEIGHTS_MODIFIERS } from "~/constants/weighting/muscles";
 import { getPushPullLegsSplit } from "~/constants/workoutSplits";
 import {
   BROSessionKeys,
@@ -186,9 +185,6 @@ export const getFrequencyMaxes = (
     }
 
     if (tracker[split][2] < many) {
-      const freq_string =
-        MUSCLE_WEIGHTS_MODIFIERS[muscle].frequencyRange.toString();
-
       let muscle_max_adj = 2;
 
       if (i < breakpoints[0]) {
@@ -201,7 +197,7 @@ export const getFrequencyMaxes = (
         muscle_max_adj = getFrequencyLimit(
           tracker[split][0] === 1,
           total_sessions,
-          MUSCLE_WEIGHTS_MODIFIERS[muscle].frequencyRange[0],
+          muscle_priority_list[i].frequency.range[0],
           muscle_max
         );
       } else if (i >= breakpoints[1]) {

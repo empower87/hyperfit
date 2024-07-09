@@ -15,7 +15,6 @@ import trainingProgramReducer, {
   SplitSessionsNameType,
   State,
   TrainingDayType,
-  TrainingProgramParamsType,
 } from "./reducer/trainingProgramReducer";
 
 type TrainingProgramType = ReturnType<typeof useTrainingProgram>;
@@ -194,27 +193,14 @@ function useTrainingProgram() {
     });
   };
 
-  const handleOnProgramConfigChange = useCallback(
-    (
-      _frequency: [number, number],
-      _split: SplitSessionsNameType,
-      _muscle_priority_list: MusclePriorityType[],
-      _params: TrainingProgramParamsType,
-      _training_block: TrainingDayType[][]
-    ) => {
-      dispatch({
-        type: "UPDATE_PROGRAM_CONFIG",
-        payload: {
-          frequency: _frequency,
-          split: _split,
-          muscle_priority_list: _muscle_priority_list,
-          training_program_config: _params,
-          training_block: _training_block,
-        },
-      });
-    },
-    []
-  );
+  const handleOnProgramConfigChange = useCallback((value: State) => {
+    dispatch({
+      type: "UPDATE_PROGRAM_CONFIG",
+      payload: {
+        value: value,
+      },
+    });
+  }, []);
 
   useEffect(() => {
     console.log(
