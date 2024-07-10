@@ -7,7 +7,10 @@ import {
   useState,
 } from "react";
 import { MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
-import { Exercise, getGroupList } from "~/utils/getExercises";
+import {
+  Exercise,
+  getGroupList,
+} from "~/hooks/useTrainingProgram/utils/exercises/getExercises";
 
 type EquipmentType = "barbell" | "dumbbell" | "machine" | "cable";
 type MovementType = "compound" | "isolation";

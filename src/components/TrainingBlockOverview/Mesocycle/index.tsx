@@ -6,18 +6,36 @@ import { cn } from "~/lib/clsx";
 import { HeaderRow, SessionRow } from "./Rows";
 
 type MesocycleProps = {
-  split: DraggableExercises[];
+  training_week: DraggableExercises[];
   currentMesocycleIndex: number;
 };
 
 export default function Mesocycle({
-  split,
+  training_week,
   currentMesocycleIndex,
 }: MesocycleProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   const onCollapse = () => setIsCollapsed(true);
   const onExpand = () => setIsCollapsed(false);
+
+  const filteredOutOffDays = training_week.filter(
+    (each) => each.sessions[0].split !== "off"
+  );
+  const sessionNumbers = filteredOutOffDays.reduce((acc: number[][], cur) => {
+    const realSessions = cur.sessions.filter((each) => each.split !== "off");
+    const sessions: number[] = [];
+    const previousDay = acc[acc.length - 1];
+    const lastSession =
+      previousDay && previousDay.length
+        ? previousDay[previousDay.length - 1]
+        : 0;
+    realSessions.forEach((each, index) =>
+      sessions.push(lastSession + index + 1)
+    );
+    if (sessions.length) acc.push(sessions);
+    return acc;
+  }, []);
 
   if (isCollapsed) {
     return (
@@ -50,11 +68,12 @@ export default function Mesocycle({
         <HeaderRow />
 
         <div className="flex flex-col space-y-2">
-          {split.map((each, index) => {
+          {filteredOutOffDays.map((each, index) => {
             return (
               <SessionRow
                 key={`${each.day}-${index}`}
                 training_day={each}
+                sessionNumbers={sessionNumbers[index]}
                 currentMesocycleIndex={currentMesocycleIndex}
               />
             );

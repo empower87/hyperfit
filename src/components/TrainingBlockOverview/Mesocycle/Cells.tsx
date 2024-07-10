@@ -1,6 +1,9 @@
 import { HTMLAttributes, ReactNode } from "react";
 import { BG_COLOR_M7 } from "~/constants/themes";
-import { SessionSplitType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
+import {
+  DayType,
+  SessionSplitType,
+} from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { cn } from "~/lib/clsx";
 import { getSplitColor } from "~/utils/getIndicatorColors";
 import { CELL_WIDTHS } from "./constants";
@@ -80,23 +83,45 @@ export function HeaderCell({ label, children }: HeaderCellProps) {
 
 type SessionCellProps = {
   split: SessionSplitType;
+  sessionNum: number;
   children?: ReactNode;
 };
-export function SessionCell({ split, children }: SessionCellProps) {
+export function SessionCell({ split, sessionNum, children }: SessionCellProps) {
   return (
-    <div className={cn(`flex ${CELL_WIDTHS.day} justify-end`)}>
+    <div className={cn(`flex ${CELL_WIDTHS.day} pl-1`)}>
       {children}
 
-      <div className={`flex items-start`}>
-        <div
-          className={cn(
-            `${
-              getSplitColor(split).bg
-            } rounded-sm px-1.5 text-[10px] font-semibold text-white`
-          )}
-        >
+      <div
+        className={cn(
+          `${
+            getSplitColor(split).bg
+          } flex w-full items-center justify-center rounded text-[10px] font-semibold text-white`
+        )}
+      >
+        <span className="flex items-center justify-center px-0.5">
+          {sessionNum}
+        </span>
+        <span className=" truncate overflow-ellipsis px-0.5">
           {split.charAt(0).toUpperCase() + split.slice(1)}
-        </div>
+        </span>
+      </div>
+    </div>
+  );
+}
+type DayCellProps = {
+  day: DayType;
+};
+
+export function DayCell({ day }: DayCellProps) {
+  return (
+    <div
+      className={cn(
+        `p flex items-center justify-center py-1 pl-1 `,
+        CELL_WIDTHS.day
+      )}
+    >
+      <div className="flex w-full items-center justify-center rounded bg-primary-700 text-xs font-semibold text-primary-300">
+        {day.slice(0, 3)}
       </div>
     </div>
   );

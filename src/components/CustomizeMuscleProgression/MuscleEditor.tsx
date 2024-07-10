@@ -25,12 +25,13 @@ import {
 } from "~/constants/themes";
 import { ExerciseType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
+import { Exercise } from "~/hooks/useTrainingProgram/utils/exercises/getExercises";
 import { cn } from "~/lib/clsx";
-import { Exercise } from "~/utils/getExercises";
 import { getRankColor } from "~/utils/getIndicatorColors";
 import { getMuscleData } from "~/utils/getMuscleData";
 import getMuscleTitleForUI from "~/utils/getMuscleTitleForUI";
 
+import { getSetProgressionForExercise } from "../../hooks/useTrainingProgram/utils/exercises/setProgressionHandlers";
 import CollapsableHeader from "../Layout/CollapsableHeader";
 import SelectExercise from "../Modals/ChangeExerciseModal/ChangeExerciseModal";
 import SideMenu from "./components/SideMenu";
@@ -38,7 +39,6 @@ import {
   MuscleEditorProvider,
   useMuscleEditorContext,
 } from "./context/MuscleEditorContext";
-import { getSetProgressionForExercise } from "./utils/setProgressionHandlers";
 
 export default function MuscleEditor() {
   const { prioritized_muscle_list } = useTrainingProgramContext();

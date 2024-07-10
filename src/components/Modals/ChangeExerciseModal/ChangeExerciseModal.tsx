@@ -9,8 +9,8 @@ import {
 } from "~/constants/themes";
 import { useOutsideClick } from "~/hooks/useOnOutsideClick";
 import { MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
+import { Exercise } from "~/hooks/useTrainingProgram/utils/exercises/getExercises";
 import { cn } from "~/lib/clsx";
-import { Exercise } from "~/utils/getExercises";
 import {
   ChangeExerciseProvider,
   FilterTagsKey,

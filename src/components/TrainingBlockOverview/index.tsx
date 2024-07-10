@@ -16,7 +16,7 @@ export default function TrainingBlock() {
         return (
           <Mesocycle
             key={`${index}_${each[index]?.day}_mesocycles`}
-            split={each}
+            training_week={each}
             currentMesocycleIndex={index}
           />
         );

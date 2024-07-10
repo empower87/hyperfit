@@ -7,7 +7,7 @@ import {
 import {
   Exercise,
   initializeNewExerciseSetsPerMeso,
-} from "~/utils/getExercises";
+} from "~/hooks/useTrainingProgram/utils/exercises/getExercises";
 
 type AddSubtractSetsType = {
   type: "INCREMENT_SETS";

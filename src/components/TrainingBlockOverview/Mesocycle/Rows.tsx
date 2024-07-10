@@ -3,18 +3,26 @@ import { DraggableExercises } from "~/components/TrainingWeekOverview/components
 import { BG_COLOR_M4, BG_COLOR_M6, BG_COLOR_M7 } from "~/constants/themes";
 import { ExerciseType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
+import { getSetProgressionForExercise } from "~/hooks/useTrainingProgram/utils/exercises/setProgressionHandlers";
 import { cn } from "~/lib/clsx";
 import { getRankColor } from "~/utils/getIndicatorColors";
-import { ExerciseCell, HeaderCell, SessionCell, WeekCell } from "./Cells";
+import {
+  DayCell,
+  ExerciseCell,
+  HeaderCell,
+  SessionCell,
+  WeekCell,
+} from "./Cells";
 import { CELL_WIDTHS } from "./constants";
 
 type DataRowProps = {
   exercise: ExerciseType;
   index: number;
+  setProgression: number[];
 };
-function DataRow({ exercise, index }: DataRowProps) {
-  const details = exercise.mesocycle_progression?.map((each) => {
-    return [each.sets, each.reps, each.weight, each.rir];
+function DataRow({ exercise, setProgression, index }: DataRowProps) {
+  const details = setProgression.map((each) => {
+    return [each, exercise.reps, exercise.weight, exercise.rir];
   });
 
   const exerciseData = [
@@ -75,7 +83,7 @@ export function HeaderRow() {
           data={CELL_WIDTHS.exercise.headers}
           widths={CELL_WIDTHS.exercise.widths}
           bgColor={`${BG_COLOR_M7}`}
-          fontSize="text-xxxs"
+          fontSize="text-xxs"
         />
       </HeaderCell>
 
@@ -86,7 +94,7 @@ export function HeaderRow() {
               data={CELL_WIDTHS.week.headers}
               widths={CELL_WIDTHS.week.widths}
               bgColor={`${BG_COLOR_M7}`}
-              fontSize="text-xxxs"
+              fontSize="text-xxs"
             />
           </HeaderCell>
         );
@@ -97,7 +105,7 @@ export function HeaderRow() {
           data={CELL_WIDTHS.week.headers}
           widths={CELL_WIDTHS.week.widths}
           bgColor={`${BG_COLOR_M7}`}
-          fontSize="text-xxxs"
+          fontSize="text-xxs"
         />
       </HeaderCell>
     </div>
@@ -106,11 +114,15 @@ export function HeaderRow() {
 
 type SessionSplitRowType = {
   exercises: ExerciseType[];
+  currentMesocycleIndex: number;
   children: ReactNode;
 };
 
-function SessionSplitRow({ exercises, children }: SessionSplitRowType) {
-  let count = 0;
+function SessionSplitRow({
+  exercises,
+  currentMesocycleIndex,
+  children,
+}: SessionSplitRowType) {
   return (
     <div
       className={cn(
@@ -119,13 +131,29 @@ function SessionSplitRow({ exercises, children }: SessionSplitRowType) {
     >
       {children}
 
-      <ul className="flex flex-col space-y-0.5 overflow-hidden rounded">
+      <ul className="flex flex-col space-y-0.5 overflow-hidden rounded pr-1">
         {exercises.map((exercise, index) => {
+          let exerciseIndex = 0;
+          const exercisesByMuscleGroup = exercises.filter((each, index) => {
+            if (each.muscle === exercise.muscle) {
+              if (each.name === exercise.name) exerciseIndex = index;
+              return each;
+            }
+          });
+          const setsOverWeek = getSetProgressionForExercise(
+            exercise.setProgressionSchema[currentMesocycleIndex],
+            currentMesocycleIndex,
+            exercise,
+            4,
+            exercisesByMuscleGroup.length,
+            exerciseIndex
+          );
           return (
             <DataRow
               key={`${index}_exercises_training_block_${exercise.id}`}
               exercise={exercise}
-              index={index}
+              setProgression={setsOverWeek}
+              index={index + 1}
             />
           );
         })}
@@ -136,10 +164,12 @@ function SessionSplitRow({ exercises, children }: SessionSplitRowType) {
 
 type SessionRowProps = {
   training_day: DraggableExercises;
+  sessionNumbers: number[];
   currentMesocycleIndex: number;
 };
 export function SessionRow({
   training_day,
+  sessionNumbers,
   currentMesocycleIndex,
 }: SessionRowProps) {
   const sessions = training_day.sessions;
@@ -150,22 +180,18 @@ export function SessionRow({
     <div
       className={cn(`flex flex-col rounded border border-primary-500 py-0.5`)}
     >
-      <div
-        className={cn(
-          `flex justify-center pb-1 text-sm font-semibold text-primary-800`,
-          CELL_WIDTHS.day
-        )}
-      >
-        {day.slice(0, 3)}
-      </div>
-
+      <DayCell day={day} />
       {sessions.map((each, index) => {
         return (
           <SessionSplitRow
             key={`${each.split}_${index}_session`}
             exercises={each.exercises}
+            currentMesocycleIndex={currentMesocycleIndex}
           >
-            <SessionCell split={each.split} />
+            <SessionCell
+              split={each.split}
+              sessionNum={sessionNumbers[index]}
+            />
           </SessionSplitRow>
         );
       })}

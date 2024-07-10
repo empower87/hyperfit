@@ -9,7 +9,6 @@ import {
 import { DragDropContext, Draggable } from "react-beautiful-dnd";
 import ReactDOM from "react-dom";
 import { DotsIcon } from "~/assets/icons/_icons";
-import { getSetProgressionForExercise } from "~/components/CustomizeMuscleProgression/utils/setProgressionHandlers";
 import Dropdown from "~/components/Layout/Dropdown";
 import { CardS as Card } from "~/components/Layout/Sections";
 import Modal from "~/components/Modals/Modal";
@@ -28,9 +27,10 @@ import {
   SplitType,
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
+import { getGroupList } from "~/hooks/useTrainingProgram/utils/exercises/getExercises";
+import { getSetProgressionForExercise } from "~/hooks/useTrainingProgram/utils/exercises/setProgressionHandlers";
 import { cn } from "~/lib/clsx";
 import StrictModeDroppable from "~/lib/react-beautiful-dnd/StrictModeDroppable";
-import { getGroupList } from "~/utils/getExercises";
 import { getRankColor, getSplitColor } from "~/utils/getIndicatorColors";
 import { capitalizeFirstLetter } from "~/utils/uiHelpers";
 import Settings from "../Configuration/components/MusclePrioritization/Settings";
@@ -294,13 +294,20 @@ function DaySessionItem({
   const setProgressionSchema =
     exercise.setProgressionSchema[selectedMesocycleIndex];
 
+  let exerciseIndex = 0;
+  const exercisesByMuscleGroup = exercises.filter((each, index) => {
+    if (each.muscle === exercise.muscle) {
+      if (each.name === exercise.name) exerciseIndex = index;
+      return each;
+    }
+  });
   const setsOverWeek = getSetProgressionForExercise(
     setProgressionSchema,
     selectedMesocycleIndex,
     exercise,
     4,
-    2,
-    0
+    exercisesByMuscleGroup.length,
+    exerciseIndex
   );
 
   const mesocycle_progression = exercise.mesocycle_progression;

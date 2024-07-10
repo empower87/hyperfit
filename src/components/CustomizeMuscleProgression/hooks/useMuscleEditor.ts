@@ -10,8 +10,8 @@ import {
   Exercise,
   INITIAL_EXERCISE,
   initializeNewExerciseSetsPerMeso,
-} from "~/utils/getExercises";
-import { getSetProgressionForExercise } from "../utils/setProgressionHandlers";
+} from "~/hooks/useTrainingProgram/utils/exercises/getExercises";
+import { getSetProgressionForExercise } from "../../../hooks/useTrainingProgram/utils/exercises/setProgressionHandlers";
 
 const getNewExercise = (
   newExercise: Exercise,

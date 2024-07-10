@@ -24,8 +24,8 @@ import {
   QUADS_EXERCISES,
   TRAPS_EXERCISES,
   TRICEPS_EXERCISES,
-} from "../constants/exercises/index";
-import { getMuscleData } from "./getMuscleData";
+} from "../../../../constants/exercises/index";
+import { getMuscleData } from "../../../../utils/getMuscleData";
 
 // back
 // regions: "lat" | "upper-back" | "upper-trap"
@@ -166,7 +166,7 @@ export const getGroupList = (group: string): Exercise[] => {
       exercises = ABS_EXERCISES;
       break;
     default:
-      exercises = BACK_EXERCISES;
+      break;
   }
 
   const rankedExercises = exercises.map((each) => ({
@@ -431,8 +431,4 @@ const getMevMvIncrement = (
   const increment = setsToProgress / microcycles - 1;
 
   return increment;
-};
-
-const handleIncrement = (increment: number) => {
-  const roundedIncrement = Math.round(increment);
 };

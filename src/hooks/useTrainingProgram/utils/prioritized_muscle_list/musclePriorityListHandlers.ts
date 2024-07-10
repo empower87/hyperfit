@@ -2,7 +2,7 @@ import { MuscleType } from "~/constants/workoutSplits";
 import {
   getTotalExercisesForMuscleGroup,
   initializeSetProgression,
-} from "~/utils/getExercises";
+} from "~/hooks/useTrainingProgram/utils/exercises/getExercises";
 import { getMuscleData } from "~/utils/getMuscleData";
 
 import {
