@@ -58,6 +58,7 @@ const calculateTotalVolume = (
           exercises[i].length,
           g
         );
+
         totalVolumes[j] = totalVolumes[j] + sets[sets.length - 1];
       }
     }
@@ -70,12 +71,23 @@ const updateExercisesOnFrequencyIncrement = (
   frequencyProgression: number[],
   frequencyIndex: number
 ) => {
+  const copiedExercises = structuredClone(exercises);
   const nextFreq = frequencyProgression[frequencyIndex + 1];
   const sessionIndex = frequencyProgression[frequencyIndex] - 1;
-  const sessionExercises = exercises[sessionIndex];
+  const sessionExercises = copiedExercises[sessionIndex];
 
-  const toCopyExercises = exercises[nextFreq - 1];
+  const toCopyExercises = copiedExercises[nextFreq - 1];
 
+  console.log(
+    exercises,
+    frequencyProgression,
+    frequencyIndex,
+    nextFreq,
+    sessionIndex,
+    sessionExercises,
+    toCopyExercises,
+    "OH MY LOTS OF DATA"
+  );
   for (let i = 0; i < sessionExercises.length; i++) {
     const nextFreqSets =
       toCopyExercises[i].initialSetsPerMeso[frequencyIndex + 1];
@@ -85,8 +97,8 @@ const updateExercisesOnFrequencyIncrement = (
     sessionExercises[i].setProgressionSchema[frequencyIndex] = nextAlgoSchema;
   }
 
-  exercises[sessionIndex] = sessionExercises;
-  return exercises;
+  copiedExercises[sessionIndex] = sessionExercises;
+  return copiedExercises;
 };
 
 export default function useMuscleEditor(muscle: MusclePriorityType) {
@@ -274,6 +286,39 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
     [selectedMesocycleIndex, muscleGroup]
   );
 
+  const canAddOrSubtractFrequency = (
+    freqProgression: number[],
+    targetIndex: number,
+    operation: "+" | "-"
+  ) => {
+    if (operation === "+") {
+      const next = freqProgression[targetIndex + 1];
+      if (next && freqProgression[targetIndex] < next) {
+        return next;
+      }
+    } else {
+      const prev = freqProgression[targetIndex - 1];
+      if (prev && freqProgression[targetIndex] > prev) {
+        return prev;
+      }
+    }
+    return false;
+  };
+
+  const onFrequencyIncrement = (
+    targetIndex: number,
+    operation: "+" | "-",
+    muscleGroup: MusclePriorityType
+  ) => {
+    const exercises = muscleGroup.exercises;
+    const frequencyProgression = muscleGroup.frequency.progression;
+    let curr = frequencyProgression[targetIndex];
+
+    if (operation === "+") {
+    } else {
+    }
+  };
+
   const onFrequencyProgressionIncrement = useCallback(
     (targetIndex: number, operation: "+" | "-") => {
       const exercises = muscleGroup.exercises;
@@ -305,6 +350,7 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
           if (curr < prevFreq) {
             curr++;
             frequencyProgression[targetIndex] = curr;
+
             setMuscleGroup((prev) => ({
               ...prev,
               volume: {
@@ -312,17 +358,21 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
                 frequencyProgression: frequencyProgression,
               },
             }));
-          }
+          } else return;
         }
       } else {
         const prev = frequencyProgression[targetIndex - 1];
         if (prev) {
           if (curr > prev) {
             curr--;
+          } else {
+            return;
           }
         } else {
           if (curr > 0) {
             curr--;
+          } else {
+            return;
           }
         }
         frequencyProgression[targetIndex] = curr;
@@ -335,7 +385,7 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
         }));
       }
     },
-    [muscleGroup]
+    [muscleGroup, microcycles, mesocycles]
   );
 
   const onResetMuscleGroup = useCallback(() => {

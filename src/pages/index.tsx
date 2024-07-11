@@ -42,7 +42,7 @@ const Home: NextPage = () => {
               </Configuration>
             </Section>
 
-            <Section title="CUSTOMIZE MUSCLE">
+            <Section title="CUSTOMIZE MUSCLE PROGRESSION">
               <MuscleEditor />
             </Section>
 

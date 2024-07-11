@@ -295,6 +295,7 @@ function Exercises() {
     muscleGroup.frequency.progression[selectedMesocycleIndex];
   const exercisesByMeso = muscleGroup.exercises.slice(0, totalExercisesByMeso);
 
+  console.log(muscleGroup.muscle, exercisesByMeso, "man this logic needs work");
   const totalSessions = exercisesByMeso.length;
   const remaining = totalSessions < 5 ? 5 - totalSessions : 0;
   const addButtonDivs = Array.from(Array(remaining), (e, i) => i);
