@@ -243,6 +243,51 @@ export const INITIAL_EXERCISE: ExerciseType = {
   },
 };
 
+// MUSCLES BY COLOR?
+// PUSH --
+// chest
+// triceps
+// f_delts
+// s_delts
+// PULL
+// back
+// biceps
+// traps
+// r_delts
+// LEGS
+
+export const getSetProgressionOnFrequencyChange = (
+  frequencyProgression: number[],
+  matrix: number[][][],
+  rank: VolumeLandmarkType,
+  exercises: ExerciseType[][]
+) => {
+  const updated_exercises = structuredClone(exercises);
+  for (let i = 0; i < updated_exercises.length; i++) {
+    const session = updated_exercises[i];
+
+    for (let j = 0; j < session.length; j++) {
+      let sets = [];
+      let schemas: SetProgressionType[] = [];
+
+      if (rank === "MEV" || rank === "MV") {
+        for (let g = 0; g < frequencyProgression.length; g++) {
+          sets.push(2); /// TEST TEST OH BOY HARD CODE
+          schemas.push("NO_ADD");
+        }
+      } else {
+        const toAdd = initializeSetsPerMeso(frequencyProgression, matrix, j, i);
+        sets = toAdd.sets;
+        schemas = toAdd.schemas;
+      }
+      session[j].initialSetsPerMeso = sets;
+      session[j].setProgressionSchema = schemas;
+    }
+    updated_exercises[i] = session;
+  }
+  return updated_exercises;
+};
+
 export const getTotalExercisesForMuscleGroup = (
   group: MuscleType,
   rank: VolumeLandmarkType,
