@@ -1,6 +1,7 @@
 import {
   MRV_PROGRESSION_MATRIX_ONE,
   MRV_PROGRESSION_MATRIX_TWO_INIT,
+  getSetProgressionMatrix_mev_mv,
   getVolumeProgressionMatrix,
 } from "~/constants/volumeProgressionMatrices";
 import { MuscleType } from "~/constants/workoutSplits";
@@ -243,19 +244,95 @@ export const INITIAL_EXERCISE: ExerciseType = {
   },
 };
 
-// MUSCLES BY COLOR?
-// PUSH --
-// chest
-// triceps
-// f_delts
-// s_delts
-// PULL
-// back
-// biceps
-// traps
-// r_delts
-// LEGS
+const getValidFrequencyIndex_mev_mv = (selectedFrequency: number) => {
+  switch (true) {
+    case selectedFrequency > 1:
+      return 1;
+    case selectedFrequency === 1:
+      return 0;
+    default:
+      return null;
+  }
+};
 
+const getExerciseMatrix = (
+  rank: VolumeLandmarkType,
+  exercisesPerSessionSchema: number
+) => {
+  if (rank === "MRV") {
+    const matrix = getVolumeProgressionMatrix(rank, exercisesPerSessionSchema);
+    return matrix;
+  } else {
+    // const index = getValidFrequencyIndex_mev_mv(selectedFrequency);
+    // if (index == null) return [];
+    const matrix = getSetProgressionMatrix_mev_mv(exercisesPerSessionSchema);
+    return matrix;
+  }
+};
+
+// frequencyProgression changes..
+//
+export const updateInitialSetsForExercises = (
+  rank: VolumeLandmarkType,
+  rankData: number,
+  exercisesPerSessionSchema: number,
+  exercises: ExerciseType[][],
+  freqProgIndex: number, // 1
+  freqProg: number[] // 2, 3 4
+) => {
+  let exercises_matrix: number[][] = [];
+  let freq_index = freqProg[freqProgIndex] - 1; // 0 1 2
+  let variable = exercisesPerSessionSchema;
+  if (rank !== "MRV") {
+    const index = getValidFrequencyIndex_mev_mv(freqProg[freq_index]);
+    variable = rankData;
+    freq_index = index == null ? -1 : index;
+  }
+  const matrix = getExerciseMatrix(rank, variable);
+  exercises_matrix = matrix[freq_index];
+
+  const copied_exercises = structuredClone(exercises);
+  // const valid_exercises = exercises.slice(0, freqProg[freqProgIndex] - 1);
+  for (let i = 0; i < copied_exercises.length; i++) {
+    const session_exercises = copied_exercises[i];
+
+    for (let j = 0; j < session_exercises.length; j++) {
+      const exercise = session_exercises[j];
+      const setsAndSchemas = getSetsAndSchema(
+        exercises_matrix,
+        freqProgIndex,
+        j
+      );
+      copied_exercises[i][j].initialSetsPerMeso[freqProgIndex] =
+        setsAndSchemas.sets;
+      console.log(
+        exercise,
+        setsAndSchemas,
+        copied_exercises,
+        freqProg,
+        freqProgIndex,
+        "WTF????"
+      );
+    }
+  }
+  return copied_exercises;
+};
+// const getExerciseMatrix = (
+//   selectedFrequency: number,
+//   rank: VolumeLandmarkType,
+//   exercisesPerSessionSchema: number
+// ) => {
+//   if (rank === "MRV") {
+//     const index = selectedFrequency - 1;
+//     const matrix = getVolumeProgressionMatrix(rank, exercisesPerSessionSchema);
+//     return matrix[index];
+//   } else {
+//     const index = getValidFrequencyIndex_mev_mv(selectedFrequency);
+//     if (index == null) return [];
+//     const matrix = getSetProgressionMatrix_mev_mv(exercisesPerSessionSchema);
+//     return matrix[index];
+//   }
+// };
 export const getSetProgressionOnFrequencyChange = (
   frequencyProgression: number[],
   matrix: number[][][],
@@ -302,18 +379,20 @@ export const getTotalExercisesForMuscleGroup = (
   const exercise_list: ExerciseType[][] = [];
   let exercises_index = 0;
 
+  let matrix: number[][][] = [];
   let exercises_matrix: number[][] = [];
-  const matrix = getVolumeProgressionMatrix(rank, exercisesPerSessionSchema);
+  // const matrix = getVolumeProgressionMatrix(rank, exercisesPerSessionSchema);
 
-  if (rank === "MEV" || rank === "MV") {
-    if (muscleData[rank] === 0) return exercise_list;
-    exercises_matrix = initializeSetsPerMeso_mev_mv(
-      muscleData[rank],
-      frequencyProgression
-    );
-  } else {
-    exercises_matrix = matrix[total_frequency - 1];
+  let freq_index = total_frequency - 1;
+  let variable = exercisesPerSessionSchema;
+  if (rank !== "MRV") {
+    const index = getValidFrequencyIndex_mev_mv(total_frequency);
+    if (muscleData[rank] === 0 || index == null) return exercise_list;
+    variable = muscleData[rank];
+    freq_index = index;
   }
+  matrix = getExerciseMatrix(rank, variable);
+  exercises_matrix = matrix[freq_index];
 
   if (!exercises_matrix) return exercise_list;
 
@@ -339,6 +418,9 @@ export const getTotalExercisesForMuscleGroup = (
         },
       };
 
+      for (let k = 0; k < frequencyProgression.length; k++) {
+        const setsAndSchemas = getSetsAndSchema(exercises_matrix, i, j);
+      }
       // Initializes the set progression schema and initial sets per meso
       let sets = [];
       let schemas: SetProgressionType[] = [];
@@ -371,6 +453,7 @@ export const getTotalExercisesForMuscleGroup = (
 
 // NOTE: May need to experiment with a more algorithmic logic to create these values then hard coding
 //       these cases
+
 const initializeSetsPerMeso_mev_mv = (
   target: number,
   frequencyProgression: number[]
@@ -413,6 +496,32 @@ const initializeSetsPerMeso_mev_mv = (
     default:
       return [[]];
   }
+};
+
+const getProgressionByMeso = (
+  targetFrequency: number,
+  matrix: number[][][]
+) => {
+  return matrix[targetFrequency];
+};
+
+const getSetsAndSchema = (
+  matrix: number[][],
+  freqIndex: number,
+  exerciseIndex: number
+) => {
+  if (!matrix[freqIndex] || !matrix[freqIndex][exerciseIndex]) {
+    console.log(
+      matrix,
+      freqIndex,
+      exerciseIndex,
+      "ERROR: matrix does not contain these coords"
+    );
+  }
+  return {
+    sets: matrix[freqIndex][exerciseIndex],
+    schema: "ADD_ONE_PER_MICROCYCLE",
+  };
 };
 
 const initializeSetsPerMeso = (

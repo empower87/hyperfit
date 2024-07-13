@@ -1,5 +1,39 @@
 import { VolumeLandmarkType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 
+const MEV_MV_TWO = [[[2]]];
+const MEV_MV_FOUR = [[[2, 2]], [[2], [2]]];
+const MEV_MV_SIX = [[[3, 3]], [[3], [3]]];
+const MEV_MV_EIGHT = [
+  [[3, 3]],
+  [
+    [2, 2],
+    [2, 2],
+  ],
+];
+const MEV_MV_TEN = [
+  [[4, 3]],
+  [
+    [3, 2],
+    [3, 2],
+  ],
+];
+
+export const getSetProgressionMatrix_mev_mv = (total_sets: number) => {
+  switch (total_sets) {
+    case 2:
+      return MEV_MV_TWO;
+    case 4:
+      return MEV_MV_FOUR;
+    case 6:
+      return MEV_MV_SIX;
+    case 8:
+      return MEV_MV_EIGHT;
+    case 10:
+      return MEV_MV_TEN;
+    default:
+      return [];
+  }
+};
 export const MRV_PROGRESSION_MATRIX_ONE = [
   [[2]],
   [[3], [3]],
@@ -236,3 +270,5 @@ export const getVolumeProgressionMatrix = (
       return MRV_PROGRESSION_MATRIX_TWO;
   }
 };
+
+const SET_PROG = [[3, 3], [3, 3], [3, 2], [2]];

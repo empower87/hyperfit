@@ -12,6 +12,7 @@ import {
   getSetProgressionOnFrequencyChange,
   INITIAL_EXERCISE,
   initializeNewExerciseSetsPerMeso,
+  updateInitialSetsForExercises,
 } from "~/hooks/useTrainingProgram/utils/exercises/getExercises";
 import { getSetProgressionForExercise } from "../../../hooks/useTrainingProgram/utils/exercises/setProgressionHandlers";
 
@@ -315,6 +316,9 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
   const onFrequencyProgressionIncrement = useCallback(
     (targetIndex: number, operation: "+" | "-") => {
       const exercises = muscleGroup.exercises;
+      const rank = muscleGroup.volume.landmark;
+      const exercisesPerSessionSchema =
+        muscleGroup.volume.exercisesPerSessionSchema;
       const frequencyProgression = muscleGroup.frequency.progression;
       let curr = frequencyProgression[targetIndex];
 
@@ -324,11 +328,21 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
           if (curr < next) {
             curr++;
             frequencyProgression[targetIndex] = curr;
-            const updatedExercises = updateExercisesOnFrequencyIncrement(
+            // const updatedExercises = updateExercisesOnFrequencyIncrement(
+            //   exercises,
+            //   frequencyProgression,
+            //   targetIndex
+            // );
+            console.log(exercises, frequencyProgression, "BEFORE");
+            const updatedExercises = updateInitialSetsForExercises(
+              rank,
+              6,
+              exercisesPerSessionSchema,
               exercises,
-              frequencyProgression,
-              targetIndex
+              targetIndex,
+              frequencyProgression
             );
+            console.log(updatedExercises, frequencyProgression, "AFTER");
             const totalVolumes = calculateTotalVolume(
               updatedExercises,
               mesocycles,
@@ -349,16 +363,26 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
           if (curr < prevFreq) {
             curr++;
             frequencyProgression[targetIndex] = curr;
-            const matrix = getVolumeProgressionMatrix(
-              muscleGroup.volume.landmark,
-              muscleGroup.volume.exercisesPerSessionSchema
+            // const matrix = getVolumeProgressionMatrix(
+            //   muscleGroup.volume.landmark,
+            //   muscleGroup.volume.exercisesPerSessionSchema
+            // );
+            // const updateExercises = getSetProgressionOnFrequencyChange(
+            //   frequencyProgression,
+            //   matrix,
+            //   muscleGroup.volume.landmark,
+            //   exercises
+            // );
+            console.log(exercises, frequencyProgression, "BEFORE");
+            const updateExercises = updateInitialSetsForExercises(
+              rank,
+              6,
+              exercisesPerSessionSchema,
+              exercises,
+              targetIndex,
+              frequencyProgression
             );
-            const updateExercises = getSetProgressionOnFrequencyChange(
-              frequencyProgression,
-              matrix,
-              muscleGroup.volume.landmark,
-              exercises
-            );
+            console.log(updateExercises, frequencyProgression, "AFTER");
             const totalVolumes = calculateTotalVolume(
               updateExercises,
               mesocycles,
