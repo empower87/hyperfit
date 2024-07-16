@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from "react";
-import { getVolumeProgressionMatrix } from "~/constants/volumeProgressionMatrices";
 import { MuscleType } from "~/constants/workoutSplits";
 import {
   type ExerciseType,
@@ -9,7 +8,6 @@ import {
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
 import {
   Exercise,
-  getSetProgressionOnFrequencyChange,
   INITIAL_EXERCISE,
   initializeNewExerciseSetsPerMeso,
   updateInitialSetsForExercises,
@@ -51,17 +49,19 @@ const calculateTotalVolume = (
 ) => {
   const totalVolumes = Array.from(Array(mesocycles), (e, i) => 0);
   for (let i = 0; i < exercises.length; i++) {
-    for (let g = 0; g < exercises[i].length; g++) {
+    const sessionExercises = exercises[i];
+    for (let g = 0; g < sessionExercises.length; g++) {
+      const exercise = sessionExercises[g];
       for (let j = 0; j < mesocycles; j++) {
         const sets = getSetProgressionForExercise(
-          exercises[i][g].setProgressionSchema[j],
+          sessionExercises[g].setProgressionSchema[j],
           j,
-          exercises[i][g],
+          sessionExercises[g],
           microcycles,
-          exercises[i].length,
+          sessionExercises.length,
           g
         );
-
+        console.log(exercise, sets, "WTF YO??");
         totalVolumes[j] = totalVolumes[j] + sets[sets.length - 1];
       }
     }
@@ -123,20 +123,22 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
 
   useEffect(() => {
     const cloned_muscle = structuredClone(muscle);
-    const cloned_prog = [...muscle.frequency.progression];
-    setFrequencyProgression(cloned_prog);
     setMuscleGroup(cloned_muscle);
   }, [muscle]);
 
-  // useEffect(() => {
-  //   const exercises = muscleGroup.exercises;
-  //   const totalVolumes = calculateTotalVolume(
-  //     exercises,
-  //     mesocycles,
-  //     microcycles
-  //   );
-  //   setVolumes(totalVolumes);
-  // }, [microcycles, mesocycles, muscleGroup]);
+  useEffect(() => {
+    const exercises = muscleGroup.exercises;
+    const totalVolumes = calculateTotalVolume(
+      exercises,
+      mesocycles,
+      microcycles
+    );
+    const forLoggingExercises = exercises.map((each) =>
+      each.map((ea) => [ea.muscle, ea.name, ea.initialSetsPerMeso])
+    );
+    console.log(forLoggingExercises, totalVolumes, "OH MY LETS LOOK AT THIS");
+    setVolumes(totalVolumes);
+  }, [microcycles, mesocycles, muscleGroup]);
 
   const onSelectMesocycle = useCallback(
     (index: number) => {
@@ -343,12 +345,12 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
               frequencyProgression
             );
             console.log(updatedExercises, frequencyProgression, "AFTER");
-            const totalVolumes = calculateTotalVolume(
-              updatedExercises,
-              mesocycles,
-              microcycles
-            );
-            setVolumes(totalVolumes);
+            // const totalVolumes = calculateTotalVolume(
+            //   updatedExercises,
+            //   mesocycles,
+            //   microcycles
+            // );
+            // setVolumes(totalVolumes);
             setMuscleGroup((prev) => ({
               ...prev,
               exercises: updatedExercises,
@@ -383,12 +385,12 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
               frequencyProgression
             );
             console.log(updateExercises, frequencyProgression, "AFTER");
-            const totalVolumes = calculateTotalVolume(
-              updateExercises,
-              mesocycles,
-              microcycles
-            );
-            setVolumes(totalVolumes);
+            // const totalVolumes = calculateTotalVolume(
+            //   updateExercises,
+            //   mesocycles,
+            //   microcycles
+            // );
+            // setVolumes(totalVolumes);
             setMuscleGroup((prev) => ({
               ...prev,
               exercises: updateExercises,
@@ -422,24 +424,33 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
           targetIndex,
           "WTF IS HAPPENING HERE?"
         );
-        const matrix = getVolumeProgressionMatrix(
-          muscleGroup.volume.landmark,
-          muscleGroup.volume.exercisesPerSessionSchema
+        const updatedExercises = updateInitialSetsForExercises(
+          rank,
+          6,
+          exercisesPerSessionSchema,
+          exercises,
+          targetIndex,
+          frequencyProgression
         );
-        const updateExercises = getSetProgressionOnFrequencyChange(
-          frequencyProgression,
-          matrix,
-          muscleGroup.volume.landmark,
-          exercises
-        );
-        const totalVolumes = calculateTotalVolume(
-          updateExercises,
-          mesocycles,
-          microcycles
-        );
-        setVolumes(totalVolumes);
+        // const matrix = getVolumeProgressionMatrix(
+        //   muscleGroup.volume.landmark,
+        //   muscleGroup.volume.exercisesPerSessionSchema
+        // );
+        // const updateExercises = getSetProgressionOnFrequencyChange(
+        //   frequencyProgression,
+        //   matrix,
+        //   muscleGroup.volume.landmark,
+        //   exercises
+        // );
+        // const totalVolumes = calculateTotalVolume(
+        //   updateExercises,
+        //   mesocycles,
+        //   microcycles
+        // );
+        // setVolumes(totalVolumes);
         setMuscleGroup((prev) => ({
           ...prev,
+          exercises: updatedExercises,
           volume: {
             ...prev.volume,
             frequencyProgression: frequencyProgression,

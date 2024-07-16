@@ -283,34 +283,40 @@ export const updateInitialSetsForExercises = (
   let exercises_matrix: number[][] = [];
   let freq_index = freqProg[freqProgIndex] - 1; // 0 1 2
   let variable = exercisesPerSessionSchema;
+
   if (rank !== "MRV") {
     const index = getValidFrequencyIndex_mev_mv(freqProg[freq_index]);
     variable = rankData;
     freq_index = index == null ? -1 : index;
   }
+
   const matrix = getExerciseMatrix(rank, variable);
   exercises_matrix = matrix[freq_index];
 
   const copied_exercises = structuredClone(exercises);
-  // const valid_exercises = exercises.slice(0, freqProg[freqProgIndex] - 1);
+
   for (let i = 0; i < copied_exercises.length; i++) {
     const session_exercises = copied_exercises[i];
 
     for (let j = 0; j < session_exercises.length; j++) {
       const exercise = session_exercises[j];
+
       const setsAndSchemas = getSetsAndSchema(
         exercises_matrix,
         freqProgIndex,
         j
       );
-      copied_exercises[i][j].initialSetsPerMeso[freqProgIndex] =
-        setsAndSchemas.sets;
+      const validSets =
+        i > freqProg[freqProgIndex] - 1 ? 0 : setsAndSchemas.sets;
+      copied_exercises[i][j].initialSetsPerMeso[freqProgIndex] = validSets;
+
       console.log(
         exercise,
         setsAndSchemas,
         copied_exercises,
         freqProg,
         freqProgIndex,
+        exercises_matrix,
         "WTF????"
       );
     }
@@ -518,6 +524,7 @@ const getSetsAndSchema = (
       "ERROR: matrix does not contain these coords"
     );
   }
+
   return {
     sets: matrix[freqIndex][exerciseIndex],
     schema: "ADD_ONE_PER_MICROCYCLE",

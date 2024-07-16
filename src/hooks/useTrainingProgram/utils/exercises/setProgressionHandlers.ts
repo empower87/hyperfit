@@ -77,6 +77,9 @@ const setProgression_addOnePerMicrocycle = (
   exerciseIndex: number
 ) => {
   const initialSets = exercise.initialSetsPerMeso[mesocycleIndex];
+  if (initialSets === 0) {
+    return Array.from(Array(microcycles), (e, i) => 0);
+  }
   const setsPerMicrocycle: number[] = [initialSets];
 
   let setCount = initialSets;
