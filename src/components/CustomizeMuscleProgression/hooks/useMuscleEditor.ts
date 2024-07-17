@@ -329,134 +329,43 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
         if (next) {
           if (curr < next) {
             curr++;
-            frequencyProgression[targetIndex] = curr;
-            // const updatedExercises = updateExercisesOnFrequencyIncrement(
-            //   exercises,
-            //   frequencyProgression,
-            //   targetIndex
-            // );
-            console.log(exercises, frequencyProgression, "BEFORE");
-            const updatedExercises = updateInitialSetsForExercises(
-              rank,
-              6,
-              exercisesPerSessionSchema,
-              exercises,
-              targetIndex,
-              frequencyProgression
-            );
-            console.log(updatedExercises, frequencyProgression, "AFTER");
-            // const totalVolumes = calculateTotalVolume(
-            //   updatedExercises,
-            //   mesocycles,
-            //   microcycles
-            // );
-            // setVolumes(totalVolumes);
-            setMuscleGroup((prev) => ({
-              ...prev,
-              exercises: updatedExercises,
-              volume: {
-                ...prev.volume,
-                frequencyProgression: frequencyProgression,
-              },
-            }));
           }
         } else {
           const prevFreq = muscle.frequency.progression[targetIndex];
           if (curr < prevFreq) {
             curr++;
-            frequencyProgression[targetIndex] = curr;
-            // const matrix = getVolumeProgressionMatrix(
-            //   muscleGroup.volume.landmark,
-            //   muscleGroup.volume.exercisesPerSessionSchema
-            // );
-            // const updateExercises = getSetProgressionOnFrequencyChange(
-            //   frequencyProgression,
-            //   matrix,
-            //   muscleGroup.volume.landmark,
-            //   exercises
-            // );
-            console.log(exercises, frequencyProgression, "BEFORE");
-            const updateExercises = updateInitialSetsForExercises(
-              rank,
-              6,
-              exercisesPerSessionSchema,
-              exercises,
-              targetIndex,
-              frequencyProgression
-            );
-            console.log(updateExercises, frequencyProgression, "AFTER");
-            // const totalVolumes = calculateTotalVolume(
-            //   updateExercises,
-            //   mesocycles,
-            //   microcycles
-            // );
-            // setVolumes(totalVolumes);
-            setMuscleGroup((prev) => ({
-              ...prev,
-              exercises: updateExercises,
-              volume: {
-                ...prev.volume,
-                frequencyProgression: frequencyProgression,
-              },
-            }));
-          } else return;
+          }
         }
       } else {
         const prev = frequencyProgression[targetIndex - 1];
         if (prev) {
           if (curr > prev) {
             curr--;
-          } else {
-            return;
           }
         } else {
           if (curr > 0) {
             curr--;
-          } else {
-            return;
           }
         }
-        frequencyProgression[targetIndex] = curr;
-        console.log(
-          curr,
-          prev,
-          frequencyProgression,
-          targetIndex,
-          "WTF IS HAPPENING HERE?"
-        );
-        const updatedExercises = updateInitialSetsForExercises(
-          rank,
-          6,
-          exercisesPerSessionSchema,
-          exercises,
-          targetIndex,
-          frequencyProgression
-        );
-        // const matrix = getVolumeProgressionMatrix(
-        //   muscleGroup.volume.landmark,
-        //   muscleGroup.volume.exercisesPerSessionSchema
-        // );
-        // const updateExercises = getSetProgressionOnFrequencyChange(
-        //   frequencyProgression,
-        //   matrix,
-        //   muscleGroup.volume.landmark,
-        //   exercises
-        // );
-        // const totalVolumes = calculateTotalVolume(
-        //   updateExercises,
-        //   mesocycles,
-        //   microcycles
-        // );
-        // setVolumes(totalVolumes);
-        setMuscleGroup((prev) => ({
-          ...prev,
-          exercises: updatedExercises,
-          volume: {
-            ...prev.volume,
-            frequencyProgression: frequencyProgression,
-          },
-        }));
       }
+
+      frequencyProgression[targetIndex] = curr;
+      const updatedExercises = updateInitialSetsForExercises(
+        rank,
+        6,
+        exercisesPerSessionSchema,
+        exercises,
+        targetIndex,
+        frequencyProgression
+      );
+      setMuscleGroup((prev) => ({
+        ...prev,
+        exercises: updatedExercises,
+        volume: {
+          ...prev.volume,
+          frequencyProgression: frequencyProgression,
+        },
+      }));
     },
     [muscleGroup, microcycles, mesocycles]
   );

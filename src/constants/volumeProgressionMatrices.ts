@@ -1,14 +1,15 @@
 import { VolumeLandmarkType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 
-const MEV_MV_TWO = [[[2]]];
-const MEV_MV_FOUR = [[[2, 2]], [[2], [2]]];
-const MEV_MV_SIX = [[[3, 3]], [[3], [3]]];
+const MEV_MV_TWO = [[[2]], [[2], [0]], [[2], [0], [0]]];
+const MEV_MV_FOUR = [[[2, 2]], [[2], [2]], [[2], [2], [0]]];
+const MEV_MV_SIX = [[[3, 3]], [[3], [3]], [[2], [2], [2]]];
 const MEV_MV_EIGHT = [
   [[3, 3]],
   [
     [2, 2],
     [2, 2],
   ],
+  [[2, 2], [2], [2]],
 ];
 const MEV_MV_TEN = [
   [[4, 3]],
@@ -16,10 +17,11 @@ const MEV_MV_TEN = [
     [3, 2],
     [3, 2],
   ],
+  [[2, 2], [2, 2], [2]],
 ];
 
-export const getSetProgressionMatrix_mev_mv = (total_sets: number) => {
-  switch (total_sets) {
+const getSetProgressionMatrix_mev_mv = (volume: number) => {
+  switch (volume) {
     case 2:
       return MEV_MV_TWO;
     case 4:
@@ -34,6 +36,19 @@ export const getSetProgressionMatrix_mev_mv = (total_sets: number) => {
       return [];
   }
 };
+export const getValidFrequencyIndex_mev_mv = (selectedFrequency: number) => {
+  if (selectedFrequency > 2) return -1;
+  return selectedFrequency;
+};
+
+export const getMatrixFnByVolumeLandmark = (rank: VolumeLandmarkType) => {
+  if (rank === "MRV") {
+    return getSetProgressionMatrix_mrv;
+  } else {
+    return getSetProgressionMatrix_mev_mv;
+  }
+};
+
 export const MRV_PROGRESSION_MATRIX_ONE = [
   [[2]],
   [[3], [3]],
@@ -109,6 +124,7 @@ export const MRV_PROGRESSION_MATRIX_ONE_INIT = [
 // 2,3 2,3 2,2
 // 3,3 3,3 3,2, 1
 // 4,3 4,3 3,3 2, 1 = 23 > 4,4 4,4 4,3 3, 2 > 28 > 5,4 5,4 4,4 4, 3 > 33
+
 const getMatrixByKeySchema = (keySchema: [VolumeLandmarkType, number]) => {
   switch (keySchema[0]) {
     case "MRV":
@@ -271,4 +287,14 @@ export const getVolumeProgressionMatrix = (
   }
 };
 
+const getSetProgressionMatrix_mrv = (exercisesPerSession: number) => {
+  switch (exercisesPerSession) {
+    case 1:
+      return MRV_PROGRESSION_MATRIX_ONE;
+    case 2:
+      return MRV_PROGRESSION_MATRIX_TWO;
+    default:
+      return [];
+  }
+};
 const SET_PROG = [[3, 3], [3, 3], [3, 2], [2]];

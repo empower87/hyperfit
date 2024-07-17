@@ -338,7 +338,7 @@ function Exercises() {
         const indices = exerciseIndices.splice(0, each.length);
         return (
           <Session
-            key={`${each[0].id}_${index}_Session`}
+            key={`${each[0]?.id}_${index}_Session`}
             exercises={each}
             index={index}
             indices={indices}
