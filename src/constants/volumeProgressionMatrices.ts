@@ -1,7 +1,7 @@
 import { VolumeLandmarkType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 
-const MEV_MV_TWO = [[[2]], [[2], [0]], [[2], [0], [0]]];
-const MEV_MV_FOUR = [[[2, 2]], [[2], [2]], [[2], [2], [0]]];
+const MEV_MV_TWO = [[[2]]];
+const MEV_MV_FOUR = [[[2, 2]], [[2], [2]]];
 const MEV_MV_SIX = [[[3, 3]], [[3], [3]], [[2], [2], [2]]];
 const MEV_MV_EIGHT = [
   [[3, 3]],
@@ -19,6 +19,36 @@ const MEV_MV_TEN = [
   ],
   [[2, 2], [2, 2], [2]],
 ];
+// const MEV_MV_TWO = [[[2]], [[2], [0]], [[2], [0], [0]]];
+// const MEV_MV_FOUR = [[[2, 2]], [[2], [2]], [[2], [2], [0]]];
+// const MEV_MV_SIX = [[[3, 3]], [[3], [3]], [[2], [2], [2]]];
+// const MEV_MV_EIGHT = [
+//   [[3, 3]],
+//   [
+//     [2, 2],
+//     [2, 2],
+//   ],
+//   [[2, 2], [2], [2]],
+// ];
+// const MEV_MV_TEN = [
+//   [[4, 3]],
+//   [
+//     [3, 2],
+//     [3, 2],
+//   ],
+//   [[2, 2], [2, 2], [2]],
+// ];
+
+const getSetProgressionMatrix_mrv = (exercisesPerSession: number) => {
+  switch (exercisesPerSession) {
+    case 1:
+      return MRV_PROGRESSION_MATRIX_ONE;
+    case 2:
+      return MRV_PROGRESSION_MATRIX_TWO;
+    default:
+      return [];
+  }
+};
 
 const getSetProgressionMatrix_mev_mv = (volume: number) => {
   switch (volume) {
@@ -35,6 +65,13 @@ const getSetProgressionMatrix_mev_mv = (volume: number) => {
     default:
       return [];
   }
+};
+
+export const getValidFrequencyIndex = (
+  selectedFrequency: number,
+  matrix: number[][][]
+) => {
+  const selectedMatrix = matrix[selectedFrequency];
 };
 export const getValidFrequencyIndex_mev_mv = (selectedFrequency: number) => {
   if (selectedFrequency > 2) return -1;
@@ -286,15 +323,3 @@ export const getVolumeProgressionMatrix = (
       return MRV_PROGRESSION_MATRIX_TWO;
   }
 };
-
-const getSetProgressionMatrix_mrv = (exercisesPerSession: number) => {
-  switch (exercisesPerSession) {
-    case 1:
-      return MRV_PROGRESSION_MATRIX_ONE;
-    case 2:
-      return MRV_PROGRESSION_MATRIX_TWO;
-    default:
-      return [];
-  }
-};
-const SET_PROG = [[3, 3], [3, 3], [3, 2], [2]];
