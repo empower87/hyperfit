@@ -1,0 +1,254 @@
+[
+  {
+    "name": "biceps",
+    "frequency": {
+      "range": [3, 6],
+      "exercisesPerSession": 1
+    },
+    "volume": {
+      "MV": [0, 4],
+      "MEV": [4, 8],
+      "MAV": [8, 20],
+      "MRV": [20, 26],
+      "MAV-P": [20, 26],
+      "MRV-P": [26, 34]
+    },
+    "restPeriod": 1,
+    "systemicallyFatiguing": false,
+    "localSystemicFatigue": ["back"]
+  },
+  {
+    "name": "abs",
+    "frequency": {
+      "range": [3, 6],
+      "exercisesPerSession": 1
+    },
+    "volume": {
+      "MV": [0, 4],
+      "MEV": [0, 4],
+      "MAV": [4, 12],
+      "MRV": [12, 20],
+      "MAV-P": [16, 24],
+      "MRV-P": [24, 32]
+    },
+    "restPeriod": 1,
+    "systemicallyFatiguing": false,
+    "localSystemicFatigue": []
+  },
+  {
+    "name": "back",
+    "frequency": {
+      "range": [3, 4],
+      "exercisesPerSession": 2
+    },
+    "volume": {
+      "MV": [2, 6],
+      "MEV": [6, 8],
+      "MAV": [8, 20],
+      "MRV": [20, 26],
+      "MAV-P": [20, 26],
+      "MRV-P": [26, 34]
+    },
+    "restPeriod": 2,
+    "systemicallyFatiguing": true,
+    "localSystemicFatigue": ["biceps"]
+  },
+  {
+    "name": "traps",
+    "frequency": {
+      "range": [2, 4],
+      "exercisesPerSession": 1
+    },
+    "volume": {
+      "MV": [0, 4],
+      "MEV": [0, 4],
+      "MAV": [4, 12],
+      "MRV": [12, 20],
+      "MAV-P": [16, 24],
+      "MRV-P": [24, 32]
+    },
+    "restPeriod": 1,
+    "systemicallyFatiguing": false,
+    "localSystemicFatigue": ["delts_rear", "delts_side", "delts_front"]
+  },
+  {
+    "name": "triceps",
+    "frequency": {
+      "range": [2, 4],
+      "exercisesPerSession": 1
+    },
+    "volume": {
+      "MV": [0, 4],
+      "MEV": [4, 6],
+      "MAV": [6, 16],
+      "MRV": [16, 20],
+      "MAV-P": [16, 20],
+      "MRV-P": [20, 26]
+    },
+    "restPeriod": 1,
+    "systemicallyFatiguing": false,
+    "localSystemicFatigue": ["chest"]
+  },
+  {
+    "name": "chest",
+    "frequency": {
+      "range": [2, 4],
+      "exercisesPerSession": 2
+    },
+    "volume": {
+      "MV": [2, 4],
+      "MEV": [4, 6],
+      "MAV": [6, 16],
+      "MRV": [16, 24],
+      "MAV-P": [16, 24],
+      "MRV-P": [24, 32]
+    },
+    "restPeriod": 2,
+    "systemicallyFatiguing": true,
+    "localSystemicFatigue": ["triceps", "delts_front"]
+  },
+  {
+    "name": "quads",
+    "frequency": {
+      "range": [2, 5],
+      "exercisesPerSession": 2
+    },
+    "volume": {
+      "MV": [2, 4],
+      "MEV": [4, 6],
+      "MAV": [6, 14],
+      "MRV": [14, 18],
+      "MAV-P": [10, 18],
+      "MRV-P": [18, 24]
+    },
+    "restPeriod": 2,
+    "systemicallyFatiguing": true,
+    "localSystemicFatigue": ["hamstrings", "glutes"]
+  },
+  {
+    "name": "hamstrings",
+    "frequency": {
+      "range": [2, 3],
+      "exercisesPerSession": 1
+    },
+    "volume": {
+      "MV": [2, 4],
+      "MEV": [4, 6],
+      "MAV": [6, 12],
+      "MRV": [12, 16],
+      "MAV-P": [12, 16],
+      "MRV-P": [16, 20]
+    },
+    "restPeriod": 2,
+    "systemicallyFatiguing": true,
+    "localSystemicFatigue": ["quads", "hamstrings"]
+  },
+  {
+    "name": "glutes",
+    "frequency": {
+      "range": [2, 5],
+      "exercisesPerSession": 1
+    },
+    "volume": {
+      "MV": [2, 6],
+      "MEV": [6, 8],
+      "MAV": [8, 24],
+      "MRV": [24, 30],
+      "MAV-P": [24, 30],
+      "MRV-P": [30, 40]
+    },
+    "restPeriod": 2,
+    "systemicallyFatiguing": true,
+    "localSystemicFatigue": ["hamstrings", "quads"]
+  },
+  {
+    "name": "delts_front",
+    "frequency": {
+      "range": [2, 3],
+      "exercisesPerSession": 1
+    },
+    "volume": {
+      "MV": [0, 2],
+      "MEV": [0, 2],
+      "MAV": [4, 8],
+      "MRV": [8, 12],
+      "MAV-P": [12, 16],
+      "MRV-P": [16, 20]
+    },
+    "restPeriod": 2,
+    "systemicallyFatiguing": false,
+    "localSystemicFatigue": ["chest"]
+  },
+  {
+    "name": "delts_side",
+    "frequency": {
+      "range": [3, 6],
+      "exercisesPerSession": 2
+    },
+    "volume": {
+      "MV": [2, 6],
+      "MEV": [6, 8],
+      "MAV": [8, 24],
+      "MRV": [24, 30],
+      "MAV-P": [24, 30],
+      "MRV-P": [30, 40]
+    },
+    "restPeriod": 1,
+    "systemicallyFatiguing": false,
+    "localSystemicFatigue": ["delts_rear", "delts_front", "traps"]
+  },
+  {
+    "name": "delts_rear",
+    "frequency": {
+      "range": [3, 6],
+      "exercisesPerSession": 1
+    },
+    "volume": {
+      "MV": [0, 4],
+      "MEV": [0, 4],
+      "MAV": [4, 12],
+      "MRV": [12, 20],
+      "MAV-P": [24, 30],
+      "MRV-P": [30, 40]
+    },
+    "restPeriod": 1,
+    "systemicallyFatiguing": false,
+    "localSystemicFatigue": ["back", "delts_side", "delts_front"]
+  },
+  {
+    "name": "calves",
+    "frequency": {
+      "range": [3, 6],
+      "exercisesPerSession": 1
+    },
+    "volume": {
+      "MV": [2, 4],
+      "MEV": [4, 6],
+      "MAV": [6, 16],
+      "MRV": [16, 24],
+      "MAV-P": [16, 24],
+      "MRV-P": [24, 32]
+    },
+    "restPeriod": 1,
+    "systemicallyFatiguing": false,
+    "localSystemicFatigue": ["hamstrings"]
+  },
+  {
+    "name": "forearms",
+    "frequency": {
+      "range": [3, 6],
+      "exercisesPerSession": 1
+    },
+    "volume": {
+      "MV": [0, 4],
+      "MEV": [0, 8],
+      "MAV": [8, 24],
+      "MRV": [24, 30],
+      "MAV-P": [24, 30],
+      "MRV-P": [30, 40]
+    },
+    "restPeriod": 1,
+    "systemicallyFatiguing": false,
+    "localSystemicFatigue": ["biceps"]
+  }
+]

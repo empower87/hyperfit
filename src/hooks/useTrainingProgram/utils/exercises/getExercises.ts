@@ -1,6 +1,5 @@
 import {
   MRV_PROGRESSION_MATRIX_ONE,
-  MRV_PROGRESSION_MATRIX_TWO_INIT,
   getMatrixFnByVolumeLandmark,
   getValidFrequencyIndex_mev_mv,
 } from "~/constants/volumeProgressionMatrices";
@@ -204,17 +203,37 @@ const disperseAddedSets = (addedSets: number[], schema: number[][]) => {
 };
 
 export const initializeSetProgression = (
-  progression: number[],
-  targetSets: number,
+  rank: VolumeLandmarkType,
+  frequencyProgression: number[],
+  case_index: number,
   muscle: MuscleType
 ) => {
   const mesoProgression: number[][][] = [];
-
+  const getMatrix = getMatrixFnByVolumeLandmark(rank);
+  const matrix = getMatrix(case_index);
+  if (!matrix.length) {
+    return frequencyProgression.map((each) =>
+      Array.from(Array(each), () => [])
+    );
+  }
   let counter: number[] = [];
-  for (let i = 0; i < progression.length; i++) {
-    const meso = progression[i];
-    const schemaa = MRV_PROGRESSION_MATRIX_TWO_INIT[meso - 1];
-    const currentSchema = disperseAddedSets(counter, schemaa);
+  for (let i = 0; i < frequencyProgression.length; i++) {
+    const meso = frequencyProgression[i];
+    // const validIndex = matrixIndexValidator(meso, matrix);
+    const schemaa = matrix[meso - 1];
+    console.log(
+      muscle,
+      rank,
+      case_index,
+      matrix,
+      meso,
+      schemaa,
+      "LETS SEE WHAT WHENT WRONGG"
+    );
+    let currentSchema = schemaa;
+    if (rank === "MRV") {
+      currentSchema = disperseAddedSets(counter, schemaa);
+    }
     mesoProgression.push(currentSchema);
     counter.push(meso);
   }
@@ -254,12 +273,6 @@ export const updateInitialSetsForExercises = (
 ) => {
   let exerciseIndex = freqProg[targetIndex] - 1;
 
-  // const exercises_matrix = getValidatedMatrix(
-  //   rank,
-  //   rankData,
-  //   exercisesPerSessionSchema,
-  //   exerciseIndex
-  // );
   const getMatrix = getMatrixFnByVolumeLandmark(rank);
   let matrix_index = exercisesPerSessionSchema;
 
@@ -284,6 +297,7 @@ export const updateInitialSetsForExercises = (
 
   return copied_exercises;
 };
+
 const matrixIndexValidator = (index: number, matrix: number[][][]) => {
   const selectedMatrix = matrix[index];
   if (!selectedMatrix) {
@@ -390,53 +404,6 @@ export const getTotalExercisesForMuscleGroup = (
 // deload should be implemented on 3 weeks of hard training
 // otherwise should be around 4 weeks
 
-// NOTE: May need to experiment with a more algorithmic logic to create these values then hard coding
-//       these cases
-
-const initializeSetsPerMeso_mev_mv = (
-  target: number,
-  frequencyProgression: number[]
-) => {
-  const total_frequency = frequencyProgression[frequencyProgression.length - 1];
-
-  switch (target) {
-    case 2:
-      return [[2]];
-    case 4:
-      if (total_frequency === 2) {
-        return [[2], [2]];
-      } else {
-        return [[2, 2]];
-      }
-    case 6:
-      if (total_frequency === 2) {
-        return [[3], [3]];
-      } else {
-        return [[3, 3]];
-      }
-    case 8:
-      if (total_frequency === 2) {
-        return [
-          [2, 2],
-          [2, 2],
-        ];
-      } else {
-        return [[3, 3]];
-      }
-    case 10:
-      if (total_frequency === 2) {
-        return [
-          [3, 2],
-          [3, 2],
-        ];
-      } else {
-        return [[4, 3]];
-      }
-    default:
-      return [[]];
-  }
-};
-
 const getSetsAndSchema = (
   matrix: number[][],
   freqIndex: number,
@@ -481,13 +448,34 @@ export const initializeNewExerciseSetsPerMeso = (
   };
 };
 
-const getMevMvIncrement = (
-  initialSet: number,
-  microcycles: number,
-  target: number
+export const initNewExercise = (
+  exerciseData: Exercise,
+  frequencyProgression: number[],
+  landmark: VolumeLandmarkType,
+  dayIndex: number
 ) => {
-  const setsToProgress = target - initialSet;
-  const increment = setsToProgress / microcycles - 1;
-
-  return increment;
+  const setProgression = initializeNewExerciseSetsPerMeso(
+    frequencyProgression,
+    dayIndex
+  );
+  const new_exercise: ExerciseType = {
+    ...INITIAL_EXERCISE,
+    id: exerciseData.id,
+    name: exerciseData.name,
+    muscle: exerciseData.group as MuscleType,
+    session: dayIndex,
+    rank: landmark,
+    sets: 2,
+    reps: 10,
+    weight: 100,
+    rir: 3,
+    weightIncrement: 2,
+    initialSetsPerMeso: setProgression.sets,
+    setProgressionSchema: setProgression.schemas,
+    data: {
+      movement_type: exerciseData.movement_type,
+      requirements: exerciseData.requirements,
+    },
+  };
+  return new_exercise;
 };

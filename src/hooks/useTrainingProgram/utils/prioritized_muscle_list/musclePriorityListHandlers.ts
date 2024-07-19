@@ -27,7 +27,7 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
       range: [3, 4],
       target: 0,
       progression: [],
-      setProgression: [],
+      setProgressionMatrix: [],
     },
   },
   {
@@ -42,7 +42,7 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
       range: [3, 6],
       target: 0,
       progression: [],
-      setProgression: [],
+      setProgressionMatrix: [],
     },
   },
   {
@@ -57,7 +57,7 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
       range: [2, 4],
       target: 0,
       progression: [],
-      setProgression: [],
+      setProgressionMatrix: [],
     },
   },
   {
@@ -72,7 +72,7 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
       range: [2, 3],
       target: 0,
       progression: [],
-      setProgression: [],
+      setProgressionMatrix: [],
     },
   },
   {
@@ -87,7 +87,7 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
       range: [2, 5],
       target: 0,
       progression: [],
-      setProgression: [],
+      setProgressionMatrix: [],
     },
   },
   {
@@ -102,7 +102,7 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
       range: [3, 6],
       target: 0,
       progression: [],
-      setProgression: [],
+      setProgressionMatrix: [],
     },
   },
   {
@@ -117,7 +117,7 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
       range: [3, 6],
       target: 0,
       progression: [],
-      setProgression: [],
+      setProgressionMatrix: [],
     },
   },
   {
@@ -132,7 +132,7 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
       range: [2, 4],
       target: 0,
       progression: [],
-      setProgression: [],
+      setProgressionMatrix: [],
     },
   },
   {
@@ -147,10 +147,9 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
       range: [3, 6],
       target: 0,
       progression: [],
-      setProgression: [],
+      setProgressionMatrix: [],
     },
   },
-
   {
     id: "chest-005",
     muscle: "chest",
@@ -163,7 +162,7 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
       range: [2, 4],
       target: 0,
       progression: [],
-      setProgression: [],
+      setProgressionMatrix: [],
     },
   },
   {
@@ -178,7 +177,7 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
       range: [3, 6],
       target: 0,
       progression: [],
-      setProgression: [],
+      setProgressionMatrix: [],
     },
   },
   {
@@ -193,7 +192,7 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
       range: [2, 3],
       target: 0,
       progression: [],
-      setProgression: [],
+      setProgressionMatrix: [],
     },
   },
   {
@@ -208,7 +207,7 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
       range: [3, 6],
       target: 0,
       progression: [],
-      setProgression: [],
+      setProgressionMatrix: [],
     },
   },
   {
@@ -223,7 +222,7 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
       range: [2, 5],
       target: 0,
       progression: [],
-      setProgression: [],
+      setProgressionMatrix: [],
     },
   },
 ];
@@ -255,6 +254,7 @@ export const attachTargetFrequency = (
   const updated_list = structuredClone(muscle_priority_list);
   for (let i = 0; i < updated_list.length; i++) {
     const muscle = updated_list[i].muscle;
+    const muscleData = getMuscleData(muscle);
     const landmark = updated_list[i].volume.landmark;
     const exercisesPerSessionSchema =
       updated_list[i].volume.exercisesPerSessionSchema;
@@ -273,9 +273,12 @@ export const attachTargetFrequency = (
     );
     const frequencyProgression = determineFrequencyProgression(3, target);
     const setProgressionTEST = initializeSetProgression(
+      volume_landmark,
       frequencyProgression,
-      32,
-      updated_list[i].muscle
+      volume_landmark !== "MRV"
+        ? muscleData[volume_landmark]
+        : exercisesPerSessionSchema,
+      muscle
     );
     const exercises = getTotalExercisesForMuscleGroup(
       muscle,
@@ -287,7 +290,7 @@ export const attachTargetFrequency = (
     updated_list[i].volume.landmark = volume_landmark;
     updated_list[i].frequency.target = target;
     updated_list[i].frequency.progression = frequencyProgression;
-    updated_list[i].frequency.setProgression = setProgressionTEST;
+    updated_list[i].frequency.setProgressionMatrix = setProgressionTEST;
     updated_list[i].exercises = exercises;
   }
   return updated_list;

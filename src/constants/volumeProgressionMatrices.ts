@@ -1,6 +1,15 @@
 import { VolumeLandmarkType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 
-const MEV_MV_TWO = [[[2]]];
+// 0, 2
+// 0, 4
+// 0, 8
+// 2, 4
+// 2, 6
+// 4, 6
+// 4, 8
+// 6, 8
+
+const MEV_MV_TWO = [[[2]], [[2]], [[2]]];
 const MEV_MV_FOUR = [[[2, 2]], [[2], [2]]];
 const MEV_MV_SIX = [[[3, 3]], [[3], [3]], [[2], [2], [2]]];
 const MEV_MV_EIGHT = [
@@ -112,6 +121,14 @@ export const MRV_PROGRESSION_MATRIX_TWO = [
   [[3, 3], [3, 3], [3, 3], [3], [2]],
   [[3, 3], [3, 3], [3, 3], [3], [2], [1]],
 ];
+
+// [2, 2, 2], [2, 2]
+// [3, 2, 2], [3, 2], [2, 2]
+// [3, 3, 2], [3, 3], [3, 2], [2]
+
+// 3 3 4 4
+// 3 3 3 4
+// 2 3 3 3
 
 // 4,3 4,3 3,3 3, 2 = 25
 // 4,4 4,4 4,3 3, 3 = 29

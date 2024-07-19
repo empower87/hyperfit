@@ -259,7 +259,7 @@ export type MusclePriorityFrequencyType = {
   range: [number, number];
   target: number;
   progression: number[];
-  setProgression: number[][][];
+  setProgressionMatrix: number[][][];
 };
 export type MusclePriorityType = {
   id: string;

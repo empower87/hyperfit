@@ -308,3 +308,36 @@ export const getPrioritizedPPL = (
   }
   return prio;
 };
+
+export const getMuscleType = (name: string): MuscleType | undefined => {
+  switch (name) {
+    case "abs":
+      return "abs";
+    case "back":
+      return "back";
+    case "biceps":
+      return "biceps";
+    case "calves":
+      return "calves";
+    case "chest":
+      return "chest";
+    case "delts_front":
+      return "delts_front";
+    case "delts_rear":
+      return "delts_rear";
+    case "delts_side":
+      return "delts_side";
+    case "forearms":
+      return "forearms";
+    case "glutes":
+      return "glutes";
+    case "hamstrings":
+      return "hamstrings";
+    case "quads":
+      return "quads";
+    case "traps":
+      return "traps";
+    case "triceps":
+      return "triceps";
+  }
+};
