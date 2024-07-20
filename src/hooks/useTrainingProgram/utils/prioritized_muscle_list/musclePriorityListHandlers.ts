@@ -1,6 +1,7 @@
 import { MuscleType } from "~/constants/workoutSplits";
 import {
   getTotalExercisesForMuscleGroup,
+  getTotalExercisesFromSetMatrix,
   initializeSetProgression,
 } from "~/hooks/useTrainingProgram/utils/exercises/getExercises";
 import { getMuscleData } from "~/utils/getMuscleData";
@@ -272,7 +273,7 @@ export const attachTargetFrequency = (
       total_sessions
     );
     const frequencyProgression = determineFrequencyProgression(3, target);
-    const setProgressionTEST = initializeSetProgression(
+    const setProgressionMatrix = initializeSetProgression(
       volume_landmark,
       frequencyProgression,
       volume_landmark !== "MRV"
@@ -280,18 +281,32 @@ export const attachTargetFrequency = (
         : exercisesPerSessionSchema,
       muscle
     );
+
+    const testExercises = getTotalExercisesFromSetMatrix(
+      muscle,
+      volume_landmark,
+      setProgressionMatrix,
+      frequencyProgression
+    );
+
     const exercises = getTotalExercisesForMuscleGroup(
       muscle,
       landmark,
       frequencyProgression,
       exercisesPerSessionSchema
     );
-
+    console.log(
+      muscle,
+      setProgressionMatrix,
+      testExercises,
+      exercises,
+      "THESE KINDA SHOULD BE THE SAME I THINK"
+    );
     updated_list[i].volume.landmark = volume_landmark;
     updated_list[i].frequency.target = target;
     updated_list[i].frequency.progression = frequencyProgression;
-    updated_list[i].frequency.setProgressionMatrix = setProgressionTEST;
-    updated_list[i].exercises = exercises;
+    updated_list[i].frequency.setProgressionMatrix = setProgressionMatrix;
+    updated_list[i].exercises = testExercises;
   }
   return updated_list;
 };

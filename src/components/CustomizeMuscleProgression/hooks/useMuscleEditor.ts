@@ -10,7 +10,7 @@ import {
   Exercise,
   INITIAL_EXERCISE,
   initializeNewExerciseSetsPerMeso,
-  updateInitialSetsForExercises,
+  updateInitialSetsForExercisesTEST,
 } from "~/hooks/useTrainingProgram/utils/exercises/getExercises";
 import { getSetProgressionForExercise } from "../../../hooks/useTrainingProgram/utils/exercises/setProgressionHandlers";
 
@@ -322,6 +322,7 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
       const exercisesPerSessionSchema =
         muscleGroup.volume.exercisesPerSessionSchema;
       const frequencyProgression = muscleGroup.frequency.progression;
+      const setProgressionMatrix = muscleGroup.frequency.setProgressionMatrix;
       let curr = frequencyProgression[targetIndex];
 
       if (operation === "+") {
@@ -349,18 +350,35 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
         }
       }
 
-      frequencyProgression[targetIndex] = curr;
-      const updatedExercises = updateInitialSetsForExercises(
+      let newExercises: ExerciseType[][] = muscleGroup.exercises;
+      const updatedExercisess = updateInitialSetsForExercisesTEST(
         rank,
         6,
         exercisesPerSessionSchema,
         exercises,
         targetIndex,
-        frequencyProgression
+        frequencyProgression,
+        curr,
+        setProgressionMatrix
       );
+      if (updatedExercisess) {
+        newExercises = updatedExercisess;
+        frequencyProgression[targetIndex] = curr;
+      }
+
+      console.log(newExercises, frequencyProgression, "LOL I BRAKE?");
+      // frequencyProgression[targetIndex] = curr;
+      // const updatedExercises = updateInitialSetsForExercises(
+      //   rank,
+      //   6,
+      //   exercisesPerSessionSchema,
+      //   exercises,
+      //   targetIndex,
+      //   frequencyProgression
+      // );
       setMuscleGroup((prev) => ({
         ...prev,
-        exercises: updatedExercises,
+        exercises: newExercises,
         volume: {
           ...prev.volume,
           frequencyProgression: frequencyProgression,

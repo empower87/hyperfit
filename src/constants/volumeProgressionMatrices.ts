@@ -58,6 +58,16 @@ const getSetProgressionMatrix_mrv = (exercisesPerSession: number) => {
       return [];
   }
 };
+const getInitSetProgressionMatrix_mrv = (exercisesPerSession: number) => {
+  switch (exercisesPerSession) {
+    case 1:
+      return MRV_PROGRESSION_MATRIX_ONE_INIT;
+    case 2:
+      return MRV_PROGRESSION_MATRIX_TWO_INIT;
+    default:
+      return [];
+  }
+};
 
 const getSetProgressionMatrix_mev_mv = (volume: number) => {
   switch (volume) {
@@ -90,6 +100,14 @@ export const getValidFrequencyIndex_mev_mv = (selectedFrequency: number) => {
 export const getMatrixFnByVolumeLandmark = (rank: VolumeLandmarkType) => {
   if (rank === "MRV") {
     return getSetProgressionMatrix_mrv;
+  } else {
+    return getSetProgressionMatrix_mev_mv;
+  }
+};
+
+export const getInitMatrixFnByVolumeLandmark = (rank: VolumeLandmarkType) => {
+  if (rank === "MRV") {
+    return getInitSetProgressionMatrix_mrv;
   } else {
     return getSetProgressionMatrix_mev_mv;
   }
