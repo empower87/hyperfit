@@ -1,46 +1,16 @@
 import { useCallback, useEffect, useState } from "react";
-import { MuscleType } from "~/constants/workoutSplits";
 import {
   type ExerciseType,
   type MusclePriorityType,
-  type VolumeLandmarkType,
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
 import {
+  addNewExerciseSetsToSetProgressionMatrix,
   Exercise,
-  INITIAL_EXERCISE,
-  initializeNewExerciseSetsPerMeso,
+  initNewExercise,
   updateInitialSetsForExercisesTEST,
 } from "~/hooks/useTrainingProgram/utils/exercises/getExercises";
-import { getSetProgressionForExercise } from "../../../hooks/useTrainingProgram/utils/exercises/setProgressionHandlers";
-
-const getNewExercise = (
-  newExercise: Exercise,
-  frequencyProgression: number[],
-  landmark: VolumeLandmarkType,
-  dayIndex: number
-) => {
-  const setProgression = initializeNewExerciseSetsPerMeso(
-    frequencyProgression,
-    dayIndex
-  );
-  const new_exercise: ExerciseType = {
-    ...INITIAL_EXERCISE,
-    id: newExercise.id,
-    name: newExercise.name,
-    muscle: newExercise.group as MuscleType,
-    session: dayIndex,
-    rank: landmark,
-    sets: 2,
-    reps: 10,
-    weight: 100,
-    rir: 3,
-    weightIncrement: 2,
-    initialSetsPerMeso: setProgression.sets,
-    setProgressionSchema: setProgression.schemas,
-  };
-  return new_exercise;
-};
+import { getSetProgressionForExercise } from "../../../hooks/useTrainingProgram/utils/exercises/setProgressionOverMicrocycles";
 
 const calculateTotalVolume = (
   exercises: ExerciseType[][],
@@ -61,7 +31,7 @@ const calculateTotalVolume = (
           sessionExercises.length,
           g
         );
-        console.log(exercise, sets, "WTF YO??");
+
         totalVolumes[j] = totalVolumes[j] + sets[sets.length - 1];
       }
     }
@@ -152,18 +122,26 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
   };
 
   const onAddExercise = useCallback(
-    (newExercise: Exercise, dayIndex: number) => {
+    (newExercise: Exercise, sessionIndex: number) => {
       const exercises = muscleGroup.exercises;
-      const new_exercise = getNewExercise(
+      const data = addNewExerciseSetsToSetProgressionMatrix(
+        muscleGroup.frequency.setProgressionMatrix,
+        sessionIndex
+      );
+      const new_exercise = initNewExercise(
         newExercise,
-        muscleGroup.frequency.progression,
         muscleGroup.volume.landmark,
-        dayIndex
+        sessionIndex,
+        data.initialSetsPerMeso
       );
 
-      exercises[dayIndex]?.push(new_exercise);
+      exercises[sessionIndex]?.push(new_exercise);
       setMuscleGroup((prev) => ({
         ...prev,
+        frequency: {
+          ...prev.frequency,
+          setProgressionMatrix: data.setProgressionMatrix,
+        },
         exercises: exercises,
       }));
     },
@@ -254,6 +232,7 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
   const onAddTrainingDay = useCallback(
     (firstExercise?: Exercise, dayIndex?: number) => {
       const frequencyProgression = muscleGroup.frequency.progression;
+      const setProgressionMatrix = muscleGroup.frequency.setProgressionMatrix;
       const cloned_exercises = muscleGroup.exercises;
 
       if (!firstExercise || !dayIndex) {
@@ -274,12 +253,18 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
           },
         }));
       } else {
+        const added = frequencyProgression[frequencyProgression.length - 1] + 1;
         frequencyProgression[frequencyProgression.length - 1]++;
-        const initial_exercise = getNewExercise(
+
+        const data = addNewExerciseSetsToSetProgressionMatrix(
+          setProgressionMatrix,
+          added
+        );
+        const initial_exercise = initNewExercise(
           firstExercise,
-          frequencyProgression,
           muscleGroup.volume.landmark,
-          dayIndex
+          added,
+          data.initialSetsPerMeso
         );
 
         cloned_exercises.push([initial_exercise]);
@@ -351,31 +336,17 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
       }
 
       let newExercises: ExerciseType[][] = muscleGroup.exercises;
-      const updatedExercisess = updateInitialSetsForExercisesTEST(
-        rank,
-        6,
-        exercisesPerSessionSchema,
+      const updatedExercises = updateInitialSetsForExercisesTEST(
         exercises,
         targetIndex,
-        frequencyProgression,
         curr,
         setProgressionMatrix
       );
-      if (updatedExercisess) {
-        newExercises = updatedExercisess;
+      if (updatedExercises) {
+        newExercises = updatedExercises;
         frequencyProgression[targetIndex] = curr;
       }
 
-      console.log(newExercises, frequencyProgression, "LOL I BRAKE?");
-      // frequencyProgression[targetIndex] = curr;
-      // const updatedExercises = updateInitialSetsForExercises(
-      //   rank,
-      //   6,
-      //   exercisesPerSessionSchema,
-      //   exercises,
-      //   targetIndex,
-      //   frequencyProgression
-      // );
       setMuscleGroup((prev) => ({
         ...prev,
         exercises: newExercises,

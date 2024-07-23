@@ -31,7 +31,7 @@ import { getRankColor } from "~/utils/getIndicatorColors";
 import { getMuscleData } from "~/utils/getMuscleData";
 import getMuscleTitleForUI from "~/utils/getMuscleTitleForUI";
 
-import { getSetProgressionForExercise } from "../../hooks/useTrainingProgram/utils/exercises/setProgressionHandlers";
+import { getSetProgressionForExercise } from "../../hooks/useTrainingProgram/utils/exercises/setProgressionOverMicrocycles";
 import CollapsableHeader from "../Layout/CollapsableHeader";
 import SelectExercise from "../Modals/ChangeExerciseModal/ChangeExerciseModal";
 import SideMenu from "./components/SideMenu";

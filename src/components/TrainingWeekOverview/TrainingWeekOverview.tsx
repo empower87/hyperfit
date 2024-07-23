@@ -28,7 +28,7 @@ import {
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
 import { getGroupList } from "~/hooks/useTrainingProgram/utils/exercises/getExercises";
-import { getSetProgressionForExercise } from "~/hooks/useTrainingProgram/utils/exercises/setProgressionHandlers";
+import { getSetProgressionForExercise } from "~/hooks/useTrainingProgram/utils/exercises/setProgressionOverMicrocycles";
 import { cn } from "~/lib/clsx";
 import StrictModeDroppable from "~/lib/react-beautiful-dnd/StrictModeDroppable";
 import { getRankColor, getSplitColor } from "~/utils/getIndicatorColors";

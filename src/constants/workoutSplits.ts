@@ -1,15 +1,15 @@
 import {
-  BROSessionKeys,
-  MusclePriorityType,
-  OPTSessionKeys,
-  PPLSessionKeys,
-  PPLULSessionKeys,
-  ReturnValidSessionKeys,
-  SplitSessionsNameType,
-  SplitSessionsType,
-  SplitType,
-  ULSessionKeys,
+  type BROSessionKeys,
+  type MusclePriorityType,
+  type OPTSessionKeys,
   type OPTSessionsType,
+  type PPLSessionKeys,
+  type PPLULSessionKeys,
+  type ReturnValidSessionKeys,
+  type SplitSessionsNameType,
+  type SplitSessionsType,
+  type SplitType,
+  type ULSessionKeys,
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { includes } from "~/utils/readOnlyArrayIncludes";
 

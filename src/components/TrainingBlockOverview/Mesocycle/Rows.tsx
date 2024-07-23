@@ -3,7 +3,7 @@ import { DraggableExercises } from "~/components/TrainingWeekOverview/components
 import { BG_COLOR_M4, BG_COLOR_M6, BG_COLOR_M7 } from "~/constants/themes";
 import { ExerciseType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
-import { getSetProgressionForExercise } from "~/hooks/useTrainingProgram/utils/exercises/setProgressionHandlers";
+import { getSetProgressionForExercise } from "~/hooks/useTrainingProgram/utils/exercises/setProgressionOverMicrocycles";
 import { cn } from "~/lib/clsx";
 import { getRankColor } from "~/utils/getIndicatorColors";
 import {

@@ -1,15 +1,15 @@
-import {
-  MRV_PROGRESSION_MATRIX_ONE,
-  getInitMatrixFnByVolumeLandmark,
-  getMatrixFnByVolumeLandmark,
-  getValidFrequencyIndex_mev_mv,
-} from "~/constants/volumeProgressionMatrices";
 import { MuscleType } from "~/constants/workoutSplits";
 import {
   ExerciseType,
   SetProgressionType,
   type VolumeLandmarkType,
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
+import {
+  MRV_PROGRESSION_MATRIX_ONE,
+  getInitMatrixFnByVolumeLandmark,
+  getMatrixFnByVolumeLandmark,
+  getValidFrequencyIndex_mev_mv,
+} from "~/hooks/useTrainingProgram/utils/exercises/setProgressionMatrices";
 import {
   ABS_EXERCISES,
   BACK_EXERCISES,
@@ -209,18 +209,6 @@ const disperseAddedSets = (addedSets: number[], schema: number[][]) => {
 //    meso 3: [[   2,    3], [   2,    3], [   2,    2], [   0]]
 //    meso 3: [[   3,    3], [   3,    3], [   3,    2], [   2]]
 
-const SETS = {
-  session: "",
-  sets: [0, 0],
-};
-
-const EXERCISE_SET_MAP = {
-  session: "",
-  sets: [1, 2],
-  exercises: [1, 2],
-};
-const createSetMap = () => {};
-
 export const initializeSetProgression = (
   rank: VolumeLandmarkType,
   frequencyProgression: number[],
@@ -240,16 +228,6 @@ export const initializeSetProgression = (
   for (let i = 0; i < frequencyProgression.length; i++) {
     const meso = frequencyProgression[i];
     let currentSchema = matrix[meso - 1];
-
-    console.log(
-      muscle,
-      rank,
-      case_index,
-      matrix,
-      meso,
-      currentSchema,
-      "LETS SEE WHAT WHENT WRONGG"
-    );
 
     if (rank === "MRV") {
       currentSchema = disperseAddedSets(counter, currentSchema);
@@ -319,12 +297,8 @@ export const updateInitialSetsForExercises = (
 };
 
 export const updateInitialSetsForExercisesTEST = (
-  rank: VolumeLandmarkType,
-  rankData: number,
-  exercisesPerSessionSchema: number,
   exercises: ExerciseType[][],
-  targetIndex: number, // 1
-  freqProg: number[], // 2, 3, 4
+  targetIndex: number,
   newValue: number,
   setProgressionMatrix: number[][][]
 ) => {
@@ -334,14 +308,21 @@ export const updateInitialSetsForExercisesTEST = (
       newValuesMatrix = i;
     }
   }
-  if (!newValuesMatrix) return;
+
+  // TODO: Add logic to create another progression matrix
+  // Note. On incrementing initialSets determine if should update matrix or not. Probably not just initialSets actually.
+  if (newValuesMatrix == null) return;
 
   const copied_exercises = structuredClone(exercises);
 
   for (let i = 0; i < copied_exercises.length; i++) {
     const session_exercises = copied_exercises[i];
     for (let j = 0; j < session_exercises.length; j++) {
-      const newSets = session_exercises[j].initialSetsPerMeso[newValuesMatrix];
+      const newSets =
+        setProgressionMatrix[newValuesMatrix][i] &&
+        setProgressionMatrix[newValuesMatrix][i][j]
+          ? setProgressionMatrix[newValuesMatrix][i][j]
+          : 0;
       copied_exercises[i][j].initialSetsPerMeso[targetIndex] = newSets;
     }
   }
@@ -556,15 +537,45 @@ export const initializeNewExerciseSetsPerMeso = (
   };
 };
 
+export const addNewExerciseSetsToSetProgressionMatrix = (
+  setProgressionMatrix: number[][][],
+  exerciseIndex: number
+) => {
+  let sets = 2;
+  let initalSetsPerMeso = [];
+
+  const matrix = setProgressionMatrix;
+  const lastMeso = matrix[matrix.length - 1];
+  const isNewSession = lastMeso[exerciseIndex] ? true : false;
+
+  // NOTE: this messes with other logic, because it should create next meso line so
+  // that incrementing previous frequency can work.
+  if (!isNewSession) {
+    matrix[matrix.length - 1].push([sets]);
+  }
+  for (let i = 0; i < matrix.length; i++) {
+    let includedSetInMeso = 0;
+    if (matrix[i][exerciseIndex]) {
+      includedSetInMeso = sets;
+      matrix[i][exerciseIndex].push(sets);
+    }
+    initalSetsPerMeso.push(includedSetInMeso);
+  }
+
+  return {
+    initialSetsPerMeso: initalSetsPerMeso,
+    setProgressionMatrix: matrix,
+  };
+};
+
 export const initNewExercise = (
   exerciseData: Exercise,
-  frequencyProgression: number[],
   landmark: VolumeLandmarkType,
-  dayIndex: number
+  dayIndex: number,
+  initalSetsPerMeso: number[]
 ) => {
-  const setProgression = initializeNewExerciseSetsPerMeso(
-    frequencyProgression,
-    dayIndex
+  const schemas: SetProgressionType[] = Array.from(initalSetsPerMeso, (e, i) =>
+    landmark === "MRV" ? "ADD_ONE_PER_MICROCYCLE" : "NO_ADD"
   );
   const new_exercise: ExerciseType = {
     ...INITIAL_EXERCISE,
@@ -578,8 +589,8 @@ export const initNewExercise = (
     weight: 100,
     rir: 3,
     weightIncrement: 2,
-    initialSetsPerMeso: setProgression.sets,
-    setProgressionSchema: setProgression.schemas,
+    initialSetsPerMeso: initalSetsPerMeso,
+    setProgressionSchema: schemas,
     data: {
       movement_type: exerciseData.movement_type,
       requirements: exerciseData.requirements,
