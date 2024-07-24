@@ -45,7 +45,8 @@ const restructureProgramConfig = (
   const reordered_items = attachTargetFrequency(
     muscle_priority_list,
     total,
-    breakpoints
+    breakpoints,
+    mesocycles
   );
 
   // seems to be a problem here

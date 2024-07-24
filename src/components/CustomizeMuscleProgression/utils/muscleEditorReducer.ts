@@ -1,13 +1,8 @@
-import { MuscleType } from "~/constants/workoutSplits";
 import {
   ExerciseType,
   MusclePriorityType,
-  VolumeLandmarkType,
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
-import {
-  Exercise,
-  initializeNewExerciseSetsPerMeso,
-} from "~/hooks/useTrainingProgram/utils/exercises/getExercises";
+import { Exercise } from "~/hooks/useTrainingProgram/utils/exercises/getExercises";
 
 type AddSubtractSetsType = {
   type: "INCREMENT_SETS";
@@ -118,14 +113,7 @@ export function muscleEditorReducer(state: MusclePriorityType, action: Action) {
       const freq = [...progression];
       freq[freq.length - 1]++;
 
-      const initial_exercise = getNewExercise(
-        payload2.exercise,
-        freq,
-        landmark,
-        payload2.dayIndex
-      );
-
-      cloned_exercises2.push([initial_exercise]);
+      cloned_exercises2.push([]);
 
       return {
         ...state,
@@ -150,15 +138,7 @@ export function muscleEditorReducer(state: MusclePriorityType, action: Action) {
     case "ADD_EXERCISE":
       const payload = action.payload;
       const copyExercises = structuredClone(exercises);
-      const new_exercise = getNewExercise(
-        payload.exercise,
-        progression,
-        landmark,
-        payload.dayIndex
-      );
 
-      copyExercises[payload.dayIndex]?.push(new_exercise);
-      console.log(payload, new_exercise, copyExercises, "ADD_EXERCISE");
       return {
         ...state,
         exercises: copyExercises,
@@ -200,37 +180,3 @@ export function muscleEditorReducer(state: MusclePriorityType, action: Action) {
       return state;
   }
 }
-
-const getNewExercise = (
-  newExercise: Exercise,
-  frequencyProgression: number[],
-  landmark: VolumeLandmarkType,
-  dayIndex: number
-) => {
-  const setProgression = initializeNewExerciseSetsPerMeso(
-    frequencyProgression,
-    dayIndex
-  );
-  const new_exercise: ExerciseType = {
-    id: newExercise.id,
-    name: newExercise.name,
-    muscle: newExercise.group as MuscleType,
-    session: dayIndex,
-    rank: landmark,
-    sets: 2,
-    reps: 10,
-    weight: 100,
-    rir: 3,
-    weightIncrement: 2,
-    trainingModality: "straight",
-    mesocycle_progression: [],
-    supersetWith: null,
-    initialSetsPerMeso: setProgression.sets,
-    setProgressionSchema: setProgression.schemas,
-    data: {
-      movement_type: newExercise.movement_type,
-      requirements: newExercise.requirements,
-    },
-  };
-  return new_exercise;
-};

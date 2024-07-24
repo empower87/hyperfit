@@ -124,14 +124,15 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
   const onAddExercise = useCallback(
     (newExercise: Exercise, sessionIndex: number) => {
       const exercises = muscleGroup.exercises;
+      const frequencyProgression = muscleGroup.frequency.progression;
       const data = addNewExerciseSetsToSetProgressionMatrix(
+        frequencyProgression,
         muscleGroup.frequency.setProgressionMatrix,
         sessionIndex
       );
       const new_exercise = initNewExercise(
         newExercise,
         muscleGroup.volume.landmark,
-        sessionIndex,
         data.initialSetsPerMeso
       );
 
@@ -253,27 +254,44 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
           },
         }));
       } else {
-        const added = frequencyProgression[frequencyProgression.length - 1] + 1;
+        // const added = frequencyProgression[frequencyProgression.length - 1] + 1;
         frequencyProgression[frequencyProgression.length - 1]++;
 
         const data = addNewExerciseSetsToSetProgressionMatrix(
+          frequencyProgression,
           setProgressionMatrix,
-          added
+          frequencyProgression[frequencyProgression.length - 1]
+        );
+        console.log(
+          data,
+          muscleGroup,
+          frequencyProgression,
+          "OH BOY WHAT DIS?"
         );
         const initial_exercise = initNewExercise(
           firstExercise,
           muscleGroup.volume.landmark,
-          added,
           data.initialSetsPerMeso
         );
 
         cloned_exercises.push([initial_exercise]);
+        let lol = cloned_exercises;
+        const cloned_exercisess = updateInitialSetsForExercisesTEST(
+          cloned_exercises,
+          frequencyProgression.length - 1,
+          frequencyProgression[frequencyProgression.length - 1],
+          data.setProgressionMatrix
+        );
+        if (cloned_exercisess) {
+          lol = cloned_exercisess;
+        }
         setMuscleGroup((prev) => ({
           ...prev,
-          exercises: cloned_exercises,
-          volume: {
-            ...prev.volume,
-            frequencyProgression: frequencyProgression,
+          exercises: lol,
+          frequency: {
+            ...prev.frequency,
+            progression: frequencyProgression,
+            setProgressionMatrix: data.setProgressionMatrix,
           },
         }));
       }

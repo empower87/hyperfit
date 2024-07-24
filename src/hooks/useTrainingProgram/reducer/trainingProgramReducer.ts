@@ -536,7 +536,8 @@ export default function trainingProgramReducer(state: State, action: Action) {
       const updated_list_freq = attachTargetFrequency(
         muscle_priority_list,
         frequency_total,
-        breakpoints
+        breakpoints,
+        mesocycles
       );
 
       return {
@@ -575,7 +576,8 @@ export default function trainingProgramReducer(state: State, action: Action) {
       const updated_list = attachTargetFrequency(
         muscle_priority_list,
         frequency_total,
-        breakpoints
+        breakpoints,
+        mesocycles
       );
 
       return {
@@ -625,7 +627,8 @@ export default function trainingProgramReducer(state: State, action: Action) {
       const updated_list_2 = attachTargetFrequency(
         muscle_priority_list,
         frequency_total,
-        breakpoints
+        breakpoints,
+        mesocycles
       );
 
       return {
@@ -662,7 +665,8 @@ export default function trainingProgramReducer(state: State, action: Action) {
       const updated_list_sessions = attachTargetFrequency(
         muscle_priority_list,
         frequency_total,
-        breakpoints
+        breakpoints,
+        mesocycles
       );
 
       return {
@@ -728,7 +732,8 @@ export default function trainingProgramReducer(state: State, action: Action) {
       const update_muscle_list = attachTargetFrequency(
         muscle_priority_list,
         frequency_total,
-        breakpoints
+        breakpoints,
+        mesocycles
       );
 
       const rebuild_training_block = initializeTrainingBlock(

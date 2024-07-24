@@ -1,6 +1,5 @@
 import { MuscleType } from "~/constants/workoutSplits";
 import {
-  getTotalExercisesForMuscleGroup,
   getTotalExercisesFromSetMatrix,
   initializeSetProgression,
 } from "~/hooks/useTrainingProgram/utils/exercises/getExercises";
@@ -10,6 +9,7 @@ import {
   type MusclePriorityType,
   type VolumeLandmarkType,
 } from "../../reducer/trainingProgramReducer";
+import { getMaxFrequencyTarget_mev_mv } from "../exercises/setProgressionMatrices";
 import {
   determineFrequencyByRange,
   determineFrequencyProgression,
@@ -250,7 +250,8 @@ export const getVolumeLandmarkForMuscle = (
 export const attachTargetFrequency = (
   muscle_priority_list: MusclePriorityType[],
   total_sessions: number,
-  breakpoints: [number, number]
+  breakpoints: [number, number],
+  mesocycles: number
 ) => {
   const updated_list = structuredClone(muscle_priority_list);
   for (let i = 0; i < updated_list.length; i++) {
@@ -259,20 +260,28 @@ export const attachTargetFrequency = (
     const landmark = updated_list[i].volume.landmark;
     const exercisesPerSessionSchema =
       updated_list[i].volume.exercisesPerSessionSchema;
-    const current_volume_landmark = muscle_priority_list[i].volume.landmark;
 
     const volume_landmark = getVolumeLandmarkForMuscle(
       i,
-      current_volume_landmark,
+      landmark,
       breakpoints
     );
-    const target = determineFrequencyByRange(
-      updated_list[i].frequency.range,
-      i,
-      breakpoints,
-      total_sessions
+
+    let target = 0;
+    if (landmark !== "MRV") {
+      target = getMaxFrequencyTarget_mev_mv(muscleData[landmark], 2);
+    } else {
+      target = determineFrequencyByRange(
+        updated_list[i].frequency.range,
+        i,
+        breakpoints,
+        total_sessions
+      );
+    }
+    const frequencyProgression = determineFrequencyProgression(
+      mesocycles,
+      target
     );
-    const frequencyProgression = determineFrequencyProgression(3, target);
     const setProgressionMatrix = initializeSetProgression(
       volume_landmark,
       frequencyProgression,
@@ -282,31 +291,26 @@ export const attachTargetFrequency = (
       muscle
     );
 
-    const testExercises = getTotalExercisesFromSetMatrix(
+    console.log(
+      muscle,
+      updated_list,
+      setProgressionMatrix,
+      target,
+      frequencyProgression,
+      "THESE KINDA SHOULD BE THE SAME I THINK"
+    );
+
+    const exercises = getTotalExercisesFromSetMatrix(
       muscle,
       volume_landmark,
       setProgressionMatrix,
       frequencyProgression
     );
-
-    const exercises = getTotalExercisesForMuscleGroup(
-      muscle,
-      landmark,
-      frequencyProgression,
-      exercisesPerSessionSchema
-    );
-    console.log(
-      muscle,
-      setProgressionMatrix,
-      testExercises,
-      exercises,
-      "THESE KINDA SHOULD BE THE SAME I THINK"
-    );
     updated_list[i].volume.landmark = volume_landmark;
     updated_list[i].frequency.target = target;
     updated_list[i].frequency.progression = frequencyProgression;
     updated_list[i].frequency.setProgressionMatrix = setProgressionMatrix;
-    updated_list[i].exercises = testExercises;
+    updated_list[i].exercises = exercises;
   }
   return updated_list;
 };

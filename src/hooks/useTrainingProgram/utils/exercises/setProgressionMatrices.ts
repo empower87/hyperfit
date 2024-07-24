@@ -107,6 +107,19 @@ const getSetProgressionMatrix_mev_mv = (volume: number) => {
   }
 };
 
+export const getMaxFrequencyTarget_mev_mv = (
+  volume: number,
+  target: number
+) => {
+  const targetIndex = target - 1;
+  const matrix = getSetProgressionMatrix_mev_mv(volume);
+  const lastMatrixRow = matrix[matrix.length - 1];
+
+  if (lastMatrixRow && lastMatrixRow[targetIndex]) {
+    return target;
+  }
+  return target - 1;
+};
 export const getValidFrequencyIndex_mev_mv = (selectedFrequency: number) => {
   if (selectedFrequency > 2) return -1;
   return selectedFrequency;
