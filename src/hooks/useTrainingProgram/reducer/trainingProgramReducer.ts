@@ -223,6 +223,12 @@ export type ExerciseDataType = {
   requirements: string[];
 };
 
+type FrequencyProgressionType = number[];
+type Frequency = FrequencyProgressionType[number];
+type InitialSets = {
+  [key: Frequency]: number;
+};
+
 export type ExerciseType = {
   id: string;
   name: string;
@@ -240,6 +246,7 @@ export type ExerciseType = {
   initialSetsPerMeso: number[];
   setProgressionSchema: SetProgressionType[];
   data: ExerciseDataType;
+  initialSets?: InitialSets;
 };
 
 export type TrainingProgramParamsType = {

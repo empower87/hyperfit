@@ -204,16 +204,23 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
   const onSetIncrement = useCallback(
     (operation: "+" | "-", exerciseId: ExerciseType["id"]) => {
       const exercises = muscleGroup.exercises;
+      const setProgressionMatrix = muscleGroup.frequency.setProgressionMatrix
+      const frequency = muscleGroup.frequency.progression[selectedMesocycleIndex]
       const exercise = exercises.flat().find((e) => e.id === exerciseId);
       if (!exercise) return;
 
       const sets = exercise.initialSetsPerMeso[selectedMesocycleIndex];
       if (operation === "-" && sets - 1 < 1) return;
-
+      
       exercise.initialSetsPerMeso[selectedMesocycleIndex] =
-        sets + (operation === "+" ? 1 : -1);
+      sets + (operation === "+" ? 1 : -1);
 
-      const incrementedExercise = exercises.map((day) => {
+      const newKeyValue = {
+        [frequency]: exercise.initialSetsPerMeso[selectedMesocycleIndex]
+      }
+      
+      exercise.initialSets = exercise.initialSets ? { ...exercise.initialSets, [frequency]: exercise.initialSetsPerMeso[selectedMesocycleIndex] } : newKeyValue
+      const incrementedExercises = exercises.map((day) => {
         return day.map((e) => {
           if (e.id === exerciseId) {
             return exercise;
@@ -222,9 +229,10 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
         });
       });
 
+      console.log(setProgressionMatrix, incrementedExercises, "OH BOY?")
       setMuscleGroup((prev) => ({
         ...prev,
-        exercises: incrementedExercise,
+        exercises: incrementedExercises,
       }));
     },
     [selectedMesocycleIndex, muscleGroup]
@@ -275,19 +283,17 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
         );
 
         cloned_exercises.push([initial_exercise]);
-        let lol = cloned_exercises;
-        const cloned_exercisess = updateInitialSetsForExercisesTEST(
+
+        const updated_exercises = updateInitialSetsForExercisesTEST(
           cloned_exercises,
           frequencyProgression.length - 1,
           frequencyProgression[frequencyProgression.length - 1],
           data.setProgressionMatrix
         );
-        if (cloned_exercisess) {
-          lol = cloned_exercisess;
-        }
+
         setMuscleGroup((prev) => ({
           ...prev,
-          exercises: lol,
+          exercises: updated_exercises,
           frequency: {
             ...prev.frequency,
             progression: frequencyProgression,

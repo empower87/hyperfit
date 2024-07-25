@@ -212,10 +212,9 @@ const disperseAddedSets = (addedSets: number[], schema: number[][]) => {
 export const initializeSetProgression = (
   rank: VolumeLandmarkType,
   frequencyProgression: number[],
-  case_index: number,
-  muscle: MuscleType
+  case_index: number
 ) => {
-  const mesoProgression: number[][][] = [];
+  const setProgression: number[][][] = [];
   const getMatrix = getInitMatrixFnByVolumeLandmark(rank);
   const matrix = getMatrix(case_index);
 
@@ -232,11 +231,11 @@ export const initializeSetProgression = (
     if (rank === "MRV") {
       currentSchema = disperseAddedSets(counter, currentSchema);
     }
-    mesoProgression.push(currentSchema);
+    setProgression.push(currentSchema);
     counter.push(meso);
   }
 
-  return mesoProgression;
+  return setProgression;
 };
 
 export const INITIAL_EXERCISE: ExerciseType = {
@@ -308,10 +307,9 @@ export const updateInitialSetsForExercisesTEST = (
       newValuesMatrix = i;
     }
   }
-
   // TODO: Add logic to create another progression matrix
   // Note. On incrementing initialSets determine if should update matrix or not. Probably not just initialSets actually.
-  if (newValuesMatrix == null) return;
+  if (newValuesMatrix == null) return exercises;
 
   const copied_exercises = structuredClone(exercises);
 
@@ -390,7 +388,7 @@ export const getTotalExercisesFromSetMatrix = (
         volume_landmark,
         sets
       );
-
+      exercise.sets = finalProgression[i][j];
       session_exercises.push(exercise);
       exercises_index++;
     }

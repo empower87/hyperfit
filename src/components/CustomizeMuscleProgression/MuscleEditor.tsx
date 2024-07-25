@@ -31,7 +31,7 @@ import { getRankColor } from "~/utils/getIndicatorColors";
 import { getMuscleData } from "~/utils/getMuscleData";
 import getMuscleTitleForUI from "~/utils/getMuscleTitleForUI";
 
-import { getSetProgressionForExercise } from "../../hooks/useTrainingProgram/utils/exercises/setProgressionOverMicrocycles";
+import { setProgression_addOnePerMicrocycle_TEST } from "../../hooks/useTrainingProgram/utils/exercises/setProgressionOverMicrocycles";
 import CollapsableHeader from "../Layout/CollapsableHeader";
 import SelectExercise from "../Modals/ChangeExerciseModal/ChangeExerciseModal";
 import SideMenu from "./components/SideMenu";
@@ -415,7 +415,7 @@ function SessionItem({ exercises, indices, dayIndex }: SessionItemProps) {
             <ExerciseItem
               key={`${each.id}_exerciseItem_${index}`}
               exercise={each}
-              index={index + 1}
+              index={index}
               exerciseIndex={indices[index]}
               dayIndex={dayIndex}
               onOpen={onOpen}
@@ -475,6 +475,7 @@ function ExerciseItem({
   totalExercisesInSession,
 }: ExerciseItemProps) {
   const {
+    muscleGroup,
     selectedMesocycleIndex,
     onSetIncrement,
     onRemoveExercise,
@@ -483,14 +484,37 @@ function ExerciseItem({
   const { training_program_params } = useTrainingProgramContext();
   const { microcycles } = training_program_params;
 
-  const sets = getSetProgressionForExercise(
-    exercise.setProgressionSchema[selectedMesocycleIndex],
-    selectedMesocycleIndex,
-    exercise,
+  const setProgressionMatrix = muscleGroup.frequency.setProgressionMatrix;
+  const setProgressionLengths = Array.from(
+    setProgressionMatrix,
+    (e, i) => e.length
+  );
+  const frequency = muscleGroup.frequency.progression[selectedMesocycleIndex];
+  const setProgressionIndex = setProgressionLengths.indexOf(frequency);
+  const setProgressionX = setProgressionMatrix[setProgressionIndex] ?? 0;
+  const setProgressionY = setProgressionX[dayIndex - 1] ?? 0;
+  const selectedExerciseSet = setProgressionY[index];
+
+  const initialSets =
+    exercise.initialSets && exercise.initialSets[frequency]
+      ? exercise.initialSets[frequency]
+      : selectedExerciseSet;
+
+  const sets = setProgression_addOnePerMicrocycle_TEST(
     microcycles,
     totalExercisesInSession,
-    index - 1
+    index,
+    initialSets
   );
+
+  // const sets = getSetProgressionForExercise(
+  //   exercise.setProgressionSchema[selectedMesocycleIndex],
+  //   selectedMesocycleIndex,
+  //   exercise,
+  //   microcycles,
+  //   totalExercisesInSession,
+  //   index - 1
+  // );
 
   return (
     <li className={`flex text-xxs text-white ${BG_COLOR_M5}`}>

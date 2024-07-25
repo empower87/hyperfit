@@ -287,8 +287,7 @@ export const attachTargetFrequency = (
       frequencyProgression,
       volume_landmark !== "MRV"
         ? muscleData[volume_landmark]
-        : exercisesPerSessionSchema,
-      muscle
+        : exercisesPerSessionSchema
     );
 
     console.log(

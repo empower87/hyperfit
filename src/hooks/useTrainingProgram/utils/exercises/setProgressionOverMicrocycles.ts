@@ -77,6 +77,7 @@ const setProgression_addOnePerMicrocycle = (
   exerciseIndex: number
 ) => {
   const initialSets = exercise.initialSetsPerMeso[mesocycleIndex];
+
   if (initialSets === 0) {
     return Array.from(Array(microcycles), (e, i) => 0);
   }
@@ -100,6 +101,34 @@ const setProgression_addOnePerMicrocycle = (
   return setsPerMicrocycle;
 };
 
+export const setProgression_addOnePerMicrocycle_TEST = (
+  microcycles: number,
+  totalExercisesInSession: number,
+  exerciseIndex: number,
+  initialSets: number
+) => {
+  if (initialSets === 0) {
+    return Array.from(Array(microcycles), (e, i) => 0);
+  }
+  const setsPerMicrocycle: number[] = [initialSets];
+
+  let setCount = initialSets;
+  let addCount = 0;
+
+  for (let i = 0; i < microcycles - 1; i++) {
+    if (addCount === exerciseIndex) {
+      setCount++;
+    }
+    if (addCount === totalExercisesInSession - 1) {
+      addCount = 0;
+    } else {
+      addCount++;
+    }
+
+    setsPerMicrocycle.push(setCount);
+  }
+  return setsPerMicrocycle;
+};
 export const getSetProgressionForExercise = (
   type: SetProgressionType,
   mesocycleIndex: number,
