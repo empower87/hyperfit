@@ -53,7 +53,7 @@ import { getMuscleData } from "../../../../utils/getMuscleData";
 // stability 0 = above on a bosu ball..
 // NOTE: DONE AS OF 3/2/2024
 
-export type Exercise = {
+export type JSONExercise = {
   id: string;
   name: string;
   rank: number;
@@ -78,7 +78,7 @@ export type Exercise = {
     fatigue: number;
   };
 };
-export type HypertrophyCriteriaKey = keyof Exercise["hypertrophy_criteria"];
+export type HypertrophyCriteriaKey = keyof JSONExercise["hypertrophy_criteria"];
 
 const CRITERIA_WEIGHTS = {
   stretch: {
@@ -94,7 +94,7 @@ const CRITERIA_WEIGHTS = {
   loadability: 1.1,
 } as const;
 
-const getWeightedCriteriaTotal = (exercise: Exercise) => {
+const getWeightedCriteriaTotal = (exercise: JSONExercise) => {
   const hypertrophy_criteria = exercise.hypertrophy_criteria;
   let total = 0;
 
@@ -121,8 +121,8 @@ const getWeightedCriteriaTotal = (exercise: Exercise) => {
   return Math.round(total);
 };
 
-export const getGroupList = (group: string): Exercise[] => {
-  let exercises: Exercise[] = [];
+export const getGroupList = (group: string): JSONExercise[] => {
+  let exercises: JSONExercise[] = [];
   switch (group) {
     case "back":
       exercises = BACK_EXERCISES;
@@ -237,6 +237,8 @@ export const initializeSetProgression = (
 
   return setProgression;
 };
+
+const getInitialSets = () => {};
 
 export const INITIAL_EXERCISE: ExerciseType = {
   name: "Triceps Extension (cable, single-arm)",
@@ -561,7 +563,7 @@ export const addNewExerciseSetsToSetProgressionMatrix = (
 };
 
 export const initNewExercise = (
-  exerciseData: Exercise,
+  exerciseData: JSONExercise,
   volume_landmark: VolumeLandmarkType,
   initalSetsPerMeso: number[]
 ) => {

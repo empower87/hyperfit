@@ -25,7 +25,7 @@ import {
 } from "~/constants/themes";
 import { ExerciseType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
-import { Exercise } from "~/hooks/useTrainingProgram/utils/exercises/getExercises";
+import { JSONExercise } from "~/hooks/useTrainingProgram/utils/exercises/getExercises";
 import { cn } from "~/lib/clsx";
 import { getRankColor } from "~/utils/getIndicatorColors";
 import { getMuscleData } from "~/utils/getMuscleData";
@@ -309,7 +309,7 @@ function Exercises() {
   const onClose = () => setIsOpen(false);
 
   const onSelectHandler = useCallback(
-    (newExercise: Exercise) => {
+    (newExercise: JSONExercise) => {
       onAddTrainingDay(newExercise, exercisesByMeso.length);
     },
     [exercisesByMeso]
