@@ -1,5 +1,6 @@
 import { MuscleType } from "~/constants/workoutSplits";
 import {
+  getMatrixIndexCase,
   getTotalExercisesFromSetMatrix,
   initializeSetProgression,
 } from "~/hooks/useTrainingProgram/utils/exercises/getExercises";
@@ -9,10 +10,10 @@ import {
   type MusclePriorityType,
   type VolumeLandmarkType,
 } from "../../reducer/trainingProgramReducer";
-import { getMaxFrequencyTarget_mev_mv } from "../exercises/setProgressionMatrices";
 import {
   determineFrequencyByRange,
   determineFrequencyProgression,
+  getFrequencyRange,
 } from "./maximumFrequencyHandlers";
 
 export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
@@ -254,6 +255,7 @@ export const attachTargetFrequency = (
   mesocycles: number
 ) => {
   const updated_list = structuredClone(muscle_priority_list);
+
   for (let i = 0; i < updated_list.length; i++) {
     const muscle = updated_list[i].muscle;
     const muscleData = getMuscleData(muscle);
@@ -267,21 +269,28 @@ export const attachTargetFrequency = (
       breakpoints
     );
 
-    let target = 0;
-    if (landmark !== "MRV") {
-      target = getMaxFrequencyTarget_mev_mv(muscleData[landmark], 2);
-    } else {
-      target = determineFrequencyByRange(
-        updated_list[i].frequency.range,
-        i,
-        breakpoints,
-        total_sessions
-      );
-    }
+    const frequency_range = getFrequencyRange(
+      muscle,
+      volume_landmark,
+      updated_list[i].frequency.range
+    );
+
+    const target = determineFrequencyByRange(
+      frequency_range,
+      i,
+      breakpoints,
+      total_sessions
+    );
+
     const frequencyProgression = determineFrequencyProgression(
       mesocycles,
       target
     );
+    const matrix_index = getMatrixIndexCase({
+      ...updated_list[i],
+      volume: { ...updated_list[i].volume, landmark: volume_landmark },
+    });
+
     const setProgressionMatrix = initializeSetProgression(
       volume_landmark,
       frequencyProgression,

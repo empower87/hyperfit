@@ -1,5 +1,9 @@
 // TOTAL_SESSION = 6
 
+import { MuscleType } from "~/constants/workoutSplits";
+import { getMuscleData } from "~/utils/getMuscleData";
+import { VolumeLandmarkType } from "../../reducer/trainingProgramReducer";
+
 // MRV_BREAKPOINTS = [ 4 , 9 ]
 
 // legs = 1, 7, 11, 14
@@ -32,7 +36,8 @@
 // 4 3.75 3.5 3.25
 
 const MIN_MRV_FREQUENCY = 3;
-const MAX_MEV_FREQUENCY = 2;
+const MIN_MEV_MV_FREQUENCY = 0;
+const MAX_MEV_FREQUENCY = 3;
 
 // NOTE: may need to adjust how this responds to total_sessions
 export const determineFrequencyByRange = (
@@ -41,9 +46,7 @@ export const determineFrequencyByRange = (
   breakpoints: [number, number],
   total_sessions: number
 ) => {
-  if (rank >= breakpoints[0] && rank < breakpoints[1]) return 2;
-  else if (rank >= breakpoints[1]) return 1;
-  else {
+  if (rank < breakpoints[0]) {
     const min = Math.max(range[0], MIN_MRV_FREQUENCY);
     const max = Math.max(
       Math.min(range[1] - rank, total_sessions),
@@ -59,9 +62,43 @@ export const determineFrequencyByRange = (
       frequency = Math.floor(max - decrement * rank);
     }
     return frequency;
+  } else {
+    const total = range[0] + range[1];
+    return Math.floor(total / 2);
   }
 };
 
+const getFrequencyRange_mev_mv = (volume: number): [number, number] => {
+  switch (volume) {
+    case 0:
+      return [0, 0];
+    case 2:
+      return [1, 1];
+    case 4:
+      return [1, 2];
+    case 6:
+      return [1, 3];
+    case 8:
+      return [1, 3];
+    case 10:
+      return [1, 3];
+    default:
+      return [0, 0];
+  }
+};
+export const getFrequencyRange = (
+  muscle: MuscleType,
+  rank: VolumeLandmarkType,
+  range: [number, number]
+) => {
+  let newFrequency: [number, number] = [...range];
+  if (rank === "MEV" || rank === "MV") {
+    const muscleData = getMuscleData(muscle);
+    const maxVolume = muscleData[rank];
+    newFrequency = getFrequencyRange_mev_mv(maxVolume);
+  }
+  return newFrequency;
+};
 // mesocycles |  1  2  3
 // ----------------------
 // freqEnd  1 |  1  1  1

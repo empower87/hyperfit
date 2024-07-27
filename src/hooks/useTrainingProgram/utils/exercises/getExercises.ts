@@ -1,6 +1,7 @@
 import { MuscleType } from "~/constants/workoutSplits";
 import {
   ExerciseType,
+  MusclePriorityType,
   SetProgressionType,
   type VolumeLandmarkType,
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
@@ -209,6 +210,17 @@ const disperseAddedSets = (addedSets: number[], schema: number[][]) => {
 //    meso 3: [[   2,    3], [   2,    3], [   2,    2], [   0]]
 //    meso 3: [[   3,    3], [   3,    3], [   3,    2], [   2]]
 
+export const getMatrixIndexCase = (muscle: MusclePriorityType) => {
+  switch (muscle.volume.landmark) {
+    case "MEV":
+    case "MV":
+      const data = getMuscleData(muscle.muscle);
+      return data[muscle.volume.landmark];
+    default:
+      return muscle.volume.exercisesPerSessionSchema;
+  }
+};
+
 export const initializeSetProgression = (
   rank: VolumeLandmarkType,
   frequencyProgression: number[],
@@ -237,8 +249,6 @@ export const initializeSetProgression = (
 
   return setProgression;
 };
-
-const getInitialSets = () => {};
 
 export const INITIAL_EXERCISE: ExerciseType = {
   name: "Triceps Extension (cable, single-arm)",
