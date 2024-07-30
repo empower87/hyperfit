@@ -1,12 +1,12 @@
-import { MuscleType } from "~/constants/workoutSplits";
+import { getMusclesMaxFrequency, MuscleType } from "~/constants/workoutSplits";
 import {
-  getMatrixIndexCase,
   getTotalExercisesFromSetMatrix,
   initializeSetProgression,
 } from "~/hooks/useTrainingProgram/utils/exercises/getExercises";
 import { getMuscleData } from "~/utils/getMuscleData";
 
 import {
+  SplitSessionsType,
   type MusclePriorityType,
   type VolumeLandmarkType,
 } from "../../reducer/trainingProgramReducer";
@@ -232,10 +232,8 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
 // NOTE: updates only on REORDERING of list or changing MEV/MRV BREAKPOINT
 export const getVolumeLandmarkForMuscle = (
   index: number,
-  volume_landmark: VolumeLandmarkType,
-  volume_breakpoints?: [number, number]
+  volume_breakpoints: [number, number]
 ) => {
-  if (!volume_breakpoints) return volume_landmark;
   const mrv_bp = volume_breakpoints[0];
   const mev_bp = volume_breakpoints[1];
 
@@ -248,26 +246,16 @@ export const getVolumeLandmarkForMuscle = (
   }
 };
 
-export const attachTargetFrequency = (
+export const onMusclePrioritization = (
   muscle_priority_list: MusclePriorityType[],
-  total_sessions: number,
   breakpoints: [number, number],
-  mesocycles: number
+  total_sessions: number
 ) => {
-  const updated_list = structuredClone(muscle_priority_list);
+  const updated_list = [...muscle_priority_list];
 
   for (let i = 0; i < updated_list.length; i++) {
     const muscle = updated_list[i].muscle;
-    const muscleData = getMuscleData(muscle);
-    const landmark = updated_list[i].volume.landmark;
-    const exercisesPerSessionSchema =
-      updated_list[i].volume.exercisesPerSessionSchema;
-
-    const volume_landmark = getVolumeLandmarkForMuscle(
-      i,
-      landmark,
-      breakpoints
-    );
+    const volume_landmark = getVolumeLandmarkForMuscle(i, breakpoints);
 
     const frequency_range = getFrequencyRange(
       muscle,
@@ -281,15 +269,51 @@ export const attachTargetFrequency = (
       breakpoints,
       total_sessions
     );
+    updated_list[i].volume.landmark = volume_landmark;
+    updated_list[i].frequency.target = target;
+  }
+  return updated_list;
+};
+
+export const attachTargetFrequency = (
+  muscle_priority_list: MusclePriorityType[],
+  total_sessions: number,
+  breakpoints: [number, number],
+  mesocycles: number,
+  split_sessions: SplitSessionsType
+) => {
+  const updated_list = [...muscle_priority_list];
+
+  for (let i = 0; i < updated_list.length; i++) {
+    const muscle = updated_list[i].muscle;
+    const muscleData = getMuscleData(muscle);
+    const exercisesPerSessionSchema =
+      updated_list[i].volume.exercisesPerSessionSchema;
+    const volume_landmark = updated_list[i].volume.landmark;
+    let target = updated_list[i].frequency.target;
+
+    // const volume_landmark = getVolumeLandmarkForMuscle(i, breakpoints);
+
+    // const frequency_range = getFrequencyRange(
+    //   muscle,
+    //   volume_landmark,
+    //   updated_list[i].frequency.range
+    // );
+
+    // const target = determineFrequencyByRange(
+    //   frequency_range,
+    //   i,
+    //   breakpoints,
+    //   total_sessions
+    // );
+
+    const readjusted_target = getMusclesMaxFrequency(split_sessions, muscle);
+    target = Math.min(target, readjusted_target);
 
     const frequencyProgression = determineFrequencyProgression(
       mesocycles,
       target
     );
-    const matrix_index = getMatrixIndexCase({
-      ...updated_list[i],
-      volume: { ...updated_list[i].volume, landmark: volume_landmark },
-    });
 
     const setProgressionMatrix = initializeSetProgression(
       volume_landmark,
@@ -301,8 +325,8 @@ export const attachTargetFrequency = (
 
     console.log(
       muscle,
-      updated_list,
-      setProgressionMatrix,
+      split_sessions,
+      updated_list[i].frequency.range,
       target,
       frequencyProgression,
       "THESE KINDA SHOULD BE THE SAME I THINK"

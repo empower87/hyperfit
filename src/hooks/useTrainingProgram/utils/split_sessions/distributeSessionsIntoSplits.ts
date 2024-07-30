@@ -235,6 +235,7 @@ export const getFrequencyMaxes = (
         : Math.round(tracker.legs[1] / many),
     ],
   };
+
   return freq_maxes;
 };
 

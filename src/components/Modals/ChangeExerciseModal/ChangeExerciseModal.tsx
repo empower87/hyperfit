@@ -9,7 +9,7 @@ import {
 } from "~/constants/themes";
 import { useOutsideClick } from "~/hooks/useOnOutsideClick";
 import { MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
-import { Exercise } from "~/hooks/useTrainingProgram/utils/exercises/getExercises";
+import { JSONExercise } from "~/hooks/useTrainingProgram/utils/exercises/getExercises";
 import { cn } from "~/lib/clsx";
 import {
   ChangeExerciseProvider,
@@ -220,7 +220,7 @@ function ItemTag({ name, selected }: ItemTagProps) {
   );
 }
 type ItemProps = {
-  exercise: Exercise;
+  exercise: JSONExercise;
   selected: boolean;
 };
 function Item({ exercise, selected }: ItemProps) {
@@ -372,14 +372,14 @@ SelectExercise.Filter = Filter;
 type SelectExerciseProps = {
   muscle: MusclePriorityType;
   exerciseId: string;
-  onSelect: (newExercise: Exercise) => void;
+  onSelect: (newExercise: JSONExercise) => void;
   onClose: () => void;
 };
 function SelectExerciseContents({
   onSelect,
   onClose,
 }: {
-  onSelect: (newExercise: Exercise) => void;
+  onSelect: (newExercise: JSONExercise) => void;
   onClose: () => void;
 }) {
   const { exercises, allExercises, selectedExerciseId, onSaveExerciseHandler } =

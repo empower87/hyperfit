@@ -27,6 +27,7 @@ import {
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
 import {
   attachTargetFrequency,
+  onMusclePrioritization,
   reorderListByVolumeBreakpoints,
 } from "~/hooks/useTrainingProgram/utils/prioritized_muscle_list/musclePriorityListHandlers";
 import { distributeSplitAcrossWeek } from "~/hooks/useTrainingProgram/utils/training_block/distributeSplitAcrossTrainingWeek";
@@ -42,24 +43,23 @@ const restructureProgramConfig = (
   // const { mesocycles } = programConfig.training_program_params;
   const total = total_sessions[0] + total_sessions[1];
 
-  const reordered_items = attachTargetFrequency(
+  const update_items = onMusclePrioritization(
     muscle_priority_list,
-    total,
     breakpoints,
-    mesocycles
+    total
   );
 
   // seems to be a problem here
   const getNGroup = getFrequencyMaxes(
     2, // this will be determined via mrv_breakpoint
-    reordered_items,
+    update_items,
     breakpoints,
     total
   );
 
   const broSplitSorted =
     split === "BRO"
-      ? reordered_items.reduce((acc: BROSessionKeys[], curr) => {
+      ? update_items.reduce((acc: BROSessionKeys[], curr) => {
           const split = getBroSplit(curr.muscle);
           if (!acc.includes(split)) return [...acc, split];
           return acc;
@@ -71,6 +71,13 @@ const restructureProgramConfig = (
     total,
     getNGroup,
     broSplitSorted
+  );
+  const reordered_items = attachTargetFrequency(
+    update_items,
+    total,
+    breakpoints,
+    mesocycles,
+    new_split_sessions
   );
 
   const new_training_week = distributeSplitAcrossWeek(
@@ -92,6 +99,7 @@ const restructureProgramConfig = (
     new_training_block[new_training_block.length - 1],
     "OK LETS CHECK THESE"
   );
+
   return {
     frequency: total_sessions,
     split_sessions: new_split_sessions,
