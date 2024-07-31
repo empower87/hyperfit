@@ -7,14 +7,8 @@ import {
   useState,
 } from "react";
 import { DropResult } from "react-beautiful-dnd";
-import { getBroSplit } from "~/constants/workoutSplits";
-import {
-  distributeSessionsIntoSplits,
-  getFrequencyMaxes,
-} from "~/hooks/useTrainingProgram/utils/split_sessions/distributeSessionsIntoSplits";
 
 import {
-  BROSessionKeys,
   INITIAL_STATE,
   INITIAL_WEEK,
   State as ProgramConfigState,
@@ -25,90 +19,8 @@ import {
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
-import {
-  attachTargetFrequency,
-  onMusclePrioritization,
-  reorderListByVolumeBreakpoints,
-} from "~/hooks/useTrainingProgram/utils/prioritized_muscle_list/musclePriorityListHandlers";
-import { distributeSplitAcrossWeek } from "~/hooks/useTrainingProgram/utils/training_block/distributeSplitAcrossTrainingWeek";
-import { initializeTrainingBlock } from "~/hooks/useTrainingProgram/utils/training_block/trainingBlockHelpers";
-
-const restructureProgramConfig = (
-  total_sessions: [number, number],
-  split: SplitSessionsNameType,
-  muscle_priority_list: MusclePriorityType[],
-  mesocycles: number,
-  breakpoints: [number, number]
-) => {
-  // const { mesocycles } = programConfig.training_program_params;
-  const total = total_sessions[0] + total_sessions[1];
-
-  const update_items = onMusclePrioritization(
-    muscle_priority_list,
-    breakpoints,
-    total
-  );
-
-  // seems to be a problem here
-  const getNGroup = getFrequencyMaxes(
-    2, // this will be determined via mrv_breakpoint
-    update_items,
-    breakpoints,
-    total
-  );
-
-  const broSplitSorted =
-    split === "BRO"
-      ? update_items.reduce((acc: BROSessionKeys[], curr) => {
-          const split = getBroSplit(curr.muscle);
-          if (!acc.includes(split)) return [...acc, split];
-          return acc;
-        }, [])
-      : undefined;
-
-  const new_split_sessions = distributeSessionsIntoSplits(
-    split,
-    total,
-    getNGroup,
-    broSplitSorted
-  );
-  const reordered_items = attachTargetFrequency(
-    update_items,
-    total,
-    breakpoints,
-    mesocycles,
-    new_split_sessions
-  );
-
-  const new_training_week = distributeSplitAcrossWeek(
-    total_sessions,
-    new_split_sessions
-  );
-  const new_training_block = initializeTrainingBlock(
-    new_split_sessions,
-    reordered_items,
-    new_training_week,
-    total,
-    mesocycles
-  );
-
-  console.log(
-    total_sessions,
-    getNGroup,
-    reordered_items,
-    new_training_block[new_training_block.length - 1],
-    "OK LETS CHECK THESE"
-  );
-
-  return {
-    frequency: total_sessions,
-    split_sessions: new_split_sessions,
-    training_block: new_training_block,
-    muscle_priority_list: reordered_items,
-    mrv_breakpoint: breakpoints[0],
-    mev_breakpoint: breakpoints[1],
-  };
-};
+import { reorderListByVolumeBreakpoints } from "~/hooks/useTrainingProgram/utils/prioritized_muscle_list/musclePriorityListHandlers";
+import { trainingProgramHandler } from "~/hooks/useTrainingProgram/utils/trainingProgramHandler";
 
 function useProgramConfig() {
   const {
@@ -125,11 +37,6 @@ function useProgramConfig() {
   const [programConfig, setProgramConfig] = useState<ProgramConfigState>({
     ...INITIAL_STATE,
   });
-
-  const [volumeBreakpoints, setVolumeBreakpoints] = useState<[number, number]>([
-    mrv_breakpoint,
-    mev_breakpoint,
-  ]);
 
   useEffect(() => {
     const remove = window.localStorage.removeItem("TRAINING_PROGRAM_STATE");
@@ -162,7 +69,7 @@ function useProgramConfig() {
         mrv_breakpoint,
       } = programConfig;
 
-      const updated = restructureProgramConfig(
+      const updated = trainingProgramHandler(
         values,
         split_sessions.split,
         muscle_priority_list,
@@ -193,7 +100,7 @@ function useProgramConfig() {
         mev_breakpoint,
       ];
       // onChangeHandler(frequency, split, muscle_priority_list);
-      const updated = restructureProgramConfig(
+      const updated = trainingProgramHandler(
         frequency,
         split,
         muscle_priority_list,
@@ -270,7 +177,7 @@ function useProgramConfig() {
       items.splice(result.destination.index, 0, removed);
 
       // onChangeHandler(frequency, split_sessions.split, items);
-      const updated = restructureProgramConfig(
+      const updated = trainingProgramHandler(
         frequency,
         split_sessions.split,
         items,
@@ -298,10 +205,14 @@ function useProgramConfig() {
       const { newList, newVolumeBreakpoints } =
         reorderListByVolumeBreakpoints(list);
 
-      setVolumeBreakpoints(newVolumeBreakpoints);
-      setProgramConfig((prev) => ({ ...prev, muscle_priority_list: newList }));
+      setProgramConfig((prev) => ({
+        ...prev,
+        muscle_priority_list: newList,
+        mrv_breakpoint: newVolumeBreakpoints[0],
+        mev_breakpoint: newVolumeBreakpoints[1],
+      }));
     },
-    [programConfig, volumeBreakpoints]
+    [programConfig]
   );
 
   const onBreakpointChange = useCallback(
@@ -322,7 +233,7 @@ function useProgramConfig() {
       const index = type === "MRV" ? 0 : 1;
       new_breakpoints[index] = value;
 
-      const updated = restructureProgramConfig(
+      const updated = trainingProgramHandler(
         frequency,
         split_sessions.split,
         muscle_priority_list,
@@ -375,7 +286,7 @@ function useProgramConfig() {
         }
       }
 
-      const updated = restructureProgramConfig(
+      const updated = trainingProgramHandler(
         frequency,
         split_sessions.split,
         muscle_priority_list,
@@ -421,7 +332,10 @@ function useProgramConfig() {
 
   return {
     muscle_priority_list: programConfig.muscle_priority_list,
-    volumeBreakpoints,
+    volumeBreakpoints: [
+      programConfig.mrv_breakpoint,
+      programConfig.mev_breakpoint,
+    ],
     trainingWeek:
       programConfig.training_block[programConfig.training_block.length - 1],
     split_sessions: programConfig.split_sessions,

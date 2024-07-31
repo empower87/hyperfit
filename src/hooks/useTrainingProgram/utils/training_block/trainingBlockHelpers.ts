@@ -52,6 +52,7 @@ export const initializeTrainingBlock = (
       filteredWeek,
       n
     );
+
     training_block.unshift(filledWeek);
   }
 
@@ -132,9 +133,10 @@ const removeSplitsByMesocycle = (
   const total = Object.values(sessions).reduce((acc, cur) => acc + cur, 0);
 
   let tracker = 0;
-  const removedSplits = [];
+  const removedSplits: string[] = [];
 
-  while (total >= selectedFrequency) {
+  // NOTE: this may cause errors have to fully test all possibilities of frequency and splits
+  while (total > selectedFrequency) {
     const key = priorityRemoval[tracker] as keyof typeof sessions;
     const canSub = sessions[key] - 1 >= 0;
 
@@ -177,7 +179,7 @@ const filterOutSplitsFromWeek = (
   toRemove: string[],
   week: TrainingDayType[]
 ) => {
-  if (!toRemove) return week;
+  if (!toRemove.length) return week;
   let remove = [...toRemove];
   const clonedWeek = structuredClone(week);
 

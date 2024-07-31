@@ -277,8 +277,6 @@ export const onMusclePrioritization = (
 
 export const attachTargetFrequency = (
   muscle_priority_list: MusclePriorityType[],
-  total_sessions: number,
-  breakpoints: [number, number],
   mesocycles: number,
   split_sessions: SplitSessionsType
 ) => {

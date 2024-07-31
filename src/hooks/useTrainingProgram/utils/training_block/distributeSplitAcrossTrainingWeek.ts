@@ -7,11 +7,10 @@ import {
 } from "../../reducer/trainingProgramReducer";
 
 export const distributeSplitAcrossWeek = (
-  sessions: [number, number],
+  total_sessions: number,
   split_sessions: SplitSessionsType
 ) => {
-  const week_sessions = sessions[0];
-  const off_days = 7 - week_sessions;
+  const off_days = 7 - total_sessions;
   const off_day_indices = getOffDayIndices(off_days);
 
   const initWeek = structuredClone(INITIAL_WEEK);

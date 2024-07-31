@@ -6,6 +6,7 @@ import {
   SplitSessionsNameType,
   SplitSessionsType,
 } from "../../reducer/trainingProgramReducer";
+import { determineFrequencyByRange } from "../prioritized_muscle_list/maximumFrequencyHandlers";
 
 type Basket = {
   push: number;
@@ -174,31 +175,43 @@ export const getFrequencyMaxes = (
     legs: [0, 0, 0],
   };
 
-  let rank = 0;
+  let rank = 1;
   for (let i = 0; i < muscle_priority_list.length; i++) {
     const muscle = muscle_priority_list[i].muscle;
     const split = getPushPullLegsSplit(muscle);
 
     if (tracker[split][0] === 0) {
-      rank++;
       tracker[split][0] = rank;
+      rank++;
     }
 
     if (tracker[split][2] < many) {
       let muscle_max_adj = 2;
 
       if (i < breakpoints[0]) {
-        // const muscle_max = getMaxFrequencyByMatrix(
-        //   freq_string,
-        //   i,
-        //   breakpoints[0] - 1
-        // );
-        const muscle_max = muscle_priority_list[i].frequency.target;
+        const muscle_min = muscle_priority_list[i].frequency.range[0]
+        const muscle_max = muscle_priority_list[i].frequency.range[1];
+
         muscle_max_adj = getFrequencyLimit(
           tracker[split][0] === 1,
           total_sessions,
-          muscle_priority_list[i].frequency.range[0],
+          muscle_min,
           muscle_max
+        );
+        
+        const testRangeFinder = determineFrequencyByRange(
+          muscle_priority_list[i].frequency.range,
+          i,
+          breakpoints,
+          total_sessions
+        );
+        console.log(
+          muscle,
+          testRangeFinder,
+          muscle_max_adj,
+          muscle_max,
+          tracker,
+          "WTF IS GOING OON HERE??"
         );
       } else if (i >= breakpoints[1]) {
         muscle_max_adj = 1;
@@ -257,7 +270,7 @@ const distributeSessionsIntoSplits_opt = (
   ) {
     mutateBasket(basket, total_sessions);
   }
-
+  console.log(basket, total_sessions, freq_limits, "WTF IS GOING OON HERE??");
   return basket;
 };
 

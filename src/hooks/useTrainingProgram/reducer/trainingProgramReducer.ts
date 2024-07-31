@@ -542,9 +542,8 @@ export default function trainingProgramReducer(state: State, action: Action) {
 
       const updated_list_freq = attachTargetFrequency(
         muscle_priority_list,
-        frequency_total,
-        breakpoints,
-        mesocycles
+        mesocycles,
+        update_split_sessions_freq
       );
 
       return {
@@ -582,9 +581,8 @@ export default function trainingProgramReducer(state: State, action: Action) {
 
       const updated_list = attachTargetFrequency(
         muscle_priority_list,
-        frequency_total,
-        breakpoints,
-        mesocycles
+        mesocycles,
+        update_split_sessions
       );
 
       return {
@@ -633,9 +631,8 @@ export default function trainingProgramReducer(state: State, action: Action) {
 
       const updated_list_2 = attachTargetFrequency(
         muscle_priority_list,
-        frequency_total,
-        breakpoints,
-        mesocycles
+        mesocycles,
+        update_split_sessions_2
       );
 
       return {
@@ -671,9 +668,8 @@ export default function trainingProgramReducer(state: State, action: Action) {
 
       const updated_list_sessions = attachTargetFrequency(
         muscle_priority_list,
-        frequency_total,
-        breakpoints,
-        mesocycles
+        mesocycles,
+        splitSessions
       );
 
       return {
@@ -682,15 +678,16 @@ export default function trainingProgramReducer(state: State, action: Action) {
         muscle_priority_list: updated_list_sessions,
       };
     case "UPDATE_TRAINING_WEEK":
+      const freq_total_3 = frequency[0] + frequency[1];
       const new_training_week = distributeSplitAcrossWeek(
-        frequency,
+        freq_total_3,
         split_sessions
       );
       const get_training_block = initializeTrainingBlock(
         split_sessions,
         muscle_priority_list,
         new_training_week,
-        frequency[0] + frequency[1],
+        freq_total_3,
         mesocycles
       );
       return {
@@ -738,9 +735,8 @@ export default function trainingProgramReducer(state: State, action: Action) {
 
       const update_muscle_list = attachTargetFrequency(
         muscle_priority_list,
-        frequency_total,
-        breakpoints,
-        mesocycles
+        mesocycles,
+        split_sessions
       );
 
       const rebuild_training_block = initializeTrainingBlock(
