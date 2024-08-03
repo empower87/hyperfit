@@ -33,7 +33,12 @@ const getIndexOfDay = (droppableId: string) => {
 };
 
 export function TrainingWeek() {
-  const { trainingWeek, onRearrangedWeek } = useProgramConfigContext();
+  const {
+    trainingWeek: training_week,
+    trainingBlock,
+    onRearrangedWeek,
+  } = useProgramConfigContext();
+  const trainingWeek = trainingBlock[trainingBlock.length - 1];
   const onDragEnd = useCallback(
     (result: DropResult) => {
       if (!result.destination) return;

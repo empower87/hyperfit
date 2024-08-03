@@ -35,6 +35,11 @@ import { VolumeLandmarkType } from "../../reducer/trainingProgramReducer";
 
 // 4 3.75 3.5 3.25
 
+// mrv_breakpoint is 4
+// 3-6
+// 6 6 6 6
+// 6 5 4 4
+
 const MIN_MRV_FREQUENCY = 3;
 const MIN_MEV_MV_FREQUENCY = 0;
 const MAX_MEV_FREQUENCY = 3;
@@ -61,6 +66,16 @@ export const determineFrequencyByRange = (
     } else {
       frequency = Math.floor(max - decrement * rank);
     }
+    console.log(
+      range,
+      rank,
+      min,
+      max,
+      spread,
+      decrement,
+      frequency,
+      "OH BOY LOTS OF DATA"
+    );
     return frequency;
   } else {
     const total = range[0] + range[1];

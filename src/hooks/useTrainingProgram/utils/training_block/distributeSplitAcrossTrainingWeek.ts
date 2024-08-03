@@ -13,9 +13,8 @@ export const distributeSplitAcrossWeek = (
   const off_days = 7 - total_sessions;
   const off_day_indices = getOffDayIndices(off_days);
 
-  const initWeek = structuredClone(INITIAL_WEEK);
-
-  const initOffDays = initWeek.map((each, index) => {
+  const initial_week = structuredClone(INITIAL_WEEK);
+  const initOffDays = initial_week.map((each, index) => {
     if (off_day_indices.includes(index)) {
       return { ...each, isTrainingDay: false };
     } else return each;

@@ -16,7 +16,7 @@ type Basket = {
   full: number;
 };
 
-type SplitMaxes = {
+export type SplitMaxes = {
   push: [number, number];
   pull: [number, number];
   legs: [number, number];
@@ -270,7 +270,6 @@ const distributeSessionsIntoSplits_opt = (
   ) {
     mutateBasket(basket, total_sessions);
   }
-  console.log(basket, total_sessions, freq_limits, "WTF IS GOING OON HERE??");
   return basket;
 };
 

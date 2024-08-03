@@ -290,21 +290,6 @@ export const attachTargetFrequency = (
     const volume_landmark = updated_list[i].volume.landmark;
     let target = updated_list[i].frequency.target;
 
-    // const volume_landmark = getVolumeLandmarkForMuscle(i, breakpoints);
-
-    // const frequency_range = getFrequencyRange(
-    //   muscle,
-    //   volume_landmark,
-    //   updated_list[i].frequency.range
-    // );
-
-    // const target = determineFrequencyByRange(
-    //   frequency_range,
-    //   i,
-    //   breakpoints,
-    //   total_sessions
-    // );
-
     const readjusted_target = getMusclesMaxFrequency(split_sessions, muscle);
     target = Math.min(target, readjusted_target);
 
@@ -336,8 +321,7 @@ export const attachTargetFrequency = (
       setProgressionMatrix,
       frequencyProgression
     );
-    updated_list[i].volume.landmark = volume_landmark;
-    updated_list[i].frequency.target = target;
+
     updated_list[i].frequency.progression = frequencyProgression;
     updated_list[i].frequency.setProgressionMatrix = setProgressionMatrix;
     updated_list[i].exercises = exercises;
@@ -443,32 +427,27 @@ const onVolumeLandmarkChangeHandler = (
   }
 };
 
-export const reorderListByVolumeBreakpoints = (
-  muscle_priority_list: MusclePriorityType[]
-) => {
-  const list = [...muscle_priority_list];
-  const mrv = [];
-  const mev = [];
-  const mv = [];
-
-  for (let i = 0; i < list.length; i++) {
-    if (list[i].volume.landmark === "MRV") {
-      mrv.push(list[i]);
-    } else if (list[i].volume.landmark === "MEV") {
-      mev.push(list[i]);
-    } else {
-      mv.push(list[i]);
-    }
+export const adjustBreakpoints = (
+  oldVol: VolumeLandmarkType,
+  newVol: VolumeLandmarkType,
+  breakpoints: [number, number]
+): [number, number] => {
+  if (oldVol === newVol) return breakpoints;
+  switch (oldVol) {
+    case "MRV":
+      const secondBreakpoint =
+        newVol === "MEV" ? breakpoints[1] : breakpoints[1] - 1;
+      return [breakpoints[0] - 1, secondBreakpoint];
+    case "MEV":
+      if (newVol === "MRV") {
+        return [breakpoints[0] + 1, breakpoints[1]];
+      }
+      return [breakpoints[0], breakpoints[1] - 1];
+    case "MV":
+      const firstBreakpoint =
+        newVol === "MRV" ? breakpoints[0] + 1 : breakpoints[0];
+      return [firstBreakpoint, breakpoints[1] - 1];
+    default:
+      return breakpoints;
   }
-  const mrv_breakpoint = mrv.length;
-  const mev_breakpoint = mev.length + mrv_breakpoint;
-  const newVolumeBreakpoints: [number, number] = [
-    mrv_breakpoint,
-    mev_breakpoint,
-  ];
-  const newList = [...mrv, ...mev, ...mv];
-  return {
-    newList: newList,
-    newVolumeBreakpoints: newVolumeBreakpoints,
-  };
 };

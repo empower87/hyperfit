@@ -19,20 +19,11 @@ import {
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
-import { reorderListByVolumeBreakpoints } from "~/hooks/useTrainingProgram/utils/prioritized_muscle_list/musclePriorityListHandlers";
+import { adjustBreakpoints } from "~/hooks/useTrainingProgram/utils/prioritized_muscle_list/musclePriorityListHandlers";
 import { trainingProgramHandler } from "~/hooks/useTrainingProgram/utils/trainingProgramHandler";
 
 function useProgramConfig() {
-  const {
-    prioritized_muscle_list,
-    mrv_breakpoint,
-    mev_breakpoint,
-    split_sessions,
-    training_program_params,
-    frequency,
-    training_block,
-    handleOnProgramConfigChange,
-  } = useTrainingProgramContext();
+  const tpc = useTrainingProgramContext();
 
   const [programConfig, setProgramConfig] = useState<ProgramConfigState>({
     ...INITIAL_STATE,
@@ -41,23 +32,15 @@ function useProgramConfig() {
   useEffect(() => {
     const remove = window.localStorage.removeItem("TRAINING_PROGRAM_STATE");
     setProgramConfig({
-      muscle_priority_list: prioritized_muscle_list,
-      mrv_breakpoint: mrv_breakpoint,
-      mev_breakpoint: mev_breakpoint,
-      split_sessions: split_sessions,
-      training_program_params: training_program_params,
-      frequency: frequency,
-      training_block: training_block,
+      muscle_priority_list: tpc.prioritized_muscle_list,
+      mrv_breakpoint: tpc.mrv_breakpoint,
+      mev_breakpoint: tpc.mev_breakpoint,
+      split_sessions: tpc.split_sessions,
+      training_program_params: tpc.training_program_params,
+      frequency: tpc.frequency,
+      training_block: tpc.training_block,
     });
-  }, [
-    frequency,
-    prioritized_muscle_list,
-    mrv_breakpoint,
-    mev_breakpoint,
-    split_sessions,
-    training_program_params,
-    training_block,
-  ]);
+  }, [tpc]);
 
   const onFrequencyChange = useCallback(
     (values: [number, number]) => {
@@ -91,21 +74,21 @@ function useProgramConfig() {
 
   const onSplitChange = useCallback(
     (split: SplitSessionsNameType) => {
-      // const remove = window.localStorage.removeItem("TRAINING_PROGRAM_STATE");
-      const { frequency, muscle_priority_list, training_program_params } =
-        programConfig;
-      const mesocyles = training_program_params.mesocycles;
-      const volumeBreakpoints: [number, number] = [
-        mrv_breakpoint,
+      const {
+        frequency,
+        muscle_priority_list,
+        training_program_params,
         mev_breakpoint,
-      ];
-      // onChangeHandler(frequency, split, muscle_priority_list);
+        mrv_breakpoint,
+      } = programConfig;
+      const mesocyles = training_program_params.mesocycles;
+
       const updated = trainingProgramHandler(
         frequency,
         split,
         muscle_priority_list,
         mesocyles,
-        volumeBreakpoints
+        [mrv_breakpoint, mev_breakpoint]
       );
       setProgramConfig((prev) => ({
         ...prev,
@@ -164,25 +147,26 @@ function useProgramConfig() {
   const onPriorityListDragEnd = useCallback(
     (result: DropResult) => {
       if (!result.destination) return;
-      const { frequency, muscle_priority_list, training_program_params } =
-        programConfig;
-      const mesocyles = training_program_params.mesocycles;
-      const volumeBreakpoints: [number, number] = [
+      const {
+        frequency,
+        muscle_priority_list,
+        split_sessions,
+        training_program_params,
         mrv_breakpoint,
         mev_breakpoint,
-      ];
+      } = programConfig;
+      const mesocyles = training_program_params.mesocycles;
 
       const items = structuredClone(muscle_priority_list);
       const [removed] = items.splice(result.source.index, 1);
       items.splice(result.destination.index, 0, removed);
 
-      // onChangeHandler(frequency, split_sessions.split, items);
       const updated = trainingProgramHandler(
         frequency,
         split_sessions.split,
         items,
         mesocyles,
-        volumeBreakpoints
+        [mrv_breakpoint, mev_breakpoint]
       );
       setProgramConfig((prev) => ({
         ...prev,
@@ -199,17 +183,59 @@ function useProgramConfig() {
 
   const onSelectVolumeLandmarkChange = useCallback(
     (id: MusclePriorityType["id"], volume_landmark: VolumeLandmarkType) => {
-      const list = structuredClone(programConfig.muscle_priority_list);
+      const {
+        frequency,
+        muscle_priority_list,
+        split_sessions,
+        mrv_breakpoint,
+        mev_breakpoint,
+        training_program_params,
+      } = programConfig;
+      // NOTE: worked until i added trainingProgramHandler so need to tweak it for that
+      let volumeBreakpoints: [number, number] = [
+        mrv_breakpoint,
+        mev_breakpoint,
+      ];
+      const list = structuredClone(muscle_priority_list);
       const index = list.findIndex((item) => item.id === id);
+      const currentVolumeLandmark = list[index].volume.landmark;
       list[index].volume.landmark = volume_landmark;
-      const { newList, newVolumeBreakpoints } =
-        reorderListByVolumeBreakpoints(list);
+      volumeBreakpoints = adjustBreakpoints(
+        currentVolumeLandmark,
+        volume_landmark,
+        volumeBreakpoints
+      );
+      const destinationIndex =
+        volume_landmark === "MRV"
+          ? volumeBreakpoints[0]
+          : volume_landmark === "MEV"
+          ? volumeBreakpoints[1] - 1
+          : volumeBreakpoints[1];
+      const [removed] = list.splice(index, 1);
+      list.splice(destinationIndex, 0, removed);
+
+      console.log(
+        volumeBreakpoints,
+        [mrv_breakpoint, mev_breakpoint],
+        list,
+        "lol weird convolution"
+      );
+      const updated = trainingProgramHandler(
+        frequency,
+        split_sessions.split,
+        list,
+        training_program_params.mesocycles,
+        volumeBreakpoints
+      );
 
       setProgramConfig((prev) => ({
         ...prev,
-        muscle_priority_list: newList,
-        mrv_breakpoint: newVolumeBreakpoints[0],
-        mev_breakpoint: newVolumeBreakpoints[1],
+        frequency: updated.frequency,
+        muscle_priority_list: updated.muscle_priority_list,
+        split_sessions: updated.split_sessions,
+        training_block: updated.training_block,
+        mrv_breakpoint: updated.mrv_breakpoint,
+        mev_breakpoint: updated.mrv_breakpoint,
       }));
     },
     [programConfig]
@@ -221,6 +247,7 @@ function useProgramConfig() {
         frequency,
         muscle_priority_list,
         training_program_params,
+        split_sessions,
         mrv_breakpoint,
         mev_breakpoint,
       } = programConfig;
@@ -261,6 +288,7 @@ function useProgramConfig() {
         training_program_params,
         mrv_breakpoint,
         mev_breakpoint,
+        split_sessions,
       } = programConfig;
       const mesocyles = training_program_params.mesocycles;
       const new_breakpoints: [number, number] = [
@@ -308,26 +336,18 @@ function useProgramConfig() {
 
   const onResetConfig = useCallback(() => {
     setProgramConfig({
-      muscle_priority_list: prioritized_muscle_list,
-      mrv_breakpoint: mrv_breakpoint,
-      mev_breakpoint: mev_breakpoint,
-      split_sessions: split_sessions,
-      training_program_params: training_program_params,
-      frequency: frequency,
-      training_block: training_block,
+      muscle_priority_list: tpc.prioritized_muscle_list,
+      mrv_breakpoint: tpc.mrv_breakpoint,
+      mev_breakpoint: tpc.mev_breakpoint,
+      split_sessions: tpc.split_sessions,
+      training_program_params: tpc.training_program_params,
+      frequency: tpc.frequency,
+      training_block: tpc.training_block,
     });
-  }, [
-    frequency,
-    prioritized_muscle_list,
-    mrv_breakpoint,
-    mev_breakpoint,
-    split_sessions,
-    training_program_params,
-    training_block,
-  ]);
+  }, [tpc]);
 
   const onSaveConfig = useCallback(() => {
-    handleOnProgramConfigChange({ ...programConfig });
+    tpc.handleOnProgramConfigChange({ ...programConfig });
   }, [programConfig]);
 
   return {
@@ -338,6 +358,7 @@ function useProgramConfig() {
     ],
     trainingWeek:
       programConfig.training_block[programConfig.training_block.length - 1],
+    trainingBlock: programConfig.training_block,
     split_sessions: programConfig.split_sessions,
     training_program_params: programConfig.training_program_params,
     frequency: programConfig.frequency,
@@ -360,6 +381,7 @@ const ProgramConfigContext = createContext<ProgramConfigType>({
   muscle_priority_list: INITIAL_STATE.muscle_priority_list,
   volumeBreakpoints: [4, 9],
   trainingWeek: INITIAL_WEEK,
+  trainingBlock: [],
   split_sessions: INITIAL_STATE.split_sessions,
   training_program_params: INITIAL_STATE.training_program_params,
   frequency: INITIAL_STATE.frequency,
