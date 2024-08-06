@@ -19,7 +19,10 @@ import {
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
-import { adjustBreakpoints } from "~/hooks/useTrainingProgram/utils/prioritized_muscle_list/musclePriorityListHandlers";
+import {
+  getBreakpointsByMusclePriorityList,
+  reorganizePriorityListByVolumeLandmark,
+} from "~/hooks/useTrainingProgram/utils/prioritized_muscle_list/musclePriorityListHandlers";
 import { trainingProgramHandler } from "~/hooks/useTrainingProgram/utils/trainingProgramHandler";
 
 function useProgramConfig() {
@@ -187,45 +190,22 @@ function useProgramConfig() {
         frequency,
         muscle_priority_list,
         split_sessions,
-        mrv_breakpoint,
-        mev_breakpoint,
         training_program_params,
       } = programConfig;
-      // NOTE: worked until i added trainingProgramHandler so need to tweak it for that
-      let volumeBreakpoints: [number, number] = [
-        mrv_breakpoint,
-        mev_breakpoint,
-      ];
-      const list = structuredClone(muscle_priority_list);
-      const index = list.findIndex((item) => item.id === id);
-      const currentVolumeLandmark = list[index].volume.landmark;
-      list[index].volume.landmark = volume_landmark;
-      volumeBreakpoints = adjustBreakpoints(
-        currentVolumeLandmark,
-        volume_landmark,
-        volumeBreakpoints
-      );
-      const destinationIndex =
-        volume_landmark === "MRV"
-          ? volumeBreakpoints[0]
-          : volume_landmark === "MEV"
-          ? volumeBreakpoints[1] - 1
-          : volumeBreakpoints[1];
-      const [removed] = list.splice(index, 1);
-      list.splice(destinationIndex, 0, removed);
+      const index = muscle_priority_list.findIndex((item) => item.id === id);
+      const cloned_list = structuredClone(muscle_priority_list);
+      cloned_list[index].volume.landmark = volume_landmark;
 
-      console.log(
-        volumeBreakpoints,
-        [mrv_breakpoint, mev_breakpoint],
-        list,
-        "lol weird convolution"
-      );
+      const reorganized_list =
+        reorganizePriorityListByVolumeLandmark(cloned_list);
+      const breakpoints = getBreakpointsByMusclePriorityList(reorganized_list);
+
       const updated = trainingProgramHandler(
         frequency,
         split_sessions.split,
-        list,
+        reorganized_list,
         training_program_params.mesocycles,
-        volumeBreakpoints
+        breakpoints
       );
 
       setProgramConfig((prev) => ({
@@ -234,8 +214,8 @@ function useProgramConfig() {
         muscle_priority_list: updated.muscle_priority_list,
         split_sessions: updated.split_sessions,
         training_block: updated.training_block,
-        mrv_breakpoint: updated.mrv_breakpoint,
-        mev_breakpoint: updated.mrv_breakpoint,
+        mrv_breakpoint: breakpoints[0],
+        mev_breakpoint: breakpoints[1],
       }));
     },
     [programConfig]
@@ -291,6 +271,7 @@ function useProgramConfig() {
         split_sessions,
       } = programConfig;
       const mesocyles = training_program_params.mesocycles;
+      const default_breakpoints: [number, number] = [4, 9];
       const new_breakpoints: [number, number] = [
         mrv_breakpoint,
         mev_breakpoint,
@@ -298,22 +279,22 @@ function useProgramConfig() {
 
       if (type === "All MEV") {
         if (new_breakpoints[0] === 0 && new_breakpoints[1] === 14) {
-          new_breakpoints[0] = mrv_breakpoint;
-          new_breakpoints[1] = mev_breakpoint;
+          new_breakpoints[0] = default_breakpoints[0];
+          new_breakpoints[1] = default_breakpoints[1];
         } else {
           new_breakpoints[0] = 0;
           new_breakpoints[1] = 14;
         }
       } else {
         if (new_breakpoints[0] === 0 && new_breakpoints[1] === 0) {
-          new_breakpoints[0] = mrv_breakpoint;
-          new_breakpoints[1] = mev_breakpoint;
+          new_breakpoints[0] = default_breakpoints[0];
+          new_breakpoints[1] = default_breakpoints[1];
         } else {
           new_breakpoints[0] = 0;
           new_breakpoints[1] = 0;
         }
       }
-
+      console.log(new_breakpoints, "LOOP HERE??");
       const updated = trainingProgramHandler(
         frequency,
         split_sessions.split,

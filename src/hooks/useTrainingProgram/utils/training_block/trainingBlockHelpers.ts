@@ -169,7 +169,9 @@ const removeSplitsByMesocycle = (
     } else {
       tracker++;
     }
-    if (tracker === priorityRemoval.length) break;
+    // NOTE: 8/6/24 - this function in general may need to be reworked as I can't tell how it works and why.
+    // but it does bug out some of the mrv/mev breakpoint settings when user changes them in priority list.
+    if (tracker > priorityRemoval.length) return removedSplits;
   }
 
   return removedSplits;

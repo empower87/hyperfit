@@ -251,7 +251,7 @@ export const onMusclePrioritization = (
   breakpoints: [number, number],
   total_sessions: number
 ) => {
-  const updated_list = [...muscle_priority_list];
+  const updated_list = structuredClone(muscle_priority_list);
 
   for (let i = 0; i < updated_list.length; i++) {
     const muscle = updated_list[i].muscle;
@@ -280,7 +280,7 @@ export const attachTargetFrequency = (
   mesocycles: number,
   split_sessions: SplitSessionsType
 ) => {
-  const updated_list = [...muscle_priority_list];
+  const updated_list = structuredClone(muscle_priority_list);
 
   for (let i = 0; i < updated_list.length; i++) {
     const muscle = updated_list[i].muscle;
@@ -437,6 +437,13 @@ export const adjustBreakpoints = (
     case "MRV":
       const secondBreakpoint =
         newVol === "MEV" ? breakpoints[1] : breakpoints[1] - 1;
+      console.log(
+        breakpoints,
+        secondBreakpoint,
+        oldVol,
+        newVol,
+        "ERR IS HERE SOMEHOW?"
+      );
       return [breakpoints[0] - 1, secondBreakpoint];
     case "MEV":
       if (newVol === "MRV") {
@@ -446,8 +453,50 @@ export const adjustBreakpoints = (
     case "MV":
       const firstBreakpoint =
         newVol === "MRV" ? breakpoints[0] + 1 : breakpoints[0];
-      return [firstBreakpoint, breakpoints[1] - 1];
+      return [firstBreakpoint, breakpoints[1] + 1];
     default:
       return breakpoints;
   }
+};
+
+export const reorganizePriorityListByVolumeLandmark = (
+  muscle_priority_list: MusclePriorityType[]
+) => {
+  return muscle_priority_list.sort((a, b) => {
+    if (a.volume.landmark === "MRV" && b.volume.landmark === "MEV") {
+      return -1;
+    } else if (a.volume.landmark === "MEV" && b.volume.landmark === "MRV") {
+      return 1;
+    } else if (a.volume.landmark === "MEV" && b.volume.landmark === "MV") {
+      return -1;
+    } else if (a.volume.landmark === "MV" && b.volume.landmark === "MEV") {
+      return 1;
+    } else if (a.volume.landmark === "MRV" && b.volume.landmark === "MV") {
+      return -1;
+    } else if (a.volume.landmark === "MV" && b.volume.landmark === "MRV") {
+      return 1;
+    } else {
+      return 0;
+    }
+  });
+};
+
+export const getBreakpointsByMusclePriorityList = (
+  muscle_priority_list: MusclePriorityType[]
+) => {
+  const breakpoints: [number, number] = [0, 0];
+  muscle_priority_list.forEach((item) => {
+    switch (item.volume.landmark) {
+      case "MRV":
+        breakpoints[0] = breakpoints[0] + 1;
+        breakpoints[1] = breakpoints[0];
+        break;
+      case "MEV":
+        breakpoints[1] = breakpoints[1] + 1;
+        break;
+      default:
+        break;
+    }
+  });
+  return breakpoints;
 };

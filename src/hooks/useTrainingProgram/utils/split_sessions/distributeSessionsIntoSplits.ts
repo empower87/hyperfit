@@ -31,23 +31,26 @@ const removeRemaining = (totals: Basket, total_frequency: number) => {
     totals.pull -
     total_frequency;
 
-  let remove: "upper" | "lower" = "upper";
+  let remove: "upper" | "lower" | "full" = "upper";
   if (remainder > 0) {
     const isEven = remainder % 2 === 0;
 
     if (isEven) {
       remove = "lower";
     }
-
-    for (let i = 0; i < remainder; i++) {
-      totals[remove]--;
-      remove = remove === "upper" ? "lower" : "upper";
-    }
+  } else {
+    remove = "full";
   }
+  for (let i = 0; i < remainder; i++) {
+    totals[remove]--;
+    remove = remove === "upper" ? "lower" : "upper";
+  }
+  console.log(totals, total_frequency, remainder, "HAHAH FOUND U??!");
   return totals;
 };
 
 const mutateBasket = (basket: Basket, total_frequency: number) => {
+  console.log(basket, total_frequency, "HAHAH FOUND U??!");
   switch (true) {
     case basket.push > 0 && basket.pull > 0:
       return {
@@ -188,8 +191,15 @@ export const getFrequencyMaxes = (
     if (tracker[split][2] < many) {
       let muscle_max_adj = 2;
 
+      const testRangeFinder = determineFrequencyByRange(
+        muscle_priority_list[i].frequency.range,
+        i,
+        breakpoints,
+        total_sessions
+      );
+
       if (i < breakpoints[0]) {
-        const muscle_min = muscle_priority_list[i].frequency.range[0]
+        const muscle_min = muscle_priority_list[i].frequency.range[0];
         const muscle_max = muscle_priority_list[i].frequency.range[1];
 
         muscle_max_adj = getFrequencyLimit(
@@ -197,21 +207,6 @@ export const getFrequencyMaxes = (
           total_sessions,
           muscle_min,
           muscle_max
-        );
-        
-        const testRangeFinder = determineFrequencyByRange(
-          muscle_priority_list[i].frequency.range,
-          i,
-          breakpoints,
-          total_sessions
-        );
-        console.log(
-          muscle,
-          testRangeFinder,
-          muscle_max_adj,
-          muscle_max,
-          tracker,
-          "WTF IS GOING OON HERE??"
         );
       } else if (i >= breakpoints[1]) {
         muscle_max_adj = 1;
@@ -249,7 +244,42 @@ export const getFrequencyMaxes = (
     ],
   };
 
+  const totals = Object.values(freq_maxes).reduce(
+    (acc, curr) => acc + curr[1],
+    0
+  );
+  const isEqual = ifMaxesLessThanTotalSessions(totals, total_sessions);
+  if (isEqual) {
+    for (let i = 0; i < isEqual.length; i++) {
+      const keyByRank = Object.keys(freq_maxes).filter(
+        (key) => freq_maxes[key as keyof typeof freq_maxes][0] === i + 1
+      )[0] as keyof typeof freq_maxes;
+      freq_maxes[keyByRank][1] += isEqual[i];
+    }
+  }
+
+  console.log(freq_maxes, totals, isEqual, "freq_maxes");
   return freq_maxes;
+};
+
+const ifMaxesLessThanTotalSessions = (
+  totals: number,
+  total_sessions: number
+) => {
+  let remainder = total_sessions - totals;
+  if (remainder <= 0) return false;
+  const addToMaxes: [number, number, number] = [0, 0, 0];
+  let increment = 0;
+  while (remainder > 0) {
+    addToMaxes[increment]++;
+    remainder--;
+    if (increment === 2) {
+      increment = 0;
+    } else {
+      increment++;
+    }
+  }
+  return addToMaxes;
 };
 
 const distributeSessionsIntoSplits_opt = (
