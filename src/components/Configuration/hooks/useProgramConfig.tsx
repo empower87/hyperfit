@@ -25,6 +25,31 @@ import {
 } from "~/hooks/useTrainingProgram/utils/prioritized_muscle_list/musclePriorityListHandlers";
 import { trainingProgramHandler } from "~/hooks/useTrainingProgram/utils/trainingProgramHandler";
 
+const breakpointToggleHandler = (
+  type: "All MEV" | "All MV",
+  breakpoints: [number, number]
+): [number, number] => {
+  const DEFAULT_BREAKPOINTS: [number, number] = [4, 9];
+  switch (type) {
+    case "All MEV":
+      const ALL_MEV_BREAKPOINTS: [number, number] = [0, 14];
+      const isAllMEV =
+        breakpoints[0] === ALL_MEV_BREAKPOINTS[0] &&
+        breakpoints[1] === ALL_MEV_BREAKPOINTS[1];
+      if (isAllMEV) return DEFAULT_BREAKPOINTS;
+      else return ALL_MEV_BREAKPOINTS;
+    case "All MV":
+      const ALL_MV_BREAKPOINTS: [number, number] = [0, 0];
+      const isAllMV =
+        breakpoints[0] === ALL_MV_BREAKPOINTS[0] &&
+        breakpoints[1] === ALL_MV_BREAKPOINTS[1];
+      if (isAllMV) return DEFAULT_BREAKPOINTS;
+      else return ALL_MV_BREAKPOINTS;
+    default:
+      return breakpoints;
+  }
+};
+
 function useProgramConfig() {
   const tpc = useTrainingProgramContext();
 
@@ -214,8 +239,8 @@ function useProgramConfig() {
         muscle_priority_list: updated.muscle_priority_list,
         split_sessions: updated.split_sessions,
         training_block: updated.training_block,
-        mrv_breakpoint: breakpoints[0],
-        mev_breakpoint: breakpoints[1],
+        mrv_breakpoint: updated.mrv_breakpoint,
+        mev_breakpoint: updated.mev_breakpoint,
       }));
     },
     [programConfig]
@@ -271,36 +296,18 @@ function useProgramConfig() {
         split_sessions,
       } = programConfig;
       const mesocyles = training_program_params.mesocycles;
-      const default_breakpoints: [number, number] = [4, 9];
-      const new_breakpoints: [number, number] = [
+
+      const breakpoints = breakpointToggleHandler(type, [
         mrv_breakpoint,
         mev_breakpoint,
-      ];
+      ]);
 
-      if (type === "All MEV") {
-        if (new_breakpoints[0] === 0 && new_breakpoints[1] === 14) {
-          new_breakpoints[0] = default_breakpoints[0];
-          new_breakpoints[1] = default_breakpoints[1];
-        } else {
-          new_breakpoints[0] = 0;
-          new_breakpoints[1] = 14;
-        }
-      } else {
-        if (new_breakpoints[0] === 0 && new_breakpoints[1] === 0) {
-          new_breakpoints[0] = default_breakpoints[0];
-          new_breakpoints[1] = default_breakpoints[1];
-        } else {
-          new_breakpoints[0] = 0;
-          new_breakpoints[1] = 0;
-        }
-      }
-      console.log(new_breakpoints, "LOOP HERE??");
       const updated = trainingProgramHandler(
         frequency,
         split_sessions.split,
         muscle_priority_list,
         mesocyles,
-        new_breakpoints
+        breakpoints
       );
       setProgramConfig((prev) => ({
         ...prev,

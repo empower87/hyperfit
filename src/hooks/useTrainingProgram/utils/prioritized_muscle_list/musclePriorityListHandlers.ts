@@ -1,4 +1,4 @@
-import { getMusclesMaxFrequency, MuscleType } from "~/constants/workoutSplits";
+import { getMusclesMaxFrequency } from "~/constants/workoutSplits";
 import {
   getTotalExercisesFromSetMatrix,
   initializeSetProgression,
@@ -8,12 +8,11 @@ import { getMuscleData } from "~/utils/getMuscleData";
 import {
   SplitSessionsType,
   type MusclePriorityType,
-  type VolumeLandmarkType,
 } from "../../reducer/trainingProgramReducer";
 import {
   determineFrequencyByRange,
-  determineFrequencyProgression,
   getFrequencyRange,
+  initFrequencyProgression,
 } from "./maximumFrequencyHandlers";
 
 export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
@@ -291,12 +290,10 @@ export const attachTargetFrequency = (
     let target = updated_list[i].frequency.target;
 
     const readjusted_target = getMusclesMaxFrequency(split_sessions, muscle);
+
     target = Math.min(target, readjusted_target);
 
-    const frequencyProgression = determineFrequencyProgression(
-      mesocycles,
-      target
-    );
+    const frequencyProgression = initFrequencyProgression(mesocycles, target);
 
     const setProgressionMatrix = initializeSetProgression(
       volume_landmark,
@@ -329,22 +326,6 @@ export const attachTargetFrequency = (
   return updated_list;
 };
 
-// NOTE: updates on SPLIT_SESSIONS change or MUSCLE_PRIORITY_LIST change
-
-const getMaxFrequencyForMEVMV = (
-  muscle: MuscleType,
-  volume_landmark: VolumeLandmarkType
-) => {
-  const data = getMuscleData(muscle);
-  if (volume_landmark === "MRV") return 0;
-  const volume = data[volume_landmark];
-
-  // if (volume > 8) return 3;
-  if (volume > 4 && volume <= 10) return 2;
-  else if (volume > 0 && volume <= 4) return 1;
-  else return 0;
-};
-
 export const getFrequencyProgression = (
   sessions: number,
   mesocycles: number
@@ -361,102 +342,6 @@ export const getFrequencyProgression = (
     frequencyProgression.unshift(frequency);
   }
   return frequencyProgression;
-};
-
-const getFrequencyByVolumeLandmark = (
-  sessions: number,
-  muscle: MuscleType,
-  volume_landmark: VolumeLandmarkType,
-  mesocycles: number
-) => {
-  switch (volume_landmark) {
-    case "MRV":
-      const mrv = getFrequencyProgression(sessions, mesocycles);
-      return mrv;
-    case "MEV":
-      const sessions_capped = Math.min(
-        getMaxFrequencyForMEVMV(muscle, "MEV"),
-        sessions
-      );
-      const mev = getFrequencyProgression(sessions_capped, mesocycles);
-      return mev;
-    case "MV":
-      const sessions_capped_mv = Math.min(
-        getMaxFrequencyForMEVMV(muscle, "MV"),
-        sessions
-      );
-      const mv = getFrequencyProgression(sessions_capped_mv, mesocycles);
-      return mv;
-    default:
-      return [];
-  }
-};
-
-const onVolumeLandmarkChangeHandler = (
-  id: MusclePriorityType["id"],
-  new_volume_landmark: VolumeLandmarkType,
-  muscle_priority_list: MusclePriorityType[],
-  volume_breakpoints: [number, number]
-) => {
-  const list = structuredClone(muscle_priority_list);
-  const index = list.findIndex((item) => item.id === id);
-  const prev_volume_landmark = list[index].volume.landmark;
-
-  const [removed] = list.splice(index, 1);
-  removed.volume.landmark = new_volume_landmark;
-  const new_volume_breakpoints = volume_breakpoints;
-  switch (new_volume_landmark) {
-    case "MRV":
-      list.splice(volume_breakpoints[0], 0, removed);
-      new_volume_breakpoints[0] = volume_breakpoints[0] + 1;
-      return { newList: list, newVolumeBreakpoints: new_volume_breakpoints };
-    case "MEV":
-      list.splice(volume_breakpoints[1], 0, removed);
-      new_volume_breakpoints[1] = volume_breakpoints[1] + 1;
-      return { newList: list, newVolumeBreakpoints: new_volume_breakpoints };
-    case "MV":
-      if (prev_volume_landmark === "MRV") {
-        new_volume_breakpoints[0] = new_volume_breakpoints[0] - 1;
-      } else {
-        new_volume_breakpoints[1] = new_volume_breakpoints[1] - 1;
-      }
-      list.push(removed);
-      return { newList: list, newVolumeBreakpoints: new_volume_breakpoints };
-    default:
-      return { newList: list, newVolumeBreakpoints: new_volume_breakpoints };
-  }
-};
-
-export const adjustBreakpoints = (
-  oldVol: VolumeLandmarkType,
-  newVol: VolumeLandmarkType,
-  breakpoints: [number, number]
-): [number, number] => {
-  if (oldVol === newVol) return breakpoints;
-  switch (oldVol) {
-    case "MRV":
-      const secondBreakpoint =
-        newVol === "MEV" ? breakpoints[1] : breakpoints[1] - 1;
-      console.log(
-        breakpoints,
-        secondBreakpoint,
-        oldVol,
-        newVol,
-        "ERR IS HERE SOMEHOW?"
-      );
-      return [breakpoints[0] - 1, secondBreakpoint];
-    case "MEV":
-      if (newVol === "MRV") {
-        return [breakpoints[0] + 1, breakpoints[1]];
-      }
-      return [breakpoints[0], breakpoints[1] - 1];
-    case "MV":
-      const firstBreakpoint =
-        newVol === "MRV" ? breakpoints[0] + 1 : breakpoints[0];
-      return [firstBreakpoint, breakpoints[1] + 1];
-    default:
-      return breakpoints;
-  }
 };
 
 export const reorganizePriorityListByVolumeLandmark = (

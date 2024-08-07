@@ -26,14 +26,14 @@ export function trainingProgramHandler(
   const volume_breakpoints: [number, number] = [...breakpoints];
   const update_items = onMusclePrioritization(
     muscle_priority_list,
-    volume_breakpoints,
+    breakpoints,
     total
   );
 
   const getNGroup = getFrequencyMaxes(
     2, // this will be determined via mrv_breakpoint
     update_items,
-    volume_breakpoints,
+    breakpoints,
     total
   );
 

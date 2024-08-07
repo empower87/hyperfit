@@ -189,7 +189,14 @@ export const getFrequencyMaxes = (
     }
 
     if (tracker[split][2] < many) {
-      let muscle_max_adj = 2;
+      let muscle_max_adj = muscle_priority_list[i].frequency.target;
+      console.log(
+        muscle,
+        muscle_priority_list[i].volume.landmark,
+        muscle_priority_list[i].frequency,
+        muscle_max_adj,
+        "WTF ISG OING ON HERE?"
+      );
 
       const testRangeFinder = determineFrequencyByRange(
         muscle_priority_list[i].frequency.range,
@@ -208,8 +215,6 @@ export const getFrequencyMaxes = (
           muscle_min,
           muscle_max
         );
-      } else if (i >= breakpoints[1]) {
-        muscle_max_adj = 1;
       }
 
       if (tracker[split][0] === 1) {
@@ -248,17 +253,20 @@ export const getFrequencyMaxes = (
     (acc, curr) => acc + curr[1],
     0
   );
-  const isEqual = ifMaxesLessThanTotalSessions(totals, total_sessions);
-  if (isEqual) {
-    for (let i = 0; i < isEqual.length; i++) {
+  const isLessThanTotalSessions = ifMaxesLessThanTotalSessions(
+    totals,
+    total_sessions
+  );
+  if (isLessThanTotalSessions) {
+    for (let i = 0; i < isLessThanTotalSessions.length; i++) {
       const keyByRank = Object.keys(freq_maxes).filter(
         (key) => freq_maxes[key as keyof typeof freq_maxes][0] === i + 1
       )[0] as keyof typeof freq_maxes;
-      freq_maxes[keyByRank][1] += isEqual[i];
+      freq_maxes[keyByRank][1] += isLessThanTotalSessions[i];
     }
   }
 
-  console.log(freq_maxes, totals, isEqual, "freq_maxes");
+  console.log(freq_maxes, totals, isLessThanTotalSessions, "freq_maxes");
   return freq_maxes;
 };
 

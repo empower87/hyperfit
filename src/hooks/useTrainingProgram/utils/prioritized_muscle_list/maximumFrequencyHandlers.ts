@@ -79,37 +79,42 @@ export const determineFrequencyByRange = (
     return frequency;
   } else {
     const total = range[0] + range[1];
-    return Math.floor(total / 2);
+    // return Math.floor(total / 2);
+    return range[1];
   }
 };
 
 const getFrequencyRange_mev_mv = (volume: number): [number, number] => {
   switch (volume) {
     case 0:
+    case 1:
       return [0, 0];
     case 2:
+    case 3:
       return [1, 1];
     case 4:
-      return [1, 2];
+    case 5:
     case 6:
-      return [1, 3];
+      return [1, 2];
+    case 7:
     case 8:
-      return [1, 3];
+    case 9:
     case 10:
       return [1, 3];
     default:
       return [0, 0];
   }
 };
+
 export const getFrequencyRange = (
   muscle: MuscleType,
-  rank: VolumeLandmarkType,
+  landmark: VolumeLandmarkType,
   range: [number, number]
 ) => {
   let newFrequency: [number, number] = [...range];
-  if (rank === "MEV" || rank === "MV") {
+  if (landmark !== "MRV") {
     const muscleData = getMuscleData(muscle);
-    const maxVolume = muscleData[rank];
+    const maxVolume = muscleData[landmark];
     newFrequency = getFrequencyRange_mev_mv(maxVolume);
   }
   return newFrequency;
@@ -147,7 +152,7 @@ export const getFrequencyRange = (
 // freqEnd  6 |  2  3  4  5  6
 
 // case where MV frequency is 0, needs to be factored in.
-export const determineFrequencyProgression = (
+export const initFrequencyProgression = (
   mesocycles: number,
   tar_frequency: number
 ) => {

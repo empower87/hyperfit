@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { BG_COLOR_M5, BG_COLOR_M6, BORDER_COLOR_M6 } from "~/constants/themes";
 import { cn } from "~/lib/clsx";
 import { getRankColor } from "~/utils/getIndicatorColors";
@@ -15,17 +14,6 @@ function VolumeSettingFrame({
   breakpoint,
   onChange,
 }: VolumeSettingFrameProps) {
-  const [currentBreakpoint, setCurrentBreakpoint] =
-    useState<number>(breakpoint);
-
-  const onSubtract = () => {
-    setCurrentBreakpoint((prev) => prev - 1);
-    onChange(title, currentBreakpoint - 1);
-  };
-  const onAdd = () => {
-    setCurrentBreakpoint((prev) => prev + 1);
-    onChange(title, currentBreakpoint + 1);
-  };
   const textColor = getRankColor(title);
   return (
     <div className={cn(`${BG_COLOR_M6} flex justify-between text-xxs`)}>
@@ -42,15 +30,15 @@ function VolumeSettingFrame({
             BG_COLOR_M5 +
             " flex h-4 w-4 items-center justify-center text-xxs font-bold text-slate-300"
           }
-          onClick={onSubtract}
+          onClick={() => onChange(title, breakpoint - 1)}
         >
           -
         </button>
         <div className=" flex h-4 w-4 items-center justify-center text-white">
-          {currentBreakpoint}
+          {breakpoint}
         </div>
         <button
-          onClick={onAdd}
+          onClick={() => onChange(title, breakpoint + 1)}
           className={
             BG_COLOR_M5 +
             " flex h-4 w-4 items-center justify-center text-xxs font-bold text-slate-300"
