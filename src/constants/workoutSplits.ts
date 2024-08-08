@@ -204,6 +204,14 @@ export const getMusclesSplit = (
   }
 };
 
+export const canAddFrequencyToMuscleGroup = (
+  final_meso_frequency: number,
+  total_possible_frequency: number
+) => {
+  if (final_meso_frequency < total_possible_frequency) return true;
+  return false;
+};
+
 export const getMusclesMaxFrequency = (
   split_sessions: SplitSessionsType,
   muscle: MuscleType

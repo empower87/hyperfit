@@ -50,6 +50,7 @@ const breakpointToggleHandler = (
   }
 };
 
+
 function useProgramConfig() {
   const tpc = useTrainingProgramContext();
 
@@ -400,3 +401,4 @@ const useProgramConfigContext = () => {
 };
 
 export { ProgramConfigProvider, useProgramConfigContext };
+
