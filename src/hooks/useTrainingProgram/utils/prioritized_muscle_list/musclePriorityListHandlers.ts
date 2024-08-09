@@ -309,9 +309,7 @@ export const attachTargetFrequency = (
     console.log(
       muscle,
       split_sessions,
-      updated_list[i].frequency.range,
       target,
-
       frequencyProgression,
       "THESE KINDA SHOULD BE THE SAME I THINK"
     );
@@ -328,24 +326,6 @@ export const attachTargetFrequency = (
     updated_list[i].exercises = exercises;
   }
   return updated_list;
-};
-
-export const getFrequencyProgression = (
-  sessions: number,
-  mesocycles: number
-) => {
-  const frequencyProgression: number[] = [];
-
-  for (let i = 0; i < mesocycles; i++) {
-    let frequency = sessions - i;
-    if (sessions === 0) {
-      frequency = 0;
-    } else if (frequency <= 0) {
-      frequency = 1;
-    }
-    frequencyProgression.unshift(frequency);
-  }
-  return frequencyProgression;
 };
 
 export const reorganizePriorityListByVolumeLandmark = (

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { getMusclesMaxFrequency } from "~/constants/workoutSplits";
 import {
   type ExerciseType,
   type MusclePriorityType,
@@ -10,6 +11,10 @@ import {
   JSONExercise,
   updateInitialSetsForExercisesTEST,
 } from "~/hooks/useTrainingProgram/utils/exercises/getExercises";
+import {
+  canTargetFrequencyBeIncreased,
+  incrementTargetFrequency,
+} from "~/hooks/useTrainingProgram/utils/prioritized_muscle_list/maximumFrequencyHandlers";
 import { getSetProgressionForExercise } from "../../../hooks/useTrainingProgram/utils/exercises/setProgressionOverMicrocycles";
 
 const calculateTotalVolume = (
@@ -122,15 +127,18 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
   const onAddExercise = useCallback(
     (newExercise: JSONExercise, sessionIndex: number) => {
       const exercises = muscleGroup.exercises;
+      const volumeLandmark = muscleGroup.volume.landmark;
       const frequencyProgression = muscleGroup.frequency.progression;
+      const setProgressionMatrix = muscleGroup.frequency.setProgressionMatrix;
+
       const data = addNewExerciseSetsToSetProgressionMatrix(
         frequencyProgression,
-        muscleGroup.frequency.setProgressionMatrix,
+        setProgressionMatrix,
         sessionIndex
       );
       const new_exercise = initNewExercise(
         newExercise,
-        muscleGroup.volume.landmark,
+        volumeLandmark,
         data.initialSetsPerMeso
       );
 
@@ -317,29 +325,55 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
       let target_freq = frequencyProgression[targetIndex];
 
       if (operation === "+") {
-        const next = frequencyProgression[targetIndex + 1];
-        if (next) {
-          if (target_freq < next) {
-            target_freq++;
-          }
-        } else {
-          const prevFreq = muscle.frequency.progression[targetIndex];
-          if (target_freq < prevFreq) {
-            target_freq++;
-          }
-          // const total_possible_freq = getMusclesMaxFrequency(
-          //   split_sessions,
-          //   muscleGroup.muscle
-          // );
-          // if (canAddFrequencyToMuscleGroup(target_freq, total_possible_freq)) {
-          //   target_freq++;
-          // } else {
-          //   const prevFreq = muscle.frequency.progression[targetIndex];
-          //   if (target_freq < prevFreq) {
-          //     target_freq++;
-          //   }
-          // }
-        }
+        const total_possible_freq = getMusclesMaxFrequency(
+          split_sessions,
+          muscleGroup.muscle
+        );
+        const canAdd = canTargetFrequencyBeIncreased(total_possible_freq);
+        const incrementedFrequency = incrementTargetFrequency(
+          targetIndex,
+          frequencyProgression,
+          canAdd
+        );
+        console.log(
+          targetIndex,
+          frequencyProgression,
+          total_possible_freq,
+          canAdd,
+          incrementedFrequency,
+          "WHAT WE WORKING WITH??"
+        );
+
+        // const next = frequencyProgression[targetIndex + 1];
+        // if (next) {
+        //   if (target_freq < next) {
+        //     target_freq++;
+        //   }
+        // } else {
+        //   // const prevFreq = muscle.frequency.progression[targetIndex];
+        //   // if (target_freq < prevFreq) {
+        //   //   target_freq++;
+        //   // }
+
+        //   const total_possible_freq = getMusclesMaxFrequency(
+        //     split_sessions,
+        //     muscleGroup.muscle
+        //   );
+        //   const canAdd = canTargetFrequencyBeIncreased(total_possible_freq);
+        //   const incrementedFrequency = incrementTargetFrequency(
+        //     targetIndex,
+        //     frequencyProgression,
+        //     canAdd
+        //   );
+        //   if (canAddFrequencyToMuscleGroup(target_freq, total_possible_freq)) {
+        //     target_freq++;
+        //   } else {
+        //     const prevFreq = muscle.frequency.progression[targetIndex];
+        //     if (target_freq < prevFreq) {
+        //       target_freq++;
+        //     }
+        //   }
+        // }
       } else {
         const prev = frequencyProgression[targetIndex - 1];
         if (prev) {

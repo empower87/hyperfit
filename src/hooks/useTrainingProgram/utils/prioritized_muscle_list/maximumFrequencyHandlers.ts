@@ -120,7 +120,7 @@ export const getFrequencyRange = (
   return newFrequency;
 };
 
-// NOTE: Seems that subtracting 1 from the target frequency produces the best progression
+// NOTE: how i determine the frequency progression based on the target frequency spread over how many mesocycles
 // mesocycles         |  1    2    3    4    5
 // -------------------------------------------
 // freqEnd  0  goal   |  0    0    0    0    0   =  0 0 0 0 0
@@ -266,4 +266,27 @@ export const initFrequencyProgressionAcrossMesocycles = (
   }
 
   return init_frequency_progression;
+};
+
+export const canTargetFrequencyBeIncreased = (
+  total_possible_frequency: number
+) => {
+  return function (target_frequency: number) {
+    return target_frequency < total_possible_frequency;
+  };
+};
+
+export const incrementTargetFrequency = (
+  index: number,
+  frequency_progression: number[],
+  condition: (target_frequency: number) => boolean
+) => {
+  const target_frequency = frequency_progression[index];
+  const next_frequency = frequency_progression[index + 1];
+  if (!next_frequency) {
+    if (!condition(target_frequency)) return null;
+  }
+  if (target_frequency >= next_frequency) return frequency_progression;
+  frequency_progression[index] = target_frequency + 1;
+  return frequency_progression;
 };
