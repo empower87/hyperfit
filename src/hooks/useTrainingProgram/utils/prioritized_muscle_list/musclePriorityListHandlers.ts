@@ -12,7 +12,7 @@ import {
 import {
   determineFrequencyByRange,
   getFrequencyRange,
-  initFrequencyProgression,
+  initFrequencyProgressionAcrossMesocycles,
 } from "./maximumFrequencyHandlers";
 
 export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
@@ -293,7 +293,10 @@ export const attachTargetFrequency = (
 
     target = Math.min(target, readjusted_target);
 
-    const frequencyProgression = initFrequencyProgression(mesocycles, target);
+    const frequencyProgression = initFrequencyProgressionAcrossMesocycles(
+      mesocycles,
+      target
+    );
 
     const setProgressionMatrix = initializeSetProgression(
       volume_landmark,
@@ -308,6 +311,7 @@ export const attachTargetFrequency = (
       split_sessions,
       updated_list[i].frequency.range,
       target,
+
       frequencyProgression,
       "THESE KINDA SHOULD BE THE SAME I THINK"
     );

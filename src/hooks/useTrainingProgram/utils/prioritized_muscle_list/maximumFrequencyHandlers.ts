@@ -119,59 +119,151 @@ export const getFrequencyRange = (
   }
   return newFrequency;
 };
-// mesocycles |  1  2  3
-// ----------------------
-// freqEnd  1 |  1  1  1
-// freqEnd  2 |  1  2  2
-// freqEnd  3 |  1  2  3
-// freqEnd  4 |  2  3  4
-// freqEnd  5 |  3  4  5
-// freqEnd  6 |  4  5  6
 
-// mesocycles |  1  2  3  4
-// -------------------------
-// freqEnd  1 |  1  1  1  1
-// freqEnd  2 |  1  1  2  2
-// freqEnd  3 |  1  2  2  3
-// freqEnd  4 |  1  2  3  4
-// freqEnd  5 |  2  3  4  5
-// freqEnd  6 |  3  4  5  6
+// NOTE: Seems that subtracting 1 from the target frequency produces the best progression
+// mesocycles         |  1    2    3    4    5
+// -------------------------------------------
+// freqEnd  0  goal   |  0    0    0    0    0   =  0 0 0 0 0
+// T (0 - 1)/5 = -0.2 |  0   0.2  0.4  0.6  0.8  =  0 0 0 1 1
+// T (0 - 0)/5 = 0    |  0    0    0    0    0   =  0 0 0 0 0
 
-// mesocycles |  1  2  3  4  5
-// ----------------------------
-// freqEnd  1 |  1  1  1  1  1
-// freqEnd  2 |  1  1  2  2  2
-// TEST       |  2  1.8 1.6 1.4 1
-// freqEnd  3 |  1  2  2  3  3
-// TEST          3  2.6 2.2 1.8  1
+// freqEnd  1  goal   |  1    1    1    1    1   =  1 1 1 1 1
+// T (1 - 1)/5 = 0    |  1    1    1    1    1   =  1 1 1 1 1
+// T (1 - 0)/5 = 0.2  |  1   0.8  0.6  0.4  0.2  =  0 0 1 1 1
 
-// freqEnd  4 |  1  2  3  3  4
-// TEST          4 3.3 2.7 2.1 1
+// 2 - 5 = -3
+// freqEnd  2         |  1    1    2    2    2
+// T (2 - 1)/5 = 0.2  |  2   1.8  1.6  1.4   1   =  1 1 2 2 2
+// T (2 - 0)/5 = 0.4  |  2   1.6  1.2  0.8  0.4  =  0 1 1 2 2
+// T (2 - 2)/5 = 0    |  2   1.8  1.6  1.4  1.2  =  1 1 2 2 2
 
-// freqEnd  5 |  1  2  3  4  5
-// freqEnd  6 |  2  3  4  5  6
+// 3 - 5 = -2
+// freqEnd  3  goal   |  1    2    2    3    3   =  1 2 2 3 3
+// T (3 - 1)/5 = 0.4  |  3   2.6  2.2  1.8   1   =  1 2 2 3 3
+// T (3 - 0)/5 = 0.6  |  3   2.4  1.8  1.2  0.6  =  1 1 2 2 3
+// T (3 - 2)/5 = 0.2  |  3   2.8  2.6  2.4  2.2  =  2 2 3 3 3
 
-// case where MV frequency is 0, needs to be factored in.
-export const initFrequencyProgression = (
+// 4 - 5 = -1
+// freqEnd  4  goal   |  1    2    3    3    4   =  1 2 3 3 4
+// T (4 - 1)/5 = 0.6  |  4   3.4  2.8  2.2  1.6  =  2 2 3 3 4
+// T (4 - 0)/5 = 0.8  |  4   3.2  2.4  1.6  0.8  =  1 2 2 3 4
+// T (4 - 3)/5 = 0.2  |  4   3.8  3.6  3.4  3.2  =  3 3 4 4 4
+
+// 5 - 5 = 0
+// freqEnd  5 goal    |  1    2    3    4    5   =  1 2 3 4 5
+// T (5 - 1)/5 = 0.8  |  5   4.2  3.4  2.6  1.8  =  2 3 3 4 5
+// T (5 - 0)/5 = 1    |  5    4    3    2    1   =  1 2 3 4 5
+
+// 6 - 5 = 1
+// freqEnd  6 goal    |  2    3    4    5    6   =  2 3 4 5 6
+// T (6 - 1)/5 = 1    |  6    5    4    3    2   =  2 3 4 5 6
+// T (6 - 0)/5 = 1.2  |  6   4.8  3.6  2.4  1.2  =  1 2 4 5 6
+// T (6 - 2)/5 = 0.8  |  6   5.2  4.4  3.6  2.8  =  3 4 4 5 6
+
+// mesocycles         |  1    2    3    4
+// --------------------------------------
+// freqEnd  0  goal   |  0    0    0    0   =  0 0 0 0
+// T (0 - 1)/3 = -0.3 |  0   0.3  0.6   4   =  0 0 1
+// T (0 - 0)/3 = 0    |  0    0    0    4   =  0 0 0
+
+// freqEnd  1  goal   |  1    2    3    4   =  1 2 3 4
+// T (1 - 1)/3 = 0    |  1    1    1    4   =  1 1 1 1
+// T (1 - 0)/3 = 0.3  |  1   0.7  0.3   4   =  0 1 1
+
+// 2 - 4 = -2
+// freqEnd  2         |  1    1    2    2   =  1 1 2 2
+// T (2 - 1)/4 = 0.3  |  2   1.8  1.5  1.3  =  1 2 2 2
+// T (2 - 0)/4 = 0.5  |  2   1.5   1   0.5  =  1 1 2 2
+// T (2 - 2)/4 = 0    |  2    2    2    2   =  2 2 2 2
+
+// 3 - 4 = -1
+// freqEnd  3  goal   |  1    2    2    3   =  1 2 2 3
+// T (3 + 1)/4 = 1    |  3    2    1    0  =   0 1 2 3
+// T (3 - 1)/4 = 0.5  |  3   2.5   2   1.5  =  2 2 3 3
+// T (3 - 0)/4 = 0.8  |  3   2.2  1.5  0.6  =  1 2 2 3
+// T (3 - 2)/4 = 0.3  |  3   2.7  2.5  2.2  =  2 3 3 3
+
+// 4 - 4 = 0
+// freqEnd  4  goal   |  2    3    3    4   =  2 3 3 4
+// T (4 - 1)/4 = 1    |  4    3    2    4   =  2 3 4
+// T (4 - 0)/4 = 1.3  |  4   2.7  1.4   4   =  1 3 4
+// T (4 - 2)/4 = 0.7  |  4   3.3  2.7   4   =  3 3 4
+
+// 5 - 4 = 1
+// freqEnd  5 goal    |  2    3    4    5   =  2 3 4 5
+// T (5 - 1)/4 = 1.3  |  5   3.7  2.3   4   =  2 4 5
+// T (5 - 0)/4 = 1.7  |  5   3.3  1.7   4   =  2 3 5
+// T (5 - 2)/4 = 1    |  5    4    3   4    =  3 4 5
+
+// 6 - 4 = 2
+// freqEnd  6 goal    |  3    4    5    6   =  3 4 5 6
+// T (6 - 1)/4 = 1.7  |  6   4.3  2.6   4   =  3 4 6
+// T (6 - 0)/4 = 2    |  6    4    2    4   =  2 4 6
+// T (6 - 2)/4 = 1.3  |  6   4.7  3.4   4   =  3 5 6
+// T (6 - 3)/4 = 1    |  6    5    4    4   =  4 5 6
+
+// mesocycles         |  1    2    3
+// ----------------------------------
+// freqEnd  0  goal   |  0    0    0   =  0 0 0
+// T (0 - 1)/3 = -0.3 |  0   0.3  0.6  =  0 0 1
+// T (0 - 0)/3 = 0    |  0    0    0   =  0 0 0
+
+// freqEnd  1  goal   |  1    1    1   =  1 1 1
+// T (1 - 1)/3 = 0    |  1    1    1   =  1 1 1
+// T (1 - 0)/3 = 0.3  |  1   0.7  0.3  =  0 1 1
+
+// 2 - 3 = -1
+// freqEnd  2         |  1    2    2   =  1 2 2
+// T (2 - 1)/3 = 0.3  |  2   1.7  1.4  =  1 2 2
+// T (2 - 0)/3 = 0.7  |  2   1.3  0.7  =  1 1 2
+
+// 3 - 3 = 0
+// freqEnd  3  goal   |  2    2    3    =  2 2 3
+// T (3 - 1)/3 = 0.4  |  3   2.6  2.2   =  2 3 3
+// T (3 - 0)/3 = 0.6  |  3   2.4  1.8   =  2 2 3
+
+// 4 - 3 = 1
+// freqEnd  4  goal   |  2    3    4    =  2 3 4
+// T (4 - 1)/3 = 1    |  4    3    2    =  2 3 4
+// T (4 - 0)/3 = 1.3  |  4   2.7  1.4   =  1 3 4
+// T (4 - 2)/3 = 0.7  |  4   3.3  2.7   =  3 3 4
+
+// 5 - 3 = 2
+// freqEnd  5 goal    |  3    4    5    =  3 4 5
+// T (5 - 1)/3 = 1.3  |  5   3.7  2.3   =  2 4 5
+// T (5 - 0)/3 = 1.7  |  5   3.3  1.7   =  2 3 5
+// T (5 - 2)/3 = 1    |  5    4    3    =  3 4 5
+
+// 6 - 3 = 3
+// freqEnd  6 goal    |  4    5    6    =  4 5 6
+// T (6 - 1)/3 = 1.7  |  6   4.3  2.6   =  3 4 6
+// T (6 - 0)/3 = 2    |  6    4    2    =  2 4 6
+// T (6 - 2)/3 = 1.3  |  6   4.7  3.4   =  3 5 6
+// T (6 - 3)/3 = 1    |  6    5    4    =  4 5 6
+
+export const initFrequencyProgressionAcrossMesocycles = (
   mesocycles: number,
-  tar_frequency: number
-) => {
-  const freq_prog: number[] = [tar_frequency];
-  switch (true) {
-    case tar_frequency === 1:
-      return Array.from(Array(mesocycles), (e, i) => 1);
-    case mesocycles <= tar_frequency:
-      for (let i = 1; i < mesocycles; i++) {
-        freq_prog.push(tar_frequency - i);
-      }
-      return freq_prog.reverse();
-    default:
-      const spread = tar_frequency - 1;
-      const decrement = spread / mesocycles;
+  target_frequency: number
+): number[] => {
+  const init_frequency_progression: number[] = Array.from(
+    Array(mesocycles),
+    (e, i) => target_frequency
+  );
+  if (target_frequency <= 1) return init_frequency_progression;
 
-      for (let i = 1; i < mesocycles; i++) {
-        freq_prog.push(Math.round(tar_frequency - decrement * i));
-      }
-      return freq_prog.reverse();
+  const min_frequency = target_frequency - mesocycles;
+  const adj_min_frequncy = min_frequency < 0 ? 1 : min_frequency;
+  const total_frequencies_to_decrement = target_frequency - adj_min_frequncy;
+  const decrement_value = total_frequencies_to_decrement / mesocycles;
+
+  let decrement_tracker = 0;
+
+  for (let i = init_frequency_progression.length - 1; i >= 0; i--) {
+    const frequency = init_frequency_progression[i];
+    const final_frequency = Math.round(frequency - decrement_tracker);
+    init_frequency_progression[i] = final_frequency;
+    decrement_tracker = decrement_tracker + decrement_value;
   }
+
+  return init_frequency_progression;
 };

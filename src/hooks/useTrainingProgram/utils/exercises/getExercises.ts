@@ -555,17 +555,6 @@ export const addNewExerciseSetsToSetProgressionMatrix = (
     0
   );
 
-  // for (let i = 0; i < matrix.length; i++) {
-  //   let includedSetInMeso = 0;
-  //   const lol = matrix[i][exerciseIndex]
-
-  //   if (matrix[i][exerciseIndex]) {
-  //     includedSetInMeso = sets;
-  //     matrix[i][exerciseIndex].push(sets);
-  //   }
-  //   initialSetsPerMeso.push(includedSetInMeso);
-  // }
-
   return {
     initialSetsPerMeso: initialSetsPerMeso,
     setProgressionMatrix: matrix,
