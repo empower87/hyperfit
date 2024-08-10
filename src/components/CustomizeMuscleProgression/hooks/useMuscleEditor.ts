@@ -13,6 +13,7 @@ import {
 } from "~/hooks/useTrainingProgram/utils/exercises/getExercises";
 import {
   canTargetFrequencyBeIncreased,
+  decrementTargetFrequency,
   incrementTargetFrequency,
 } from "~/hooks/useTrainingProgram/utils/prioritized_muscle_list/maximumFrequencyHandlers";
 import { getSetProgressionForExercise } from "../../../hooks/useTrainingProgram/utils/exercises/setProgressionOverMicrocycles";
@@ -320,96 +321,160 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
   const onFrequencyProgressionIncrement = useCallback(
     (targetIndex: number, operation: "+" | "-") => {
       const exercises = muscleGroup.exercises;
-      const frequencyProgression = muscleGroup.frequency.progression;
       const setProgressionMatrix = muscleGroup.frequency.setProgressionMatrix;
-      let target_freq = frequencyProgression[targetIndex];
 
+      let original = muscleGroup.frequency.progression;
+      let spread = [...muscleGroup.frequency.progression];
+      let cloned = structuredClone(muscleGroup.frequency.progression);
+
+      let target_freq = original[targetIndex];
       if (operation === "+") {
         const total_possible_freq = getMusclesMaxFrequency(
           split_sessions,
           muscleGroup.muscle
         );
         const canAdd = canTargetFrequencyBeIncreased(total_possible_freq);
-        const incrementedFrequency = incrementTargetFrequency(
+        const isIncremented = incrementTargetFrequency(
           targetIndex,
-          frequencyProgression,
+          original,
           canAdd
         );
-        console.log(
-          targetIndex,
-          frequencyProgression,
-          total_possible_freq,
-          canAdd,
-          incrementedFrequency,
-          "WHAT WE WORKING WITH??"
-        );
 
-        // const next = frequencyProgression[targetIndex + 1];
-        // if (next) {
-        //   if (target_freq < next) {
-        //     target_freq++;
-        //   }
-        // } else {
-        //   // const prevFreq = muscle.frequency.progression[targetIndex];
-        //   // if (target_freq < prevFreq) {
-        //   //   target_freq++;
-        //   // }
-
-        //   const total_possible_freq = getMusclesMaxFrequency(
-        //     split_sessions,
-        //     muscleGroup.muscle
-        //   );
-        //   const canAdd = canTargetFrequencyBeIncreased(total_possible_freq);
-        //   const incrementedFrequency = incrementTargetFrequency(
-        //     targetIndex,
-        //     frequencyProgression,
-        //     canAdd
-        //   );
-        //   if (canAddFrequencyToMuscleGroup(target_freq, total_possible_freq)) {
-        //     target_freq++;
-        //   } else {
-        //     const prevFreq = muscle.frequency.progression[targetIndex];
-        //     if (target_freq < prevFreq) {
-        //       target_freq++;
-        //     }
-        //   }
-        // }
-      } else {
-        const prev = frequencyProgression[targetIndex - 1];
-        if (prev) {
-          if (target_freq > prev) {
-            target_freq--;
-          }
-        } else {
-          if (target_freq > 0) {
-            target_freq--;
-          }
+        if (isIncremented) {
+          original = [...isIncremented];
         }
+      } else {
+        original = decrementTargetFrequency(targetIndex, original);
       }
 
-      let newExercises: ExerciseType[][] = muscleGroup.exercises;
       const updatedExercises = updateInitialSetsForExercisesTEST(
         exercises,
         targetIndex,
-        target_freq,
+        original[targetIndex],
         setProgressionMatrix
       );
-      if (updatedExercises) {
-        newExercises = updatedExercises;
-        frequencyProgression[targetIndex] = target_freq;
-      }
+
+      console.log(
+        operation,
+        targetIndex,
+        original,
+        spread,
+        cloned,
+        updatedExercises,
+        "OH BOY WHAT DIS?"
+      );
 
       setMuscleGroup((prev) => ({
         ...prev,
-        exercises: newExercises,
+        exercises: updatedExercises,
         volume: {
           ...prev.volume,
-          frequencyProgression: frequencyProgression,
+          frequencyProgression: [...original],
         },
       }));
     },
     [muscleGroup, microcycles, mesocycles, split_sessions]
   );
+
+  // const onFrequencyProgressionIncrement = useCallback(
+  //   (targetIndex: number, operation: "+" | "-") => {
+  //     const exercises = muscleGroup.exercises;
+  //     const frequencyProgression = muscleGroup.frequency.progression;
+  //     const setProgressionMatrix = muscleGroup.frequency.setProgressionMatrix;
+  //     let target_freq = frequencyProgression[targetIndex];
+
+  //     if (operation === "+") {
+  //       const total_possible_freq = getMusclesMaxFrequency(
+  //         split_sessions,
+  //         muscleGroup.muscle
+  //       );
+  //       const canAdd = canTargetFrequencyBeIncreased(total_possible_freq);
+  //       const incrementedFrequency = incrementTargetFrequency(
+  //         targetIndex,
+  //         frequencyProgression,
+  //         canAdd
+  //       );
+  //       console.log(
+  //         targetIndex,
+  //         frequencyProgression,
+  //         total_possible_freq,
+  //         canAdd,
+  //         incrementedFrequency,
+  //         "WHAT WE WORKING WITH??"
+  //       );
+
+  //       // const next = frequencyProgression[targetIndex + 1];
+  //       // if (next) {
+  //       //   if (target_freq < next) {
+  //       //     target_freq++;
+  //       //   }
+  //       // } else {
+  //       //   // const prevFreq = muscle.frequency.progression[targetIndex];
+  //       //   // if (target_freq < prevFreq) {
+  //       //   //   target_freq++;
+  //       //   // }
+
+  //       //   const total_possible_freq = getMusclesMaxFrequency(
+  //       //     split_sessions,
+  //       //     muscleGroup.muscle
+  //       //   );
+  //       //   const canAdd = canTargetFrequencyBeIncreased(total_possible_freq);
+  //       //   const incrementedFrequency = incrementTargetFrequency(
+  //       //     targetIndex,
+  //       //     frequencyProgression,
+  //       //     canAdd
+  //       //   );
+  //       //   if (canAddFrequencyToMuscleGroup(target_freq, total_possible_freq)) {
+  //       //     target_freq++;
+  //       //   } else {
+  //       //     const prevFreq = muscle.frequency.progression[targetIndex];
+  //       //     if (target_freq < prevFreq) {
+  //       //       target_freq++;
+  //       //     }
+  //       //   }
+  //       // }
+  //     } else {
+
+  //       const decremenetedFrequency = decrementTargetFrequency(
+  //         targetIndex,
+  //         frequencyProgression
+  //       );
+
+  //       const prev = frequencyProgression[targetIndex - 1];
+  //       if (prev) {
+  //         if (target_freq > prev) {
+  //           target_freq--;
+  //         }
+  //       } else {
+  //         if (target_freq > 0) {
+  //           target_freq--;
+  //         }
+  //       }
+  //     }
+
+  //     let newExercises: ExerciseType[][] = muscleGroup.exercises;
+  //     const updatedExercises = updateInitialSetsForExercisesTEST(
+  //       exercises,
+  //       targetIndex,
+  //       target_freq,
+  //       setProgressionMatrix
+  //     );
+  //     if (updatedExercises) {
+  //       newExercises = updatedExercises;
+  //       frequencyProgression[targetIndex] = target_freq;
+  //     }
+
+  //     setMuscleGroup((prev) => ({
+  //       ...prev,
+  //       exercises: newExercises,
+  //       volume: {
+  //         ...prev.volume,
+  //         frequencyProgression: frequencyProgression,
+  //       },
+  //     }));
+  //   },
+  //   [muscleGroup, microcycles, mesocycles, split_sessions]
+  // );
 
   const onResetMuscleGroup = useCallback(() => {
     const muscleCloned = structuredClone(muscle);
