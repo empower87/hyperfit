@@ -221,6 +221,34 @@ export const getMatrixIndexCase = (muscle: MusclePriorityType) => {
   }
 };
 
+export const updateSetProgression = (
+  frequencyProgression: number[],
+  setProgressionMatrix: number[][][]
+) => {
+  // loop over progression matrix
+  // 1. if matrix[i].length is in frequencyProgression > next
+  // 2. find closest frequency in frequencyProgression
+  for (let i = 0; i < setProgressionMatrix.length; i++) {
+    const frequencyInSets = setProgressionMatrix[i].length;
+    // 1.
+    if (frequencyProgression.includes(frequencyInSets)) continue;
+    // 2.
+    const closestFrequency = frequencyProgression.reduce((prev, curr) => {
+      return Math.abs(curr - frequencyInSets) < Math.abs(prev - frequencyInSets)
+        ? curr
+        : prev;
+    });
+    console.log(
+      closestFrequency,
+      frequencyInSets,
+      frequencyProgression,
+      setProgressionMatrix,
+      "OH BOY LETS TAKE LOOK REAL WUICK"
+    );
+    let currentSchema = setProgressionMatrix[i];
+  }
+};
+
 export const initializeSetProgression = (
   rank: VolumeLandmarkType,
   frequencyProgression: number[],
@@ -235,6 +263,7 @@ export const initializeSetProgression = (
       Array.from(Array(each), () => [])
     );
   }
+
   let counter: number[] = [];
   for (let i = 0; i < frequencyProgression.length; i++) {
     const meso = frequencyProgression[i];
@@ -336,6 +365,7 @@ export const updateInitialSetsForExercisesTEST = (
       copied_exercises[i][j].initialSetsPerMeso[targetIndex] = newSets;
     }
   }
+
   return copied_exercises;
 };
 

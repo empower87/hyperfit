@@ -10,6 +10,7 @@ import {
   initNewExercise,
   JSONExercise,
   updateInitialSetsForExercisesTEST,
+  updateSetProgression,
 } from "~/hooks/useTrainingProgram/utils/exercises/getExercises";
 import {
   canTargetFrequencyBeIncreased,
@@ -322,12 +323,8 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
     (targetIndex: number, operation: "+" | "-") => {
       const exercises = muscleGroup.exercises;
       const setProgressionMatrix = muscleGroup.frequency.setProgressionMatrix;
+      let frequencyProgression = muscleGroup.frequency.progression;
 
-      let original = muscleGroup.frequency.progression;
-      let spread = [...muscleGroup.frequency.progression];
-      let cloned = structuredClone(muscleGroup.frequency.progression);
-
-      let target_freq = original[targetIndex];
       if (operation === "+") {
         const total_possible_freq = getMusclesMaxFrequency(
           split_sessions,
@@ -336,30 +333,29 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
         const canAdd = canTargetFrequencyBeIncreased(total_possible_freq);
         const isIncremented = incrementTargetFrequency(
           targetIndex,
-          original,
+          frequencyProgression,
           canAdd
         );
 
         if (isIncremented) {
-          original = [...isIncremented];
+          frequencyProgression = [...isIncremented];
         }
       } else {
-        original = decrementTargetFrequency(targetIndex, original);
+        frequencyProgression = decrementTargetFrequency(targetIndex, frequencyProgression);
       }
 
+      const setProgUpdate = updateSetProgression(frequencyProgression, setProgressionMatrix)
       const updatedExercises = updateInitialSetsForExercisesTEST(
         exercises,
         targetIndex,
-        original[targetIndex],
+        frequencyProgression[targetIndex],
         setProgressionMatrix
       );
 
       console.log(
         operation,
         targetIndex,
-        original,
-        spread,
-        cloned,
+        frequencyProgression,
         updatedExercises,
         "OH BOY WHAT DIS?"
       );
@@ -369,7 +365,7 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
         exercises: updatedExercises,
         volume: {
           ...prev.volume,
-          frequencyProgression: [...original],
+          frequencyProgression: [...frequencyProgression],
         },
       }));
     },
