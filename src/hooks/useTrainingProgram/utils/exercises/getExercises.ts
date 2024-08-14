@@ -221,6 +221,18 @@ export const getMatrixIndexCase = (muscle: MusclePriorityType) => {
   }
 };
 
+const findClosestIndex = (frequency: number, matrix: number[][][]) => {
+  let index = 0;
+  for (let i = 0; i < matrix.length; i++) {
+    const frequencyInSets = matrix[i].length;
+    if (frequencyInSets === frequency) return i;
+    if (frequencyInSets < frequency) {
+      index = i;
+    }
+  }
+  return index;
+};
+
 export const updateSetProgression = (
   frequencyProgression: number[],
   setProgressionMatrix: number[][][]
@@ -228,25 +240,27 @@ export const updateSetProgression = (
   // loop over progression matrix
   // 1. if matrix[i].length is in frequencyProgression > next
   // 2. find closest frequency in frequencyProgression
-  for (let i = 0; i < setProgressionMatrix.length; i++) {
-    const frequencyInSets = setProgressionMatrix[i].length;
-    // 1.
-    if (frequencyProgression.includes(frequencyInSets)) continue;
-    // 2.
-    const closestFrequency = frequencyProgression.reduce((prev, curr) => {
-      return Math.abs(curr - frequencyInSets) < Math.abs(prev - frequencyInSets)
-        ? curr
-        : prev;
-    });
+  const cloneMatrix = structuredClone(setProgressionMatrix);
+
+  for (let i = 0; i < frequencyProgression.length; i++) {
+    const frequency = frequencyProgression[i];
+
+    const closestIndex = findClosestIndex(frequency, cloneMatrix);
+    if (cloneMatrix[closestIndex].length === frequency) continue;
+    const closestProgression = cloneMatrix[closestIndex];
+    closestProgression.push([2]);
+    const addProgression = disperseAddedSets([frequency], closestProgression);
+
+    cloneMatrix.splice(closestIndex, 0, addProgression);
     console.log(
-      closestFrequency,
-      frequencyInSets,
-      frequencyProgression,
-      setProgressionMatrix,
-      "OH BOY LETS TAKE LOOK REAL WUICK"
+      frequency,
+      closestIndex,
+      cloneMatrix,
+      addProgression,
+      "WHAT IT DO?"
     );
-    let currentSchema = setProgressionMatrix[i];
   }
+  return cloneMatrix;
 };
 
 export const initializeSetProgression = (
