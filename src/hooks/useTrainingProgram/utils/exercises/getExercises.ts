@@ -186,6 +186,13 @@ const findLeastSetsIndex = (sessionSets: number[]) => {
   }
   return index;
 };
+const findGreatestSetsIndex = (sessionSets: number[]) => {
+  let index = 0;
+  for (let i = 0; i < sessionSets.length; i++) {
+    index = sessionSets[i] > sessionSets[index] ? i : index;
+  }
+  return index;
+};
 
 const disperseAddedSets = (addedSets: number[], schema: number[][]) => {
   const copiedSchema = structuredClone(schema);
@@ -225,14 +232,36 @@ const findClosestIndex = (frequency: number, matrix: number[][][]) => {
   let index = 0;
   for (let i = 0; i < matrix.length; i++) {
     const frequencyInSets = matrix[i].length;
-    if (frequencyInSets === frequency) return i;
-    if (frequencyInSets < frequency) {
-      index = i;
+    switch (true) {
+      case frequencyInSets === frequency:
+        return i;
+      case frequencyInSets < frequency:
+        index = i;
+        break;
+      default:
+        index = 0;
+        console.log(
+          frequencyInSets,
+          frequency,
+          matrix[i],
+          "HEY WHAT WE DOING HERE?"
+        );
     }
   }
   return index;
 };
 
+const reduceFrequencyBySelectedMatrixRow = (matrix: number[][]) => {
+  let frequency = matrix.length;
+  for (let i = 0; i < matrix.length - 1; i++) {
+    const index = findGreatestSetsIndex(matrix[i]);
+    if (frequency > 0) {
+      matrix[i][index]--;
+      frequency--;
+    }
+  }
+  return matrix;
+};
 export const updateSetProgression = (
   frequencyProgression: number[],
   setProgressionMatrix: number[][][]
@@ -240,27 +269,35 @@ export const updateSetProgression = (
   // loop over progression matrix
   // 1. if matrix[i].length is in frequencyProgression > next
   // 2. find closest frequency in frequencyProgression
-  const cloneMatrix = structuredClone(setProgressionMatrix);
+  // const cloneMatrix = structuredClone(setProgressionMatrix);
 
   for (let i = 0; i < frequencyProgression.length; i++) {
     const frequency = frequencyProgression[i];
 
-    const closestIndex = findClosestIndex(frequency, cloneMatrix);
-    if (cloneMatrix[closestIndex].length === frequency) continue;
-    const closestProgression = cloneMatrix[closestIndex];
-    closestProgression.push([2]);
-    const addProgression = disperseAddedSets([frequency], closestProgression);
+    const closestIndex = findClosestIndex(frequency, setProgressionMatrix);
+    // 1. frequency is in matrix and thus no need to do update matrix
+    if (setProgressionMatrix[closestIndex].length === frequency) continue;
 
-    cloneMatrix.splice(closestIndex, 0, addProgression);
-    console.log(
-      frequency,
-      closestIndex,
-      cloneMatrix,
-      addProgression,
-      "WHAT IT DO?"
+    const closestProgression = structuredClone(
+      setProgressionMatrix[closestIndex]
     );
+    const closestFrequency = closestProgression.length;
+
+    if (closestIndex === 0) {
+      const reduced = reduceFrequencyBySelectedMatrixRow(closestProgression);
+      setProgressionMatrix.unshift(reduced);
+    } else {
+      closestProgression.push([2]);
+      const addProgression = disperseAddedSets(
+        [closestFrequency],
+        closestProgression
+      );
+      setProgressionMatrix.splice(closestIndex + 1, 0, addProgression);
+    }
+
+    console.log(frequency, closestIndex, setProgressionMatrix, "WHAT IT DO?");
   }
-  return cloneMatrix;
+  return setProgressionMatrix;
 };
 
 export const initializeSetProgression = (
