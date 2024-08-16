@@ -341,32 +341,40 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
           frequencyProgression = [...isIncremented];
         }
       } else {
-        frequencyProgression = decrementTargetFrequency(targetIndex, frequencyProgression);
+        frequencyProgression = decrementTargetFrequency(
+          targetIndex,
+          frequencyProgression
+        );
       }
 
-      const setProgUpdate = updateSetProgression(frequencyProgression, setProgressionMatrix)
+      const updatedSetProgression = updateSetProgression(
+        frequencyProgression,
+        setProgressionMatrix
+      );
       const updatedExercises = updateInitialSetsForExercisesTEST(
         exercises,
         targetIndex,
         frequencyProgression[targetIndex],
-        setProgressionMatrix
+        updatedSetProgression
       );
 
       console.log(
         operation,
         targetIndex,
         frequencyProgression,
+        updatedSetProgression,
         updatedExercises,
         "OH BOY WHAT DIS?"
       );
 
       setMuscleGroup((prev) => ({
         ...prev,
-        exercises: updatedExercises,
-        volume: {
-          ...prev.volume,
-          frequencyProgression: [...frequencyProgression],
+        frequency: {
+          ...prev.frequency,
+          progression: [...frequencyProgression],
+          setProgressionMatrix: updatedSetProgression,
         },
+        exercises: updatedExercises,
       }));
     },
     [muscleGroup, microcycles, mesocycles, split_sessions]
