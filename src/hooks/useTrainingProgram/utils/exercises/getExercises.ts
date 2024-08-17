@@ -272,16 +272,52 @@ export const updateSetProgression = (
       );
       setProgressionMatrix.splice(closestIndex + 1, 0, addProgression);
     }
-
-    console.log(
-      frequency,
-      closestIndex,
-      frequencyProgression,
-      setProgressionMatrix,
-      "WHAT IT DO?"
-    );
   }
   return setProgressionMatrix;
+};
+
+export const updateExercisesOnSetProgressionChange = (
+  setProgressionMatrix: number[][][],
+  exercises: ExerciseType[][]
+) => {
+  const total_exercise_frequency = exercises.length;
+  const total_exercises_frequency_in_sets =
+    setProgressionMatrix[setProgressionMatrix.length - 1].length;
+  const remaining_frequency =
+    total_exercises_frequency_in_sets - total_exercise_frequency;
+  if (remaining_frequency <= 0) return exercises;
+  const selected_index = setProgressionMatrix.length - remaining_frequency + 1;
+  const selected_sets =
+    setProgressionMatrix[setProgressionMatrix.length - 1].slice(selected_index);
+  const muscle_group = exercises[0][0]?.muscle;
+  const volume_landmark = exercises[0][0].rank;
+  const allExercises = getGroupList(muscle_group);
+
+  for (let i = 0; i < selected_sets.length; i++) {
+    const session = selected_sets[i];
+    const session_exercises: ExerciseType[] = [];
+    for (let j = 0; j < session.length; j++) {
+      const exercise_index = Math.floor(Math.random() * allExercises.length);
+      const exercise_data = allExercises[exercise_index];
+      const selected_exercise = initializeNewExercise(
+        exercise_data,
+        volume_landmark
+      );
+      session_exercises.push(selected_exercise);
+    }
+    exercises.push(session_exercises);
+    console.log(
+      muscle_group,
+      setProgressionMatrix,
+      exercises,
+      session_exercises,
+      selected_sets,
+      selected_index,
+      remaining_frequency,
+      "OH BOY HERE WE GO"
+    );
+  }
+  return exercises;
 };
 
 export const initializeSetProgression = (
@@ -649,6 +685,31 @@ export const initNewExercise = (
     weightIncrement: 2,
     initialSetsPerMeso: initalSetsPerMeso,
     setProgressionSchema: schemas,
+    data: {
+      movement_type: exerciseData.movement_type,
+      requirements: exerciseData.requirements,
+    },
+  };
+  return new_exercise;
+};
+
+export const initializeNewExercise = (
+  exerciseData: JSONExercise,
+  volume_landmark: VolumeLandmarkType
+) => {
+  const uid = getUID();
+  const new_exercise: ExerciseType = {
+    ...INITIAL_EXERCISE,
+    id: `${exerciseData.id}_${uid}`,
+    name: exerciseData.name,
+    muscle: exerciseData.group as MuscleType,
+    session: 0,
+    rank: volume_landmark,
+    sets: 2,
+    reps: 10,
+    weight: 100,
+    rir: 3,
+    weightIncrement: 2,
     data: {
       movement_type: exerciseData.movement_type,
       requirements: exerciseData.requirements,
