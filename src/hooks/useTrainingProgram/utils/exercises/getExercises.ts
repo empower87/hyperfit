@@ -186,6 +186,19 @@ const findLeastSetsIndex = (sessionSets: number[]) => {
   }
   return index;
 };
+export const getFinalMicrocycleSets_AddOnePerMicrocycle = (
+  initialSets: number[],
+  microcycles: number
+) => {
+  const setsOverMicrocycles = [initialSets];
+  for (let i = 0; i < microcycles; i++) {
+    const sets = [...setsOverMicrocycles[i]];
+    const index = findLeastSetsIndex(sets);
+    sets[index] = sets[index] + 1;
+    setsOverMicrocycles.push(sets);
+  }
+  return setsOverMicrocycles;
+};
 
 const disperseAddedSets = (addedSets: number[], schema: number[][]) => {
   const copiedSchema = structuredClone(schema);
@@ -305,6 +318,7 @@ export const updateExercisesOnSetProgressionChange = (
       );
       session_exercises.push(selected_exercise);
     }
+
     exercises.push(session_exercises);
     console.log(
       muscle_group,

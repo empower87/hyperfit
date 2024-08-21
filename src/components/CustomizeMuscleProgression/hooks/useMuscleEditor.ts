@@ -7,6 +7,7 @@ import {
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
 import {
   addNewExerciseSetsToSetProgressionMatrix,
+  getFinalMicrocycleSets_AddOnePerMicrocycle,
   initNewExercise,
   JSONExercise,
   updateExercisesOnSetProgressionChange,
@@ -18,32 +19,109 @@ import {
   decrementTargetFrequency,
   incrementTargetFrequency,
 } from "~/hooks/useTrainingProgram/utils/prioritized_muscle_list/maximumFrequencyHandlers";
-import { getSetProgressionForExercise } from "../../../hooks/useTrainingProgram/utils/exercises/setProgressionOverMicrocycles";
 
 const calculateTotalVolume = (
   exercises: ExerciseType[][],
+  frequencyProgression: number[],
+  setProgressionMatrix: number[][][],
   mesocycles: number,
   microcycles: number
 ) => {
-  const totalVolumes = Array.from(Array(mesocycles), (e, i) => 0);
-  for (let i = 0; i < exercises.length; i++) {
-    const sessionExercises = exercises[i];
-    for (let g = 0; g < sessionExercises.length; g++) {
-      const exercise = sessionExercises[g];
-      for (let j = 0; j < mesocycles; j++) {
-        const sets = getSetProgressionForExercise(
-          sessionExercises[g].setProgressionSchema[j],
-          j,
-          sessionExercises[g],
-          microcycles,
-          sessionExercises.length,
-          g
-        );
+  const totalVolumes = Array.from(Array(frequencyProgression), (e, i) => 0);
 
-        totalVolumes[j] = totalVolumes[j] + sets[sets.length - 1];
+  for (let i = 0; i < frequencyProgression.length; i++) {
+    const frequency = frequencyProgression[i];
+    const matrixIndex = setProgressionMatrix.findIndex(
+      (row) => row.length === frequency
+    );
+    // if (matrixIndex < 0) {
+    //   console.log(
+    //     frequency,
+    //     setProgressionMatrix,
+    //     matrixIndex,
+    //     "matrixIndex isn't in matrix"
+    //   );
+    //   continue;
+    // }
+    let totalVolume = 0;
+    const row = setProgressionMatrix[matrixIndex];
+    console.log(
+      row,
+      exercises[0][0].muscle,
+      matrixIndex,
+      frequency,
+      "LETS START THE LOGGING??"
+    );
+    for (let j = 0; j < exercises.length; j++) {
+      const sessionExercises = exercises[j];
+      const sessionSets: number[] = [];
+
+      for (let g = 0; g < sessionExercises.length; g++) {
+        const exercise = sessionExercises[g];
+        const setProgressionSchema =
+          sessionExercises[g].setProgressionSchema[j];
+        const defaultSetProgression = "ADD_ONE_PER_MICROCYCLE";
+        const validatedSetProgressionSchema =
+          setProgressionSchema ?? defaultSetProgression;
+        const initialSets = exercise.initialSets
+          ? exercise.initialSets[frequency]
+            ? exercise.initialSets[frequency]
+            : undefined
+          : undefined;
+        // console.log(
+        //   // j,
+        //   // row,
+        //   // row[j],
+        //   // g,
+        //   exercise.muscle,
+        //   row[j][g],
+        //   // setProgressionMatrix,
+        //   // frequency,
+        //   // frequencyProgression,
+
+        //   // exercise,
+        //   "LETS START THE LOGGING??"
+        // );
+        const sets = initialSets ? initialSets : row[j][g];
+        sessionSets.push(sets);
       }
+      const totalSets = getFinalMicrocycleSets_AddOnePerMicrocycle(
+        sessionSets,
+        microcycles
+      );
+      const sessionsSetsTotalVolume = totalSets[totalSets.length - 1].reduce(
+        (acc, set) => acc + set,
+        0
+      );
+      totalVolume = totalVolume + sessionsSetsTotalVolume;
     }
+    totalVolumes[i] = totalVolume;
   }
+
+  // for (let i = 0; i < exercises.length; i++) {
+  //   const sessionExercises = exercises[i];
+  //   for (let g = 0; g < sessionExercises.length; g++) {
+  //     const exercise = sessionExercises[g];
+  //     for (let j = 0; j < mesocycles; j++) {
+  //       const setProgressionSchema =
+  //         sessionExercises[g].setProgressionSchema[j];
+  //       const defaultSetProgression = "ADD_ONE_PER_MICROCYCLE";
+  //       const validatedSetProgressionSchema =
+  //         setProgressionSchema ?? defaultSetProgression;
+  //       const sets = getSetProgressionForExercise(
+  //         validatedSetProgressionSchema,
+  //         j,
+  //         sessionExercises[g],
+  //         microcycles,
+  //         sessionExercises.length,
+  //         g
+  //       );
+
+  //       totalVolumes[j] = totalVolumes[j] + sets[sets.length - 1];
+  //     }
+  //   }
+  // }
+  console.log(exercises, mesocycles, microcycles, totalVolumes, "WHY NaN??");
   return totalVolumes;
 };
 
@@ -104,13 +182,22 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
 
   useEffect(() => {
     const exercises = muscleGroup.exercises;
+    const frequencyProgression = muscleGroup.frequency.progression;
+    const setProgressionMatrix = muscleGroup.frequency.setProgressionMatrix;
     const totalVolumes = calculateTotalVolume(
       exercises,
+      frequencyProgression,
+      setProgressionMatrix,
       mesocycles,
       microcycles
     );
     const forLoggingExercises = exercises.map((each) =>
-      each.map((ea) => [ea.muscle, ea.name, ea.initialSetsPerMeso])
+      each.map((ea) => [
+        ea.muscle,
+        ea.name,
+        ea.initialSetsPerMeso,
+        ea.setProgressionSchema,
+      ])
     );
     console.log(forLoggingExercises, totalVolumes, "OH MY LETS LOOK AT THIS");
     setVolumes(totalVolumes);
@@ -379,7 +466,7 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
           progression: [...frequencyProgression],
           setProgressionMatrix: updatedSetProgression,
         },
-        exercises: updatedExercises,
+        exercises: realUpdatedExercises,
       }));
     },
     [muscleGroup, microcycles, mesocycles, split_sessions]

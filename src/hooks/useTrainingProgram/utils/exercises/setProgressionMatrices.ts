@@ -28,6 +28,7 @@ export const MRV_PROGRESSION_MATRIX_ONE_INIT = [
   [[3], [3], [3], [2]],
   [[3], [3], [3], [3], [2]],
   [[3], [3], [3], [3], [3], [2]],
+  [[3], [3], [3], [3], [3], [2], [1]],
 ];
 // prettier-ignore
 export const MRV_PROGRESSION_MATRIX_TWO_INIT = [
@@ -37,6 +38,7 @@ export const MRV_PROGRESSION_MATRIX_TWO_INIT = [
   [[2, 2], [2, 2], [2, 2], [2]],
   [[2, 2], [2, 2], [2, 2], [2], [1]],
   [[2, 2], [2, 2], [2, 2], [2], [2], [1]],
+  [[2, 2], [2, 2], [2, 2], [2], [2], [2], [1]],
 ];
 // prettier-ignore
 const MEV_MV_PROGRESSION_MATRIX_TWO = [
@@ -140,7 +142,6 @@ export const getInitMatrixFnByVolumeLandmark = (rank: VolumeLandmarkType) => {
     return getSetProgressionMatrix_mev_mv;
   }
 };
-
 
 // [2, 2, 2], [2, 2]
 // [3, 2, 2], [3, 2], [2, 2]
