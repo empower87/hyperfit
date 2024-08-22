@@ -48,25 +48,25 @@ const MEV_MV_PROGRESSION_MATRIX_TWO = [
 ];
 // prettier-ignore
 const MEV_MV_PROGRESSION_MATRIX_FOUR = [
-  [[2, 2]], 
+  [[2]], 
   [[2], [2]], 
   [[2], [2]]
 ];
 // prettier-ignore
 const MEV_MV_PROGRESSION_MATRIX_SIX = [
-  [[3, 3]], 
+  [[3]], 
   [[3], [3]], 
   [[2], [2], [2]]
 ];
 // prettier-ignore
 const MEV_MV_PROGRESSION_MATRIX_EIGHT = [
-  [[3, 3]],
+  [[2, 2]],
   [[2, 2], [2, 2]],
   [[2, 2], [2], [2]],
 ];
 // prettier-ignore
 const MEV_MV_PROGRESSION_MATRIX_TEN = [
-  [[4, 3]],
+  [[2, 2]],
   [[3, 2], [3, 2]],
   [[2, 2], [2, 2], [2]],
 ];

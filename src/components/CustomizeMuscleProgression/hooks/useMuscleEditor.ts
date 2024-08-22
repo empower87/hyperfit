@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { getMusclesMaxFrequency } from "~/constants/workoutSplits";
+import { getMusclesMaxFrequency, MuscleType } from "~/constants/workoutSplits";
 import {
   type ExerciseType,
   type MusclePriorityType,
@@ -25,64 +25,53 @@ const calculateTotalVolume = (
   frequencyProgression: number[],
   setProgressionMatrix: number[][][],
   mesocycles: number,
-  microcycles: number
+  microcycles: number,
+  muscleGroup: MuscleType
 ) => {
-  const totalVolumes = Array.from(Array(frequencyProgression), (e, i) => 0);
+  const totalVolumes = Array.from(frequencyProgression, (e, i) => 0);
+  console.log(
+    muscleGroup,
+    exercises,
+    totalVolumes,
+    frequencyProgression,
+    "LETS START THE LOGGING?? BEFORE"
+  );
+  if (exercises.length === 0) return totalVolumes;
 
   for (let i = 0; i < frequencyProgression.length; i++) {
     const frequency = frequencyProgression[i];
     const matrixIndex = setProgressionMatrix.findIndex(
       (row) => row.length === frequency
     );
-    // if (matrixIndex < 0) {
-    //   console.log(
-    //     frequency,
-    //     setProgressionMatrix,
-    //     matrixIndex,
-    //     "matrixIndex isn't in matrix"
-    //   );
-    //   continue;
-    // }
+
+    if (matrixIndex < 0) {
+      console.log(
+        frequency,
+        setProgressionMatrix,
+        matrixIndex,
+        "matrixIndex isn't in matrix"
+      );
+      continue;
+    }
+
     let totalVolume = 0;
     const row = setProgressionMatrix[matrixIndex];
-    console.log(
-      row,
-      exercises[0][0].muscle,
-      matrixIndex,
-      frequency,
-      "LETS START THE LOGGING??"
-    );
+
     for (let j = 0; j < exercises.length; j++) {
       const sessionExercises = exercises[j];
       const sessionSets: number[] = [];
 
       for (let g = 0; g < sessionExercises.length; g++) {
         const exercise = sessionExercises[g];
-        const setProgressionSchema =
-          sessionExercises[g].setProgressionSchema[j];
-        const defaultSetProgression = "ADD_ONE_PER_MICROCYCLE";
-        const validatedSetProgressionSchema =
-          setProgressionSchema ?? defaultSetProgression;
+
         const initialSets = exercise.initialSets
           ? exercise.initialSets[frequency]
             ? exercise.initialSets[frequency]
             : undefined
           : undefined;
-        // console.log(
-        //   // j,
-        //   // row,
-        //   // row[j],
-        //   // g,
-        //   exercise.muscle,
-        //   row[j][g],
-        //   // setProgressionMatrix,
-        //   // frequency,
-        //   // frequencyProgression,
 
-        //   // exercise,
-        //   "LETS START THE LOGGING??"
-        // );
-        const sets = initialSets ? initialSets : row[j][g];
+        const matrixRowSets = row[j] && row[j][g] ? row[j][g] : 0;
+        const sets = initialSets ? initialSets : matrixRowSets;
         sessionSets.push(sets);
       }
       const totalSets = getFinalMicrocycleSets_AddOnePerMicrocycle(
@@ -94,34 +83,18 @@ const calculateTotalVolume = (
         0
       );
       totalVolume = totalVolume + sessionsSetsTotalVolume;
+      console.log(
+        exercises.flat().map((ea) => ea.name),
+        totalSets,
+        sessionsSetsTotalVolume,
+        totalVolume,
+        totalVolumes,
+        "WHY NaN??"
+      );
     }
     totalVolumes[i] = totalVolume;
   }
 
-  // for (let i = 0; i < exercises.length; i++) {
-  //   const sessionExercises = exercises[i];
-  //   for (let g = 0; g < sessionExercises.length; g++) {
-  //     const exercise = sessionExercises[g];
-  //     for (let j = 0; j < mesocycles; j++) {
-  //       const setProgressionSchema =
-  //         sessionExercises[g].setProgressionSchema[j];
-  //       const defaultSetProgression = "ADD_ONE_PER_MICROCYCLE";
-  //       const validatedSetProgressionSchema =
-  //         setProgressionSchema ?? defaultSetProgression;
-  //       const sets = getSetProgressionForExercise(
-  //         validatedSetProgressionSchema,
-  //         j,
-  //         sessionExercises[g],
-  //         microcycles,
-  //         sessionExercises.length,
-  //         g
-  //       );
-
-  //       totalVolumes[j] = totalVolumes[j] + sets[sets.length - 1];
-  //     }
-  //   }
-  // }
-  console.log(exercises, mesocycles, microcycles, totalVolumes, "WHY NaN??");
   return totalVolumes;
 };
 
@@ -189,7 +162,8 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
       frequencyProgression,
       setProgressionMatrix,
       mesocycles,
-      microcycles
+      microcycles,
+      muscleGroup.muscle
     );
     const forLoggingExercises = exercises.map((each) =>
       each.map((ea) => [

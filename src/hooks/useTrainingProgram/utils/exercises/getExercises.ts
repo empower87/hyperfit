@@ -191,10 +191,11 @@ export const getFinalMicrocycleSets_AddOnePerMicrocycle = (
   microcycles: number
 ) => {
   const setsOverMicrocycles = [initialSets];
-  for (let i = 0; i < microcycles; i++) {
+  for (let i = 0; i < microcycles - 1; i++) {
     const sets = [...setsOverMicrocycles[i]];
     const index = findLeastSetsIndex(sets);
-    sets[index] = sets[index] + 1;
+    const validAddableSets = sets[index] > 0 ? sets[index] + 1 : 0;
+    sets[index] = validAddableSets;
     setsOverMicrocycles.push(sets);
   }
   return setsOverMicrocycles;
