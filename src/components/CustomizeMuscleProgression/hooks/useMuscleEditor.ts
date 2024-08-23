@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { getMusclesMaxFrequency, MuscleType } from "~/constants/workoutSplits";
+import { getMusclesMaxFrequency } from "~/constants/workoutSplits";
 import {
   type ExerciseType,
   type MusclePriorityType,
@@ -24,18 +24,10 @@ const calculateTotalVolume = (
   exercises: ExerciseType[][],
   frequencyProgression: number[],
   setProgressionMatrix: number[][][],
-  mesocycles: number,
-  microcycles: number,
-  muscleGroup: MuscleType
+  microcycles: number
 ) => {
   const totalVolumes = Array.from(frequencyProgression, (e, i) => 0);
-  console.log(
-    muscleGroup,
-    exercises,
-    totalVolumes,
-    frequencyProgression,
-    "LETS START THE LOGGING?? BEFORE"
-  );
+
   if (exercises.length === 0) return totalVolumes;
 
   for (let i = 0; i < frequencyProgression.length; i++) {
@@ -74,15 +66,19 @@ const calculateTotalVolume = (
         const sets = initialSets ? initialSets : matrixRowSets;
         sessionSets.push(sets);
       }
+
       const totalSets = getFinalMicrocycleSets_AddOnePerMicrocycle(
         sessionSets,
         microcycles
       );
+
       const sessionsSetsTotalVolume = totalSets[totalSets.length - 1].reduce(
         (acc, set) => acc + set,
         0
       );
+
       totalVolume = totalVolume + sessionsSetsTotalVolume;
+
       console.log(
         exercises.flat().map((ea) => ea.name),
         totalSets,
@@ -161,9 +157,7 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
       exercises,
       frequencyProgression,
       setProgressionMatrix,
-      mesocycles,
-      microcycles,
-      muscleGroup.muscle
+      microcycles
     );
     const forLoggingExercises = exercises.map((each) =>
       each.map((ea) => [
@@ -383,6 +377,8 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
 
   const onFrequencyProgressionIncrement = useCallback(
     (targetIndex: number, operation: "+" | "-") => {
+      const muscle = muscleGroup.muscle;
+      const volume_landmark = muscleGroup.volume.landmark;
       const exercises = muscleGroup.exercises;
       const setProgressionMatrix = muscleGroup.frequency.setProgressionMatrix;
       let frequencyProgression = muscleGroup.frequency.progression;
@@ -414,6 +410,8 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
         setProgressionMatrix
       );
       const realUpdatedExercises = updateExercisesOnSetProgressionChange(
+        muscle,
+        volume_landmark,
         updatedSetProgression,
         exercises
       );

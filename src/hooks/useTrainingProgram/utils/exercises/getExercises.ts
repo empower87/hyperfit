@@ -186,6 +186,7 @@ const findLeastSetsIndex = (sessionSets: number[]) => {
   }
   return index;
 };
+
 export const getFinalMicrocycleSets_AddOnePerMicrocycle = (
   initialSets: number[],
   microcycles: number
@@ -215,6 +216,7 @@ const disperseAddedSets = (addedSets: number[], schema: number[][]) => {
       }
     }
   }
+
   return copiedSchema;
 };
 
@@ -291,6 +293,8 @@ export const updateSetProgression = (
 };
 
 export const updateExercisesOnSetProgressionChange = (
+  muscle: MuscleType,
+  volume_landmark: VolumeLandmarkType, // TODO: try passing a function to create new exercise
   setProgressionMatrix: number[][][],
   exercises: ExerciseType[][]
 ) => {
@@ -300,19 +304,45 @@ export const updateExercisesOnSetProgressionChange = (
   const remaining_frequency =
     total_exercises_frequency_in_sets - total_exercise_frequency;
   if (remaining_frequency <= 0) return exercises;
-  const selected_index = setProgressionMatrix.length - remaining_frequency + 1;
+  const selected_index =
+    total_exercises_frequency_in_sets - remaining_frequency;
   const selected_sets =
     setProgressionMatrix[setProgressionMatrix.length - 1].slice(selected_index);
-  const muscle_group = exercises[0][0]?.muscle;
-  const volume_landmark = exercises[0][0].rank;
-  const allExercises = getGroupList(muscle_group);
+  const all_exercises = getGroupList(muscle);
 
   for (let i = 0; i < selected_sets.length; i++) {
     const session = selected_sets[i];
     const session_exercises: ExerciseType[] = [];
+
     for (let j = 0; j < session.length; j++) {
-      const exercise_index = Math.floor(Math.random() * allExercises.length);
-      const exercise_data = allExercises[exercise_index];
+      const current_exercise_names = exercises.flat().map((ex) => ex.name);
+      const unselected_exercises = all_exercises.filter(
+        (ex) => !current_exercise_names.includes(ex.name)
+      );
+
+      let max = all_exercises.length;
+      let min = unselected_exercises.length;
+
+      let available_exercises = all_exercises;
+      if (min > 0) {
+        available_exercises = unselected_exercises;
+        max = min;
+        min = 0;
+      }
+
+      const exercise_index = Math.floor(Math.random() * (max - min) + min);
+      const exercise_data = available_exercises[exercise_index];
+      console.log(
+        muscle,
+        current_exercise_names,
+        unselected_exercises.flat().map((ex) => ex.name),
+        max,
+        min,
+        exercise_index,
+        available_exercises.flat().map((ea) => ea.name),
+        // selected_exercise,
+        "CHECK CH CH CHECK IT OUT"
+      );
       const selected_exercise = initializeNewExercise(
         exercise_data,
         volume_landmark
@@ -322,7 +352,7 @@ export const updateExercisesOnSetProgressionChange = (
 
     exercises.push(session_exercises);
     console.log(
-      muscle_group,
+      muscle,
       setProgressionMatrix,
       exercises,
       session_exercises,
