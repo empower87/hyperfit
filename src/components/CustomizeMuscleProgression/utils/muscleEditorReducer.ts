@@ -2,7 +2,7 @@ import {
   ExerciseType,
   MusclePriorityType,
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
-import { Exercise } from "~/hooks/useTrainingProgram/utils/exercises/getExercises";
+import { JSONExercise } from "~/hooks/useTrainingProgram/utils/exercises/getExercises";
 
 type AddSubtractSetsType = {
   type: "INCREMENT_SETS";
@@ -15,7 +15,7 @@ type AddSubtractSetsType = {
 type AddTrainingDayType = {
   type: "ADD_TRAINING_DAY";
   payload: {
-    exercise: Exercise;
+    exercise: JSONExercise;
     dayIndex: number;
   };
 };
@@ -35,7 +35,7 @@ type RemoveTrainingDayType = {
 type AddExerciseType = {
   type: "ADD_EXERCISE";
   payload: {
-    exercise: Exercise;
+    exercise: JSONExercise;
     dayIndex: number;
   };
 };
