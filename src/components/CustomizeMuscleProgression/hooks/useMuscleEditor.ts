@@ -11,7 +11,6 @@ import {
   initNewExercise,
   JSONExercise,
   updateExercisesOnSetProgressionChange,
-  updateInitialSetsForExercisesTEST,
   updateSetProgression,
 } from "~/hooks/useTrainingProgram/utils/exercises/getExercises";
 import {
@@ -36,15 +35,7 @@ const calculateTotalVolume = (
       (row) => row.length === frequency
     );
 
-    if (matrixIndex < 0) {
-      console.log(
-        frequency,
-        setProgressionMatrix,
-        matrixIndex,
-        "matrixIndex isn't in matrix"
-      );
-      continue;
-    }
+    if (matrixIndex < 0) continue;
 
     let totalVolume = 0;
     const row = setProgressionMatrix[matrixIndex];
@@ -78,15 +69,6 @@ const calculateTotalVolume = (
       );
 
       totalVolume = totalVolume + sessionsSetsTotalVolume;
-
-      console.log(
-        exercises.flat().map((ea) => ea.name),
-        totalSets,
-        sessionsSetsTotalVolume,
-        totalVolume,
-        totalVolumes,
-        "WHY NaN??"
-      );
     }
     totalVolumes[i] = totalVolume;
   }
@@ -308,72 +290,86 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
     [selectedMesocycleIndex, muscleGroup]
   );
 
-  const onAddTrainingDay = useCallback(
-    (firstExercise?: JSONExercise, dayIndex?: number) => {
-      const frequencyProgression = muscleGroup.frequency.progression;
-      const setProgressionMatrix = muscleGroup.frequency.setProgressionMatrix;
-      const cloned_exercises = muscleGroup.exercises;
+  const onAddTrainingDay = useCallback(() => {
+    const muscle = muscleGroup.muscle;
+    const volume_landmark = muscleGroup.volume.landmark;
+    const setProgressionMatrix = muscleGroup.frequency.setProgressionMatrix;
+    const cloned_exercises = muscleGroup.exercises;
+    let frequencyProgression = muscleGroup.frequency.progression;
 
-      if (!firstExercise || !dayIndex) {
-        frequencyProgression[selectedMesocycleIndex]++;
+    const total_possible_freq = getMusclesMaxFrequency(
+      split_sessions,
+      muscleGroup.muscle
+    );
+    const targetFrequencyIndex = selectedMesocycleIndex;
+    const canAdd = canTargetFrequencyBeIncreased(total_possible_freq);
+    const isIncremented = incrementTargetFrequency(
+      targetFrequencyIndex,
+      frequencyProgression,
+      canAdd
+    );
+    if (isIncremented) {
+      frequencyProgression = [...isIncremented];
+    } else {
+      console.log("CAN'T ADD TRAINING DAY BECZU OF reasons");
+      return;
+    }
+    const updatedSetProgression = updateSetProgression(
+      frequencyProgression,
+      setProgressionMatrix
+    );
+    const updatedExercises = updateExercisesOnSetProgressionChange(
+      muscle,
+      volume_landmark,
+      updatedSetProgression,
+      cloned_exercises
+    );
 
-        const sessionExercises = updateExercisesOnFrequencyIncrement(
-          cloned_exercises,
-          frequencyProgression,
-          selectedMesocycleIndex
-        );
+    console.log(
+      frequencyProgression,
+      updatedSetProgression,
+      updatedExercises,
+      "I WANNA BE HERE!"
+    );
+    // const added = frequencyProgression[frequencyProgression.length - 1] + 1;
+    // frequencyProgression[frequencyProgression.length - 1]++;
 
-        setMuscleGroup((prev) => ({
-          ...prev,
-          exercises: sessionExercises,
-          volume: {
-            ...prev.volume,
-            frequencyProgression: frequencyProgression,
-          },
-        }));
-      } else {
-        // const added = frequencyProgression[frequencyProgression.length - 1] + 1;
-        frequencyProgression[frequencyProgression.length - 1]++;
+    // const data = addNewExerciseSetsToSetProgressionMatrix(
+    //   frequencyProgression,
+    //   setProgressionMatrix,
+    //   frequencyProgression[frequencyProgression.length - 1]
+    // );
+    // console.log(
+    //   data,
+    //   muscleGroup,
+    //   frequencyProgression,
+    //   "OH BOY WHAT DIS?"
+    // );
+    // const initial_exercise = initNewExercise(
+    //   firstExercise,
+    //   muscleGroup.volume.landmark,
+    //   data.initialSetsPerMeso
+    // );
 
-        const data = addNewExerciseSetsToSetProgressionMatrix(
-          frequencyProgression,
-          setProgressionMatrix,
-          frequencyProgression[frequencyProgression.length - 1]
-        );
-        console.log(
-          data,
-          muscleGroup,
-          frequencyProgression,
-          "OH BOY WHAT DIS?"
-        );
-        const initial_exercise = initNewExercise(
-          firstExercise,
-          muscleGroup.volume.landmark,
-          data.initialSetsPerMeso
-        );
+    // cloned_exercises.push([initial_exercise]);
 
-        cloned_exercises.push([initial_exercise]);
+    // const updated_exercises = updateInitialSetsForExercisesTEST(
+    //   cloned_exercises,
+    //   frequencyProgression.length - 1,
+    //   frequencyProgression[frequencyProgression.length - 1],
+    //   data.setProgressionMatrix
+    // );
 
-        const updated_exercises = updateInitialSetsForExercisesTEST(
-          cloned_exercises,
-          frequencyProgression.length - 1,
-          frequencyProgression[frequencyProgression.length - 1],
-          data.setProgressionMatrix
-        );
-
-        setMuscleGroup((prev) => ({
-          ...prev,
-          exercises: updated_exercises,
-          frequency: {
-            ...prev.frequency,
-            progression: frequencyProgression,
-            setProgressionMatrix: data.setProgressionMatrix,
-          },
-        }));
-      }
-    },
-    [selectedMesocycleIndex, muscleGroup, mesocycles, microcycles]
-  );
+    setMuscleGroup((prev) => ({
+      ...prev,
+      exercises: updatedExercises,
+      frequency: {
+        ...prev.frequency,
+        progression: frequencyProgression,
+        setProgressionMatrix: updatedSetProgression,
+      },
+    }));
+  }, [selectedMesocycleIndex, muscleGroup, mesocycles, microcycles]);
 
   const onFrequencyProgressionIncrement = useCallback(
     (targetIndex: number, operation: "+" | "-") => {
@@ -409,25 +405,25 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
         frequencyProgression,
         setProgressionMatrix
       );
-      const realUpdatedExercises = updateExercisesOnSetProgressionChange(
+      const updatedExercises = updateExercisesOnSetProgressionChange(
         muscle,
         volume_landmark,
         updatedSetProgression,
         exercises
       );
-      const updatedExercises = updateInitialSetsForExercisesTEST(
-        exercises,
-        targetIndex,
-        frequencyProgression[targetIndex],
-        updatedSetProgression
-      );
+      // const updatedExercises = updateInitialSetsForExercisesTEST(
+      //   exercises,
+      //   targetIndex,
+      //   frequencyProgression[targetIndex],
+      //   updatedSetProgression
+      // );
 
       console.log(
         operation,
         targetIndex,
         frequencyProgression,
         updatedSetProgression,
-        updatedExercises,
+        // updatedExercises,
         "OH BOY WHAT DIS?"
       );
 
@@ -438,7 +434,7 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
           progression: [...frequencyProgression],
           setProgressionMatrix: updatedSetProgression,
         },
-        exercises: realUpdatedExercises,
+        exercises: updatedExercises,
       }));
     },
     [muscleGroup, microcycles, mesocycles, split_sessions]

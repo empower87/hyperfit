@@ -25,7 +25,6 @@ import {
 } from "~/constants/themes";
 import { ExerciseType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
-import { JSONExercise } from "~/hooks/useTrainingProgram/utils/exercises/getExercises";
 import { cn } from "~/lib/clsx";
 import { getRankColor } from "~/utils/getIndicatorColors";
 import { getMuscleData } from "~/utils/getMuscleData";
@@ -308,12 +307,12 @@ function Exercises() {
   const onOpen = () => setIsOpen(true);
   const onClose = () => setIsOpen(false);
 
-  const onSelectHandler = useCallback(
-    (newExercise: JSONExercise) => {
-      onAddTrainingDay(newExercise, exercisesByMeso.length);
-    },
-    [exercisesByMeso]
-  );
+  // const onSelectHandler = useCallback(
+  //   (newExercise: JSONExercise) => {
+  //     onAddTrainingDay(newExercise, exercisesByMeso.length);
+  //   },
+  //   [exercisesByMeso]
+  // );
 
   const addTrainingDayHandler = useCallback(() => {
     if (!isLastMesocycle) {
@@ -325,14 +324,14 @@ function Exercises() {
 
   return (
     <div className={`flex min-h-[95px] space-x-1 overflow-x-auto`}>
-      <Modal isOpen={isOpen} onClose={onClose}>
+      {/* <Modal isOpen={isOpen} onClose={onClose}>
         <SelectExercise
           muscle={muscleGroup}
           exerciseId=""
           onSelect={onSelectHandler}
           onClose={onClose}
         />
-      </Modal>
+      </Modal> */}
 
       {exercisesByMeso.map((each, index) => {
         const indices = exerciseIndices.splice(0, each.length);
@@ -350,7 +349,7 @@ function Exercises() {
           <AddDayItem key={`${i}_AddButtonDivs`}>
             {i === 0 && canAddSessionAtMesocycle ? (
               <button
-                onClick={addTrainingDayHandler}
+                onClick={onAddTrainingDay}
                 className={`flex items-center justify-center p-1 hover:${BG_COLOR_M7}`}
               >
                 <PlusIcon fill="white" />
