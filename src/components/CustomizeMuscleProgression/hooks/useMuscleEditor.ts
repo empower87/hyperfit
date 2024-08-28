@@ -18,6 +18,10 @@ import {
   decrementTargetFrequency,
   incrementTargetFrequency,
 } from "~/hooks/useTrainingProgram/utils/prioritized_muscle_list/maximumFrequencyHandlers";
+import {
+  updateExercisesOnTrainingDayRemoval,
+  updateFrequencyProgressionOnTrainingDayRemoval,
+} from "../utils/trainingDayHelpers";
 
 const calculateTotalVolume = (
   exercises: ExerciseType[][],
@@ -230,23 +234,6 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
     [muscleGroup]
   );
 
-  const onRemoveTrainingDay = useCallback(
-    (dayIndex: number) => {
-      const frequencyProgression = muscleGroup.frequency.progression;
-      frequencyProgression[selectedMesocycleIndex]--;
-
-      const exercises = muscleGroup.exercises;
-      exercises.splice(dayIndex, 1);
-
-      setMuscleGroup((prev) => ({
-        ...prev,
-        exercises: exercises,
-        volume: { ...prev.volume, frequencyProgression: frequencyProgression },
-      }));
-    },
-    [selectedMesocycleIndex, muscleGroup]
-  );
-
   const onSetIncrement = useCallback(
     (operation: "+" | "-", exerciseId: ExerciseType["id"]) => {
       const exercises = muscleGroup.exercises;
@@ -301,6 +288,7 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
       split_sessions,
       muscleGroup.muscle
     );
+
     const targetFrequencyIndex = selectedMesocycleIndex;
     const canAdd = canTargetFrequencyBeIncreased(total_possible_freq);
     const isIncremented = incrementTargetFrequency(
@@ -308,16 +296,21 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
       frequencyProgression,
       canAdd
     );
+
     if (isIncremented) {
       frequencyProgression = [...isIncremented];
     } else {
-      console.log("CAN'T ADD TRAINING DAY BECZU OF reasons");
+      console.log(
+        "Unable to add training day since split doesn't contain another viable session for muscle.."
+      );
       return;
     }
+
     const updatedSetProgression = updateSetProgression(
       frequencyProgression,
       setProgressionMatrix
     );
+
     const updatedExercises = updateExercisesOnSetProgressionChange(
       muscle,
       volume_landmark,
@@ -327,39 +320,12 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
 
     console.log(
       frequencyProgression,
-      updatedSetProgression,
       updatedExercises,
-      "I WANNA BE HERE!"
+      updatedSetProgression,
+      "-------------------------",
+      "ADDED TRAINING DAY",
+      "-------------------------"
     );
-    // const added = frequencyProgression[frequencyProgression.length - 1] + 1;
-    // frequencyProgression[frequencyProgression.length - 1]++;
-
-    // const data = addNewExerciseSetsToSetProgressionMatrix(
-    //   frequencyProgression,
-    //   setProgressionMatrix,
-    //   frequencyProgression[frequencyProgression.length - 1]
-    // );
-    // console.log(
-    //   data,
-    //   muscleGroup,
-    //   frequencyProgression,
-    //   "OH BOY WHAT DIS?"
-    // );
-    // const initial_exercise = initNewExercise(
-    //   firstExercise,
-    //   muscleGroup.volume.landmark,
-    //   data.initialSetsPerMeso
-    // );
-
-    // cloned_exercises.push([initial_exercise]);
-
-    // const updated_exercises = updateInitialSetsForExercisesTEST(
-    //   cloned_exercises,
-    //   frequencyProgression.length - 1,
-    //   frequencyProgression[frequencyProgression.length - 1],
-    //   data.setProgressionMatrix
-    // );
-
     setMuscleGroup((prev) => ({
       ...prev,
       exercises: updatedExercises,
@@ -370,6 +336,48 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
       },
     }));
   }, [selectedMesocycleIndex, muscleGroup, mesocycles, microcycles]);
+
+  const onRemoveTrainingDay = useCallback(
+    (dayIndex: number) => {
+      const frequencyProgression = muscleGroup.frequency.progression;
+      const exercises = muscleGroup.exercises;
+      const setProgressionMatrix = muscleGroup.frequency.setProgressionMatrix;
+
+      const updatedExercises = updateExercisesOnTrainingDayRemoval(
+        dayIndex,
+        exercises
+      );
+      const updatedFrequencyProgression =
+        updateFrequencyProgressionOnTrainingDayRemoval(
+          dayIndex,
+          updatedExercises,
+          frequencyProgression
+        );
+      const updatedSetProgression = updateSetProgression(
+        updatedFrequencyProgression,
+        setProgressionMatrix
+      );
+
+      console.log(
+        updatedExercises,
+        updatedFrequencyProgression,
+        updatedSetProgression,
+        "-------------------------",
+        "REMOVED TRAINING DAY",
+        "-------------------------"
+      );
+      setMuscleGroup((prev) => ({
+        ...prev,
+        exercises: updatedExercises,
+        frequency: {
+          ...prev.frequency,
+          progression: updatedFrequencyProgression,
+          setProgressionMatrix: updatedSetProgression,
+        },
+      }));
+    },
+    [selectedMesocycleIndex, muscleGroup]
+  );
 
   const onFrequencyProgressionIncrement = useCallback(
     (targetIndex: number, operation: "+" | "-") => {

@@ -297,12 +297,10 @@ export const decrementTargetFrequency = (
 ) => {
   const target_frequency = frequency_progression[index];
   const prev_frequency = frequency_progression[index - 1];
-
   const min_frequency = prev_frequency ? prev_frequency : 0;
   const decremented_frequency = target_frequency - 1;
 
   if (decremented_frequency < min_frequency) return frequency_progression;
-
   frequency_progression[index] = decremented_frequency;
   return frequency_progression;
 };
