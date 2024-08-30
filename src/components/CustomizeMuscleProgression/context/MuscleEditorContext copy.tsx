@@ -3,7 +3,7 @@ import {
   INITIAL_STATE,
   MusclePriorityType,
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
-import useMuscleEditor from "../hooks/useMuscleEditorWithReducer";
+import useMuscleEditor from "../hooks/useMuscleEditor";
 
 type MuscleEditorType = ReturnType<typeof useMuscleEditor>;
 
@@ -14,17 +14,15 @@ const MuscleEditorContext = createContext<MuscleEditorType>({
   onSelectMesocycle: () => null,
   mesocyclesArray: [],
   microcyclesArray: [],
+  onSetIncrement: () => null,
   onAddTrainingDay: () => null,
-  onRemoveTrainingDay: () => null,
   onAddExercise: () => null,
   onRemoveExercise: () => null,
-  onSelectedExerciseSetDecrement: () => null,
-  onSelectedExerciseSetIncrement: () => null,
-  onSelectedFrequencyProgressionIncrement: () => null,
-  onSelectedFrequencyProgressionDecrement: () => null,
+  onRemoveTrainingDay: () => null,
   onResetMuscleGroup: () => null,
   onSaveMuscleGroupChanges: () => null,
   toggleSetProgression: () => null,
+  onFrequencyProgressionIncrement: () => null,
 });
 
 const MuscleEditorProvider = ({

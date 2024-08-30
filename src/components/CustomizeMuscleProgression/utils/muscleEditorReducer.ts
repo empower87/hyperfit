@@ -1,42 +1,71 @@
+import { getMusclesMaxFrequency } from "~/constants/workoutSplits";
 import {
   ExerciseType,
   MusclePriorityType,
+  SplitSessionsType,
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
-import { JSONExercise } from "~/hooks/useTrainingProgram/utils/exercises/getExercises";
+import {
+  addNewExerciseSetsToSetProgressionMatrix,
+  initNewExercise,
+  JSONExercise,
+  updateExercisesOnSetProgressionChange,
+  updateSetProgression,
+} from "~/hooks/useTrainingProgram/utils/exercises/getExercises";
+import {
+  canTargetFrequencyBeIncreased,
+  decrementTargetFrequency,
+  incrementTargetFrequency,
+} from "~/hooks/useTrainingProgram/utils/prioritized_muscle_list/maximumFrequencyHandlers";
+import {
+  updateExercisesOnTrainingDayRemoval,
+  updateFrequencyProgressionOnTrainingDayRemoval,
+} from "./trainingDayHelpers";
 
-type AddSubtractSetsType = {
-  type: "INCREMENT_SETS";
+type IncrementSelectedExerciseSetsType = {
+  type: "INCREMENT_SELECTED_EXERCISE_SETS";
   payload: {
-    operation: "+" | "-";
     exerciseId: ExerciseType["id"];
-    selectedMesocycleIndex: number;
+    selected_mesocycle_index: number;
+  };
+};
+type DecrementSelectedExerciseSetsType = {
+  type: "DECREMENT_SELECTED_EXERCISE_SETS";
+  payload: {
+    exerciseId: ExerciseType["id"];
+    selected_mesocycle_index: number;
   };
 };
 type AddTrainingDayType = {
   type: "ADD_TRAINING_DAY";
   payload: {
-    exercise: JSONExercise;
-    dayIndex: number;
-  };
-};
-type CopyNextTrainingDayType = {
-  type: "COPY_NEXT_TRAINING_DAY";
-  payload: {
-    selectedMesocycleIndex: number;
+    split_sessions: SplitSessionsType;
+    target_frequency_index: number;
   };
 };
 type RemoveTrainingDayType = {
   type: "REMOVE_TRAINING_DAY";
   payload: {
-    dayIndex: number;
-    selectedMesocycleIndex: number;
+    removed_index: number;
+  };
+};
+type IncrementFrequencyProgressionType = {
+  type: "INCREMENT_SELECTED_FREQUENCY_PROGRESSION";
+  payload: {
+    target_index: number;
+    split_sessions: SplitSessionsType;
+  };
+};
+type DecrementFrequencyProgressionType = {
+  type: "DECREMENT_SELECTED_FREQUENCY_PROGRESSION";
+  payload: {
+    target_index: number;
   };
 };
 type AddExerciseType = {
   type: "ADD_EXERCISE";
   payload: {
     exercise: JSONExercise;
-    dayIndex: number;
+    session_index: number;
   };
 };
 type RemoveExerciseType = {
@@ -45,137 +74,350 @@ type RemoveExerciseType = {
     id: ExerciseType["id"];
   };
 };
-type ResetStateType = {
-  type: "RESET_STATE";
+type InitializeStateType = {
+  type: "INITIALIZE_STATE";
   payload: {
-    reset_muscle: MusclePriorityType;
+    state: MusclePriorityType;
   };
 };
 type Action =
-  | AddSubtractSetsType
   | AddTrainingDayType
-  | CopyNextTrainingDayType
   | RemoveTrainingDayType
   | AddExerciseType
   | RemoveExerciseType
-  | ResetStateType;
+  | IncrementSelectedExerciseSetsType
+  | DecrementSelectedExerciseSetsType
+  | InitializeStateType
+  | IncrementFrequencyProgressionType
+  | DecrementFrequencyProgressionType;
 
 export function muscleEditorReducer(state: MusclePriorityType, action: Action) {
+  const muscle = state.muscle;
   const exercises = state.exercises;
-  const volume = state.volume;
-  const frequency = state.frequency;
-  const { progression } = frequency;
-  const { landmark } = volume;
+  const volume_landmark = state.volume.landmark;
+  const frequency_progression = state.frequency.progression;
+  const setProgressionMatrix = state.frequency.setProgressionMatrix;
 
   switch (action.type) {
-    case "COPY_NEXT_TRAINING_DAY":
-      const payload1 = action.payload;
-      const copiedFrequencyProgression = [...progression];
-      copiedFrequencyProgression[payload1.selectedMesocycleIndex]++;
-
-      const nextFreq =
-        copiedFrequencyProgression[payload1.selectedMesocycleIndex + 1];
-      const sessionIndex =
-        copiedFrequencyProgression[payload1.selectedMesocycleIndex] - 1;
-      const cloned_exercises = structuredClone(exercises);
-      const sessionExercises = structuredClone(cloned_exercises[sessionIndex]);
-      const toCopyExercises = exercises[nextFreq - 1];
-
-      for (let i = 0; i < sessionExercises.length; i++) {
-        const nextFreqSets =
-          toCopyExercises[i].initialSetsPerMeso[
-            payload1.selectedMesocycleIndex + 1
-          ];
-        const nextAlgoSchema =
-          toCopyExercises[i].setProgressionSchema[
-            payload1.selectedMesocycleIndex + 1
-          ];
-        sessionExercises[i].initialSetsPerMeso[
-          payload1.selectedMesocycleIndex
-        ] = nextFreqSets;
-        sessionExercises[i].setProgressionSchema[
-          payload1.selectedMesocycleIndex
-        ] = nextAlgoSchema;
-      }
-
-      cloned_exercises[sessionIndex] = sessionExercises;
-      return {
-        ...state,
-        exercises: cloned_exercises,
-        volume: {
-          ...state.volume,
-          frequencyProgression: copiedFrequencyProgression,
-        },
-      };
     case "ADD_TRAINING_DAY":
-      const payload2 = action.payload;
-      const cloned_exercises2 = structuredClone(exercises);
-      const freq = [...progression];
-      freq[freq.length - 1]++;
+      const split_sessions_for_max_frequency = action.payload.split_sessions;
+      const targetFrequencyIndex = action.payload.target_frequency_index;
+      let adjustableFrequencyProgression = [...frequency_progression];
+      const total_possible_freq = getMusclesMaxFrequency(
+        split_sessions_for_max_frequency,
+        muscle
+      );
+      const canAdd = canTargetFrequencyBeIncreased(total_possible_freq);
+      const isIncremented = incrementTargetFrequency(
+        targetFrequencyIndex,
+        adjustableFrequencyProgression,
+        canAdd
+      );
 
-      cloned_exercises2.push([]);
+      if (!isIncremented) return state;
+      adjustableFrequencyProgression = [...isIncremented];
 
+      const updatedSetProgressionOnFrequencyChange = updateSetProgression(
+        adjustableFrequencyProgression,
+        setProgressionMatrix
+      );
+
+      const exercisesOnAddedTrainingDay = updateExercisesOnSetProgressionChange(
+        muscle,
+        volume_landmark,
+        updatedSetProgressionOnFrequencyChange,
+        exercises
+      );
       return {
         ...state,
-        exercises: cloned_exercises2,
-        volume: {
-          ...state.volume,
-          frequencyProgression: freq,
+        exercises: exercisesOnAddedTrainingDay,
+        frequency: {
+          ...state.frequency,
+          progression: adjustableFrequencyProgression,
+          setProgressionMatrix: updatedSetProgressionOnFrequencyChange,
         },
       };
     case "REMOVE_TRAINING_DAY":
-      const payload3 = action.payload;
-      const freq2 = [...progression];
-      freq2[payload3.selectedMesocycleIndex]--;
-      const cloned_exercises3 = structuredClone(exercises);
-      cloned_exercises3.splice(payload3.dayIndex, 1);
+      const removed_index = action.payload.removed_index;
 
+      const exercisesAfterRemovedTrainingDay =
+        updateExercisesOnTrainingDayRemoval(removed_index, exercises);
+      const frequencyProgressionUponRemovedExercises =
+        updateFrequencyProgressionOnTrainingDayRemoval(
+          removed_index,
+          exercisesAfterRemovedTrainingDay,
+          frequency_progression
+        );
+      const adjustedSetProgressionOnFrequencyProgressionChange =
+        updateSetProgression(
+          frequencyProgressionUponRemovedExercises,
+          setProgressionMatrix
+        );
       return {
         ...state,
-        exercises: cloned_exercises3,
-        volume: { ...state.volume, frequencyProgression: freq2 },
+        exercises: exercisesAfterRemovedTrainingDay,
+        frequency: {
+          ...state.frequency,
+          progression: frequencyProgressionUponRemovedExercises,
+          setProgressionMatrix:
+            adjustedSetProgressionOnFrequencyProgressionChange,
+        },
       };
     case "ADD_EXERCISE":
-      const payload = action.payload;
-      const copyExercises = structuredClone(exercises);
+      const raw_exercise = action.payload.exercise;
+      const sessionIndex = action.payload.session_index;
 
+      const data = addNewExerciseSetsToSetProgressionMatrix(
+        frequency_progression,
+        setProgressionMatrix,
+        sessionIndex
+      );
+      const new_exercise = initNewExercise(
+        raw_exercise,
+        volume_landmark,
+        data.initialSetsPerMeso
+      );
+
+      exercises[sessionIndex]?.push(new_exercise);
       return {
         ...state,
-        exercises: copyExercises,
+        exercises: exercises,
       };
     case "REMOVE_EXERCISE":
-      const remove_ex_payload = action.payload;
+      const remove_exerciseId = action.payload.id;
 
-      const rem_exercises = exercises.map((day) => {
-        return day.filter((e) => e.id !== remove_ex_payload.id);
+      const remove_exercises = exercises.map((day) => {
+        return day.filter((e) => e.id !== remove_exerciseId);
       });
 
-      // check if no remaining exercises in session
+      let empty_index = 0;
+      const filtered_exercises = remove_exercises.filter((each, index) => {
+        if (!each.length) {
+          empty_index = index;
+        } else return each;
+      });
+
+      const totalExercises = filtered_exercises.length;
+      for (let i = 0; i < frequency_progression.length; i++) {
+        const limit = empty_index + 1;
+        const curr = frequency_progression[i];
+        if (curr >= limit) {
+          if (curr > totalExercises) {
+            frequency_progression[i]--;
+          }
+        }
+      }
+
       return {
         ...state,
-        exercises: rem_exercises.filter((each) => each.length),
+        exercises: filtered_exercises,
+        frequency: {
+          ...state.frequency,
+          progression: frequency_progression,
+        },
       };
-    case "INCREMENT_SETS":
-      const { exerciseId, selectedMesocycleIndex, operation } = action.payload;
-      const copiedExercises = structuredClone(exercises);
-      const exercise = copiedExercises.flat().find((e) => e.id === exerciseId);
-      if (!exercise) return state;
-      const sets = exercise.initialSetsPerMeso[selectedMesocycleIndex];
-      exercise.initialSetsPerMeso[selectedMesocycleIndex] =
-        sets + (operation === "+" ? 1 : -1);
+    case "INCREMENT_SELECTED_EXERCISE_SETS":
+      const increment_mesocycle_index = action.payload.selected_mesocycle_index;
+      const increment_exerciseId = action.payload.exerciseId;
+      let increment_exercise_index = [0, 0];
 
-      const incrementedExercise = copiedExercises.map((day) => {
+      for (let i = 0; i < exercises.length; i++) {
+        const session = exercises[i];
+        for (let j = 0; j < session.length; j++) {
+          const exercise = session[j];
+          if (exercise.id === increment_exerciseId) {
+            increment_exercise_index = [i, j];
+          }
+        }
+      }
+      // const increment_exercise_index = exercises.map((session, s_index) => session.map((ex, ex_index) => ex.id === increment_exerciseId ? [s_index, ex_index] : null)).filter(ea => ea !== null)[0]
+
+      const inc_session_index = increment_exercise_index[0];
+      const inc_exercise_index = increment_exercise_index[1];
+      const increment_selected_frequency =
+        frequency_progression[increment_mesocycle_index];
+      const increment_exercise_sets =
+        setProgressionMatrix[increment_mesocycle_index][inc_session_index][
+          inc_exercise_index
+        ];
+      const incremented_sets = increment_exercise_sets + 1;
+      const incremented_exercise = exercises
+        .flat()
+        .find((e) => e.id === increment_exerciseId);
+      if (!incremented_exercise) return state;
+
+      const key_value_incremented = {
+        [increment_selected_frequency]: incremented_sets,
+      };
+
+      incremented_exercise.initialSets = incremented_exercise.initialSets
+        ? {
+            ...incremented_exercise.initialSets,
+            [increment_selected_frequency]:
+              key_value_incremented[increment_selected_frequency],
+          }
+        : key_value_incremented;
+
+      const exercisesAfterIncrementedSets = exercises.map((day) => {
         return day.map((e) => {
-          if (e.id === exerciseId) {
-            return exercise;
+          if (e.id === increment_exerciseId) {
+            return incremented_exercise;
           }
           return e;
         });
       });
-      return { ...state, exercises: incrementedExercise };
-    case "RESET_STATE":
-      const { reset_muscle } = action.payload;
-      return reset_muscle;
+      return {
+        ...state,
+        exercises: exercisesAfterIncrementedSets,
+      };
+    case "DECREMENT_SELECTED_EXERCISE_SETS":
+      const decrement_mesocycle_index = action.payload.selected_mesocycle_index;
+      const decrement_exerciseId = action.payload.exerciseId;
+      let decrement_exercise_index = [0, 0];
+
+      for (let i = 0; i < exercises.length; i++) {
+        const session = exercises[i];
+        for (let j = 0; j < session.length; j++) {
+          const exercise = session[j];
+          if (exercise.id === decrement_exerciseId) {
+            decrement_exercise_index = [i, j];
+          }
+        }
+      }
+
+      const dec_session_index = decrement_exercise_index[0];
+      const dec_exercise_index = decrement_exercise_index[1];
+      const decrement_selected_frequency =
+        frequency_progression[decrement_mesocycle_index];
+
+      const decrement_matrix_sets =
+        setProgressionMatrix[decrement_mesocycle_index][dec_session_index][
+          dec_exercise_index
+        ];
+
+      const decremented_matrix_sets = decrement_matrix_sets - 1;
+      const decremented_exercise = exercises
+        .flat()
+        .find((e) => e.id === decrement_exerciseId);
+
+      // TODO: note on decrement sets below zero. Should probably prompt user if they'd like to
+      //       remove that exercise.
+      if (!decremented_exercise || decremented_matrix_sets < 0) {
+        return state;
+      }
+
+      const key_value_decremented = {
+        [decrement_selected_frequency]: decremented_matrix_sets,
+      };
+
+      if (
+        decremented_exercise.initialSets &&
+        decremented_exercise.initialSets[decrement_selected_frequency]
+      ) {
+        decremented_exercise.initialSets[decrement_selected_frequency] =
+          decremented_exercise.initialSets[decrement_selected_frequency] - 1;
+        console.log(decremented_exercise, key_value_decremented, "IM EXIST");
+      } else {
+        decremented_exercise.initialSets = key_value_decremented;
+        console.log(decremented_exercise, key_value_decremented, "IM NO EXIST");
+      }
+
+      const exercisesAfterDecrementedSets = exercises.map((day) => {
+        return day.map((e) => {
+          if (e.id === decrement_exerciseId) {
+            return decremented_exercise;
+          }
+          return e;
+        });
+      });
+      console.log(
+        decremented_matrix_sets,
+        key_value_decremented,
+        decremented_exercise,
+        // exercisesAfterDecrementedSets,
+        "WHAT???"
+      );
+
+      return {
+        ...state,
+        exercises: exercisesAfterDecrementedSets,
+      };
+    case "INCREMENT_SELECTED_FREQUENCY_PROGRESSION":
+      const increment_index = action.payload.target_index;
+      const split_sessions_for_incrementable_max_frequency =
+        action.payload.split_sessions;
+      let incremented_frequency_progression = [...frequency_progression];
+
+      const incrementable_frequency = getMusclesMaxFrequency(
+        split_sessions_for_incrementable_max_frequency,
+        muscle
+      );
+      const canAddToSelectFrequency = canTargetFrequencyBeIncreased(
+        incrementable_frequency
+      );
+      const isIncrementedFrequency = incrementTargetFrequency(
+        increment_index,
+        incremented_frequency_progression,
+        canAddToSelectFrequency
+      );
+
+      if (!isIncrementedFrequency) return state;
+      incremented_frequency_progression = [...isIncrementedFrequency];
+
+      const updatedSetProgressionOnIncrementedFrequencyProgression =
+        updateSetProgression(
+          incremented_frequency_progression,
+          setProgressionMatrix
+        );
+      const exercisesOnIncrementedFrequencyProgression =
+        updateExercisesOnSetProgressionChange(
+          muscle,
+          volume_landmark,
+          updatedSetProgressionOnIncrementedFrequencyProgression,
+          exercises
+        );
+      return {
+        ...state,
+        exercises: exercisesOnIncrementedFrequencyProgression,
+        frequency: {
+          ...state.frequency,
+          progression: incremented_frequency_progression,
+          setProgressionMatrix:
+            updatedSetProgressionOnIncrementedFrequencyProgression,
+        },
+      };
+    case "DECREMENT_SELECTED_FREQUENCY_PROGRESSION":
+      const decrement_index = action.payload.target_index;
+      let decremented_frequency_progression = [...frequency_progression];
+      decremented_frequency_progression = decrementTargetFrequency(
+        decrement_index,
+        decremented_frequency_progression
+      );
+      const updatedSetProgressionOnDecrementedFrequencyProgression =
+        updateSetProgression(
+          decremented_frequency_progression,
+          setProgressionMatrix
+        );
+      const exercisesOnDecrementedFrequencyProgression =
+        updateExercisesOnSetProgressionChange(
+          muscle,
+          volume_landmark,
+          updatedSetProgressionOnDecrementedFrequencyProgression,
+          exercises
+        );
+      return {
+        ...state,
+        exercises: exercisesOnDecrementedFrequencyProgression,
+        frequency: {
+          ...state.frequency,
+          progression: decremented_frequency_progression,
+          setProgressionMatrix:
+            updatedSetProgressionOnDecrementedFrequencyProgression,
+        },
+      };
+    case "INITIALIZE_STATE":
+      const init_muscle = action.payload.state;
+      return init_muscle;
     default:
       return state;
   }

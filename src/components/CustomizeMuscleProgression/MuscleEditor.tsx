@@ -1,10 +1,4 @@
-import {
-  HTMLAttributes,
-  ReactNode,
-  useCallback,
-  useMemo,
-  useState,
-} from "react";
+import { HTMLAttributes, ReactNode, useMemo, useState } from "react";
 import {
   AddIcon,
   DeleteIcon,
@@ -75,7 +69,8 @@ function Muscle({ rank }: MuscleProps) {
     mesocyclesArray,
     onResetMuscleGroup,
     onSaveMuscleGroupChanges,
-    onFrequencyProgressionIncrement,
+    onSelectedFrequencyProgressionIncrement,
+    onSelectedFrequencyProgressionDecrement,
   } = useMuscleEditorContext();
   const bgColor = getRankColor(muscleGroup.volume.landmark);
   const title = getMuscleTitleForUI(muscleGroup.muscle);
@@ -174,7 +169,7 @@ function Muscle({ rank }: MuscleProps) {
                           <Button
                             className={`${BG_COLOR_M7}`}
                             onClick={() =>
-                              onFrequencyProgressionIncrement(index, "-")
+                              onSelectedFrequencyProgressionDecrement(index)
                             }
                           >
                             <SubtractIcon fill="white" />
@@ -183,7 +178,7 @@ function Muscle({ rank }: MuscleProps) {
                           <Button
                             className={`${BG_COLOR_M7}`}
                             onClick={() =>
-                              onFrequencyProgressionIncrement(index, "+")
+                              onSelectedFrequencyProgressionIncrement(index)
                             }
                           >
                             <AddIcon fill="white" />
@@ -278,9 +273,6 @@ function Exercises() {
   const { training_program_params } = useTrainingProgramContext();
   const { mesocycles } = training_program_params;
 
-  // const [exercisesByMeso, setExercisesByMeso] = useState<ExerciseType[][]>([]);
-  const [isOpen, setIsOpen] = useState(false);
-
   const canAddSessionAtMesocycle =
     !muscleGroup.frequency.progression[selectedMesocycleIndex + 1] ||
     (muscleGroup.frequency.progression[selectedMesocycleIndex + 1] &&
@@ -304,35 +296,8 @@ function Exercises() {
     (e, i) => i + 1
   );
 
-  const onOpen = () => setIsOpen(true);
-  const onClose = () => setIsOpen(false);
-
-  // const onSelectHandler = useCallback(
-  //   (newExercise: JSONExercise) => {
-  //     onAddTrainingDay(newExercise, exercisesByMeso.length);
-  //   },
-  //   [exercisesByMeso]
-  // );
-
-  const addTrainingDayHandler = useCallback(() => {
-    if (!isLastMesocycle) {
-      onAddTrainingDay();
-    } else {
-      onOpen();
-    }
-  }, [isLastMesocycle, onAddTrainingDay]);
-
   return (
     <div className={`flex min-h-[95px] space-x-1 overflow-x-auto`}>
-      {/* <Modal isOpen={isOpen} onClose={onClose}>
-        <SelectExercise
-          muscle={muscleGroup}
-          exerciseId=""
-          onSelect={onSelectHandler}
-          onClose={onClose}
-        />
-      </Modal> */}
-
       {exercisesByMeso.map((each, index) => {
         const indices = exerciseIndices.splice(0, each.length);
         return (
@@ -476,7 +441,8 @@ function ExerciseItem({
   const {
     muscleGroup,
     selectedMesocycleIndex,
-    onSetIncrement,
+    onSelectedExerciseSetIncrement,
+    onSelectedExerciseSetDecrement,
     onRemoveExercise,
     toggleSetProgression,
   } = useMuscleEditorContext();
@@ -536,7 +502,7 @@ function ExerciseItem({
             return (
               <WeekOneSets key={`${exercise.id}_WeekOneSets_${i}`}>
                 <WeekOneSets.Button
-                  onClick={() => onSetIncrement("-", exercise.id)}
+                  onClick={() => onSelectedExerciseSetDecrement(exercise.id)}
                 >
                   <SubtractIcon fill="white" />
                 </WeekOneSets.Button>
@@ -546,7 +512,7 @@ function ExerciseItem({
                   {each}
                 </div>
                 <WeekOneSets.Button
-                  onClick={() => onSetIncrement("+", exercise.id)}
+                  onClick={() => onSelectedExerciseSetIncrement(exercise.id)}
                 >
                   <AddIcon fill="white" />
                 </WeekOneSets.Button>
