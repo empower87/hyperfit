@@ -9,6 +9,10 @@ type MuscleEditorType = ReturnType<typeof useMuscleEditor>;
 
 const MuscleEditorContext = createContext<MuscleEditorType>({
   muscleGroup: INITIAL_STATE.muscle_priority_list[0],
+  frequencyProgression: [],
+  setProgressionMatrix: [],
+  exercises: [],
+  exercisesInView: [],
   volumes: [],
   selectedMesocycleIndex: 0,
   onSelectMesocycle: () => null,

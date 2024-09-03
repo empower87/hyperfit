@@ -324,7 +324,7 @@ export function muscleEditorReducer(state: MusclePriorityType, action: Action) {
 
       const exercisesAfterDecrementedSets = exercises.map((day) => {
         return day.map((e) => {
-          if (e.id === decrement_exerciseId) {
+          if (e.id === decremented_exercise.id) {
             return decremented_exercise;
           }
           return e;

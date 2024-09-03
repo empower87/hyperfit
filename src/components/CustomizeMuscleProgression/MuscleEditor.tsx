@@ -1,4 +1,4 @@
-import { HTMLAttributes, ReactNode, useEffect, useMemo, useState } from "react";
+import { HTMLAttributes, ReactNode, useMemo, useState } from "react";
 import {
   AddIcon,
   DeleteIcon,
@@ -225,45 +225,61 @@ function Muscle({ rank }: MuscleProps) {
 }
 
 function Exercises() {
-  const { muscleGroup, selectedMesocycleIndex, onAddTrainingDay } =
-    useMuscleEditorContext();
-  const { training_program_params } = useTrainingProgramContext();
-  const { mesocycles } = training_program_params;
+  const {
+    muscleGroup,
+    frequencyProgression,
+    exercisesInView,
+    selectedMesocycleIndex,
+    onAddExercise,
+    onAddTrainingDay,
+    onRemoveTrainingDay,
+  } = useMuscleEditorContext();
+  const [isOpen, setIsOpen] = useState(false);
+  const [isSelectExerciseModalOpen, setIsSelectExerciseModalOpen] =
+    useState(false);
+  const onSelectExerciseModalClose = () => setIsSelectExerciseModalOpen(false);
+  const onSelectExerciseModalOpen = () => setIsSelectExerciseModalOpen(true);
+  const onDropdownClose = () => setIsOpen(false);
+  const onDropdownOpen = () => setIsOpen(true);
 
   const canAddSessionAtMesocycle =
-    !muscleGroup.frequency.progression[selectedMesocycleIndex + 1] ||
-    (muscleGroup.frequency.progression[selectedMesocycleIndex + 1] &&
-      muscleGroup.frequency.progression[selectedMesocycleIndex] <
-        muscleGroup.frequency.progression[selectedMesocycleIndex + 1])
+    !frequencyProgression[selectedMesocycleIndex + 1] ||
+    (frequencyProgression[selectedMesocycleIndex + 1] &&
+      frequencyProgression[selectedMesocycleIndex] <
+        frequencyProgression[selectedMesocycleIndex + 1])
       ? true
       : false;
 
-  const isLastMesocycle = mesocycles - 1 === selectedMesocycleIndex;
-  const totalExercisesByMeso =
-    muscleGroup.frequency.progression[selectedMesocycleIndex];
-  const exercisesByMeso = muscleGroup.exercises.slice(0, totalExercisesByMeso);
-
-  // console.log(muscleGroup.muscle, exercisesByMeso, "man this logic needs work");
-  const totalSessions = exercisesByMeso.length;
+  const totalSessions = exercisesInView.length;
   const remaining = totalSessions < 5 ? 5 - totalSessions : 0;
   const addButtonDivs = Array.from(Array(remaining), (e, i) => i);
 
   const exerciseIndices = Array.from(
-    Array(exercisesByMeso.flat().length),
+    Array(exercisesInView.flat().length),
     (e, i) => i + 1
   );
 
   return (
     <div className={`flex min-h-[95px] space-x-1 overflow-x-auto`}>
-      {exercisesByMeso.map((each, index) => {
+      {exercisesInView.map((each, index) => {
         const indices = exerciseIndices.splice(0, each.length);
         return (
-          <Session
-            key={`${each[0]?.id}_${index}_Session`}
-            exercises={each}
-            index={index}
-            indices={indices}
-          />
+          <Session key={`${each[0]?.id}_${index}_Session`} index={index}>
+            <SessionItem>
+              {each.map((ex, i) => {
+                return (
+                  <ExerciseItem
+                    key={`${ex.id}_exerciseItem_${i}`}
+                    exercise={ex}
+                    index={i}
+                    exerciseIndex={indices[i]}
+                    dayIndex={index}
+                    totalExercisesInSession={each.length}
+                  />
+                );
+              })}
+            </SessionItem>
+          </Session>
         );
       })}
       {addButtonDivs.map((e, i) => {
@@ -286,61 +302,58 @@ function Exercises() {
 
 type SessionProps = {
   index: number;
-  exercises: ExerciseType[];
-  indices: number[];
+  children: ReactNode;
 };
-function Session({ index, exercises, indices }: SessionProps) {
+function Session({ index, children }: SessionProps) {
   const { onRemoveTrainingDay } = useMuscleEditorContext();
-  const [isOpen, setIsOpen] = useState(false);
-  const onDropdownClose = () => setIsOpen(false);
-  const onDropdownOpen = () => setIsOpen(true);
+  const [isDropdownOpen, setIsDropownOpen] = useState(false);
+  const onDropdownClose = () => setIsDropownOpen(false);
+  const onDropdownOpen = () => setIsDropownOpen(true);
 
   return (
-    <div
-      key={`${exercises[0]?.id}_SessionItem_${index}`}
-      className={`flex flex-col rounded-md ${BG_COLOR_M6} mb-2`}
-    >
+    <div className={`flex flex-col rounded-md ${BG_COLOR_M6} mb-2`}>
       <div className={`flex justify-between p-1`}>
         <div className={`indent-1 text-xs font-bold text-white`}>
           Day {index + 1}
         </div>
 
-        <button className={`relative w-3`} onClick={onDropdownOpen}>
-          <DotsIcon fill="#1E293B" />
-          {isOpen ? (
-            <Dropdown onClose={onDropdownClose} className={`-bottom-6`}>
-              <Dropdown.Item onClick={() => onRemoveTrainingDay(index)}>
-                Delete Session
-              </Dropdown.Item>
-            </Dropdown>
-          ) : null}
-        </button>
+        <DotsButton
+          onClick={onDropdownOpen}
+          dropdown={
+            isDropdownOpen ? (
+              <Dropdown onClose={onDropdownClose} className={`-bottom-6`}>
+                <Dropdown.Item onClick={() => onRemoveTrainingDay(index)}>
+                  Delete Session
+                </Dropdown.Item>
+              </Dropdown>
+            ) : null
+          }
+        />
       </div>
 
-      <ul className={`space-y-1 p-1 `}>
-        <SessionItem
-          exercises={exercises}
-          indices={indices}
-          dayIndex={index + 1}
-        />
-      </ul>
+      <ul className={`space-y-1 p-1 `}>{children}</ul>
     </div>
   );
 }
 
-type SessionItemProps = {
-  exercises: ExerciseType[];
-  indices: number[];
-  dayIndex: number;
+type DotsButtonProps = {
+  onClick: () => void;
+  dropdown: ReactNode;
 };
+function DotsButton({ onClick, dropdown }: DotsButtonProps) {
+  return (
+    <button className={`relative w-3`} onClick={onClick}>
+      <DotsIcon fill="#1E293B" />
+      {dropdown}
+    </button>
+  );
+}
 
-function SessionItem({ exercises, indices, dayIndex }: SessionItemProps) {
-  const { muscleGroup, microcyclesArray, onAddExercise } =
-    useMuscleEditorContext();
-  const [isOpen, setIsOpen] = useState(false);
-
-  const onOpen = () => setIsOpen(true);
-  const onClose = () => setIsOpen(false);
+type SessionItemProps = {
+  children: ReactNode;
+};
+function SessionItem({ children }: SessionItemProps) {
+  const { microcyclesArray } = useMuscleEditorContext();
 
   return (
     <div className={`flex flex-col rounded ${BG_COLOR_M6}`}>
@@ -365,29 +378,8 @@ function SessionItem({ exercises, indices, dayIndex }: SessionItemProps) {
         </div>
       </div>
 
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <SelectExercise
-          muscle={muscleGroup}
-          exerciseId=""
-          onSelect={(newExercise) => onAddExercise(newExercise, dayIndex - 1)}
-          onClose={onClose}
-        />
-      </Modal>
-
       <div className={`flex flex-col space-y-1 p-1`}>
-        {exercises.map((each, index) => {
-          return (
-            <ExerciseItem
-              key={`${each.id}_exerciseItem_${index}`}
-              exercise={each}
-              index={index}
-              exerciseIndex={indices[index]}
-              dayIndex={dayIndex}
-              onOpen={onOpen}
-              totalExercisesInSession={exercises.length}
-            />
-          );
-        })}
+        {children}
         <AddExerciseItem onClick={() => onOpen()} />
       </div>
     </div>
@@ -427,7 +419,7 @@ type ExerciseItemProps = {
   index: number;
   exerciseIndex: number;
   dayIndex: number;
-  onOpen: () => void;
+
   totalExercisesInSession: number;
 };
 
@@ -436,14 +428,13 @@ function ExerciseItem({
   index,
   exerciseIndex,
   dayIndex,
-  onOpen,
+
   totalExercisesInSession,
 }: ExerciseItemProps) {
   const {
     muscleGroup,
     selectedMesocycleIndex,
-    onSelectedExerciseSetIncrement,
-    onSelectedExerciseSetDecrement,
+    onAddExercise,
     onRemoveExercise,
     toggleSetProgression,
   } = useMuscleEditorContext();
@@ -460,24 +451,34 @@ function ExerciseItem({
   const setProgressionX = setProgressionMatrix[setProgressionIndex] ?? 0;
   const setProgressionY = setProgressionX[dayIndex - 1] ?? 0;
   const selectedExerciseSet = setProgressionY[index];
+  const testExercise = muscleGroup.exercises
+    .flat()
+    .filter((ex) => ex.id === exercise.id)[0];
+  const initialSets =
+    testExercise.initialSets && testExercise.initialSets[frequency]
+      ? testExercise.initialSets[frequency]
+      : selectedExerciseSet;
 
-  const [sets, setSets] = useState<number[]>([]);
+  const sets = setProgression_addOnePerMicrocycle_TEST(
+    microcycles,
+    totalExercisesInSession,
+    index,
+    initialSets
+  );
+  // const [sets, setSets] = useState<number[]>([]);
 
-  useEffect(() => {
-    const initialSets =
-      exercise.initialSets && exercise.initialSets[frequency]
-        ? exercise.initialSets[frequency]
-        : selectedExerciseSet;
+  // useEffect(() => {
 
-    const sets = setProgression_addOnePerMicrocycle_TEST(
-      microcycles,
-      totalExercisesInSession,
-      index,
-      initialSets
-    );
-    console.log(initialSets, sets, exercise, "HERE SEEMS TO BE THE PROBLEM");
-    setSets(sets);
-  }, [microcycles, totalExercisesInSession, index, exercise]);
+  //   console.log(initialSets, sets, exercise, "HERE SEEMS TO BE THE PROBLEM");
+  //   setSets(sets);
+  // }, [
+  //   microcycles,
+  //   totalExercisesInSession,
+  //   index,
+  //   exercise,
+  //   selectedExerciseSet,
+  //   frequency,
+  // ]);
 
   // const sets = getSetProgressionForExercise(
   //   exercise.setProgressionSchema[selectedMesocycleIndex],
@@ -487,8 +488,22 @@ function ExerciseItem({
   //   totalExercisesInSession,
   //   index - 1
   // );
+  const [isOpen, setIsOpen] = useState(false);
+
+  const onOpen = () => setIsOpen(true);
+  const onClose = () => setIsOpen(false);
+
   return (
     <li className={`flex text-xxs text-white ${BG_COLOR_M5}`}>
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <SelectExercise
+          muscle={muscleGroup}
+          exerciseId=""
+          onSelect={(newExercise) => onAddExercise(newExercise, index)}
+          onClose={onClose}
+        />
+      </Modal>
+
       <div className={`flex w-3 items-center justify-center`}>
         <button onClick={toggleSetProgression} className={``}>
           {exerciseIndex}
@@ -503,34 +518,14 @@ function ExerciseItem({
       </div>
 
       <div className={`flex`}>
-        {sets?.map((each, i) => {
-          if (i === 0)
-            return (
-              <WeekOneSets key={`${exercise.id}_WeekOneSets_${i}`}>
-                <WeekOneSets.Button
-                  onClick={() => onSelectedExerciseSetDecrement(exercise.id)}
-                >
-                  <SubtractIcon fill="white" />
-                </WeekOneSets.Button>
-                <div
-                  className={`flex w-3 items-center justify-center px-1 text-xxs text-white`}
-                >
-                  {each}
-                </div>
-                <WeekOneSets.Button
-                  onClick={() => onSelectedExerciseSetIncrement(exercise.id)}
-                >
-                  <AddIcon fill="white" />
-                </WeekOneSets.Button>
-              </WeekOneSets>
-            );
+        {sets.map((set, index) => {
           return (
-            <div
-              key={`${exercise.id}_WeekOneSets_${each}_${i}`}
-              className={`flex w-3 justify-center border-r-2 p-0.5 ${BORDER_COLOR_M6}`}
-            >
-              {each}
-            </div>
+            <Sets
+              key={`${exercise.id}_${index}_${set}`}
+              index={index}
+              set={set}
+              exerciseId={exercise.id}
+            />
           );
         })}
         <div
@@ -541,6 +536,44 @@ function ExerciseItem({
         </div>
       </div>
     </li>
+  );
+}
+
+type SetsProps = {
+  index: number;
+  set: number;
+  exerciseId: ExerciseType["id"];
+};
+function Sets({ index, set, exerciseId }: SetsProps) {
+  const { onSelectedExerciseSetIncrement, onSelectedExerciseSetDecrement } =
+    useMuscleEditorContext();
+  if (index === 0) {
+    return (
+      <WeekOneSets>
+        <WeekOneSets.Button
+          onClick={() => onSelectedExerciseSetDecrement(exerciseId)}
+        >
+          <SubtractIcon fill="white" />
+        </WeekOneSets.Button>
+        <div
+          className={`flex w-3 items-center justify-center px-1 text-xxs text-white`}
+        >
+          {set}
+        </div>
+        <WeekOneSets.Button
+          onClick={() => onSelectedExerciseSetIncrement(exerciseId)}
+        >
+          <AddIcon fill="white" />
+        </WeekOneSets.Button>
+      </WeekOneSets>
+    );
+  }
+  return (
+    <div
+      className={`flex w-3 justify-center border-r-2 p-0.5 ${BORDER_COLOR_M6}`}
+    >
+      {set}
+    </div>
   );
 }
 

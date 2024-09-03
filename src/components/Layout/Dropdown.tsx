@@ -34,6 +34,7 @@ export default function Dropdown({
   ...props
 }: DropdownProps) {
   const ref = useOutsideClick(onClose);
+
   return (
     <div
       ref={ref}

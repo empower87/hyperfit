@@ -170,8 +170,15 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
     handleUpdateMuscle(muscleGroup);
   }, [muscleGroup, handleUpdateMuscle]);
 
+  const totalExercisesByMeso =
+    muscleGroup.frequency.progression[selectedMesocycleIndex];
+
   return {
     muscleGroup,
+    frequencyProgression: muscleGroup.frequency.progression,
+    setProgressionMatrix: muscleGroup.frequency.setProgressionMatrix,
+    exercises: muscleGroup.exercises,
+    exercisesInView: muscleGroup.exercises.slice(0, totalExercisesByMeso),
     volumes,
     selectedMesocycleIndex,
     onSelectMesocycle,
