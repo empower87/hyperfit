@@ -1,4 +1,4 @@
-import { HTMLAttributes, ReactNode, useMemo, useState } from "react";
+import { HTMLAttributes, ReactNode, useCallback, useMemo, useState } from "react";
 import {
   AddIcon,
   DeleteIcon,
@@ -24,6 +24,7 @@ import { getRankColor } from "~/utils/getIndicatorColors";
 import { getMuscleData } from "~/utils/getMuscleData";
 import getMuscleTitleForUI from "~/utils/getMuscleTitleForUI";
 
+import { JSONExercise } from "~/hooks/useTrainingProgram/utils/exercises/getExercises";
 import { setProgression_addOnePerMicrocycle_TEST } from "../../hooks/useTrainingProgram/utils/exercises/setProgressionOverMicrocycles";
 import CollapsableHeader from "../Layout/CollapsableHeader";
 import SelectExercise from "../Modals/ChangeExerciseModal/ChangeExerciseModal";
@@ -268,13 +269,20 @@ function Exercises() {
             <SessionItem>
               {each.map((ex, i) => {
                 return (
-                  <ExerciseItem
+                  <ExerciseItemWithModal
                     key={`${ex.id}_exerciseItem_${i}`}
-                    exercise={ex}
-                    index={i}
-                    exerciseIndex={indices[i]}
-                    dayIndex={index}
-                    totalExercisesInSession={each.length}
+                    sessionIndex={index}
+                    exerciseIndex={i}
+                    Item={
+                      <ExerciseItem
+                        exercise={ex}
+                        index={i}
+                        exerciseIndex={indices[i]}
+                        dayIndex={index}
+                        totalExercisesInSession={each.length}
+                        openSelectModal={() => {}}
+                      />
+                    }
                   />
                 );
               })}
@@ -353,10 +361,11 @@ type SessionItemProps = {
   children: ReactNode;
 };
 function SessionItem({ children }: SessionItemProps) {
-  const { microcyclesArray } = useMuscleEditorContext();
+  const { microcyclesArray} = useMuscleEditorContext();
 
   return (
     <div className={`flex flex-col rounded ${BG_COLOR_M6}`}>
+
       <div
         className={`flex justify-between text-xxs text-slate-300 ${BG_COLOR_M7}`}
       >
@@ -378,9 +387,10 @@ function SessionItem({ children }: SessionItemProps) {
         </div>
       </div>
 
+
       <div className={`flex flex-col space-y-1 p-1`}>
         {children}
-        <AddExerciseItem onClick={() => onOpen()} />
+        {/* <AddExerciseItem onClick={() => onOpen()} /> */}
       </div>
     </div>
   );
@@ -398,6 +408,50 @@ function AddDayItem({ children }: AddItemProps) {
     </div>
   );
 }
+
+type ExerciseItemWithModalProps = {
+  sessionIndex: number
+  exerciseIndex: number
+  Item: JSX.Element
+}
+function ExerciseItemWithModal({
+  sessionIndex,
+  exerciseIndex,
+  Item
+}: ExerciseItemWithModalProps) {
+  const { muscleGroup, onAddExercise } = useMuscleEditorContext();
+  const [isOpen, setIsOpen] = useState(false);
+
+  const onOpen = () => setIsOpen(true);
+  const onClose = () => setIsOpen(false);
+
+  const onSelectExerciseHandler = useCallback((newExercise: JSONExercise) => {
+    if (exerciseIndex < 0) {
+      // CHANGE_EXERCISE action must be created in reducer
+      
+    } else {
+      onAddExercise(newExercise, exerciseIndex)
+    }
+  }, [exerciseIndex, sessionIndex])
+
+  const ItemWithOpenFunction = (ItemComponent: JSX.Element) => {
+    return (props) => <ItemComponent {...props} openSelectModal={onOpen} />
+  }
+  return (
+    <>
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <SelectExercise
+          muscle={muscleGroup}
+          exerciseId=""
+          onSelect={(newExercise) => onSelectExerciseHandler(newExercise)}
+          onClose={onClose}
+        />
+      </Modal>
+      {Item}
+    </>
+  )
+}
+
 function AddExerciseItem({ onClick }: { onClick: () => void }) {
   return (
     <li
@@ -419,8 +473,8 @@ type ExerciseItemProps = {
   index: number;
   exerciseIndex: number;
   dayIndex: number;
-
   totalExercisesInSession: number;
+  openSelectModal: () => void
 };
 
 function ExerciseItem({
@@ -428,8 +482,8 @@ function ExerciseItem({
   index,
   exerciseIndex,
   dayIndex,
-
   totalExercisesInSession,
+  openSelectModal
 }: ExerciseItemProps) {
   const {
     muscleGroup,
@@ -488,21 +542,21 @@ function ExerciseItem({
   //   totalExercisesInSession,
   //   index - 1
   // );
-  const [isOpen, setIsOpen] = useState(false);
+  // const [isOpen, setIsOpen] = useState(false);
 
-  const onOpen = () => setIsOpen(true);
-  const onClose = () => setIsOpen(false);
+  // const onOpen = () => setIsOpen(true);
+  // const onClose = () => setIsOpen(false);
 
   return (
     <li className={`flex text-xxs text-white ${BG_COLOR_M5}`}>
-      <Modal isOpen={isOpen} onClose={onClose}>
+      {/* <Modal isOpen={isOpen} onClose={onClose}>
         <SelectExercise
           muscle={muscleGroup}
           exerciseId=""
           onSelect={(newExercise) => onAddExercise(newExercise, index)}
           onClose={onClose}
         />
-      </Modal>
+      </Modal> */}
 
       <div className={`flex w-3 items-center justify-center`}>
         <button onClick={toggleSetProgression} className={``}>
@@ -511,7 +565,7 @@ function ExerciseItem({
       </div>
 
       <div
-        onClick={onOpen}
+        onClick={openSelectModal}
         className={`flex w-32 cursor-pointer items-center truncate indent-0.5 hover:${BG_COLOR_M4}`}
       >
         {exercise.name}
