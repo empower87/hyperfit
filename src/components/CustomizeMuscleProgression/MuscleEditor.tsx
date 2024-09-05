@@ -1,4 +1,10 @@
-import { HTMLAttributes, ReactNode, useCallback, useMemo, useState } from "react";
+import {
+  HTMLAttributes,
+  ReactNode,
+  useCallback,
+  useMemo,
+  useState,
+} from "react";
 import {
   AddIcon,
   DeleteIcon,
@@ -7,7 +13,6 @@ import {
   SubtractIcon,
 } from "~/assets/icons/_icons";
 import Dropdown from "~/components/Layout/Dropdown";
-import Modal from "~/components/Modals/Modal";
 import {
   BG_COLOR_M4,
   BG_COLOR_M5,
@@ -25,9 +30,9 @@ import { getMuscleData } from "~/utils/getMuscleData";
 import getMuscleTitleForUI from "~/utils/getMuscleTitleForUI";
 
 import { JSONExercise } from "~/hooks/useTrainingProgram/utils/exercises/getExercises";
-import { setProgression_addOnePerMicrocycle_TEST } from "../../hooks/useTrainingProgram/utils/exercises/setProgressionOverMicrocycles";
 import CollapsableHeader from "../Layout/CollapsableHeader";
 import SelectExercise from "../Modals/ChangeExerciseModal/ChangeExerciseModal";
+import Modal from "../Modals/Modal";
 import SideMenu from "./components/SideMenu";
 import {
   MuscleEditorProvider,
@@ -262,31 +267,18 @@ function Exercises() {
 
   return (
     <div className={`flex min-h-[95px] space-x-1 overflow-x-auto`}>
-      {exercisesInView.map((each, index) => {
-        const indices = exerciseIndices.splice(0, each.length);
+      {exercisesInView.map((sessionExercises, sessionIndex) => {
+        const indices = exerciseIndices.splice(0, sessionExercises.length);
         return (
-          <Session key={`${each[0]?.id}_${index}_Session`} index={index}>
-            <SessionItem>
-              {each.map((ex, i) => {
-                return (
-                  <ExerciseItemWithModal
-                    key={`${ex.id}_exerciseItem_${i}`}
-                    sessionIndex={index}
-                    exerciseIndex={i}
-                    Item={
-                      <ExerciseItem
-                        exercise={ex}
-                        index={i}
-                        exerciseIndex={indices[i]}
-                        dayIndex={index}
-                        totalExercisesInSession={each.length}
-                        openSelectModal={() => {}}
-                      />
-                    }
-                  />
-                );
-              })}
-            </SessionItem>
+          <Session
+            key={`${sessionExercises[0]?.id}_${sessionIndex}_Session`}
+            index={sessionIndex}
+          >
+            <SessionItem
+              sessionExercises={sessionExercises}
+              sessionIndex={sessionIndex}
+              exerciseIndices={indices}
+            ></SessionItem>
           </Session>
         );
       })}
@@ -358,14 +350,57 @@ function DotsButton({ onClick, dropdown }: DotsButtonProps) {
 }
 
 type SessionItemProps = {
-  children: ReactNode;
+  // children: ReactNode;
+  sessionExercises: ExerciseType[];
+  sessionIndex: number;
+  exerciseIndices: number[];
 };
-function SessionItem({ children }: SessionItemProps) {
-  const { microcyclesArray} = useMuscleEditorContext();
+function SessionItem({
+  sessionExercises,
+  sessionIndex,
+  exerciseIndices,
+}: SessionItemProps) {
+  const { microcyclesArray, muscleGroup, onAddExercise, onChangeExercise } =
+    useMuscleEditorContext();
+  const [selectExerciseParams, setSelectExerciseParams] = useState<
+    ["CHANGE" | "ADD", string | number] | null
+  >(null);
 
+  const [isOpen, setIsOpen] = useState(false);
+
+  const onExerciseChangeClick = (exerciseId: ExerciseType["id"]) =>
+    setSelectExerciseParams(["CHANGE", exerciseId]);
+  const onAddExerciseClick = (sessionIndex: number) =>
+    setSelectExerciseParams(["ADD", sessionIndex]);
+
+  const onSelectExerciseHandler = useCallback(
+    (newExercise: JSONExercise) => {
+      if (!selectExerciseParams) return;
+      if (selectExerciseParams[0] === "CHANGE") {
+        if (typeof selectExerciseParams[1] === "number") return;
+        onChangeExercise(selectExerciseParams[1], newExercise);
+      } else {
+        if (typeof selectExerciseParams[1] === "string") return;
+        onAddExercise(newExercise, selectExerciseParams[1]);
+      }
+    },
+    [selectExerciseParams]
+  );
+
+  const onCloseModal = () => setSelectExerciseParams(null);
   return (
     <div className={`flex flex-col rounded ${BG_COLOR_M6}`}>
-
+      <Modal
+        isOpen={selectExerciseParams ? true : false}
+        onClose={onCloseModal}
+      >
+        <SelectExercise
+          muscle={muscleGroup}
+          exerciseId=""
+          onSelect={(newExercise) => onSelectExerciseHandler(newExercise)}
+          onClose={onCloseModal}
+        />
+      </Modal>
       <div
         className={`flex justify-between text-xxs text-slate-300 ${BG_COLOR_M7}`}
       >
@@ -387,10 +422,21 @@ function SessionItem({ children }: SessionItemProps) {
         </div>
       </div>
 
-
       <div className={`flex flex-col space-y-1 p-1`}>
-        {children}
-        {/* <AddExerciseItem onClick={() => onOpen()} /> */}
+        {sessionExercises.map((exercise, exerciseIndex) => {
+          return (
+            <ExerciseItem
+              exercise={exercise}
+              index={exerciseIndex}
+              exerciseIndex={exerciseIndices[exerciseIndex]}
+              dayIndex={sessionIndex}
+              totalExercisesInSession={sessionExercises.length}
+              openSelectModal={() => onExerciseChangeClick(exercise.id)}
+            />
+          );
+        })}
+
+        <AddExerciseItem onClick={() => onAddExerciseClick(sessionIndex)} />
       </div>
     </div>
   );
@@ -407,49 +453,6 @@ function AddDayItem({ children }: AddItemProps) {
       {children}
     </div>
   );
-}
-
-type ExerciseItemWithModalProps = {
-  sessionIndex: number
-  exerciseIndex: number
-  Item: JSX.Element
-}
-function ExerciseItemWithModal({
-  sessionIndex,
-  exerciseIndex,
-  Item
-}: ExerciseItemWithModalProps) {
-  const { muscleGroup, onAddExercise } = useMuscleEditorContext();
-  const [isOpen, setIsOpen] = useState(false);
-
-  const onOpen = () => setIsOpen(true);
-  const onClose = () => setIsOpen(false);
-
-  const onSelectExerciseHandler = useCallback((newExercise: JSONExercise) => {
-    if (exerciseIndex < 0) {
-      // CHANGE_EXERCISE action must be created in reducer
-      
-    } else {
-      onAddExercise(newExercise, exerciseIndex)
-    }
-  }, [exerciseIndex, sessionIndex])
-
-  const ItemWithOpenFunction = (ItemComponent: JSX.Element) => {
-    return (props) => <ItemComponent {...props} openSelectModal={onOpen} />
-  }
-  return (
-    <>
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <SelectExercise
-          muscle={muscleGroup}
-          exerciseId=""
-          onSelect={(newExercise) => onSelectExerciseHandler(newExercise)}
-          onClose={onClose}
-        />
-      </Modal>
-      {Item}
-    </>
-  )
 }
 
 function AddExerciseItem({ onClick }: { onClick: () => void }) {
@@ -474,7 +477,7 @@ type ExerciseItemProps = {
   exerciseIndex: number;
   dayIndex: number;
   totalExercisesInSession: number;
-  openSelectModal: () => void
+  openSelectModal: () => void;
 };
 
 function ExerciseItem({
@@ -483,70 +486,14 @@ function ExerciseItem({
   exerciseIndex,
   dayIndex,
   totalExercisesInSession,
-  openSelectModal
+  openSelectModal,
 }: ExerciseItemProps) {
-  const {
-    muscleGroup,
-    selectedMesocycleIndex,
-    onAddExercise,
-    onRemoveExercise,
-    toggleSetProgression,
-  } = useMuscleEditorContext();
-  const { training_program_params } = useTrainingProgramContext();
-  const { microcycles } = training_program_params;
+  const { getSetsByExerciseId, onRemoveExercise, toggleSetProgression } =
+    useMuscleEditorContext();
 
-  const setProgressionMatrix = muscleGroup.frequency.setProgressionMatrix;
-  const setProgressionLengths = Array.from(
-    setProgressionMatrix,
-    (e, i) => e.length
-  );
-  const frequency = muscleGroup.frequency.progression[selectedMesocycleIndex];
-  const setProgressionIndex = setProgressionLengths.indexOf(frequency);
-  const setProgressionX = setProgressionMatrix[setProgressionIndex] ?? 0;
-  const setProgressionY = setProgressionX[dayIndex - 1] ?? 0;
-  const selectedExerciseSet = setProgressionY[index];
-  const testExercise = muscleGroup.exercises
-    .flat()
-    .filter((ex) => ex.id === exercise.id)[0];
-  const initialSets =
-    testExercise.initialSets && testExercise.initialSets[frequency]
-      ? testExercise.initialSets[frequency]
-      : selectedExerciseSet;
+  const sets = getSetsByExerciseId(exercise.id);
 
-  const sets = setProgression_addOnePerMicrocycle_TEST(
-    microcycles,
-    totalExercisesInSession,
-    index,
-    initialSets
-  );
-  // const [sets, setSets] = useState<number[]>([]);
-
-  // useEffect(() => {
-
-  //   console.log(initialSets, sets, exercise, "HERE SEEMS TO BE THE PROBLEM");
-  //   setSets(sets);
-  // }, [
-  //   microcycles,
-  //   totalExercisesInSession,
-  //   index,
-  //   exercise,
-  //   selectedExerciseSet,
-  //   frequency,
-  // ]);
-
-  // const sets = getSetProgressionForExercise(
-  //   exercise.setProgressionSchema[selectedMesocycleIndex],
-  //   selectedMesocycleIndex,
-  //   exercise,
-  //   microcycles,
-  //   totalExercisesInSession,
-  //   index - 1
-  // );
-  // const [isOpen, setIsOpen] = useState(false);
-
-  // const onOpen = () => setIsOpen(true);
-  // const onClose = () => setIsOpen(false);
-
+  console.log(exercise.name, sets, "WHY IS FIRST INDEX UNDEFINED???");
   return (
     <li className={`flex text-xxs text-white ${BG_COLOR_M5}`}>
       {/* <Modal isOpen={isOpen} onClose={onClose}>

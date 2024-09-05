@@ -16,6 +16,7 @@ import {
   decrementTargetFrequency,
   incrementTargetFrequency,
 } from "~/hooks/useTrainingProgram/utils/prioritized_muscle_list/maximumFrequencyHandlers";
+import { getUID } from "~/utils/generateUID";
 import {
   updateExercisesOnTrainingDayRemoval,
   updateFrequencyProgressionOnTrainingDayRemoval,
@@ -74,6 +75,13 @@ type RemoveExerciseType = {
     id: ExerciseType["id"];
   };
 };
+type ChangeExerciseType = {
+  type: "CHANGE_EXERCISE";
+  payload: {
+    old_exerciseId: ExerciseType["id"];
+    new_exercise: JSONExercise;
+  };
+};
 type InitializeStateType = {
   type: "INITIALIZE_STATE";
   payload: {
@@ -85,6 +93,7 @@ type Action =
   | RemoveTrainingDayType
   | AddExerciseType
   | RemoveExerciseType
+  | ChangeExerciseType
   | IncrementSelectedExerciseSetsType
   | DecrementSelectedExerciseSetsType
   | InitializeStateType
@@ -166,6 +175,7 @@ export function muscleEditorReducer(state: MusclePriorityType, action: Action) {
     case "ADD_EXERCISE":
       const raw_exercise = action.payload.exercise;
       const sessionIndex = action.payload.session_index;
+      const cloned_exercises = structuredClone(exercises);
 
       const data = addNewExerciseSetsToSetProgressionMatrix(
         frequency_progression,
@@ -177,11 +187,18 @@ export function muscleEditorReducer(state: MusclePriorityType, action: Action) {
         volume_landmark,
         data.initialSetsPerMeso
       );
+      // TODO: update setProgressionMatrix on exercise addition in a better less coupled way
+      const cloned_matrix = structuredClone(setProgressionMatrix);
+      cloned_matrix[cloned_matrix.length - 1][sessionIndex].push(2);
 
-      exercises[sessionIndex]?.push(new_exercise);
+      cloned_exercises[sessionIndex]?.push(new_exercise);
       return {
         ...state,
-        exercises: exercises,
+        exercises: cloned_exercises,
+        frequency: {
+          ...state.frequency,
+          setProgressionMatrix: cloned_matrix,
+        },
       };
     case "REMOVE_EXERCISE":
       const remove_exerciseId = action.payload.id;
@@ -216,6 +233,27 @@ export function muscleEditorReducer(state: MusclePriorityType, action: Action) {
           progression: frequency_progression,
         },
       };
+    case "CHANGE_EXERCISE":
+      const old_exerciseId = action.payload.old_exerciseId;
+      const new_exercise_raw = action.payload.new_exercise;
+
+      const changed_exercises = exercises.map((sessionExercises) => {
+        return sessionExercises.map((exercise) => {
+          const uid = getUID();
+          if (exercise.id === old_exerciseId) {
+            return {
+              ...exercise,
+              id: `${exercise.id}_${uid}`,
+              name: new_exercise_raw.name,
+            };
+          } else return exercise;
+        });
+      });
+
+      return {
+        ...state,
+        exercises: changed_exercises,
+      };
     case "INCREMENT_SELECTED_EXERCISE_SETS":
       const increment_mesocycle_index = action.payload.selected_mesocycle_index;
       const increment_exerciseId = action.payload.exerciseId;
@@ -241,7 +279,7 @@ export function muscleEditorReducer(state: MusclePriorityType, action: Action) {
           inc_exercise_index
         ];
       const incremented_sets = increment_exercise_sets + 1;
-      const incremented_exercise = exercises
+      const incremented_exercise = structuredClone(exercises)
         .flat()
         .find((e) => e.id === increment_exerciseId);
       if (!incremented_exercise) return state;
@@ -250,13 +288,27 @@ export function muscleEditorReducer(state: MusclePriorityType, action: Action) {
         [increment_selected_frequency]: incremented_sets,
       };
 
-      incremented_exercise.initialSets = incremented_exercise.initialSets
-        ? {
-            ...incremented_exercise.initialSets,
-            [increment_selected_frequency]:
-              key_value_incremented[increment_selected_frequency],
-          }
-        : key_value_incremented;
+      if (
+        incremented_exercise.initialSets &&
+        incremented_exercise.initialSets[increment_selected_frequency]
+      ) {
+        incremented_exercise.initialSets[increment_selected_frequency] =
+          incremented_exercise.initialSets[increment_selected_frequency] + 1;
+        console.log(
+          incremented_exercise,
+          key_value_incremented,
+          increment_selected_frequency,
+          "IM EXIST INCREMENT"
+        );
+      } else {
+        incremented_exercise.initialSets = key_value_incremented;
+        console.log(
+          incremented_exercise,
+          key_value_incremented,
+          increment_selected_frequency,
+          "IM NO EXIST INCREMENT"
+        );
+      }
 
       const exercisesAfterIncrementedSets = exercises.map((day) => {
         return day.map((e) => {
@@ -296,7 +348,7 @@ export function muscleEditorReducer(state: MusclePriorityType, action: Action) {
         ];
 
       const decremented_matrix_sets = decrement_matrix_sets - 1;
-      const decremented_exercise = exercises
+      const decremented_exercise = structuredClone(exercises)
         .flat()
         .find((e) => e.id === decrement_exerciseId);
 
@@ -316,10 +368,20 @@ export function muscleEditorReducer(state: MusclePriorityType, action: Action) {
       ) {
         decremented_exercise.initialSets[decrement_selected_frequency] =
           decremented_exercise.initialSets[decrement_selected_frequency] - 1;
-        console.log(decremented_exercise, key_value_decremented, "IM EXIST");
+        console.log(
+          decremented_exercise,
+          key_value_decremented,
+          decrement_selected_frequency,
+          "IM EXIST DECREMENT"
+        );
       } else {
         decremented_exercise.initialSets = key_value_decremented;
-        console.log(decremented_exercise, key_value_decremented, "IM NO EXIST");
+        console.log(
+          decremented_exercise,
+          key_value_decremented,
+          decrement_selected_frequency,
+          "IM NO EXIST DECREMENT"
+        );
       }
 
       const exercisesAfterDecrementedSets = exercises.map((day) => {

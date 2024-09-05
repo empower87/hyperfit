@@ -11,6 +11,19 @@ export default function Modal({ isOpen, onClose, children }: ModalProps) {
 
   const modalRef = useRef<HTMLDialogElement | null>(null);
 
+  const onBackdropClick = (e: React.MouseEvent<HTMLDialogElement>) => {
+    if (e.target === e.currentTarget) {
+      console.log(e.target, e.currentTarget, "WHAT ARE THESE CLISCK");
+      closeModal();
+    }
+  };
+
+  const closeModal = () => {
+    document.body.style.overflow = "auto";
+    setIsModalOpen(false);
+    onClose();
+  };
+
   useEffect(() => {
     setIsModalOpen(isOpen);
   }, [isOpen]);
@@ -20,24 +33,20 @@ export default function Modal({ isOpen, onClose, children }: ModalProps) {
     if (modalElement) {
       if (isModalOpen) {
         modalElement.showModal();
+        document.body.style.overflow = "hidden";
       } else {
         modalElement.close();
       }
     }
-  }, [isModalOpen, modalRef.current]);
 
-  const handleOnClose = (e: React.MouseEvent<HTMLDialogElement>) => {
-    if (e.target === e.currentTarget) {
-      setIsModalOpen(false);
-      onClose();
-    }
-  };
+    modalRef.current?.addEventListener("close", closeModal);
+  }, [isModalOpen, modalRef.current]);
 
   return (
     <dialog
       ref={modalRef}
-      className={`m-auto justify-center bg-inherit p-0`}
-      onClick={(e) => handleOnClose(e)}
+      className={`m-auto justify-center bg-inherit p-0 backdrop:bg-black/40`}
+      onClick={(e) => onBackdropClick(e)}
     >
       {children}
     </dialog>

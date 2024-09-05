@@ -5,6 +5,7 @@ import {
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
 import { JSONExercise } from "~/hooks/useTrainingProgram/utils/exercises/getExercises";
+import { setProgression_addOnePerMicrocycle_TEST } from "~/hooks/useTrainingProgram/utils/exercises/setProgressionOverMicrocycles";
 import { calculateTotalSetsOverMesocycles } from "../utils/calculateTotalSetsPerMesocycle";
 import { muscleEditorReducer } from "../utils/muscleEditorReducer";
 
@@ -70,17 +71,76 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
         payload: { exercise, session_index },
       });
     },
-    [muscleGroup]
+    []
   );
 
-  const onRemoveExercise = useCallback(
-    (id: ExerciseType["id"]) => {
+  const onRemoveExercise = useCallback((id: ExerciseType["id"]) => {
+    dispatch({
+      type: "REMOVE_EXERCISE",
+      payload: { id },
+    });
+  }, []);
+
+  const onChangeExercise = useCallback(
+    (old_exerciseId: ExerciseType["id"], new_exercise: JSONExercise) => {
       dispatch({
-        type: "REMOVE_EXERCISE",
-        payload: { id },
+        type: "CHANGE_EXERCISE",
+        payload: { old_exerciseId, new_exercise },
       });
     },
-    [muscleGroup]
+    []
+  );
+
+  const getSetsByExerciseId = useCallback(
+    (exerciseId: ExerciseType["id"]) => {
+      const setProgressionMatrix = muscleGroup.frequency.setProgressionMatrix;
+      const setProgressionLengths = Array.from(
+        setProgressionMatrix,
+        (e, i) => e.length
+      );
+      const frequency =
+        muscleGroup.frequency.progression[selectedMesocycleIndex];
+      const setProgressionIndex = setProgressionLengths.indexOf(frequency);
+
+      let dayIndex = 0;
+      let exerciseIndex = 0;
+      let totalExercisesInSession = 0;
+      let foundExercise: ExerciseType | null = null;
+
+      for (let i = 0; i < muscleGroup.exercises.length; i++) {
+        const sessionExercises = muscleGroup.exercises[i];
+        for (let j = 0; j < sessionExercises.length; j++) {
+          const exercise = sessionExercises[j];
+          if (exercise.id === exerciseId) {
+            dayIndex = i;
+            exerciseIndex = j;
+            totalExercisesInSession = sessionExercises.length;
+            foundExercise = exercise;
+            continue;
+          }
+        }
+      }
+
+      const setsByMatrix =
+        setProgressionMatrix[setProgressionIndex][dayIndex][exerciseIndex];
+
+      const initialSets =
+        foundExercise &&
+        foundExercise.initialSets &&
+        foundExercise.initialSets[frequency]
+          ? foundExercise.initialSets[frequency]
+          : setsByMatrix;
+
+      const sets = setProgression_addOnePerMicrocycle_TEST(
+        microcycles,
+        totalExercisesInSession,
+        exerciseIndex,
+        initialSets
+      );
+      console.log(foundExercise, sets, initialSets, "GOT SETS");
+      return sets;
+    },
+    [muscleGroup, selectedMesocycleIndex]
   );
 
   const onSelectedExerciseSetIncrement = useCallback(
@@ -188,6 +248,8 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
     onRemoveTrainingDay,
     onAddExercise,
     onRemoveExercise,
+    onChangeExercise,
+    getSetsByExerciseId,
     onSelectedExerciseSetIncrement,
     onSelectedExerciseSetDecrement,
     onSelectedFrequencyProgressionIncrement,
