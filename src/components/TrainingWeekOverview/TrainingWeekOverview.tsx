@@ -366,7 +366,7 @@ function DaySessionItem({
 
   const BORDER_COLOR = exercise.supersetWith ? "border-white" : BORDER_COLOR_M7;
   return (
-    <li className={cn(`mb-0.5 flex text-white `)}>
+    <li className={cn(`relative mb-0.5 flex text-white`)}>
       <ItemCell
         className={cn(
           `${BORDER_COLOR} ${ITEM_CELL_WIDTHS.index} justify-center`
@@ -422,10 +422,10 @@ function DaySessionItem({
           </ItemCell>
         </div>
 
-        <ItemCell className={`${bgColor} ${ITEM_CELL_WIDTHS.actions} relative`}>
+        <ItemCell className={`${bgColor} ${ITEM_CELL_WIDTHS.actions}`}>
           <DropdownButton onDropdownClick={onDropdownClick} />
           {isOpen ? (
-            <Dropdown onClose={onDropdownClose}>
+            <Dropdown className={`-bottom-3`} onClose={onDropdownClose}>
               <Dropdown.Item onClick={onModalOpen}>
                 Create Superset
               </Dropdown.Item>

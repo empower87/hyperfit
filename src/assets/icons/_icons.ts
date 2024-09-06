@@ -12,6 +12,7 @@ import plusIcon, { default as PlusIcon } from "./plus-svg.svg";
 import searchIcon from "./search-svg.svg";
 import { default as SubtractIcon } from "./subtract-svg.svg";
 import { default as DeleteIcon } from "./trashCan-svg.svg";
+import { default as CloseIcon } from "./x-svg.svg";
 
 export {
   AddIcon,
@@ -19,14 +20,15 @@ export {
   ArrowLeftIcon,
   ArrowRightIcon,
   ArrowUpIcon,
+  CloseIcon,
   DeleteIcon,
   DotsIcon,
   DragHandleIcon,
   FilterIcon,
-  PlusIcon,
-  SearchIcon,
-  SubtractIcon,
   filterIcon,
+  PlusIcon,
   plusIcon,
+  SearchIcon,
   searchIcon,
+  SubtractIcon,
 };

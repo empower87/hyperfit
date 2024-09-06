@@ -1,26 +1,11 @@
-import {
-  HTMLAttributes,
-  ReactNode,
-  useCallback,
-  useMemo,
-  useState,
-} from "react";
-import {
-  AddIcon,
-  DeleteIcon,
-  DotsIcon,
-  PlusIcon,
-  SubtractIcon,
-} from "~/assets/icons/_icons";
+import { ReactNode, useCallback, useMemo, useState } from "react";
+import { AddIcon, PlusIcon, SubtractIcon } from "~/assets/icons/_icons";
 import Dropdown from "~/components/Layout/Dropdown";
 import {
-  BG_COLOR_M4,
-  BG_COLOR_M5,
   BG_COLOR_M6,
   BG_COLOR_M7,
   BG_COLOR_M8,
   BORDER_COLOR_M4,
-  BORDER_COLOR_M6,
 } from "~/constants/themes";
 import { ExerciseType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
@@ -33,6 +18,9 @@ import { JSONExercise } from "~/hooks/useTrainingProgram/utils/exercises/getExer
 import CollapsableHeader from "../Layout/CollapsableHeader";
 import SelectExercise from "../Modals/ChangeExerciseModal/ChangeExerciseModal";
 import Modal from "../Modals/Modal";
+import Counter, { Button } from "./components/Counter";
+import DotMenu from "./components/DotMenu";
+import { ExerciseItem } from "./components/ExerciseItem";
 import SideMenu from "./components/SideMenu";
 import {
   MuscleEditorProvider,
@@ -172,7 +160,24 @@ function Muscle({ rank }: MuscleProps) {
                           key={`${each}_ToggleMesocycleFrequency_${index}`}
                           selectedValue={isSelected}
                         >
-                          <Button
+                          <Counter>
+                            <Counter.Button
+                              onClick={() =>
+                                onSelectedFrequencyProgressionDecrement(index)
+                              }
+                            >
+                              <SubtractIcon fill="white" />
+                            </Counter.Button>
+                            <Counter.Value value={each} />
+                            <Counter.Button
+                              onClick={() =>
+                                onSelectedFrequencyProgressionIncrement(index)
+                              }
+                            >
+                              <AddIcon fill="white" />
+                            </Counter.Button>
+                          </Counter>
+                          {/* <Button
                             className={`${BG_COLOR_M7}`}
                             onClick={() =>
                               onSelectedFrequencyProgressionDecrement(index)
@@ -188,7 +193,7 @@ function Muscle({ rank }: MuscleProps) {
                             }
                           >
                             <AddIcon fill="white" />
-                          </Button>
+                          </Button> */}
                         </SideMenu.Cell>
                       );
                     })}
@@ -232,21 +237,11 @@ function Muscle({ rank }: MuscleProps) {
 
 function Exercises() {
   const {
-    muscleGroup,
     frequencyProgression,
     exercisesInView,
     selectedMesocycleIndex,
-    onAddExercise,
     onAddTrainingDay,
-    onRemoveTrainingDay,
   } = useMuscleEditorContext();
-  const [isOpen, setIsOpen] = useState(false);
-  const [isSelectExerciseModalOpen, setIsSelectExerciseModalOpen] =
-    useState(false);
-  const onSelectExerciseModalClose = () => setIsSelectExerciseModalOpen(false);
-  const onSelectExerciseModalOpen = () => setIsSelectExerciseModalOpen(true);
-  const onDropdownClose = () => setIsOpen(false);
-  const onDropdownOpen = () => setIsOpen(true);
 
   const canAddSessionAtMesocycle =
     !frequencyProgression[selectedMesocycleIndex + 1] ||
@@ -278,10 +273,11 @@ function Exercises() {
               sessionExercises={sessionExercises}
               sessionIndex={sessionIndex}
               exerciseIndices={indices}
-            ></SessionItem>
+            />
           </Session>
         );
       })}
+
       {addButtonDivs.map((e, i) => {
         return (
           <AddDayItem key={`${i}_AddButtonDivs`}>
@@ -312,12 +308,24 @@ function Session({ index, children }: SessionProps) {
 
   return (
     <div className={`flex flex-col rounded-md ${BG_COLOR_M6} mb-2`}>
-      <div className={`flex justify-between p-1`}>
+      <div className={`relative flex justify-between p-1`}>
         <div className={`indent-1 text-xs font-bold text-white`}>
           Day {index + 1}
         </div>
 
-        <DotsButton
+        <DotMenu>
+          <DotMenu.Button onClick={onDropdownOpen} />
+          <DotMenu.Dropdown isOpen={isDropdownOpen}>
+            <Dropdown onClose={onDropdownClose}>
+              <Dropdown.Header title="Actions" onClose={onDropdownClose} />
+              <Dropdown.Item onClick={() => onRemoveTrainingDay(index)}>
+                Delete Session
+              </Dropdown.Item>
+            </Dropdown>
+          </DotMenu.Dropdown>
+        </DotMenu>
+
+        {/* <DotsButton
           onClick={onDropdownOpen}
           dropdown={
             isDropdownOpen ? (
@@ -328,7 +336,7 @@ function Session({ index, children }: SessionProps) {
               </Dropdown>
             ) : null
           }
-        />
+        /> */}
       </div>
 
       <ul className={`space-y-1 p-1 `}>{children}</ul>
@@ -336,21 +344,7 @@ function Session({ index, children }: SessionProps) {
   );
 }
 
-type DotsButtonProps = {
-  onClick: () => void;
-  dropdown: ReactNode;
-};
-function DotsButton({ onClick, dropdown }: DotsButtonProps) {
-  return (
-    <button className={`relative w-3`} onClick={onClick}>
-      <DotsIcon fill="#1E293B" />
-      {dropdown}
-    </button>
-  );
-}
-
 type SessionItemProps = {
-  // children: ReactNode;
   sessionExercises: ExerciseType[];
   sessionIndex: number;
   exerciseIndices: number[];
@@ -365,8 +359,6 @@ function SessionItem({
   const [selectExerciseParams, setSelectExerciseParams] = useState<
     ["CHANGE" | "ADD", string | number] | null
   >(null);
-
-  const [isOpen, setIsOpen] = useState(false);
 
   const onExerciseChangeClick = (exerciseId: ExerciseType["id"]) =>
     setSelectExerciseParams(["CHANGE", exerciseId]);
@@ -401,6 +393,7 @@ function SessionItem({
           onClose={onCloseModal}
         />
       </Modal>
+
       <div
         className={`flex justify-between text-xxs text-slate-300 ${BG_COLOR_M7}`}
       >
@@ -427,15 +420,11 @@ function SessionItem({
           return (
             <ExerciseItem
               exercise={exercise}
-              index={exerciseIndex}
               exerciseIndex={exerciseIndices[exerciseIndex]}
-              dayIndex={sessionIndex}
-              totalExercisesInSession={sessionExercises.length}
               openSelectModal={() => onExerciseChangeClick(exercise.id)}
             />
           );
         })}
-
         <AddExerciseItem onClick={() => onAddExerciseClick(sessionIndex)} />
       </div>
     </div>
@@ -468,139 +457,5 @@ function AddExerciseItem({ onClick }: { onClick: () => void }) {
       </div>
       Add Exercise
     </li>
-  );
-}
-
-type ExerciseItemProps = {
-  exercise: ExerciseType;
-  index: number;
-  exerciseIndex: number;
-  dayIndex: number;
-  totalExercisesInSession: number;
-  openSelectModal: () => void;
-};
-
-function ExerciseItem({
-  exercise,
-  index,
-  exerciseIndex,
-  dayIndex,
-  totalExercisesInSession,
-  openSelectModal,
-}: ExerciseItemProps) {
-  const { getSetsByExerciseId, onRemoveExercise, toggleSetProgression } =
-    useMuscleEditorContext();
-
-  const sets = getSetsByExerciseId(exercise.id);
-
-  console.log(exercise.name, sets, "WHY IS FIRST INDEX UNDEFINED???");
-  return (
-    <li className={`flex text-xxs text-white ${BG_COLOR_M5}`}>
-      {/* <Modal isOpen={isOpen} onClose={onClose}>
-        <SelectExercise
-          muscle={muscleGroup}
-          exerciseId=""
-          onSelect={(newExercise) => onAddExercise(newExercise, index)}
-          onClose={onClose}
-        />
-      </Modal> */}
-
-      <div className={`flex w-3 items-center justify-center`}>
-        <button onClick={toggleSetProgression} className={``}>
-          {exerciseIndex}
-        </button>
-      </div>
-
-      <div
-        onClick={openSelectModal}
-        className={`flex w-32 cursor-pointer items-center truncate indent-0.5 hover:${BG_COLOR_M4}`}
-      >
-        {exercise.name}
-      </div>
-
-      <div className={`flex`}>
-        {sets.map((set, index) => {
-          return (
-            <Sets
-              key={`${exercise.id}_${index}_${set}`}
-              index={index}
-              set={set}
-              exerciseId={exercise.id}
-            />
-          );
-        })}
-        <div
-          onClick={() => onRemoveExercise(exercise.id)}
-          className={`flex w-3 cursor-pointer items-center justify-center border bg-red-400 ${BORDER_COLOR_M6} hover:bg-rose-500`}
-        >
-          <DeleteIcon fill="white" />
-        </div>
-      </div>
-    </li>
-  );
-}
-
-type SetsProps = {
-  index: number;
-  set: number;
-  exerciseId: ExerciseType["id"];
-};
-function Sets({ index, set, exerciseId }: SetsProps) {
-  const { onSelectedExerciseSetIncrement, onSelectedExerciseSetDecrement } =
-    useMuscleEditorContext();
-  if (index === 0) {
-    return (
-      <WeekOneSets>
-        <WeekOneSets.Button
-          onClick={() => onSelectedExerciseSetDecrement(exerciseId)}
-        >
-          <SubtractIcon fill="white" />
-        </WeekOneSets.Button>
-        <div
-          className={`flex w-3 items-center justify-center px-1 text-xxs text-white`}
-        >
-          {set}
-        </div>
-        <WeekOneSets.Button
-          onClick={() => onSelectedExerciseSetIncrement(exerciseId)}
-        >
-          <AddIcon fill="white" />
-        </WeekOneSets.Button>
-      </WeekOneSets>
-    );
-  }
-  return (
-    <div
-      className={`flex w-3 justify-center border-r-2 p-0.5 ${BORDER_COLOR_M6}`}
-    >
-      {set}
-    </div>
-  );
-}
-
-interface ButtonProps extends HTMLAttributes<HTMLButtonElement> {
-  children: ReactNode;
-}
-function Button({ children, className, ...props }: ButtonProps) {
-  return (
-    <button
-      {...props}
-      className={cn(
-        `flex w-[11px] border ${BORDER_COLOR_M4} ${BG_COLOR_M6} h-[11px] items-center justify-center p-[2px] text-xxs text-white hover:${BG_COLOR_M5}`,
-        className
-      )}
-    >
-      {children}
-    </button>
-  );
-}
-WeekOneSets.Button = Button;
-function WeekOneSets({ children }: { children: ReactNode }) {
-  return (
-    <div
-      className={`flex w-11 items-center justify-center border-x-2 px-1 ${BORDER_COLOR_M6}`}
-    >
-      {children}
-    </div>
   );
 }
