@@ -1,21 +1,15 @@
 import { ReactNode, useCallback, useMemo, useState } from "react";
 import { AddIcon, PlusIcon, SubtractIcon } from "~/assets/icons/_icons";
 import Dropdown from "~/components/Layout/Dropdown";
-import {
-  BG_COLOR_M6,
-  BG_COLOR_M7,
-  BG_COLOR_M8,
-  BORDER_COLOR_M4,
-} from "~/constants/themes";
+
 import { ExerciseType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
 import { cn } from "~/lib/clsx";
 import { getRankColor } from "~/utils/getIndicatorColors";
 import { getMuscleData } from "~/utils/getMuscleData";
 import getMuscleTitleForUI from "~/utils/getMuscleTitleForUI";
-
 import { JSONExercise } from "~/hooks/useTrainingProgram/utils/exercises/getExercises";
-import CollapsableHeader from "../Layout/CollapsableHeader";
+import CollapsibleHeader from "../Layout/CollapsibleHeader";
 import SelectExercise from "../Modals/ChangeExerciseModal/ChangeExerciseModal";
 import Modal from "../Modals/Modal";
 import Counter, { Button } from "./components/Counter";
@@ -88,30 +82,30 @@ function Muscle({ rank }: MuscleProps) {
   if (isCollapsed) {
     return (
       <li id={muscleGroup.muscle}>
-        <CollapsableHeader className={`${bgColor.bg} rounded`}>
-          <CollapsableHeader.Title label={`${rank} ${title}`} />
+        <CollapsibleHeader className={`${bgColor.bg} rounded`}>
+          <CollapsibleHeader.Title label={`${rank} ${title}`} />
 
-          <CollapsableHeader.Button
+          <CollapsibleHeader.Button
             isCollapsed={isCollapsed}
             onCollapse={onExpandHandler}
           />
-        </CollapsableHeader>
+        </CollapsibleHeader>
       </li>
     );
   }
   return (
     <li
       id={muscleGroup.muscle}
-      className={`flex flex-col ${BG_COLOR_M7} scroll-smooth rounded`}
+      className={`flex flex-col bg-primary-700 scroll-smooth rounded`}
     >
-      <CollapsableHeader className={`${bgColor.bg}`}>
-        <CollapsableHeader.Title label={`${rank} ${title}`} />
+      <CollapsibleHeader className={`${bgColor.bg}`}>
+        <CollapsibleHeader.Title label={`${rank} ${title}`} />
 
-        <CollapsableHeader.Button
+        <CollapsibleHeader.Button
           isCollapsed={isCollapsed}
           onCollapse={onCollapseHandler}
         />
-      </CollapsableHeader>
+      </CollapsibleHeader>
 
       <div className={`flex`}>
         <SideMenu
@@ -177,23 +171,7 @@ function Muscle({ rank }: MuscleProps) {
                               <AddIcon fill="white" />
                             </Counter.Button>
                           </Counter>
-                          {/* <Button
-                            className={`${BG_COLOR_M7}`}
-                            onClick={() =>
-                              onSelectedFrequencyProgressionDecrement(index)
-                            }
-                          >
-                            <SubtractIcon fill="white" />
-                          </Button>
-                          <div className={`px-1`}>{each}</div>
-                          <Button
-                            className={`${BG_COLOR_M7}`}
-                            onClick={() =>
-                              onSelectedFrequencyProgressionIncrement(index)
-                            }
-                          >
-                            <AddIcon fill="white" />
-                          </Button> */}
+       
                         </SideMenu.Cell>
                       );
                     })}
@@ -284,7 +262,7 @@ function Exercises() {
             {i === 0 && canAddSessionAtMesocycle ? (
               <button
                 onClick={onAddTrainingDay}
-                className={`flex items-center justify-center p-1 hover:${BG_COLOR_M7}`}
+                className={`flex items-center justify-center p-1 hover:bg-primary-700`}
               >
                 <PlusIcon fill="white" />
               </button>
@@ -307,12 +285,12 @@ function Session({ index, children }: SessionProps) {
   const onDropdownOpen = () => setIsDropownOpen(true);
 
   return (
-    <div className={`flex flex-col rounded-md ${BG_COLOR_M6} mb-2`}>
+    <div className={`flex flex-col rounded-md bg-primary-600 mb-2`}>
       <div className={`relative flex justify-between p-1`}>
         <div className={`indent-1 text-xs font-bold text-white`}>
           Day {index + 1}
         </div>
-
+        
         <DotMenu>
           <DotMenu.Button onClick={onDropdownOpen} />
           <DotMenu.Dropdown isOpen={isDropdownOpen}>
@@ -324,19 +302,6 @@ function Session({ index, children }: SessionProps) {
             </Dropdown>
           </DotMenu.Dropdown>
         </DotMenu>
-
-        {/* <DotsButton
-          onClick={onDropdownOpen}
-          dropdown={
-            isDropdownOpen ? (
-              <Dropdown onClose={onDropdownClose} className={`-bottom-6`}>
-                <Dropdown.Item onClick={() => onRemoveTrainingDay(index)}>
-                  Delete Session
-                </Dropdown.Item>
-              </Dropdown>
-            ) : null
-          }
-        /> */}
       </div>
 
       <ul className={`space-y-1 p-1 `}>{children}</ul>
@@ -381,7 +346,7 @@ function SessionItem({
 
   const onCloseModal = () => setSelectExerciseParams(null);
   return (
-    <div className={`flex flex-col rounded ${BG_COLOR_M6}`}>
+    <div className={`flex flex-col rounded bg-primary-600`}>
       <Modal
         isOpen={selectExerciseParams ? true : false}
         onClose={onCloseModal}
@@ -395,7 +360,7 @@ function SessionItem({
       </Modal>
 
       <div
-        className={`flex justify-between text-xxs text-slate-300 ${BG_COLOR_M7}`}
+        className={`flex justify-between text-xxs text-slate-300 bg-primary-700`}
       >
         <div className={`pl-2`}>Exercise</div>
         <div className={`flex pr-4`}>
@@ -437,7 +402,7 @@ type AddItemProps = {
 function AddDayItem({ children }: AddItemProps) {
   return (
     <div
-      className={`mb-2 flex w-56 items-center justify-center rounded-md p-2 ${BG_COLOR_M8} opacity-[40%]`}
+      className={`mb-2 flex w-56 items-center justify-center rounded-md p-2 bg-primary-800 opacity-[40%]`}
     >
       {children}
     </div>
@@ -448,7 +413,7 @@ function AddExerciseItem({ onClick }: { onClick: () => void }) {
   return (
     <li
       onClick={onClick}
-      className={`flex cursor-pointer p-0.5 text-xxs ${BG_COLOR_M6} ${BORDER_COLOR_M4} border indent-1 text-slate-300`}
+      className={`flex cursor-pointer p-0.5 text-xxs bg-primary-600 border-primary-400 border indent-1 text-slate-300`}
     >
       <div className={`ml-0.5 flex items-center justify-center`}>
         <Button onClick={onClick}>

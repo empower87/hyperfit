@@ -1,5 +1,4 @@
 import { DeleteIcon } from "~/assets/icons/_icons";
-import { BG_COLOR_M4, BG_COLOR_M5, BORDER_COLOR_M6 } from "~/constants/themes";
 import { ExerciseType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { useMuscleEditorContext } from "../context/MuscleEditorContext";
 import ExerciseSets from "./SetItem";
@@ -22,7 +21,7 @@ export function ExerciseItem({
 
   console.log(exercise.name, setsPerWeek, "WHY IS FIRST INDEX UNDEFINED???");
   return (
-    <li className={`flex text-xxs text-white ${BG_COLOR_M5}`}>
+    <li className={`flex text-xxs text-white bg-primary-500`}>
       <div className={`flex w-3 items-center justify-center`}>
         <button onClick={toggleSetProgression} className={``}>
           {exerciseIndex}
@@ -31,7 +30,7 @@ export function ExerciseItem({
 
       <div
         onClick={openSelectModal}
-        className={`flex w-32 cursor-pointer items-center truncate indent-0.5 hover:${BG_COLOR_M4}`}
+        className={`flex w-32 cursor-pointer items-center truncate indent-0.5 hover:bg-primary-400`}
       >
         {exercise.name}
       </div>
@@ -49,7 +48,7 @@ export function ExerciseItem({
         })}
         <div
           onClick={() => onRemoveExercise(exercise.id)}
-          className={`flex w-3 cursor-pointer items-center justify-center border bg-red-400 ${BORDER_COLOR_M6} hover:bg-rose-500`}
+          className={`flex w-3 cursor-pointer items-center justify-center border bg-red-400 border-primary-600 hover:bg-rose-500`}
         >
           <DeleteIcon fill="white" />
         </div>

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import CollapsableHeader from "~/components/Layout/CollapsableHeader";
+import CollapsibleHeader from "~/components/Layout/CollapsibleHeader";
 import { DraggableExercises } from "~/components/TrainingWeekOverview/components/hooks/useExerciseSelection";
 import { BG_COLOR_M6 } from "~/constants/themes";
 import { cn } from "~/lib/clsx";
@@ -39,30 +39,30 @@ export default function Mesocycle({
 
   if (isCollapsed) {
     return (
-      <CollapsableHeader className={`mb-2 rounded`}>
-        <CollapsableHeader.Title
+      <CollapsibleHeader className={`mb-2 rounded`}>
+        <CollapsibleHeader.Title
           label={`Mesocycle ${currentMesocycleIndex + 1}`}
         />
-        <CollapsableHeader.Button
+        <CollapsibleHeader.Button
           isCollapsed={isCollapsed}
           onCollapse={onExpand}
         />
-      </CollapsableHeader>
+      </CollapsibleHeader>
     );
   }
   return (
     <div
       className={cn(`${BG_COLOR_M6} mb-3 flex max-w-[1200px] flex-col rounded`)}
     >
-      <CollapsableHeader className={`bg-rose-400`}>
-        <CollapsableHeader.Title
+      <CollapsibleHeader className={`bg-rose-400`}>
+        <CollapsibleHeader.Title
           label={`Mesocycle ${currentMesocycleIndex + 1}`}
         />
-        <CollapsableHeader.Button
+        <CollapsibleHeader.Button
           isCollapsed={isCollapsed}
           onCollapse={onCollapse}
         />
-      </CollapsableHeader>
+      </CollapsibleHeader>
 
       <div className="flex flex-col space-y-1 overflow-x-auto p-2">
         <HeaderRow />

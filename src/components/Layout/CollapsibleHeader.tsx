@@ -1,6 +1,5 @@
 import { HTMLAttributes, ReactNode } from "react";
 import { ArrowDownIcon, ArrowUpIcon } from "~/assets/icons/_icons";
-import { BG_COLOR_M7 } from "~/constants/themes";
 import { cn } from "~/lib/clsx";
 import { Button } from "./Buttons";
 
@@ -32,7 +31,7 @@ function CollapseButton({ isCollapsed, onCollapse }: CollapseButtonProps) {
 interface CollapsableHeaderProps extends HTMLAttributes<HTMLDivElement> {
   children: ReactNode;
 }
-export default function CollapsableHeader({
+export default function CollapsibleHeader({
   children,
   className,
   ...props
@@ -41,7 +40,7 @@ export default function CollapsableHeader({
     <div
       {...props}
       className={cn(
-        `flex rounded-t ${BG_COLOR_M7} justify-between `,
+        `flex rounded-t bg-primary-700 justify-between `,
         className
       )}
     >
@@ -49,5 +48,5 @@ export default function CollapsableHeader({
     </div>
   );
 }
-CollapsableHeader.Title = Title;
-CollapsableHeader.Button = CollapseButton;
+CollapsibleHeader.Title = Title;
+CollapsibleHeader.Button = CollapseButton;
