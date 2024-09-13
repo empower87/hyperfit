@@ -19,7 +19,7 @@ type DotDropdownProps = {
 function Dropdown({ isOpen, children }: DotDropdownProps) {
   if (!isOpen) return null;
   return (
-    <div className={`absolute -bottom-5 right-0 z-10 rounded-md shadow-md`}>
+    <div className={`absolute -bottom-0 right-0 rounded-md shadow-md`}>
       {children}
     </div>
   );
@@ -31,5 +31,5 @@ type DotMenuProps = {
 DotMenu.Button = Button;
 DotMenu.Dropdown = Dropdown;
 export default function DotMenu({ children }: DotMenuProps) {
-  return <div className={`flex w-3 justify-center`}>{children}</div>;
+  return <div className={`flex w-3 justify-center relative`}>{children}</div>;
 }

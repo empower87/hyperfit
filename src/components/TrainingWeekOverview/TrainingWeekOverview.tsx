@@ -425,11 +425,14 @@ function DaySessionItem({
         <ItemCell className={`${bgColor} ${ITEM_CELL_WIDTHS.actions}`}>
           <DropdownButton onDropdownClick={onDropdownClick} />
           {isOpen ? (
-            <Dropdown className={`-bottom-3`} onClose={onDropdownClose}>
-              <Dropdown.Item onClick={onModalOpen}>
-                Create Superset
-              </Dropdown.Item>
-            </Dropdown>
+            <div className="absolute -bottom-0 right-0">
+              <Dropdown className={``} onClose={onDropdownClose}>
+                <Dropdown.Header title="Actions" onClose={onDropdownClose} />
+                <Dropdown.Item onClick={onModalOpen}>
+                  Create Superset
+                </Dropdown.Item>
+              </Dropdown>
+            </div>
           ) : null}
         </ItemCell>
 
