@@ -2,7 +2,7 @@ import { ReactNode, useCallback, useMemo, useState } from "react";
 import { AddIcon, PlusIcon, SubtractIcon } from "~/assets/icons/_icons";
 import Dropdown from "~/components/Layout/Dropdown";
 
-import { ExerciseType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
+import { ExerciseType, MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
 import { cn } from "~/lib/clsx";
 import { getRankColor } from "~/utils/getIndicatorColors";
@@ -20,6 +20,7 @@ import {
   MuscleEditorProvider,
   useMuscleEditorContext,
 } from "./context/MuscleEditorContext";
+import { createTrainingDayList, TrainingDayController, TrainingDays } from "./components/TrainingDay";
 
 export default function MuscleEditor() {
   const { prioritized_muscle_list } = useTrainingProgramContext();
@@ -37,7 +38,7 @@ export default function MuscleEditor() {
             key={`${each.id}_${index}_MuscleEditorProvider`}
             muscle={each}
           >
-            <Muscle rank={index + 1} />
+            <MuscleItem order={index + 1} />
           </MuscleEditorProvider>
         );
       })}
@@ -46,9 +47,9 @@ export default function MuscleEditor() {
 }
 
 type MuscleProps = {
-  rank: number;
+  order: number;
 };
-function Muscle({ rank }: MuscleProps) {
+function MuscleItem({ order }: MuscleProps) {
   const {
     selectedMesocycleIndex,
     muscleGroup,
@@ -60,17 +61,22 @@ function Muscle({ rank }: MuscleProps) {
     onSelectedFrequencyProgressionIncrement,
     onSelectedFrequencyProgressionDecrement,
   } = useMuscleEditorContext();
-  const bgColor = getRankColor(muscleGroup.volume.landmark);
-  const title = getMuscleTitleForUI(muscleGroup.muscle);
-  const muscleData = getMuscleData(muscleGroup.muscle);
+
+  const muscle_name = muscleGroup.muscle
+  const v_landmark = muscleGroup.volume.landmark
+  const freq_progression = muscleGroup.frequency.progression
+  const exercises = muscleGroup.exercises
+  const { bg, text} = getRankColor(v_landmark);
+  const title = getMuscleTitleForUI(muscle_name);
+  const muscleData = getMuscleData(muscle_name);
   const volumeSets =
-    muscleGroup.volume.landmark === "MRV"
+    v_landmark === "MRV"
       ? muscleData["MRV"][
-          muscleGroup.frequency.progression[
-            muscleGroup.frequency.progression.length - 1
+          freq_progression[
+            freq_progression.length - 1
           ] - 1
         ]
-      : muscleData[muscleGroup.volume.landmark];
+      : muscleData[v_landmark];
 
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isSideMenuCollapsed, setIsSideMenuCollapsed] = useState(false);
@@ -78,12 +84,13 @@ function Muscle({ rank }: MuscleProps) {
   const onToggleSideMenu = () => setIsSideMenuCollapsed((prev) => !prev);
   const onExpandHandler = () => setIsCollapsed(false);
   const onCollapseHandler = () => setIsCollapsed(true);
+  const trainingDayData = createTrainingDayList(freq_progression, exercises, selectedMesocycleIndex)
 
   if (isCollapsed) {
     return (
-      <li id={muscleGroup.muscle}>
-        <CollapsibleHeader className={`${bgColor.bg} rounded`}>
-          <CollapsibleHeader.Title label={`${rank} ${title}`} />
+      <li id={muscle_name}>
+        <CollapsibleHeader className={`${bg} rounded`}>
+          <CollapsibleHeader.Title label={`${order} ${title}`} />
 
           <CollapsibleHeader.Button
             isCollapsed={isCollapsed}
@@ -95,11 +102,11 @@ function Muscle({ rank }: MuscleProps) {
   }
   return (
     <li
-      id={muscleGroup.muscle}
+      id={muscle_name}
       className={`flex flex-col bg-primary-700 scroll-smooth rounded`}
     >
-      <CollapsibleHeader className={`${bgColor.bg}`}>
-        <CollapsibleHeader.Title label={`${rank} ${title}`} />
+      <CollapsibleHeader className={`${bg}`}>
+        <CollapsibleHeader.Title label={`${order} ${title}`} />
 
         <CollapsibleHeader.Button
           isCollapsed={isCollapsed}
@@ -118,10 +125,10 @@ function Muscle({ rank }: MuscleProps) {
                 <div
                   className={`flex items-center justify-center space-x-1 p-0.5`}
                 >
-                  <div className={`p-0.5 text-xxs font-bold ${bgColor.text}`}>
-                    {muscleGroup.volume.landmark}
+                  <div className={`p-0.5 text-xxs font-bold ${text}`}>
+                    {v_landmark}
                   </div>
-                  <div className={`p-0.5 text-xxs font-bold ${bgColor.text}`}>
+                  <div className={`p-0.5 text-xxs font-bold ${text}`}>
                     {volumeSets}
                   </div>
                 </div>
@@ -147,7 +154,7 @@ function Muscle({ rank }: MuscleProps) {
                 }
                 frequency={
                   <div className={`flex justify-center p-0.5`}>
-                    {muscleGroup.frequency.progression.map((each, index) => {
+                    {freq_progression.map((each, index) => {
                       const isSelected = index === selectedMesocycleIndex;
                       return (
                         <SideMenu.Cell
@@ -162,7 +169,9 @@ function Muscle({ rank }: MuscleProps) {
                             >
                               <SubtractIcon fill="white" />
                             </Counter.Button>
+
                             <Counter.Value value={each} />
+
                             <Counter.Button
                               onClick={() =>
                                 onSelectedFrequencyProgressionIncrement(index)
@@ -171,7 +180,6 @@ function Muscle({ rank }: MuscleProps) {
                               <AddIcon fill="white" />
                             </Counter.Button>
                           </Counter>
-       
                         </SideMenu.Cell>
                       );
                     })}
@@ -204,10 +212,26 @@ function Muscle({ rank }: MuscleProps) {
             </SideMenu.Container>
           </SideMenu.Contents>
         </SideMenu>
-
-        <div className={`w-auto overflow-x-auto p-2`}>
+        
+        <TrainingDays>
+          {trainingDayData.map((tday, index) => {
+            let total = 0
+            let total_exercises = tday.sessions.map(session => session.exercises).flat()
+            let exercise_total = total_exercises.length
+            total = total + exercise_total
+            let exercise_indices =Array.from(
+              Array(exercise_total),
+              (e, i) => i + total
+            ); 
+            console.log(total, total_exercises, exercise_total, exercise_indices, "what am i doing here exactly?")
+            return (
+              <TrainingDayController data={tday} exercise_indices={exercise_indices} />
+            )
+          })}
+        </TrainingDays>
+        {/* <div className={`w-auto overflow-x-auto p-2`}>
           <Exercises />
-        </div>
+        </div> */}
       </div>
     </li>
   );
@@ -217,6 +241,7 @@ function Exercises() {
   const {
     frequencyProgression,
     exercisesInView,
+    exercises,
     selectedMesocycleIndex,
     onAddTrainingDay,
   } = useMuscleEditorContext();
@@ -314,7 +339,7 @@ type SessionItemProps = {
   sessionIndex: number;
   exerciseIndices: number[];
 };
-function SessionItem({
+export function SessionItem({
   sessionExercises,
   sessionIndex,
   exerciseIndices,
