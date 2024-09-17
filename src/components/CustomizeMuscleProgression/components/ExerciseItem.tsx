@@ -1,7 +1,8 @@
-import { DeleteIcon } from "~/assets/icons/_icons";
+import { AddIcon, DeleteIcon } from "~/assets/icons/_icons";
 import { ExerciseType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { useMuscleEditorContext } from "../context/MuscleEditorContext";
 import ExerciseSets from "./SetItem";
+import { Button } from "./Counter";
 
 type ExerciseItemProps = {
   exercise: ExerciseType;
@@ -19,7 +20,6 @@ export function ExerciseItem({
 
   const setsPerWeek = getSetsByExerciseId(exercise.id);
 
-  console.log(exercise.name, setsPerWeek, "WHY IS FIRST INDEX UNDEFINED???");
   return (
     <li className={`flex text-xxs text-white bg-primary-500`}>
       <div className={`flex w-3 items-center justify-center`}>
@@ -46,6 +46,7 @@ export function ExerciseItem({
             />
           );
         })}
+
         <div
           onClick={() => onRemoveExercise(exercise.id)}
           className={`flex w-3 cursor-pointer items-center justify-center border bg-red-400 border-primary-600 hover:bg-rose-500`}
@@ -53,6 +54,23 @@ export function ExerciseItem({
           <DeleteIcon fill="white" />
         </div>
       </div>
+    </li>
+  );
+}
+
+  
+export function AddExerciseItem({ onClick }: { onClick: () => void }) {
+  return (
+    <li
+      onClick={onClick}
+      className={`flex cursor-pointer p-0.5 text-xxs bg-primary-600 border-primary-400 border indent-1 text-slate-300 hover:bg-primary-500`}
+    >
+      <div className={`ml-0.5 flex items-center justify-center`}>
+        <Button onClick={onClick}>
+          <AddIcon fill="white" />
+        </Button>
+      </div>
+      Add Exercise
     </li>
   );
 }

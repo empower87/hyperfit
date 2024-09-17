@@ -611,32 +611,31 @@ const addSetProgressionMatrixRow = (
 export const addNewExerciseSetsToSetProgressionMatrix = (
   frequencyProgression: number[],
   setProgressionMatrix: number[][][],
-  exerciseIndex: number
+  sessionIndex: number
 ) => {
   let sets = 2;
   // let initialSetsPerMeso = [];
 
-  const matrix = setProgressionMatrix;
+  const matrix = structuredClone(setProgressionMatrix)
   const lastMeso = matrix[matrix.length - 1];
-  const isNewSession = lastMeso[exerciseIndex] ? true : false;
+  const isNewSession = lastMeso[sessionIndex] ? true : false;
 
   if (!isNewSession) {
     const prevMeso = structuredClone(matrix[matrix.length - 1]);
     const newRow = addSetProgressionMatrixRow(prevMeso, [sets]);
     matrix.push(newRow);
+  } else {
+    
+    for (let i = 0; i < matrix.length; i++) {
+      const meso = matrix[i]
+      if (meso[sessionIndex]) {
+        matrix[i][sessionIndex].push(sets)
+      }
+    }
   }
 
-  const initialSetsPerMeso = getSetsFromProgressionMatrix(
-    frequencyProgression,
-    matrix,
-    exerciseIndex,
-    0
-  );
-
-  return {
-    initialSetsPerMeso: initialSetsPerMeso,
-    setProgressionMatrix: matrix,
-  };
+  console.log(setProgressionMatrix, matrix, sessionIndex, lastMeso, isNewSession,  "OK LETS DIG IN")
+  return matrix;
 };
 
 export const initNewExercise = (
