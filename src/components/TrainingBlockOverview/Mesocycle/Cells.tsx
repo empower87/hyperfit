@@ -1,5 +1,4 @@
 import { HTMLAttributes, ReactNode } from "react";
-import { BG_COLOR_M7 } from "~/constants/themes";
 import {
   DayType,
   SessionSplitType,
@@ -73,7 +72,7 @@ type HeaderCellProps = {
 export function HeaderCell({ label, children }: HeaderCellProps) {
   return (
     <div className={`flex flex-col space-y-0.5 overflow-hidden rounded`}>
-      <div className={`flex justify-center text-[12px] ${BG_COLOR_M7}`}>
+      <div className={`flex justify-center text-[12px] bg-primary-700`}>
         {label}
       </div>
       <div className={`flex space-x-0.5`}>{children}</div>

@@ -343,7 +343,7 @@ export const updateExercisesOnSetProgressionChange = (
         // selected_exercise,
         "CHECK CH CH CHECK IT OUT"
       );
-      const selected_exercise = initializeNewExercise(
+      const selected_exercise = initNewExercise(
         exercise_data,
         volume_landmark
       );
@@ -476,7 +476,6 @@ export const getTotalExercisesFromSetMatrix = (
       const exercise = initNewExercise(
         allExercises[exercises_index],
         volume_landmark,
-        sets
       );
       exercise.sets = finalProgression[i][j];
       session_exercises.push(exercise);
@@ -558,7 +557,6 @@ export const getTotalExercisesForMuscleGroup = (
       const exercise = initNewExercise(
         allExercises[exercises_index],
         rank,
-        sets
       );
 
       session_exercises.push(exercise);
@@ -609,19 +607,17 @@ const addSetProgressionMatrixRow = (
 };
 
 export const addNewExerciseSetsToSetProgressionMatrix = (
-  frequencyProgression: number[],
   setProgressionMatrix: number[][][],
   sessionIndex: number
 ) => {
   let sets = 2;
-  // let initialSetsPerMeso = [];
 
   const matrix = structuredClone(setProgressionMatrix)
   const lastMeso = matrix[matrix.length - 1];
   const isNewSession = lastMeso[sessionIndex] ? true : false;
 
   if (!isNewSession) {
-    const prevMeso = structuredClone(matrix[matrix.length - 1]);
+    const prevMeso = matrix[matrix.length - 1]
     const newRow = addSetProgressionMatrixRow(prevMeso, [sets]);
     matrix.push(newRow);
   } else {
@@ -633,17 +629,14 @@ export const addNewExerciseSetsToSetProgressionMatrix = (
       }
     }
   }
-
-  console.log(setProgressionMatrix, matrix, sessionIndex, lastMeso, isNewSession,  "OK LETS DIG IN")
   return matrix;
 };
 
 export const initNewExercise = (
   exerciseData: JSONExercise,
   volume_landmark: VolumeLandmarkType,
-  initalSetsPerMeso: number[]
 ) => {
-  const schemas: SetProgressionType[] = Array.from(initalSetsPerMeso, (e, i) =>
+  const schemas: SetProgressionType[] = Array.from([], (e, i) =>
     volume_landmark === "MRV" ? "ADD_ONE_PER_MICROCYCLE" : "NO_ADD"
   );
   const uid = getUID();
@@ -659,33 +652,7 @@ export const initNewExercise = (
     weight: 100,
     rir: 3,
     weightIncrement: 2,
-    initialSetsPerMeso: initalSetsPerMeso,
     setProgressionSchema: schemas,
-    data: {
-      movement_type: exerciseData.movement_type,
-      requirements: exerciseData.requirements,
-    },
-  };
-  return new_exercise;
-};
-
-export const initializeNewExercise = (
-  exerciseData: JSONExercise,
-  volume_landmark: VolumeLandmarkType
-) => {
-  const uid = getUID();
-  const new_exercise: ExerciseType = {
-    ...INITIAL_EXERCISE,
-    id: `${exerciseData.id}_${uid}`,
-    name: exerciseData.name,
-    muscle: exerciseData.group as MuscleType,
-    session: 0,
-    rank: volume_landmark,
-    sets: 2,
-    reps: 10,
-    weight: 100,
-    rir: 3,
-    weightIncrement: 2,
     data: {
       movement_type: exerciseData.movement_type,
       requirements: exerciseData.requirements,

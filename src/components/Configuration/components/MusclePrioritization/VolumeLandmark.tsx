@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { BG_COLOR_M5, BG_COLOR_M6 } from "~/constants/themes";
 import { VolumeLandmarkType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { cn } from "~/lib/clsx";
 import { useProgramConfigContext } from "../../hooks/useProgramConfig";
@@ -61,7 +60,6 @@ export default function VolumeLandmark({
         onSelect={() => onSelect("MV")}
         selectedLandmark={selectedLandmark}
       />
-      {/* <div className="flex items-center justify-center">{volume}</div> */}
     </div>
   );
 }
@@ -90,7 +88,7 @@ export function Select({ id, volume_landmark, options, bgColor }: SelectProps) {
           <option
             key={each}
             className={
-              volume_landmark === each ? BG_COLOR_M5 : BG_COLOR_M6 + " "
+              volume_landmark === each ? "bg-primary-500" : "bg-primary-600"
             }
             value={each}
             selected={volume_landmark === each}

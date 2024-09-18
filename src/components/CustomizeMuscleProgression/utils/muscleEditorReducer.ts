@@ -177,21 +177,14 @@ export function muscleEditorReducer(state: MusclePriorityType, action: Action) {
       const sessionIndex = action.payload.session_index;
       const cloned_exercises = structuredClone(exercises);
 
-      const data = addNewExerciseSetsToSetProgressionMatrix(
-        frequency_progression,
+      const cloned_matrix = addNewExerciseSetsToSetProgressionMatrix(
         setProgressionMatrix,
         sessionIndex
       );
       const new_exercise = initNewExercise(
         raw_exercise,
         volume_landmark,
-        []
       );
-      // TODO: update setProgressionMatrix on exercise addition in a better less coupled way
-      const cloned_matrix = structuredClone(data);
-      cloned_matrix[cloned_matrix.length - 1][sessionIndex].push(2);
-
-      console.log(cloned_matrix, cloned_exercises, sessionIndex, )
       cloned_exercises[sessionIndex]?.push(new_exercise);
       return {
         ...state,

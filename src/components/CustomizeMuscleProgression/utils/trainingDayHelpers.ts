@@ -1,10 +1,5 @@
 import { ExerciseType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 
-export const canAddTrainingDay = () => {};
-
-// 1. remove exercise array from exercises
-// 2. adjust frequencyProgression
-// 2a.
 
 export const updateFrequencyProgressionOnTrainingDayRemoval = (
   training_day_index: number,
@@ -25,21 +20,8 @@ export const updateFrequencyProgressionOnTrainingDayRemoval = (
     if (curr_frequency > exercise_frequency) {
       updated_frequency_prog[i] = updated_frequency_prog[i] - DAYS_REMOVED;
     }
-    console.log(
-      curr_frequency,
-      exercise_frequency,
-      updated_frequency_prog,
-      exercises.map((ea) => ea.map((e) => e.name)),
-      "NEED TO CHECK HERE ACTUALLY"
-    );
   }
-  console.log(
-    exercise_frequency,
-    updated_frequency_prog,
-    frequencyProgression,
-    training_day_index,
-    "need to get [0, 0, 0,] in updated_frequency_prog kk"
-  );
+
   return updated_frequency_prog;
 };
 

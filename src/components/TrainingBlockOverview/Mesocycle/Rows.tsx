@@ -1,6 +1,5 @@
 import { ReactNode } from "react";
 import { DraggableExercises } from "~/components/TrainingWeekOverview/components/hooks/useExerciseSelection";
-import { BG_COLOR_M4, BG_COLOR_M6, BG_COLOR_M7 } from "~/constants/themes";
 import { ExerciseType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
 import { getSetProgressionForExercise } from "~/hooks/useTrainingProgram/utils/exercises/setProgressionOverMicrocycles";
@@ -33,7 +32,7 @@ function DataRow({ exercise, setProgression, index }: DataRowProps) {
     exercise.trainingModality,
   ];
 
-  const alternatingBGColors = index % 2 === 0 ? BG_COLOR_M4 : `bg-zinc-400`;
+  const alternatingBGColors = index % 2 === 0 ? "bg-primary-400" : `bg-zinc-400`;
   return (
     <li className={`flex flex-row space-x-1 overflow-hidden`}>
       <ExerciseCell
@@ -74,7 +73,7 @@ export function HeaderRow() {
 
   return (
     <div className={`mb-1 flex space-x-1 text-slate-300`}>
-      <div className={`${BG_COLOR_M7} ${CELL_WIDTHS.day} rounded`}>
+      <div className={`bg-primary-700 ${CELL_WIDTHS.day} rounded`}>
         <div className={`flex justify-center text-[12px]`}>Day</div>
       </div>
 
@@ -82,7 +81,7 @@ export function HeaderRow() {
         <ExerciseCell
           data={CELL_WIDTHS.exercise.headers}
           widths={CELL_WIDTHS.exercise.widths}
-          bgColor={`${BG_COLOR_M7}`}
+          bgColor={`bg-primary-700`}
           fontSize="text-xxs"
         />
       </HeaderCell>
@@ -93,7 +92,7 @@ export function HeaderRow() {
             <WeekCell
               data={CELL_WIDTHS.week.headers}
               widths={CELL_WIDTHS.week.widths}
-              bgColor={`${BG_COLOR_M7}`}
+              bgColor={`bg-primary-700`}
               fontSize="text-xxs"
             />
           </HeaderCell>
@@ -104,7 +103,7 @@ export function HeaderRow() {
         <WeekCell
           data={CELL_WIDTHS.week.headers}
           widths={CELL_WIDTHS.week.widths}
-          bgColor={`${BG_COLOR_M7}`}
+          bgColor={`bg-primary-700`}
           fontSize="text-xxs"
         />
       </HeaderCell>
@@ -126,7 +125,7 @@ function SessionSplitRow({
   return (
     <div
       className={cn(
-        `mb-1 flex rounded ${BG_COLOR_M6} space-x-1 overflow-hidden`
+        `mb-1 flex rounded bg-primary-600 space-x-1 overflow-hidden`
       )}
     >
       {children}

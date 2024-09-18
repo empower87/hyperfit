@@ -1,12 +1,5 @@
 import { ReactNode, useCallback, useState } from "react";
 import { FilterIcon, SearchIcon } from "~/assets/icons/_icons";
-import {
-  BG_COLOR_M5,
-  BG_COLOR_M6,
-  BG_COLOR_M7,
-  BG_COLOR_M8,
-  BORDER_COLOR_M5,
-} from "~/constants/themes";
 import { useOutsideClick } from "~/hooks/useOnOutsideClick";
 import { MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { JSONExercise } from "~/hooks/useTrainingProgram/utils/exercises/getExercises";
@@ -22,7 +15,7 @@ function Header({ children }: { children: ReactNode }) {
 }
 function Search() {
   return (
-    <div className={cn(`m-1 flex w-1/2 indent-1 text-white ${BG_COLOR_M8}`)}>
+    <div className={cn(`m-1 flex w-1/2 indent-1 text-white bg-primary-800`)}>
       <div className="mx-1 flex items-center justify-center">
         <SearchIcon className="fill:white text-sm" />
       </div>
@@ -55,7 +48,7 @@ function Category({ title, children }: CategoryProps) {
   return (
     <div className={cn(`mb-2 flex flex-col`)}>
       <div
-        className={cn(`flex ${BG_COLOR_M6} mb-2 indent-1 text-xs text-white`)}
+        className={cn(`flex bg-primary-600 mb-2 indent-1 text-xs text-white`)}
       >
         {title}
       </div>
@@ -71,7 +64,7 @@ function FilterTag({ tag, onRemoveTag }: FilterTagProps) {
   return (
     <div
       className={cn(
-        `m-0.5 flex h-5 items-center justify-center p-1 text-white ${BORDER_COLOR_M5} ${BG_COLOR_M6}`
+        `m-0.5 flex h-5 items-center justify-center p-1 text-white border-primary-500 bg-primary-600`
       )}
     >
       <div className="p-0.5">{tag}</div>
@@ -92,7 +85,7 @@ function FilterMenu({ onSelectTag }: FilterMenuProps) {
   return (
     <div
       className={cn(
-        `absolute right-0 flex flex-col space-y-1 p-2 ${BG_COLOR_M7} border ${BORDER_COLOR_M5}`
+        `absolute right-0 flex flex-col space-y-1 p-2 bg-primary-700 border border-primary-500`
       )}
     >
       <div className={cn(`mb-2 border-b-2 text-sm text-white`)}>Filters</div>
@@ -191,13 +184,13 @@ function Layout({
   onClose: () => void;
 }) {
   return (
-    <div className={cn(`flex flex-col ${BG_COLOR_M7} w-[900px]`)}>
-      <div className={cn(`flex justify-between ${BG_COLOR_M6} mb-2 p-1`)}>
+    <div className={cn(`flex flex-col bg-primary-700 w-[900px]`)}>
+      <div className={cn(`flex justify-between bg-primary-600 mb-2 p-1`)}>
         <div className={cn(`indent-1 text-sm text-white`)}>Select Exercise</div>
         <button
           onClick={onClose}
           className={cn(
-            `mr-1 flex h-5 w-5 items-center justify-center text-white hover:${BG_COLOR_M5}`
+            `mr-1 flex h-5 w-5 items-center justify-center text-white hover:bg-primary-500`
           )}
         >
           x
@@ -230,9 +223,9 @@ function Item({ exercise, selected }: ItemProps) {
     <div
       onClick={() => onSelectExerciseHandler(exercise.id)}
       className={cn(
-        `flex p-1 indent-1 text-xs text-slate-400 ${BG_COLOR_M6} cursor-pointer hover:${BG_COLOR_M5}`,
+        `flex p-1 indent-1 text-xs text-slate-400 bg-primary-600 cursor-pointer hover:bg-primary-500`,
         {
-          [`${BG_COLOR_M5}`]:
+          [`bg-primary-500`]:
             exerciseId === exercise.id || exercise.id === selectedExerciseId,
         }
       )}
@@ -293,64 +286,64 @@ function List({ children }: { children: ReactNode }) {
         <div className={`w-4/12`}>Exercise</div>
         <div
           onClick={() => onClickHandler("rank")}
-          className={cn(`w-1/12 cursor-pointer hover:${BG_COLOR_M6}`, {
-            [`${BG_COLOR_M5}`]: sortedByIndicator === "rank",
+          className={cn(`w-1/12 cursor-pointer hover:bg-primary-600`, {
+            [`bg-primary-500`]: sortedByIndicator === "rank",
           })}
         >
           Ranked
         </div>
         <div
           onClick={() => onClickHandler("stretch", "lengthened")}
-          className={cn(`w-1/12 cursor-pointer hover:${BG_COLOR_M6}`, {
-            [`${BG_COLOR_M5}`]: sortedByIndicator === "lengthened",
+          className={cn(`w-1/12 cursor-pointer hover:bg-primary-600`, {
+            [`bg-primary-500`]: sortedByIndicator === "lengthened",
           })}
         >
           Length
         </div>
         <div
           onClick={() => onClickHandler("stretch", "challenging")}
-          className={cn(`w-1/12 cursor-pointer hover:${BG_COLOR_M6}`, {
-            [`${BG_COLOR_M5}`]: sortedByIndicator === "challenging",
+          className={cn(`w-1/12 cursor-pointer hover:bg-primary-600`, {
+            [`bg-primary-500`]: sortedByIndicator === "challenging",
           })}
         >
           Chall.
         </div>
         <div
           onClick={() => onClickHandler("limiting_factor")}
-          className={cn(`w-1/12 cursor-pointer hover:${BG_COLOR_M6}`, {
-            [`${BG_COLOR_M5}`]: sortedByIndicator === "limiting_factor",
+          className={cn(`w-1/12 cursor-pointer hover:bg-primary-600`, {
+            [`bg-primary-500`]: sortedByIndicator === "limiting_factor",
           })}
         >
           Limit
         </div>
         <div
           onClick={() => onClickHandler("loadability")}
-          className={cn(`w-1/12 cursor-pointer hover:${BG_COLOR_M6}`, {
-            [`${BG_COLOR_M5}`]: sortedByIndicator === "loadability",
+          className={cn(`w-1/12 cursor-pointer hover:bg-primary-600`, {
+            [`bg-primary-500`]: sortedByIndicator === "loadability",
           })}
         >
           Load
         </div>
         <div
           onClick={() => onClickHandler("stability")}
-          className={cn(`w-1/12 cursor-pointer hover:${BG_COLOR_M6}`, {
-            [`${BG_COLOR_M5}`]: sortedByIndicator === "stability",
+          className={cn(`w-1/12 cursor-pointer hover:bg-primary-600`, {
+            [`bg-primary-500`]: sortedByIndicator === "stability",
           })}
         >
           Stable
         </div>
         <div
           onClick={() => onClickHandler("target_function")}
-          className={cn(`w-1/12 cursor-pointer hover:${BG_COLOR_M6}`, {
-            [`${BG_COLOR_M5}`]: sortedByIndicator === "target_function",
+          className={cn(`w-1/12 cursor-pointer hover:bg-primary-600`, {
+            [`bg-primary-500`]: sortedByIndicator === "target_function",
           })}
         >
           Target
         </div>
         <div
           onClick={() => onClickHandler("time_efficiency")}
-          className={cn(`w-1/12 cursor-pointer hover:${BG_COLOR_M6}`, {
-            [`${BG_COLOR_M5}`]: sortedByIndicator === "time_efficiency",
+          className={cn(`w-1/12 cursor-pointer hover:bg-primary-600`, {
+            [`bg-primary-500`]: sortedByIndicator === "time_efficiency",
           })}
         >
           Time

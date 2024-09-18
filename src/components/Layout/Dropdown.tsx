@@ -5,14 +5,14 @@ import { cn } from "~/lib/clsx";
 import { Button } from "./Buttons";
 
 interface ItemProps extends HTMLAttributes<HTMLDivElement> {
-  onClick: () => void;
+
 }
 
-function Item({ onClick, className, children, ...props }: ItemProps) {
+function Item({ className, children, ...props }: ItemProps) {
   return (
     <div
       {...props}
-      onClick={onClick}
+ 
       className={cn(
         `flex w-32 cursor-pointer p-1 indent-1 text-white hover:bg-primary-600`,
         className

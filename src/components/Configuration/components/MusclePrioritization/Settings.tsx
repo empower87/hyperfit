@@ -1,12 +1,4 @@
 import { ReactNode } from "react";
-import {
-  BG_COLOR_M5,
-  BG_COLOR_M6,
-  BG_COLOR_M7,
-  BORDER_COLOR_M5,
-  BORDER_COLOR_M6,
-  BORDER_COLOR_M7,
-} from "~/constants/themes";
 import { cn } from "~/lib/clsx";
 import { Breakpoints, Toggles } from "./Breakpoints";
 
@@ -21,10 +13,10 @@ type SectionProps = SettingsProps & {
 function Section({ title, variant, children }: SectionProps) {
   const variants =
     variant === "dark"
-      ? { border: BORDER_COLOR_M7, bg: BG_COLOR_M7 }
+      ? { border: "border-primary-700", bg: "bg-primary-700" }
       : variant === "light"
-      ? { border: BORDER_COLOR_M5, bg: BG_COLOR_M5 }
-      : { border: BORDER_COLOR_M6, bg: BG_COLOR_M6 };
+      ? { border: "border-primary-500", bg: "bg-primary-500" }
+      : { border: "border-primary-600", bg: "bg-primary-600" };
   return (
     <div className={`flex flex-col rounded border ${variants.border}`}>
       <div

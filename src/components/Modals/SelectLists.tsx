@@ -1,9 +1,4 @@
-import {
-  BG_COLOR_M5,
-  BG_COLOR_M6,
-  BORDER_COLOR_M6,
-  HOVER_COLOR_M5,
-} from "~/constants/themes";
+
 import { getGroupList } from "~/constants/workoutSplits";
 import { SplitType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 
@@ -15,12 +10,12 @@ type ItemProps = {
 
 const Item = ({ value, selectedValue, onClick }: ItemProps) => {
   const isSelected = value === selectedValue ? true : false;
-  const selectedBG = isSelected ? BG_COLOR_M5 : BG_COLOR_M6;
+  const selectedBG = isSelected ? "bg-primary-500" : "bg-primary-600";
   const selectedText = isSelected ? "text-white" : "text-slate-400";
-  const hover = HOVER_COLOR_M5;
+
   return (
     <li
-      className={selectedBG + " mr-1 cursor-pointer " + hover}
+      className={selectedBG + " mr-1 cursor-pointer hover:bg-primary-500"}
       onClick={() => onClick(value)}
     >
       <p className={selectedText + " p-1 text-sm"}>{value}</p>
@@ -37,9 +32,9 @@ type GroupListProps = {
 export function GroupList({ split, selectedValue, onClick }: GroupListProps) {
   const groups = getGroupList(split);
   return (
-    <div className={BORDER_COLOR_M6 + " mb-2 w-full border-b-2 p-1"}>
-      <div className=" mb-1">
-        <div className={BG_COLOR_M5 + " flex p-1 text-xs text-white"}>
+    <div className={"border-primary-600 mb-2 w-full border-b-2 p-1"}>
+      <div className="mb-1">
+        <div className={"bg-primary-500 flex p-1 text-xs text-white"}>
           {split}
         </div>
       </div>

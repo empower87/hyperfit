@@ -1,4 +1,3 @@
-import { ExerciseType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { useMuscleEditorContext } from "../context/MuscleEditorContext";
 import { ReactNode, useCallback, useState } from "react";
 import DotMenu from "./DotMenu";
@@ -16,12 +15,12 @@ export default function TrainingDays() {
   const totalTrainingDays = trainingDaysByExercises.length
   const totalItemsToFill = totalTrainingDays < MIN_TDAY_ITEMS ? MIN_TDAY_ITEMS - totalTrainingDays : 0;
   const canAddTrainingDayAtMesocycle =
-  !frequencyProgression[selectedMesocycleIndex + 1] ||
-  (frequencyProgression[selectedMesocycleIndex + 1] &&
-      frequencyProgression[selectedMesocycleIndex] <
-        frequencyProgression[selectedMesocycleIndex + 1])
-        ? true
-        : false;
+    !frequencyProgression[selectedMesocycleIndex + 1] ||
+    (frequencyProgression[selectedMesocycleIndex + 1] &&
+        frequencyProgression[selectedMesocycleIndex] <
+          frequencyProgression[selectedMesocycleIndex + 1])
+          ? true
+          : false;
 
   const itemsWithContents = Array.from(Array(totalItemsToFill), (e, i) => i === 0 && canAddTrainingDayAtMesocycle ? "ADD" : "BLANK");
   
@@ -31,7 +30,7 @@ export default function TrainingDays() {
   );
 
   return (
-    <div className={`w-auto min-h-[95px] space-x-1 overflow-x-auto p-2 flex`}>
+    <ul className={`w-auto min-h-[95px] space-x-1 overflow-x-auto p-2 flex`}>
       {trainingDaysByExercises.map((sessionExercises, index) => {
         const indices = exerciseIndices.splice(0, sessionExercises.length);
         return (
@@ -55,14 +54,54 @@ export default function TrainingDays() {
           <BlankTrainingDay key={`${item}_${index}`} itemType={item} />
         )
       })}
-    </div>
+    </ul>
   )
 }
 
-type BlankTrainingDay = {
+type TrainingDayProps = {
+  index: number;
+  children: ReactNode;
+};
+function TrainingDay({ index, children }: TrainingDayProps) {
+  const { onRemoveTrainingDay } = useMuscleEditorContext();
+  const [isDropdownOpen, setIsDropownOpen] = useState(false);
+  const onDropdownClose = () => setIsDropownOpen(false);
+  const onDropdownOpen = () => setIsDropownOpen(true);
+
+  const onDeleteSession = useCallback(() => {
+    onRemoveTrainingDay(index)
+    onDropdownClose()
+  }, [index])
+
+  return (
+    <li className={`flex flex-col rounded-md bg-primary-600 mb-2`}>
+      <div className={`relative flex justify-between p-1`}>
+        <div className={`indent-1 text-xs font-bold text-white`}>
+          Day {index + 1}
+        </div>
+        
+        <DotMenu>
+          <DotMenu.Button onClick={onDropdownOpen} />
+          <DotMenu.Dropdown isOpen={isDropdownOpen}>
+            <Dropdown onClose={onDropdownClose}>
+              <Dropdown.Header title="Actions" onClose={onDropdownClose} />
+              <Dropdown.Item onClick={() => onDeleteSession()}>
+                Delete Session
+              </Dropdown.Item>
+            </Dropdown>
+          </DotMenu.Dropdown>
+        </DotMenu>
+      </div>
+
+      {children}
+    </li>
+  );
+}
+
+type BlankTrainingDayProps = {
   itemType: "ADD" | "BLANK"
 };
-function BlankTrainingDay({ itemType }: BlankTrainingDay) {
+function BlankTrainingDay({ itemType }: BlankTrainingDayProps) {
   const { onAddTrainingDay } = useMuscleEditorContext()
 
   const AddButton = () => {
@@ -82,47 +121,6 @@ function BlankTrainingDay({ itemType }: BlankTrainingDay) {
       {itemType === "ADD" ? (
         <AddButton />
       ): null}
-    </li>
-  );
-}
-
-type TrainingDayProps = {
-  index: number;
-  children: ReactNode;
-};
-function TrainingDay({ index, children }: TrainingDayProps) {
-  const { onRemoveTrainingDay } = useMuscleEditorContext();
-  const [isDropdownOpen, setIsDropownOpen] = useState(false);
-  const onDropdownClose = () => setIsDropownOpen(false);
-  const onDropdownOpen = () => setIsDropownOpen(true);
-
-  const onRemoveTrainingDayClick = useCallback(() => {
-    onRemoveTrainingDay(index)
-    onDropdownClose()
-  }, [index])
-
-  return (
-    <li className={`flex flex-col rounded-md bg-primary-600 mb-2`}>
-      <div className={`relative flex justify-between p-1`}>
-        <div className={`indent-1 text-xs font-bold text-white`}>
-          Day {index + 1}
-        </div>
-        
-        <DotMenu>
-          <DotMenu.Button onClick={onDropdownOpen} />
-          <DotMenu.Dropdown isOpen={isDropdownOpen}>
-            <Dropdown onClose={onDropdownClose}>
-              <Dropdown.Header title="Actions" onClose={onDropdownClose} />
-              <Dropdown.Item onClick={() => onRemoveTrainingDayClick()}>
-                Delete Session
-              </Dropdown.Item>
-            </Dropdown>
-          </DotMenu.Dropdown>
-        </DotMenu>
-      </div>
-
-      {children}
-      {/* <ul className={`space-y-1 p-1`}>{children}</ul> */}
     </li>
   );
 }

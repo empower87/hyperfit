@@ -1,10 +1,4 @@
 import { HTMLAttributes, ReactNode } from "react";
-import {
-  BG_COLOR_M5,
-  BG_COLOR_M6,
-  BG_COLOR_M7,
-  BORDER_COLOR_M7,
-} from "~/constants/themes";
 import { cn } from "~/lib/clsx";
 
 interface ToggleProps extends HTMLAttributes<HTMLButtonElement> {
@@ -16,10 +10,10 @@ function Toggle({ selected, children, ...props }: ToggleProps) {
   return (
     <button
       className={cn(
-        `flex cursor-pointer items-center justify-center px-2 text-sm last:rounded-r ${BG_COLOR_M7} hover:${BG_COLOR_M5}`,
+        `flex cursor-pointer items-center justify-center px-2 text-sm last:rounded-r bg-primary-700 hover:bg-primary-500`,
         {
-          [`${BG_COLOR_M5} text-white`]: selected,
-          [`${BG_COLOR_M6} text-slate-400`]: !selected,
+          [`bg-primary-500 text-white`]: selected,
+          [`bg-primary-600 text-slate-400`]: !selected,
         }
       )}
       {...props}
@@ -35,9 +29,9 @@ type ToggleLayoutProps = {
 };
 function ToggleLayout({ label, children }: ToggleLayoutProps) {
   return (
-    <div className={`flex justify-center rounded border ${BORDER_COLOR_M7}`}>
+    <div className={`flex justify-center rounded border border-primary-700`}>
       <div
-        className={`flex items-center justify-center px-2 py-1 text-sm text-white ${BG_COLOR_M7}`}
+        className={`flex items-center justify-center px-2 py-1 text-sm text-white bg-primary-700`}
       >
         {label}
       </div>

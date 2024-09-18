@@ -5,8 +5,6 @@ import { JSONExercise } from "~/hooks/useTrainingProgram/utils/exercises/getExer
 import { useCallback, useState } from "react";
 import { ExerciseType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { useMuscleEditorContext } from "../../context/MuscleEditorContext";
-import { Button } from "../Counter";
-import { AddIcon } from "~/assets/icons/_icons";
 import { cn } from "~/lib/clsx";
 
 type SessionItemProps = {

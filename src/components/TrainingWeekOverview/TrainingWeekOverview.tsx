@@ -13,14 +13,6 @@ import Dropdown from "~/components/Layout/Dropdown";
 import { CardS as Card } from "~/components/Layout/Sections";
 import Modal from "~/components/Modals/Modal";
 import {
-  BG_COLOR_M5,
-  BG_COLOR_M6,
-  BG_COLOR_M7,
-  BORDER_COLOR_M5,
-  BORDER_COLOR_M6,
-  BORDER_COLOR_M7,
-} from "~/constants/themes";
-import {
   EXERCISE_TRAINING_MODALITIES,
   ExerciseType,
   SessionSplitType,
@@ -62,7 +54,7 @@ function Prompt({ splitOptions, isOpen, onClose }: PromptProps) {
       className="absolute flex h-full w-full items-center justify-center"
       style={{ background: "#00000082" }}
     >
-      <div className={BG_COLOR_M7 + " flex w-64 flex-col p-2"}>
+      <div className="bg-primary-700 flex w-64 flex-col p-2">
         <div className=" flex flex-col text-xxs text-white">
           <div className=" mb-0.5 text-slate-300">
             Adding this Exercise to this day would change the Training Split for
@@ -79,7 +71,7 @@ function Prompt({ splitOptions, isOpen, onClose }: PromptProps) {
               <li
                 key={`${each}_${index}`}
                 className={cn(
-                  `${BG_COLOR_M6} flex cursor-pointer text-sm text-white hover:${BG_COLOR_M5}`
+                  `bg-primary-600 flex cursor-pointer text-sm text-white hover:bg-primary-500`
                 )}
                 onClick={() => onClose(splitOptions.id, each)}
               >
@@ -119,17 +111,17 @@ function DropdownListModal({
       className="flex h-full w-full flex-col items-center justify-center"
       onClick={() => onClose()}
     >
-      <ul className={cn(`w-52 ${BG_COLOR_M6}`)}>
+      <ul className={cn(`w-52 bg-primary-600`)}>
         {items.map((each, index) => {
           const getBGColor = supersets.get(each.id);
           const bgColor = getBGColor ? getBGColor : "";
           return (
             <li
               className={cn(
-                `${BORDER_COLOR_M7} m-0.5 cursor-pointer border-2 text-xs text-white hover:${BG_COLOR_M5}`,
+                `border-primary-700 m-0.5 cursor-pointer border-2 text-xs text-white hover:bg-primary-500`,
                 getRankColor(each.rank),
                 {
-                  [`${BG_COLOR_M5} border-white`]: each.id === selectedId,
+                  [`bg-primary-500 border-white`]: each.id === selectedId,
                   [bgColor]: supersets.get(each.id),
                 }
               )}
@@ -184,7 +176,7 @@ const SelectDropdown: FC<SelectDropdownProps> = ({
         return (
           <option
             key={`${option}_${index}`}
-            className={cn(`${BG_COLOR_M6}`)}
+            className="bg-primary-600"
             value={option}
             selected={option === selectedOption}
           >
@@ -211,35 +203,35 @@ function DaySessionItemHeaders() {
   return (
     <div className="flex text-white">
       <ItemCell
-        className={`${BORDER_COLOR_M5} ${BG_COLOR_M5} ${ITEM_CELL_WIDTHS.index} text-xxxs`}
+        className={`border-primary-500 bg-primary-500 ${ITEM_CELL_WIDTHS.index} text-xxxs`}
       >
         {" "}
       </ItemCell>
       <div className="flex w-full overflow-hidden rounded-sm">
         <ItemCell
-          className={`${BORDER_COLOR_M5} ${BG_COLOR_M6} ${ITEM_CELL_WIDTHS.sets} justify-center text-xxxs`}
+          className={`border-primary-500 bg-primary-600 ${ITEM_CELL_WIDTHS.sets} justify-center text-xxxs`}
         >
           Sets
         </ItemCell>
         <ItemCell
-          className={`${BORDER_COLOR_M5} ${BG_COLOR_M6} ${ITEM_CELL_WIDTHS.reps} justify-center text-xxxs`}
+          className={`border-primary-500 bg-primary-600 ${ITEM_CELL_WIDTHS.reps} justify-center text-xxxs`}
         >
           Reps
         </ItemCell>
         <ItemCell
-          className={`${BORDER_COLOR_M5} ${BG_COLOR_M6} ${ITEM_CELL_WIDTHS.lbs} justify-center text-xxxs`}
+          className={`border-primary-500 bg-primary-600 ${ITEM_CELL_WIDTHS.lbs} justify-center text-xxxs`}
         >
           Lbs
         </ItemCell>
         <div className="flex flex-col">
           <ItemCell
-            className={`${BORDER_COLOR_M5} ${BG_COLOR_M6} ${ITEM_CELL_WIDTHS.exercise} text-xxxs`}
+            className={`border-primary-500 bg-primary-600 ${ITEM_CELL_WIDTHS.exercise} text-xxxs`}
           >
             Exercise
           </ItemCell>
         </div>
         <ItemCell
-          className={`${BORDER_COLOR_M6} ${BG_COLOR_M6} ${ITEM_CELL_WIDTHS.actions} rounded-r-sm text-xxxs`}
+          className={`border-primary-600 bg-primary-600 ${ITEM_CELL_WIDTHS.actions} rounded-r-sm text-xxxs`}
         >
           {" "}
         </ItemCell>
@@ -364,7 +356,7 @@ function DaySessionItem({
     setBgColor(bgColor);
   }, [supersets, exercise]);
 
-  const BORDER_COLOR = exercise.supersetWith ? "border-white" : BORDER_COLOR_M7;
+  const BORDER_COLOR = exercise.supersetWith ? "border-white" : `border-primary-700`;
   return (
     <li className={cn(`relative mb-0.5 flex text-white`)}>
       <ItemCell
@@ -377,7 +369,7 @@ function DaySessionItem({
 
       <div
         className={cn(
-          `${BG_COLOR_M7} ${BORDER_COLOR_M7} flex space-x-0.5 overflow-hidden rounded border-2`
+          `bg-primary-700 border-primary-700 flex space-x-0.5 overflow-hidden rounded border-2`
         )}
       >
         <div className="flex flex-col space-y-0.5">
@@ -489,7 +481,7 @@ function DroppableSession({
   const onOpenDurationModal = () => setIsDurationModalOpen(true);
   const onCloseDurationModal = () => setIsDurationModalOpen(false);
   return (
-    <li className={`${BG_COLOR_M5} rounded p-1`}>
+    <li className={`bg-primary-500 rounded p-1`}>
       <div className={"flex flex-col pb-1"}>
         <div
           className={
@@ -603,8 +595,8 @@ function DayLayout({
   const { day, sessions } = session;
 
   return (
-    <li className={`${BORDER_COLOR_M7} mb-2 rounded border-2`}>
-      <div className={`${BORDER_COLOR_M7} ${BG_COLOR_M7} p-1`}>
+    <li className={`border-primary-700 mb-2 rounded border-2`}>
+      <div className={`border-primary-700 bg-primary-700 p-1`}>
         <h3 className="indent-1 text-white">{day}</h3>
       </div>
 
@@ -684,7 +676,7 @@ export default function TrainingWeekOverview() {
   return (
     <div
       id="exercise_editor"
-      className={`flex flex-col items-center rounded ${BG_COLOR_M6}`}
+      className={`flex flex-col items-center rounded bg-primary-600`}
     >
       <MesocycleToggle
         mesocycles={mesocycleTitles}

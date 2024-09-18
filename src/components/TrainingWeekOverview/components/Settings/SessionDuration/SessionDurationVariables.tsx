@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import Settings from "~/components/Configuration/components/MusclePrioritization/Settings";
-import { BG_COLOR_M5 } from "~/constants/themes";
 import { cn } from "~/lib/clsx";
 import { useSessionDurationVariablesContext } from "./sessionDurationVariablesContext";
 import { DurationTimeConstantsKeys } from "./useSessionDurationVariables";
@@ -17,7 +16,7 @@ const IncrementBtn = ({ operation, onClick }: IncrementBtnProps) => {
   return (
     <button
       className={cn(
-        `${BG_COLOR_M5} m-1 flex h-4 w-4 items-center justify-center p-1 text-xs text-white`
+        `bg-primary-500 m-1 flex h-4 w-4 items-center justify-center p-1 text-xs text-white`
       )}
       onClick={onClick}
     >

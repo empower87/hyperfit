@@ -8,7 +8,7 @@ import {
 } from "react";
 import { MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import {
-  Exercise,
+  JSONExercise,
   getGroupList,
 } from "~/hooks/useTrainingProgram/utils/exercises/getExercises";
 
@@ -28,10 +28,10 @@ export type FilterTags = {
 export type FilterTagsKey = keyof typeof INITIAL_FILTER_TAGS;
 
 const filterExercisesByTags = (
-  exercises: Exercise[],
+  exercises: JSONExercise[],
   filterTags: FilterTags
 ) => {
-  const filteredExercises: Exercise[] = [];
+  const filteredExercises: JSONExercise[] = [];
 
   for (let i = 0; i < exercises.length; i++) {
     const push = true;
@@ -57,9 +57,9 @@ const filterExercisesByTags = (
   return filteredExercises;
 };
 
-type KeyKey = keyof Exercise["hypertrophy_criteria"];
+type KeyKey = keyof JSONExercise["hypertrophy_criteria"];
 const sortExercisesByCriteria = (
-  exercises: Exercise[],
+  exercises: JSONExercise[],
   key: KeyKey | "rank",
   secondKey?: "lengthened" | "challenging"
 ) => {
@@ -126,7 +126,7 @@ const useChangeExerciseContext = () => {
 
 function useChangeExercise(muscle: MusclePriorityType, exerciseId: string) {
   const allExercises = [...muscle.exercises].flat();
-  const [visibleExercises, setVisibleExercises] = useState<Exercise[]>([]);
+  const [visibleExercises, setVisibleExercises] = useState<JSONExercise[]>([]);
   const [selectedExerciseId, setSelectedExerciseId] = useState<string>("");
   const [filterTags, setFilterTags] = useState<FilterTags>({
     ...INITIAL_FILTER_TAGS,

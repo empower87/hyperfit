@@ -5,16 +5,14 @@ import { SectionH2 as Section } from "~/components/Layout/Sections";
 import TableOfContents from "~/components/TableofContents/TableOfContents";
 import TrainingBlockOverview from "~/components/TrainingBlockOverview";
 import TrainingWeekOverview from "~/components/TrainingWeekOverview/TrainingWeekOverview";
-import { BG_COLOR_M7, BG_COLOR_M8 } from "~/constants/themes";
 import { TrainingProgramProvider } from "~/hooks/useTrainingProgram/useTrainingProgram";
 
 const Home: NextPage = () => {
   return (
-    <div id="modal-body" className={BG_COLOR_M8 + " flex h-full"}>
+    <div id="modal-body" className={"bg-primary-800 flex h-full"}>
       <div
         className={
-          BG_COLOR_M7 +
-          " fixed z-10 flex h-10 w-full items-center justify-center"
+          "bg-primary-700 fixed z-10 flex h-10 w-full items-center justify-center"
         }
       >
         <h1 className=" text-lg font-bold text-rose-400">Hyperfit</h1>

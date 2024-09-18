@@ -1,4 +1,3 @@
-import { BG_COLOR_M5, BG_COLOR_M6 } from "~/constants/themes";
 import {
   ExerciseDetails,
   ExerciseType,
@@ -25,7 +24,7 @@ type EditSetsProps = {
 const ExerciseDetail = ({ name, value }: ExerciseDetailProps) => {
   return (
     <div className=" flex flex-col">
-      <div className={BG_COLOR_M6 + " text-xxs text-white"}>{name}</div>
+      <div className={" bg-primary-600 text-xxs text-white"}>{name}</div>
 
       <div className={" flex justify-center text-xxs text-white"}>{value}</div>
     </div>
@@ -35,12 +34,12 @@ const ExerciseDetail = ({ name, value }: ExerciseDetailProps) => {
 const ExerciseDetailWeekOne = ({ name, value }: ExerciseDetailProps) => {
   return (
     <div className=" flex flex-col">
-      <div className={BG_COLOR_M6 + " mr-1 text-xxs text-white"}>{name}</div>
+      <div className={"bg-primary-600 mr-1 text-xxs text-white"}>{name}</div>
 
       <div className={" mr-1 flex justify-center text-xxs text-white"}>
-        <div className={BG_COLOR_M6 + " flex h-5 w-5 justify-center"}>-</div>
+        <div className={"bg-primary-600 flex h-5 w-5 justify-center"}>-</div>
         <div className={" flex h-5 w-6 justify-center"}>{value}</div>
-        <div className={BG_COLOR_M6 + " flex h-5 w-5 justify-center"}>+</div>
+        <div className={"bg-primary-600 flex h-5 w-5 justify-center"}>+</div>
       </div>
     </div>
   );
@@ -113,8 +112,8 @@ const MesocycleDetails = ({
 
   // const defaultClass = " text-white w-1/5";
   const defaultClasses = " flex h-14 w-full mb-1";
-  const unselectedClasses = BG_COLOR_M6 + defaultClasses;
-  const selectedClasses = BG_COLOR_M5 + defaultClasses;
+  const unselectedClasses = "bg-primary-600" + defaultClasses;
+  const selectedClasses = "bg-primary-500" + defaultClasses;
   return (
     <div className={isSelected ? selectedClasses : unselectedClasses}>
       <div className={" w-2/12 text-white"}>

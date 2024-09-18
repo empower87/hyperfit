@@ -1,20 +1,12 @@
 import { ReactNode, useCallback, useMemo, useState } from "react";
 import { AddIcon, PlusIcon, SubtractIcon } from "~/assets/icons/_icons";
-import Dropdown from "~/components/Layout/Dropdown";
-
-import { ExerciseType, } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
 import { cn } from "~/lib/clsx";
 import { getRankColor } from "~/utils/getIndicatorColors";
 import { getMuscleData } from "~/utils/getMuscleData";
 import getMuscleTitleForUI from "~/utils/getMuscleTitleForUI";
-import { JSONExercise } from "~/hooks/useTrainingProgram/utils/exercises/getExercises";
 import CollapsibleHeader from "../Layout/CollapsibleHeader";
-import SelectExercise from "../Modals/ChangeExerciseModal/ChangeExerciseModal";
-import Modal from "../Modals/Modal";
-import Counter, { Button } from "./components/Counter";
-import DotMenu from "./components/DotMenu";
-import { ExerciseItem } from "./components/ExerciseItem";
+import Counter from "./components/Counter";
 import SideMenu from "./components/SideMenu";
 import {
   MuscleEditorProvider,
@@ -213,7 +205,6 @@ function MuscleItem({ order }: MuscleProps) {
         </SideMenu>
         
         <TrainingDays />
-
       </div>
     </li>
   );

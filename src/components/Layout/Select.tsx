@@ -1,5 +1,4 @@
 import { HTMLAttributes, ReactNode } from "react";
-import { BG_COLOR_M6, BORDER_COLOR_M5 } from "~/constants/themes";
 import { cn } from "~/lib/clsx";
 
 interface SelectProps<T> extends HTMLAttributes<HTMLSelectElement> {
@@ -19,7 +18,7 @@ export function Select<T extends string | number>({
     <select
       {...props}
       className={cn(
-        `h-full w-full bg-inherit text-white ${BORDER_COLOR_M5} rounded border text-xs outline-slate-700`,
+        `h-full w-full bg-inherit text-white border-primary-500 rounded border text-xs outline-slate-700`,
         className
       )}
       onChange={onSelect}
@@ -28,7 +27,7 @@ export function Select<T extends string | number>({
         return (
           <option
             key={`${each}_${index}_select`}
-            className={`${BG_COLOR_M6}`}
+            className={`bg-primary-600`}
             value={each}
             selected={each === selectedOption}
           >

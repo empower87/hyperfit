@@ -1,13 +1,5 @@
 import { HTMLAttributes, ReactNode } from "react";
 import { ArrowLeftIcon, ArrowRightIcon } from "~/assets/icons/_icons";
-import {
-  BG_COLOR_M5,
-  BG_COLOR_M6,
-  BG_COLOR_M7,
-  BORDER_COLOR_M5,
-  BORDER_COLOR_M6,
-  BORDER_COLOR_M7,
-} from "~/constants/themes";
 import { cn } from "~/lib/clsx";
 
 type ButtonProps = {
@@ -15,13 +7,13 @@ type ButtonProps = {
   onClick: () => void;
 };
 function Button({ label, onClick }: ButtonProps) {
-  const bgColor = label === "Reset" ? BG_COLOR_M5 : "bg-rose-400";
+  const bgColor = label === "Reset" ? "bg-primary-500" : "bg-rose-400";
   const text = label === "Reset" ? "text-slate-700" : "text-white font-bold";
   return (
     <button
       onClick={onClick}
       className={cn(
-        `rounded-sm px-2 py-1 text-xxs ${text} ${bgColor} ${BORDER_COLOR_M6} flex items-center justify-center hover:opacity-80`
+        `rounded-sm px-2 py-1 text-xxs ${text} ${bgColor} border-primary-600 flex items-center justify-center hover:opacity-80`
       )}
     >
       {label}
@@ -51,12 +43,12 @@ type SectionProps = {
 function Section({ title, children, alignment }: SectionProps) {
   return (
     <div
-      className={cn(`flex w-full rounded border ${BORDER_COLOR_M7}`, {
+      className={cn(`flex w-full rounded border border-primary-700`, {
         ["flex-col"]: alignment === "y",
       })}
     >
       <div
-        className={`flex items-center justify-center px-2 py-0.5 text-xxs text-white ${BG_COLOR_M7}`}
+        className={`flex items-center justify-center px-2 py-0.5 text-xxs text-white bg-primary-700`}
       >
         {title}
       </div>
@@ -68,7 +60,7 @@ function Section({ title, children, alignment }: SectionProps) {
 function Contents({ children }: { children: ReactNode }) {
   return (
     <div
-      className={`flex flex-col space-y-1 border-t px-1 pb-1 text-xxs text-white ${BORDER_COLOR_M6}`}
+      className={`flex flex-col space-y-1 border-t px-1 pb-1 text-xxs text-white border-primary-600`}
     >
       {children}
     </div>
@@ -87,10 +79,10 @@ function ToggleMesocycle({
 }: ToggleMesocycleProps) {
   return (
     <div
-      className={cn(`flex w-full flex-col rounded border ${BORDER_COLOR_M7}`)}
+      className={cn(`flex w-full flex-col rounded border border-primary-700`)}
     >
       <div
-        className={`flex items-center justify-between border-b text-xxs text-white ${BG_COLOR_M7}`}
+        className={`flex items-center justify-between border-b text-xxs text-white bg-primary-700`}
       >
         <div className={`px-1 py-0.5`}>Mesocycle</div>
         {mesocycles}
@@ -144,7 +136,7 @@ function MesocycleCell({
         `flex w-10 cursor-pointer items-center justify-center p-0.5 text-xxs text-white last:rounded-tr`,
         {
           [`bg-white font-bold text-slate-700`]: selectedValue,
-          [`hover:${BG_COLOR_M6}`]: !selectedValue,
+          [`hover:bg-primary-600`]: !selectedValue,
         },
         className
       )}
@@ -174,11 +166,11 @@ export default function SideMenu({
 }: SideMenuProps) {
   if (isCollapsed) {
     return (
-      <div className={cn(`w-8 ${BG_COLOR_M6} flex flex-col rounded-bl`)}>
+      <div className={cn(`w-8 bg-primary-600 flex flex-col rounded-bl`)}>
         <div className={`flex p-1`}>
           <button
             onClick={onCollapse}
-            className={`border ${BORDER_COLOR_M5} flex h-4 w-4 items-center justify-center rounded p-0.5`}
+            className={`border border-primary-500 flex h-4 w-4 items-center justify-center rounded p-0.5`}
           >
             <ArrowRightIcon fill="white" />
           </button>
@@ -187,11 +179,11 @@ export default function SideMenu({
     );
   }
   return (
-    <div className={cn(`w-56 ${BG_COLOR_M6} flex flex-col rounded-bl`)}>
+    <div className={cn(`w-56 bg-primary-600 flex flex-col rounded-bl`)}>
       <div className={`flex p-1`}>
         <button
           onClick={onCollapse}
-          className={`border ${BORDER_COLOR_M5} flex h-4 w-4 items-center justify-center rounded p-0.5`}
+          className={`border border-primary-500 flex h-4 w-4 items-center justify-center rounded p-0.5`}
         >
           <ArrowLeftIcon fill="white" />
         </button>
