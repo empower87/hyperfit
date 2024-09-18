@@ -28,6 +28,7 @@ import {
   TRICEPS_EXERCISES,
 } from "../../../../constants/exercises/index";
 import { getMuscleData } from "../../../../utils/getMuscleData";
+import { setProgression_addOnePerMicrocycle_TEST } from "./setProgressionOverMicrocycles";
 
 // back
 // regions: "lat" | "upper-back" | "upper-trap"
@@ -660,3 +661,57 @@ export const initNewExercise = (
   };
   return new_exercise;
 };
+
+export const getExerciseSetsOverMicrocycles = (
+  exerciseId: ExerciseType["id"],
+  muscleGroup: MusclePriorityType,
+  selectedMesocycleIndex: number,
+  microcycles: number
+) => {
+      const setProgressionMatrix = muscleGroup.frequency.setProgressionMatrix;
+      const setProgressionLengths = Array.from(
+        setProgressionMatrix,
+        (e, i) => e.length
+      );
+      const frequency =
+        muscleGroup.frequency.progression[selectedMesocycleIndex];
+      const setProgressionIndex = setProgressionLengths.indexOf(frequency);
+
+      let dayIndex = 0;
+      let exerciseIndex = 0;
+      let totalExercisesInSession = 0;
+      let foundExercise: ExerciseType | null = null;
+
+      for (let i = 0; i < muscleGroup.exercises.length; i++) {
+        const sessionExercises = muscleGroup.exercises[i];
+        for (let j = 0; j < sessionExercises.length; j++) {
+          const exercise = sessionExercises[j];
+          if (exercise.id === exerciseId) {
+            dayIndex = i;
+            exerciseIndex = j;
+            totalExercisesInSession = sessionExercises.length;
+            foundExercise = exercise;
+            continue;
+          }
+        }
+      }
+
+      const setsByMatrix =
+        setProgressionMatrix[setProgressionIndex][dayIndex][exerciseIndex];
+
+      const initialSets =
+        foundExercise &&
+        foundExercise.initialSets &&
+        foundExercise.initialSets[frequency]
+          ? foundExercise.initialSets[frequency]
+          : setsByMatrix;
+
+      const sets = setProgression_addOnePerMicrocycle_TEST(
+        microcycles,
+        totalExercisesInSession,
+        exerciseIndex,
+        initialSets
+      );
+      console.log(foundExercise, sets, initialSets, "GOT SETS");
+      return sets;
+}

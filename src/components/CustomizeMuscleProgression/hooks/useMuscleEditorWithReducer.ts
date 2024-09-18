@@ -4,7 +4,7 @@ import {
   type MusclePriorityType,
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
-import { JSONExercise } from "~/hooks/useTrainingProgram/utils/exercises/getExercises";
+import { getExerciseSetsOverMicrocycles, JSONExercise } from "~/hooks/useTrainingProgram/utils/exercises/getExercises";
 import { setProgression_addOnePerMicrocycle_TEST } from "~/hooks/useTrainingProgram/utils/exercises/setProgressionOverMicrocycles";
 import { calculateTotalSetsOverMesocycles } from "../utils/calculateTotalSetsPerMesocycle";
 import { muscleEditorReducer } from "../utils/muscleEditorReducer";
@@ -93,52 +93,54 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
 
   const getSetsByExerciseId = useCallback(
     (exerciseId: ExerciseType["id"]) => {
-      const setProgressionMatrix = muscleGroup.frequency.setProgressionMatrix;
-      const setProgressionLengths = Array.from(
-        setProgressionMatrix,
-        (e, i) => e.length
-      );
-      const frequency =
-        muscleGroup.frequency.progression[selectedMesocycleIndex];
-      const setProgressionIndex = setProgressionLengths.indexOf(frequency);
+      
+      // const setProgressionMatrix = muscleGroup.frequency.setProgressionMatrix;
+      // const setProgressionLengths = Array.from(
+      //   setProgressionMatrix,
+      //   (e, i) => e.length
+      // );
+      // const frequency =
+      //   muscleGroup.frequency.progression[selectedMesocycleIndex];
+      // const setProgressionIndex = setProgressionLengths.indexOf(frequency);
 
-      let dayIndex = 0;
-      let exerciseIndex = 0;
-      let totalExercisesInSession = 0;
-      let foundExercise: ExerciseType | null = null;
+      // let dayIndex = 0;
+      // let exerciseIndex = 0;
+      // let totalExercisesInSession = 0;
+      // let foundExercise: ExerciseType | null = null;
 
-      for (let i = 0; i < muscleGroup.exercises.length; i++) {
-        const sessionExercises = muscleGroup.exercises[i];
-        for (let j = 0; j < sessionExercises.length; j++) {
-          const exercise = sessionExercises[j];
-          if (exercise.id === exerciseId) {
-            dayIndex = i;
-            exerciseIndex = j;
-            totalExercisesInSession = sessionExercises.length;
-            foundExercise = exercise;
-            continue;
-          }
-        }
-      }
+      // for (let i = 0; i < muscleGroup.exercises.length; i++) {
+      //   const sessionExercises = muscleGroup.exercises[i];
+      //   for (let j = 0; j < sessionExercises.length; j++) {
+      //     const exercise = sessionExercises[j];
+      //     if (exercise.id === exerciseId) {
+      //       dayIndex = i;
+      //       exerciseIndex = j;
+      //       totalExercisesInSession = sessionExercises.length;
+      //       foundExercise = exercise;
+      //       continue;
+      //     }
+      //   }
+      // }
 
-      const setsByMatrix =
-        setProgressionMatrix[setProgressionIndex][dayIndex][exerciseIndex];
+      // const setsByMatrix =
+      //   setProgressionMatrix[setProgressionIndex][dayIndex][exerciseIndex];
 
-      const initialSets =
-        foundExercise &&
-        foundExercise.initialSets &&
-        foundExercise.initialSets[frequency]
-          ? foundExercise.initialSets[frequency]
-          : setsByMatrix;
+      // const initialSets =
+      //   foundExercise &&
+      //   foundExercise.initialSets &&
+      //   foundExercise.initialSets[frequency]
+      //     ? foundExercise.initialSets[frequency]
+      //     : setsByMatrix;
 
-      const sets = setProgression_addOnePerMicrocycle_TEST(
-        microcycles,
-        totalExercisesInSession,
-        exerciseIndex,
-        initialSets
-      );
-      console.log(foundExercise, sets, initialSets, "GOT SETS");
-      return sets;
+      // const sets = setProgression_addOnePerMicrocycle_TEST(
+      //   microcycles,
+      //   totalExercisesInSession,
+      //   exerciseIndex,
+      //   initialSets
+      // );
+      // console.log(foundExercise, sets, initialSets, "GOT SETS");
+      // return sets;
+      return getExerciseSetsOverMicrocycles(exerciseId, muscleGroup, selectedMesocycleIndex, microcycles)
     },
     [muscleGroup, selectedMesocycleIndex]
   );

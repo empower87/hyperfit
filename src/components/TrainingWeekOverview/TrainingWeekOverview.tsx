@@ -19,7 +19,7 @@ import {
   SplitType,
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
-import { getGroupList } from "~/hooks/useTrainingProgram/utils/exercises/getExercises";
+import { getExerciseSetsOverMicrocycles, getGroupList } from "~/hooks/useTrainingProgram/utils/exercises/getExercises";
 import { getSetProgressionForExercise } from "~/hooks/useTrainingProgram/utils/exercises/setProgressionOverMicrocycles";
 import { cn } from "~/lib/clsx";
 import StrictModeDroppable from "~/lib/react-beautiful-dnd/StrictModeDroppable";
@@ -273,6 +273,9 @@ function DaySessionItem({
   selectedMesocycleIndex,
   onSupersetUpdate,
 }: DaySessionItemProps) {
+  const { training_program_params, prioritized_muscle_list } = useTrainingProgramContext()
+  const { microcycles } = training_program_params
+  const muscleGroup = prioritized_muscle_list.filter(muscle => muscle.muscle === exercise.muscle)[0]
   const [bgColor, setBgColor] = useState<string>("");
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const supersets = getSupersetMap(exercises);
@@ -293,18 +296,25 @@ function DaySessionItem({
       return each;
     }
   });
-  const setsOverWeek = getSetProgressionForExercise(
-    setProgressionSchema,
+  // const setsOverWeek = getSetProgressionForExercise(
+  //   setProgressionSchema,
+  //   selectedMesocycleIndex,
+  //   exercise,
+  //   4,
+  //   exercisesByMuscleGroup.length,
+  //   exerciseIndex
+  // );
+  const setsOverWeek = getExerciseSetsOverMicrocycles(
+    exercise.id,
+    muscleGroup,
     selectedMesocycleIndex,
-    exercise,
-    4,
-    exercisesByMuscleGroup.length,
-    exerciseIndex
-  );
+    microcycles
+  )
 
   const mesocycle_progression = exercise.mesocycle_progression;
   // const sets = mesocycle_progression[selectedMicrocycleIndex].sets;
   const sets = setsOverWeek[selectedMicrocycleIndex];
+  console.log(exercise, muscleGroup, setsOverWeek, sets, "OK WHAT WE DOING HERE?")
   // const reps = mesocycle_progression[selectedMicrocycleIndex].reps;
   const reps = 10;
   // const lbs = mesocycle_progression[selectedMicrocycleIndex].weight;
