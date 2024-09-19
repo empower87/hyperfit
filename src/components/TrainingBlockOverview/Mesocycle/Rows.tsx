@@ -1,16 +1,19 @@
 import { ReactNode } from "react";
 import { DraggableExercises } from "~/components/TrainingWeekOverview/components/hooks/useExerciseSelection";
-import { ExerciseType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
+import {
+  DayType,
+  ExerciseType,
+} from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
-import { getSetProgressionForExercise } from "~/hooks/useTrainingProgram/utils/exercises/setProgressionOverMicrocycles";
+import { getExerciseSetsOverMicrocycles } from "~/hooks/useTrainingProgram/utils/exercises/getExercises";
 import { cn } from "~/lib/clsx";
-import { getRankColor } from "~/utils/getIndicatorColors";
 import {
   DayCell,
-  ExerciseCell,
+  ExerciseCellGroup,
   HeaderCell,
+  HeaderCellGroup,
   SessionCell,
-  WeekCell,
+  WeekCellGroup,
 } from "./Cells";
 import { CELL_WIDTHS } from "./constants";
 
@@ -32,31 +35,35 @@ function DataRow({ exercise, setProgression, index }: DataRowProps) {
     exercise.trainingModality,
   ];
 
-  const alternatingBGColors = index % 2 === 0 ? "bg-primary-400" : `bg-zinc-400`;
+  const alternatingBGColors =
+    index % 2 === 0 ? "bg-primary-400" : `bg-zinc-400`;
   return (
     <li className={`flex flex-row space-x-1 overflow-hidden`}>
-      <ExerciseCell
+      <ExerciseCellGroup
         data={exerciseData}
         widths={CELL_WIDTHS.exercise.widths}
-        bgColor={getRankColor(exercise.rank).bg}
+        bgColor={`${alternatingBGColors}`}
+        volume_landmark={exercise.rank}
       />
 
       {details.map((each, index) => {
         return (
-          <WeekCell
+          <WeekCellGroup
             key={`${each[0]}_DataRow_${index}`}
             data={each}
             widths={CELL_WIDTHS.week.widths}
             bgColor={`${alternatingBGColors}`}
+            volume_landmark={exercise.rank}
           />
         );
       })}
 
       {/* -- for uncoded DELOAD section -- */}
-      <WeekCell
+      <WeekCellGroup
         data={details[0]}
         widths={CELL_WIDTHS.week.widths}
         bgColor={`${alternatingBGColors}`}
+        volume_landmark={exercise.rank}
       />
     </li>
   );
@@ -78,7 +85,7 @@ export function HeaderRow() {
       </div>
 
       <HeaderCell label="Exercise">
-        <ExerciseCell
+        <HeaderCellGroup
           data={CELL_WIDTHS.exercise.headers}
           widths={CELL_WIDTHS.exercise.widths}
           bgColor={`bg-primary-700`}
@@ -89,7 +96,7 @@ export function HeaderRow() {
       {MICROCYCLE_HEADERS.map((each, index) => {
         return (
           <HeaderCell label={each} key={`${each}_MicrocycleHeader_${index}`}>
-            <WeekCell
+            <HeaderCellGroup
               data={CELL_WIDTHS.week.headers}
               widths={CELL_WIDTHS.week.widths}
               bgColor={`bg-primary-700`}
@@ -100,7 +107,7 @@ export function HeaderRow() {
       })}
 
       <HeaderCell label="Deload">
-        <WeekCell
+        <HeaderCellGroup
           data={CELL_WIDTHS.week.headers}
           widths={CELL_WIDTHS.week.widths}
           bgColor={`bg-primary-700`}
@@ -122,31 +129,30 @@ function SessionSplitRow({
   currentMesocycleIndex,
   children,
 }: SessionSplitRowType) {
+  const { training_program_params, prioritized_muscle_list } =
+    useTrainingProgramContext();
+  const { microcycles } = training_program_params;
+
   return (
     <div
       className={cn(
-        `mb-1 flex rounded bg-primary-600 space-x-1 overflow-hidden`
+        `mb-1 flex space-x-1 overflow-hidden rounded bg-primary-600`
       )}
     >
       {children}
 
       <ul className="flex flex-col space-y-0.5 overflow-hidden rounded pr-1">
         {exercises.map((exercise, index) => {
-          let exerciseIndex = 0;
-          const exercisesByMuscleGroup = exercises.filter((each, index) => {
-            if (each.muscle === exercise.muscle) {
-              if (each.name === exercise.name) exerciseIndex = index;
-              return each;
-            }
-          });
-          const setsOverWeek = getSetProgressionForExercise(
-            exercise.setProgressionSchema[currentMesocycleIndex],
+          const muscleGroup = prioritized_muscle_list.filter(
+            (muscle) => muscle.muscle === exercise.muscle
+          )[0];
+          const setsOverWeek = getExerciseSetsOverMicrocycles(
+            exercise.id,
+            muscleGroup,
             currentMesocycleIndex,
-            exercise,
-            4,
-            exercisesByMuscleGroup.length,
-            exerciseIndex
+            microcycles
           );
+
           return (
             <DataRow
               key={`${index}_exercises_training_block_${exercise.id}`}
@@ -157,6 +163,54 @@ function SessionSplitRow({
           );
         })}
       </ul>
+    </div>
+  );
+}
+
+function DayHeaderRow({ day }: { day: DayType }) {
+  const { training_program_params } = useTrainingProgramContext();
+  const { microcycles } = training_program_params;
+
+  const MICROCYCLE_HEADERS = Array.from(
+    Array(microcycles),
+    (e, i) => `Week ${i + 1}`
+  );
+  return (
+    <div className={" mb-1 flex space-x-1 py-0.5 text-slate-300"}>
+      <DayCell day={day} />
+      <div className="flex overflow-hidden rounded pr-1">
+        <div className={cn(`flex space-x-0.5 pr-1`)}>
+          <HeaderCellGroup
+            data={CELL_WIDTHS.exercise.headers}
+            widths={CELL_WIDTHS.exercise.widths}
+            bgColor={`bg-primary-700`}
+            fontSize="text-xxs"
+          />
+        </div>
+        <div className="flex">
+          {MICROCYCLE_HEADERS.map((each, index) => {
+            return (
+              <div className={cn(`flex space-x-0.5`)}>
+                <HeaderCellGroup
+                  key={`${each}_MicrocycleHeader_${index}`}
+                  data={CELL_WIDTHS.week.headers}
+                  widths={CELL_WIDTHS.week.widths}
+                  bgColor={`bg-primary-700`}
+                  fontSize="text-xxs"
+                />
+              </div>
+            );
+          })}
+        </div>
+        <div className={cn(`flex space-x-0.5`)}>
+          <HeaderCellGroup
+            data={CELL_WIDTHS.week.headers}
+            widths={CELL_WIDTHS.week.widths}
+            bgColor={`bg-primary-700`}
+            fontSize="text-xxs"
+          />
+        </div>
+      </div>
     </div>
   );
 }
@@ -179,7 +233,7 @@ export function SessionRow({
     <div
       className={cn(`flex flex-col rounded border border-primary-500 py-0.5`)}
     >
-      <DayCell day={day} />
+      <DayHeaderRow day={day} />
       {sessions.map((each, index) => {
         return (
           <SessionSplitRow

@@ -4,7 +4,8 @@ import {
   SessionSplitType,
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { cn } from "~/lib/clsx";
-import { getSplitColor } from "~/utils/getIndicatorColors";
+import { VolumeLandmarkType } from "~/types/muscles/muscleTypes";
+import { getRankColor, getSplitColor } from "~/utils/getIndicatorColors";
 import { CELL_WIDTHS } from "./constants";
 
 interface CellProps extends HTMLAttributes<HTMLDivElement> {
@@ -13,8 +14,8 @@ interface CellProps extends HTMLAttributes<HTMLDivElement> {
 }
 function Cell({ value, className, fontSize, ...props }: CellProps) {
   return (
-    <div {...props} className={cn(`flex justify-center`, className)}>
-      <p className={cn(`truncate text-[10px] text-white`, fontSize)}>{value}</p>
+    <div {...props} className={cn(`flex justify-center text-white`, className)}>
+      <p className={cn(`truncate text-[10px] `, fontSize)}>{value}</p>
     </div>
   );
 }
@@ -23,23 +24,29 @@ type RowCellProps = {
   data: string[] | number[];
   widths: string[];
   bgColor: string;
+  volume_landmark: VolumeLandmarkType;
   fontSize?: string;
 };
-export function ExerciseCell({
+export function ExerciseCellGroup({
   data,
   widths,
   bgColor,
+  volume_landmark,
   fontSize,
 }: RowCellProps) {
   return (
     <div className={cn(`flex space-x-0.5`)}>
       {data.map((each, index) => {
         const nonCenteredCells = index !== 0 ? "justify-start indent-1" : "";
+        const isRankCell = index < 2;
+        const rankColor = getRankColor(volume_landmark).bg;
+        const finalBGColor = isRankCell ? rankColor : bgColor;
+        const textColor = isRankCell ? "text-white" : "text-primary-700";
         return (
           <Cell
             key={`${each}_ExerciseCell_${index}`}
             value={each}
-            className={`${bgColor} ${widths[index]} ${nonCenteredCells}`}
+            className={`${finalBGColor} ${widths[index]} ${nonCenteredCells} ${textColor}`}
             fontSize={fontSize}
           />
         );
@@ -48,13 +55,47 @@ export function ExerciseCell({
   );
 }
 
-export function WeekCell({ data, widths, bgColor, fontSize }: RowCellProps) {
+export function WeekCellGroup({
+  data,
+  widths,
+  bgColor,
+  fontSize,
+  volume_landmark,
+}: RowCellProps) {
+  const { text, bg } = getRankColor(volume_landmark);
+  return (
+    <div className={cn(`flex space-x-0.5`)}>
+      {data?.map((each, index) => {
+        const isSetsCell = index === 0;
+        const textColor = isSetsCell ? "text-white" : "text-primary-700";
+        return (
+          <Cell
+            key={`${each}_WeekCell_${index}`}
+            value={each}
+            className={cn(`${bgColor} ${widths[index]} ${textColor}`, {
+              [bg]: isSetsCell,
+            })}
+            fontSize={fontSize}
+          />
+        );
+      })}
+    </div>
+  );
+}
+
+type HeaderCellGroupProps = Omit<RowCellProps, "volume_landmark">;
+export function HeaderCellGroup({
+  data,
+  widths,
+  bgColor,
+  fontSize,
+}: HeaderCellGroupProps) {
   return (
     <div className={cn(`flex space-x-0.5`)}>
       {data?.map((each, index) => {
         return (
           <Cell
-            key={`${each}_WeekCell_${index}`}
+            key={`${each}_HeaderCellGroup_${index}`}
             value={each}
             className={`${bgColor} ${widths[index]}`}
             fontSize={fontSize}
@@ -72,7 +113,7 @@ type HeaderCellProps = {
 export function HeaderCell({ label, children }: HeaderCellProps) {
   return (
     <div className={`flex flex-col space-y-0.5 overflow-hidden rounded`}>
-      <div className={`flex justify-center text-[12px] bg-primary-700`}>
+      <div className={`flex justify-center bg-primary-700 text-[12px]`}>
         {label}
       </div>
       <div className={`flex space-x-0.5`}>{children}</div>
@@ -83,13 +124,10 @@ export function HeaderCell({ label, children }: HeaderCellProps) {
 type SessionCellProps = {
   split: SessionSplitType;
   sessionNum: number;
-  children?: ReactNode;
 };
-export function SessionCell({ split, sessionNum, children }: SessionCellProps) {
+export function SessionCell({ split, sessionNum }: SessionCellProps) {
   return (
     <div className={cn(`flex ${CELL_WIDTHS.day} pl-1`)}>
-      {children}
-
       <div
         className={cn(
           `${
@@ -114,10 +152,7 @@ type DayCellProps = {
 export function DayCell({ day }: DayCellProps) {
   return (
     <div
-      className={cn(
-        `p flex items-center justify-center py-1 pl-1 `,
-        CELL_WIDTHS.day
-      )}
+      className={cn(`flex items-center justify-center pl-1`, CELL_WIDTHS.day)}
     >
       <div className="flex w-full items-center justify-center rounded bg-primary-700 text-xs font-semibold text-primary-300">
         {day.slice(0, 3)}

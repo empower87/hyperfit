@@ -1,18 +1,17 @@
-import { ReactNode, useCallback, useMemo, useState } from "react";
-import { AddIcon, PlusIcon, SubtractIcon } from "~/assets/icons/_icons";
+import { useMemo, useState } from "react";
+import { AddIcon, SubtractIcon } from "~/assets/icons/_icons";
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
-import { cn } from "~/lib/clsx";
 import { getRankColor } from "~/utils/getIndicatorColors";
 import { getMuscleData } from "~/utils/getMuscleData";
 import getMuscleTitleForUI from "~/utils/getMuscleTitleForUI";
 import CollapsibleHeader from "../Layout/CollapsibleHeader";
 import Counter from "./components/Counter";
 import SideMenu from "./components/SideMenu";
+import TrainingDays from "./components/TrainingDay";
 import {
   MuscleEditorProvider,
   useMuscleEditorContext,
 } from "./context/MuscleEditorContext";
-import TrainingDays from "./components/TrainingDay";
 
 export default function MuscleEditor() {
   const { prioritized_muscle_list } = useTrainingProgramContext();
