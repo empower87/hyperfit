@@ -19,8 +19,10 @@ import {
   SplitType,
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
-import { getExerciseSetsOverMicrocycles, getGroupList } from "~/hooks/useTrainingProgram/utils/exercises/getExercises";
-import { getSetProgressionForExercise } from "~/hooks/useTrainingProgram/utils/exercises/setProgressionOverMicrocycles";
+import {
+  getExerciseSetsOverMicrocycles,
+  getGroupList,
+} from "~/hooks/useTrainingProgram/utils/exercises/getExercises";
 import { cn } from "~/lib/clsx";
 import StrictModeDroppable from "~/lib/react-beautiful-dnd/StrictModeDroppable";
 import { getRankColor, getSplitColor } from "~/utils/getIndicatorColors";
@@ -54,7 +56,7 @@ function Prompt({ splitOptions, isOpen, onClose }: PromptProps) {
       className="absolute flex h-full w-full items-center justify-center"
       style={{ background: "#00000082" }}
     >
-      <div className="bg-primary-700 flex w-64 flex-col p-2">
+      <div className="flex w-64 flex-col bg-primary-700 p-2">
         <div className=" flex flex-col text-xxs text-white">
           <div className=" mb-0.5 text-slate-300">
             Adding this Exercise to this day would change the Training Split for
@@ -71,7 +73,7 @@ function Prompt({ splitOptions, isOpen, onClose }: PromptProps) {
               <li
                 key={`${each}_${index}`}
                 className={cn(
-                  `bg-primary-600 flex cursor-pointer text-sm text-white hover:bg-primary-500`
+                  `flex cursor-pointer bg-primary-600 text-sm text-white hover:bg-primary-500`
                 )}
                 onClick={() => onClose(splitOptions.id, each)}
               >
@@ -118,10 +120,10 @@ function DropdownListModal({
           return (
             <li
               className={cn(
-                `border-primary-700 m-0.5 cursor-pointer border-2 text-xs text-white hover:bg-primary-500`,
+                `m-0.5 cursor-pointer border-2 border-primary-700 text-xs text-white hover:bg-primary-500`,
                 getRankColor(each.rank),
                 {
-                  [`bg-primary-500 border-white`]: each.id === selectedId,
+                  [`border-white bg-primary-500`]: each.id === selectedId,
                   [bgColor]: supersets.get(each.id),
                 }
               )}
@@ -273,9 +275,12 @@ function DaySessionItem({
   selectedMesocycleIndex,
   onSupersetUpdate,
 }: DaySessionItemProps) {
-  const { training_program_params, prioritized_muscle_list } = useTrainingProgramContext()
-  const { microcycles } = training_program_params
-  const muscleGroup = prioritized_muscle_list.filter(muscle => muscle.muscle === exercise.muscle)[0]
+  const { training_program_params, prioritized_muscle_list } =
+    useTrainingProgramContext();
+  const { microcycles } = training_program_params;
+  const muscleGroup = prioritized_muscle_list.filter(
+    (muscle) => muscle.muscle === exercise.muscle
+  )[0];
   const [bgColor, setBgColor] = useState<string>("");
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const supersets = getSupersetMap(exercises);
@@ -286,38 +291,15 @@ function DaySessionItem({
     exercise.name
   );
 
-  const setProgressionSchema =
-    exercise.setProgressionSchema[selectedMesocycleIndex];
-
-  let exerciseIndex = 0;
-  const exercisesByMuscleGroup = exercises.filter((each, index) => {
-    if (each.muscle === exercise.muscle) {
-      if (each.name === exercise.name) exerciseIndex = index;
-      return each;
-    }
-  });
-  // const setsOverWeek = getSetProgressionForExercise(
-  //   setProgressionSchema,
-  //   selectedMesocycleIndex,
-  //   exercise,
-  //   4,
-  //   exercisesByMuscleGroup.length,
-  //   exerciseIndex
-  // );
   const setsOverWeek = getExerciseSetsOverMicrocycles(
     exercise.id,
     muscleGroup,
     selectedMesocycleIndex,
     microcycles
-  )
+  );
 
-  const mesocycle_progression = exercise.mesocycle_progression;
-  // const sets = mesocycle_progression[selectedMicrocycleIndex].sets;
   const sets = setsOverWeek[selectedMicrocycleIndex];
-  console.log(exercise, muscleGroup, setsOverWeek, sets, "OK WHAT WE DOING HERE?")
-  // const reps = mesocycle_progression[selectedMicrocycleIndex].reps;
   const reps = 10;
-  // const lbs = mesocycle_progression[selectedMicrocycleIndex].weight;
   const lbs = 100;
   const modality = exercise.trainingModality;
 
@@ -366,7 +348,9 @@ function DaySessionItem({
     setBgColor(bgColor);
   }, [supersets, exercise]);
 
-  const BORDER_COLOR = exercise.supersetWith ? "border-white" : `border-primary-700`;
+  const BORDER_COLOR = exercise.supersetWith
+    ? "border-white"
+    : `border-primary-700`;
   return (
     <li className={cn(`relative mb-0.5 flex text-white`)}>
       <ItemCell
@@ -379,7 +363,7 @@ function DaySessionItem({
 
       <div
         className={cn(
-          `bg-primary-700 border-primary-700 flex space-x-0.5 overflow-hidden rounded border-2`
+          `flex space-x-0.5 overflow-hidden rounded border-2 border-primary-700 bg-primary-700`
         )}
       >
         <div className="flex flex-col space-y-0.5">
@@ -491,7 +475,7 @@ function DroppableSession({
   const onOpenDurationModal = () => setIsDurationModalOpen(true);
   const onCloseDurationModal = () => setIsDurationModalOpen(false);
   return (
-    <li className={`bg-primary-500 rounded p-1`}>
+    <li className={`rounded bg-primary-500 p-1`}>
       <div className={"flex flex-col pb-1"}>
         <div
           className={
@@ -605,7 +589,7 @@ function DayLayout({
   const { day, sessions } = session;
 
   return (
-    <li className={`border-primary-700 mb-2 rounded border-2`}>
+    <li className={`mb-2 rounded border-2 border-primary-700`}>
       <div className={`border-primary-700 bg-primary-700 p-1`}>
         <h3 className="indent-1 text-white">{day}</h3>
       </div>

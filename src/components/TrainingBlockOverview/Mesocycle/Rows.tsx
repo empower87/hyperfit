@@ -85,34 +85,25 @@ export function HeaderRow() {
       </div>
 
       <HeaderCell label="Exercise">
-        <HeaderCellGroup
-          data={CELL_WIDTHS.exercise.headers}
-          widths={CELL_WIDTHS.exercise.widths}
-          bgColor={`bg-primary-700`}
-          fontSize="text-xxs"
-        />
+        {CELL_WIDTHS.exercise.widths.map((width) => {
+          return <div className={cn(``, width)}></div>;
+        })}
       </HeaderCell>
 
       {MICROCYCLE_HEADERS.map((each, index) => {
         return (
           <HeaderCell label={each} key={`${each}_MicrocycleHeader_${index}`}>
-            <HeaderCellGroup
-              data={CELL_WIDTHS.week.headers}
-              widths={CELL_WIDTHS.week.widths}
-              bgColor={`bg-primary-700`}
-              fontSize="text-xxs"
-            />
+            {CELL_WIDTHS.week.widths.map((width) => (
+              <div className={`${width}`}></div>
+            ))}
           </HeaderCell>
         );
       })}
 
       <HeaderCell label="Deload">
-        <HeaderCellGroup
-          data={CELL_WIDTHS.week.headers}
-          widths={CELL_WIDTHS.week.widths}
-          bgColor={`bg-primary-700`}
-          fontSize="text-xxs"
-        />
+        {CELL_WIDTHS.week.widths.map((width) => (
+          <div className={`${width}`}></div>
+        ))}
       </HeaderCell>
     </div>
   );
@@ -121,13 +112,13 @@ export function HeaderRow() {
 type SessionSplitRowType = {
   exercises: ExerciseType[];
   currentMesocycleIndex: number;
-  children: ReactNode;
+  split: ReactNode;
 };
 
 function SessionSplitRow({
   exercises,
   currentMesocycleIndex,
-  children,
+  split,
 }: SessionSplitRowType) {
   const { training_program_params, prioritized_muscle_list } =
     useTrainingProgramContext();
@@ -139,7 +130,7 @@ function SessionSplitRow({
         `mb-1 flex space-x-1 overflow-hidden rounded bg-primary-600`
       )}
     >
-      {children}
+      {split}
 
       <ul className="flex flex-col space-y-0.5 overflow-hidden rounded pr-1">
         {exercises.map((exercise, index) => {
@@ -176,32 +167,32 @@ function DayHeaderRow({ day }: { day: DayType }) {
     (e, i) => `Week ${i + 1}`
   );
   return (
-    <div className={" mb-1 flex space-x-1 py-0.5 text-slate-300"}>
-      <DayCell day={day} />
-      <div className="flex overflow-hidden rounded pr-1">
-        <div className={cn(`flex space-x-0.5 pr-1`)}>
-          <HeaderCellGroup
-            data={CELL_WIDTHS.exercise.headers}
-            widths={CELL_WIDTHS.exercise.widths}
-            bgColor={`bg-primary-700`}
-            fontSize="text-xxs"
-          />
-        </div>
-        <div className="flex">
-          {MICROCYCLE_HEADERS.map((each, index) => {
-            return (
-              <div className={cn(`flex space-x-0.5`)}>
-                <HeaderCellGroup
-                  key={`${each}_MicrocycleHeader_${index}`}
-                  data={CELL_WIDTHS.week.headers}
-                  widths={CELL_WIDTHS.week.widths}
-                  bgColor={`bg-primary-700`}
-                  fontSize="text-xxs"
-                />
-              </div>
-            );
-          })}
-        </div>
+    <div className={"mb-1 flex space-x-1 py-0.5 text-slate-300"}>
+      <div className={cn(`pl-1`, CELL_WIDTHS.day)}>
+        <DayCell day={day} />
+      </div>
+
+      <div className="flex space-x-1 overflow-hidden pr-1">
+        <HeaderCellGroup
+          data={CELL_WIDTHS.exercise.headers}
+          widths={CELL_WIDTHS.exercise.widths}
+          bgColor={`bg-primary-700`}
+          fontSize="text-xxs"
+        />
+
+        {MICROCYCLE_HEADERS.map((each, index) => {
+          return (
+            <div className={cn(`flex space-x-0.5`)}>
+              <HeaderCellGroup
+                key={`${each}_MicrocycleHeader_${index}`}
+                data={CELL_WIDTHS.week.headers}
+                widths={CELL_WIDTHS.week.widths}
+                bgColor={`bg-primary-700`}
+                fontSize="text-xxs"
+              />
+            </div>
+          );
+        })}
         <div className={cn(`flex space-x-0.5`)}>
           <HeaderCellGroup
             data={CELL_WIDTHS.week.headers}
@@ -240,12 +231,13 @@ export function SessionRow({
             key={`${each.split}_${index}_session`}
             exercises={each.exercises}
             currentMesocycleIndex={currentMesocycleIndex}
-          >
-            <SessionCell
-              split={each.split}
-              sessionNum={sessionNumbers[index]}
-            />
-          </SessionSplitRow>
+            split={
+              <SessionCell
+                split={each.split}
+                sessionNum={sessionNumbers[index]}
+              />
+            }
+          />
         );
       })}
     </div>

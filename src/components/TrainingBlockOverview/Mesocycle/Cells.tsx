@@ -91,13 +91,16 @@ export function HeaderCellGroup({
   fontSize,
 }: HeaderCellGroupProps) {
   return (
-    <div className={cn(`flex space-x-0.5`)}>
+    <div className={cn(`flex space-x-0.5 `)}>
       {data?.map((each, index) => {
+        const isLeftBorderRounded = index === 0 ? "rounded-l" : "";
+        const isRightBorderRounded =
+          index === data.length - 1 ? "rounded-r" : "";
         return (
           <Cell
             key={`${each}_HeaderCellGroup_${index}`}
             value={each}
-            className={`${bgColor} ${widths[index]}`}
+            className={`${bgColor} ${widths[index]} items-center ${isLeftBorderRounded} ${isRightBorderRounded}`}
             fontSize={fontSize}
           />
         );
@@ -112,10 +115,12 @@ type HeaderCellProps = {
 };
 export function HeaderCell({ label, children }: HeaderCellProps) {
   return (
-    <div className={`flex flex-col space-y-0.5 overflow-hidden rounded`}>
-      <div className={`flex justify-center bg-primary-700 text-[12px]`}>
-        {label}
-      </div>
+    <div
+      className={cn(
+        `flex flex-col space-y-0.5 overflow-hidden rounded bg-primary-700`
+      )}
+    >
+      <div className={`flex justify-center text-[12px]`}>{label}</div>
       <div className={`flex space-x-0.5`}>{children}</div>
     </div>
   );
@@ -152,11 +157,11 @@ type DayCellProps = {
 export function DayCell({ day }: DayCellProps) {
   return (
     <div
-      className={cn(`flex items-center justify-center pl-1`, CELL_WIDTHS.day)}
+      className={cn(
+        `flex items-center justify-center rounded bg-primary-700 text-xs font-semibold text-primary-300`
+      )}
     >
-      <div className="flex w-full items-center justify-center rounded bg-primary-700 text-xs font-semibold text-primary-300">
-        {day.slice(0, 3)}
-      </div>
+      {day.slice(0, 3)}
     </div>
   );
 }
