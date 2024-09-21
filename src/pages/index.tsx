@@ -9,10 +9,10 @@ import { TrainingProgramProvider } from "~/hooks/useTrainingProgram/useTrainingP
 
 const Home: NextPage = () => {
   return (
-    <div id="modal-body" className={"bg-primary-800 flex h-full"}>
+    <div id="modal-body" className={"flex h-full bg-primary-800"}>
       <div
         className={
-          "bg-primary-700 fixed z-10 flex h-10 w-full items-center justify-center"
+          "fixed z-10 flex h-10 w-full items-center justify-center bg-primary-700"
         }
       >
         <h1 className=" text-lg font-bold text-rose-400">Hyperfit</h1>
@@ -22,7 +22,7 @@ const Home: NextPage = () => {
         <div className={`mx-auto flex h-max max-w-[1200px] px-3 py-10`}>
           <TableOfContents />
 
-          <div className="w-5/6">
+          <div className="w-[90%]">
             <Section title="CONFIGURATION">
               <Configuration>
                 <Configuration.MusclePrioritization />

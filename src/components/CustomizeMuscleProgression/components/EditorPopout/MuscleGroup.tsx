@@ -1,7 +1,10 @@
+import { ReactNode } from "react";
+import { Days } from "./Contents";
+
 const TEST_DATA = {
   id: "back-002",
   muscle: "back",
-  exercises: [[], [], [], []],
+  exercises: [[], [], [], [], [], []],
   volume: {
     landmark: "MRV",
     exercisesPerSessionSchema: 2,
@@ -14,6 +17,55 @@ const TEST_DATA = {
   },
 };
 
-export default function MuscleGroup() {
-  return <div></div>;
+type MusclePopoutProps = {
+  children: ReactNode;
+};
+
+MusclePopout.Header = Header;
+MusclePopout.Footer = Footer;
+MusclePopout.Contents = Contents;
+export default function MusclePopout({ children }: MusclePopoutProps) {
+  return (
+    <div className=" flex w-[1200px] flex-col bg-primary-600">{children}</div>
+  );
+}
+
+type HeaderProps = {
+  children: ReactNode;
+};
+function Header({ children }: HeaderProps) {
+  return (
+    <div className="flex justify-between bg-primary-700 p-1">
+      <div className="text-m indent-1 font-semibold text-white">
+        Edit Muscle
+      </div>
+      {children}
+    </div>
+  );
+}
+
+type FooterProps = {
+  children: ReactNode;
+};
+function Footer({ children }: FooterProps) {
+  return <div className="p-1">{children}</div>;
+}
+
+type ContentsPlaceholderProps = {
+  children: ReactNode;
+};
+
+const EXERCISES = TEST_DATA.exercises;
+function Contents() {
+  return (
+    <div className="flex flex-col p-1">
+      <ContentsPlaceholder>
+        <Days days={EXERCISES} />
+      </ContentsPlaceholder>
+    </div>
+  );
+}
+
+function ContentsPlaceholder({ children }: ContentsPlaceholderProps) {
+  return <div className="flex">{children}</div>;
 }

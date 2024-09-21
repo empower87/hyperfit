@@ -3,11 +3,18 @@ import { ArrowDownIcon, ArrowUpIcon } from "~/assets/icons/_icons";
 import { cn } from "~/lib/clsx";
 import { Button } from "./Buttons";
 
-type TitleProps = {
+interface TitleProps extends HTMLAttributes<HTMLDivElement> {
   label: string;
-};
-function Title({ label }: TitleProps) {
-  return <div className={`flex p-1 indent-1 text-sm text-white`}>{label}</div>;
+}
+function Title({ label, className, ...props }: TitleProps) {
+  return (
+    <div
+      {...props}
+      className={cn(`flex p-1 indent-1 text-sm text-white`, className)}
+    >
+      {label}
+    </div>
+  );
 }
 
 type CollapseButtonProps = {
@@ -39,10 +46,7 @@ export default function CollapsibleHeader({
   return (
     <div
       {...props}
-      className={cn(
-        `flex rounded-t bg-primary-700 justify-between `,
-        className
-      )}
+      className={cn(`flex justify-between bg-primary-700 `, className)}
     >
       {children}
     </div>
