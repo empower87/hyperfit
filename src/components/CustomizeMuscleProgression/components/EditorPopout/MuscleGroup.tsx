@@ -1,10 +1,10 @@
 import { ReactNode } from "react";
-import { Days } from "./Contents";
+import { ActionCard, Actions, Days } from "./Contents";
 
 const TEST_DATA = {
   id: "back-002",
   muscle: "back",
-  exercises: [[], [], [], [], [], []],
+  exercises: [[], [], [], []],
   volume: {
     landmark: "MRV",
     exercisesPerSessionSchema: 2,
@@ -58,8 +58,15 @@ type ContentsPlaceholderProps = {
 const EXERCISES = TEST_DATA.exercises;
 function Contents() {
   return (
-    <div className="flex flex-col p-1">
+    <div className="flex flex-col p-2">
       <ContentsPlaceholder>
+        <Actions>
+          <ActionCard title="Frequency">
+            <div>1</div>
+            <div>2</div>
+            <div>3</div>
+          </ActionCard>
+        </Actions>
         <Days days={EXERCISES} />
       </ContentsPlaceholder>
     </div>
@@ -67,5 +74,5 @@ function Contents() {
 }
 
 function ContentsPlaceholder({ children }: ContentsPlaceholderProps) {
-  return <div className="flex">{children}</div>;
+  return <div className="flex flex-col space-y-2">{children}</div>;
 }
