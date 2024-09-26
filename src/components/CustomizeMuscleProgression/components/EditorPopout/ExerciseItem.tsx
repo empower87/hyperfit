@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { AddIcon, SubtractIcon } from "~/assets/icons/_icons";
 import Counter from "./Counter";
 
@@ -24,39 +25,45 @@ export default function ExerciseItem({ index }: ExerciseItemProps) {
 function ExerciseDetailsHeaders({}) {
   return (
     <div className="flex text-xxs text-primary-300">
-      <div className="flex w-4/6">
+      <div className="flex p-1">
         <div>SETS</div>
-        <div>2</div>
-        <div>3</div>
-        <div>4</div>
+        <ul className="flex justify-evenly">
+          <li>2</li>
+          <li>3</li>
+          <li>4</li>
+        </ul>
       </div>
-
-      <div className="w-1/6">REPS</div>
-      <div className="w-1/6">LBS</div>
+      <div className="flex p-1">
+        <div className="">REPS</div>
+        <div className="">LBS</div>
+      </div>
     </div>
   );
 }
 
 function ExerciseDetails() {
+  const setRef = useRef<HTMLInputElement>(null);
   return (
     <div className="flex text-xxs text-primary-300">
-      <div className="flex w-1/2 p-1">
+      <div className="flex p-1">
         <Counter>
           <Counter.Button>
             <SubtractIcon fill="white" />
           </Counter.Button>
-          <Counter.Value value={3} />
+          <Counter.Value value={3} ref={setRef} />
           <Counter.Button>
             <AddIcon fill="white" />
           </Counter.Button>
         </Counter>
-        <div>2</div>
-        <div>3</div>
-        <div>4</div>
+        <ul className="flex justify-evenly">
+          <li>2</li>
+          <li>3</li>
+          <li>4</li>
+        </ul>
       </div>
 
-      <div className="flex w-1/2">
-        <div className="p-1">
+      <div className="flex p-1">
+        <div className="">
           <Counter>
             <Counter.Button>
               <SubtractIcon fill="white" />
@@ -67,7 +74,7 @@ function ExerciseDetails() {
             </Counter.Button>
           </Counter>
         </div>
-        <div className="p-1">
+        <div className="">
           <Counter>
             <Counter.Button>
               <SubtractIcon fill="white" />
@@ -78,6 +85,34 @@ function ExerciseDetails() {
             </Counter.Button>
           </Counter>
         </div>
+      </div>
+    </div>
+  );
+}
+
+type ExerciseDetailsRowProps = {
+  title: string;
+  value: number;
+};
+function ExerciseDetailsRow({ title, value }: ExerciseDetailsRowProps) {
+  return (
+    <div className="flex">
+      <div className="w-1/6 text-xs text-primary-400">{title}</div>
+      <div className="w-2/6">
+        <Counter>
+          <Counter.Button>
+            <SubtractIcon fill="white" />
+          </Counter.Button>
+          <Counter.Value value={value} />
+          <Counter.Button>
+            <AddIcon fill="white" />
+          </Counter.Button>
+        </Counter>
+      </div>
+      <div className="flex w-3/6 justify-evenly">
+        <div>2</div>
+        <div>3</div>
+        <div>4</div>
       </div>
     </div>
   );
