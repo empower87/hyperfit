@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import { PlusIcon } from "~/assets/icons/_icons";
 import { Button } from "~/components/Layout/Buttons";
+import { MuscleType } from "~/constants/workoutSplits";
 import { ExerciseType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import DayItem from "./DayItem";
 
@@ -47,6 +48,17 @@ export function ActionCard({ title, children }: ActionCardProps) {
     <div className=" flex flex-col rounded bg-primary-500/50 p-1">
       <div className="indent-1 text-sm text-white">{title}</div>
       {children}
+    </div>
+  );
+}
+
+type TitleCardProps = {
+  muscle: MuscleType;
+};
+function TitleCard({ muscle }: TitleCardProps) {
+  return (
+    <div>
+      <div>{muscle}</div>
     </div>
   );
 }
