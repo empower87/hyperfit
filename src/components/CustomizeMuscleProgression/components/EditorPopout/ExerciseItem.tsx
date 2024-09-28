@@ -7,13 +7,18 @@ type ExerciseItemProps = {
 };
 export default function ExerciseItem({ index }: ExerciseItemProps) {
   return (
-    <li className="flex flex-col bg-primary-500">
+    <li className="flex flex-col rounded bg-primary-500">
       <div className="flex ">
         <div className="flex w-6 items-center justify-center text-xs text-primary-300">
           {index + 1}
         </div>
-        <div className="indent-1 text-sm text-white">Exercise </div>
+        <div className="indent-1 text-sm text-white">Long Exercise Name</div>
       </div>
+
+      <div className="flex p-1">
+        <HeaderRow />
+      </div>
+
       <div className="flex flex-col space-y-0.5 p-1">
         {/* <ExerciseDetailsHeaders />
         <ExerciseDetails /> */}
@@ -113,9 +118,11 @@ function ExerciseDetailsRow({ type, value }: ExerciseDetailsRowProps) {
       <div className="flex w-8 items-center rounded-sm bg-primary-600 p-0.5 text-xxs font-semibold text-primary-400">
         {type}
       </div>
-      <div className="w-16">
+
+      <div className="flex w-20 justify-center">
         <ExerciseCounter type={type} initialValue={value} />
       </div>
+
       <ul className="flex justify-evenly">
         <MicrocycleRow value={value + 1} />
         <MicrocycleRow value={value + 2} />
@@ -130,8 +137,24 @@ type MicrocycleRowProps = {
 };
 function MicrocycleRow({ value }: MicrocycleRowProps) {
   return (
-    <li className="flex w-6 items-center justify-center text-xs text-primary-700">
+    <li className="flex w-8 items-center justify-center text-xs text-primary-700">
       {value}
     </li>
+  );
+}
+
+function HeaderRow() {
+  return (
+    <div className="flex items-center space-x-1">
+      <div className="w-8 p-0.5"></div>
+      <div className="flex w-20 justify-center text-xs text-primary-700">
+        Initial Value
+      </div>
+      <ul className="flex justify-evenly">
+        <MicrocycleRow value={1} />
+        <MicrocycleRow value={2} />
+        <MicrocycleRow value={3} />
+      </ul>
+    </div>
   );
 }
