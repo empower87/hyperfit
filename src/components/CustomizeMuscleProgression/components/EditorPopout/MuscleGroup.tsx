@@ -62,9 +62,17 @@ function Contents() {
       <ContentsPlaceholder>
         <Actions>
           <ActionCard title="Frequency">
-            <div>1</div>
-            <div>2</div>
-            <div>3</div>
+            <div className="flex space-x-1">
+              <div className="flex items-center justify-center rounded bg-primary-500 p-1 text-xs text-white">
+                1
+              </div>
+              <div className="flex items-center justify-center rounded bg-primary-500 p-1 text-xs text-white">
+                2
+              </div>
+              <div className="flex items-center justify-center rounded bg-primary-500 p-1 text-xs text-white">
+                3
+              </div>
+            </div>
           </ActionCard>
         </Actions>
         <Days days={EXERCISES} />
