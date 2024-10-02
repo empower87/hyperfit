@@ -1,6 +1,5 @@
 import { ReactNode, useRef } from "react";
 import { AddIcon, SubtractIcon } from "~/assets/icons/_icons";
-import { cn } from "~/lib/clsx";
 import Counter from "./Counter";
 
 type ExerciseItemProps = {
@@ -17,7 +16,6 @@ export default function ExerciseItem({ index }: ExerciseItemProps) {
       </div>
 
       <div className="flex p-1">
-        {/* <HeaderRow /> */}
         <RowLayout
           type={<></>}
           firstCell={<MicrocycleRow value={"Week 1"} />}
@@ -65,9 +63,6 @@ export default function ExerciseItem({ index }: ExerciseItemProps) {
             </>
           }
         />
-        {/* <ExerciseDetailsRow type="SETS" value={3} />
-        <ExerciseDetailsRow type="REPS" value={12} />
-        <ExerciseDetailsRow type="LBS" value={105} /> */}
       </div>
     </li>
   );
@@ -108,30 +103,6 @@ function ExerciseCounter({ type, initialValue }: ExerciseCounterProps) {
   );
 }
 
-type ExerciseDetailsRowProps = {
-  type: "SETS" | "REPS" | "LBS";
-  value: number;
-};
-function ExerciseDetailsRow({ type, value }: ExerciseDetailsRowProps) {
-  return (
-    <div className="flex items-center space-x-1">
-      <div className="flex w-8 items-center justify-center rounded-sm bg-primary-600 text-xs font-semibold text-primary-400">
-        {type}
-      </div>
-
-      <div className="w-18 flex justify-center">
-        <ExerciseCounter type={type} initialValue={value} />
-      </div>
-
-      <ul className="flex justify-evenly">
-        <MicrocycleRow value={value + 1} />
-        <MicrocycleRow value={value + 2} />
-        <MicrocycleRow value={value + 3} />
-      </ul>
-    </div>
-  );
-}
-
 type RowLayoutProps = {
   type: ReactNode;
   firstCell: ReactNode;
@@ -144,17 +115,9 @@ function RowLayout({ type, firstCell, remainingCells }: RowLayoutProps) {
         {type}
       </div>
 
-      <div className="flex w-20 justify-center">
-        {firstCell}
-        {/* <ExerciseCounter type={type} initialValue={value} /> */}
-      </div>
+      <ul className="flex w-20 justify-center">{firstCell}</ul>
 
-      <ul className="flex justify-evenly">
-        {remainingCells}
-        {/* <MicrocycleRow value={value + 1} />
-        <MicrocycleRow value={value + 2} />
-        <MicrocycleRow value={value + 3} /> */}
-      </ul>
+      <ul className="flex justify-evenly">{remainingCells}</ul>
     </div>
   );
 }
@@ -167,37 +130,5 @@ function MicrocycleRow({ value }: MicrocycleRowProps) {
     <li className="flex w-12 items-center justify-center text-xs text-primary-700">
       {value}
     </li>
-  );
-}
-
-type HeaderMicrocycleRowProps = {
-  value: number;
-  width?: string;
-};
-function HeaderMicrocycleRow({ value, width }: HeaderMicrocycleRowProps) {
-  return (
-    <div
-      className={cn(
-        `flex w-12 items-center justify-center text-xs font-semibold text-primary-700`,
-        width
-      )}
-    >
-      Week {value}
-    </div>
-  );
-}
-
-function HeaderRow() {
-  return (
-    <div className="flex items-center space-x-1">
-      <div className="w-8 p-0.5"></div>
-      <HeaderMicrocycleRow value={1} width="w-18" />
-
-      <div className="flex space-x-1">
-        <HeaderMicrocycleRow value={2} />
-        <HeaderMicrocycleRow value={3} />
-        <HeaderMicrocycleRow value={4} />
-      </div>
-    </div>
   );
 }
