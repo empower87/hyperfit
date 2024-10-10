@@ -9,10 +9,7 @@ import { ProgramConfigProvider } from "./hooks/useProgramConfig";
 export default function Configuration({ children }: { children: ReactNode }) {
   return (
     <ProgramConfigProvider>
-      <div
-        id="configuration"
-        className={`flex h-full w-full flex-col space-x-1 sm:flex-row`}
-      >
+      <div id="configuration" className={`flex flex-col space-x-1 sm:flex-row`}>
         {children}
       </div>
     </ProgramConfigProvider>

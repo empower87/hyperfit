@@ -5,6 +5,7 @@ type CardProps = {
   contents: ReactNode;
   footer?: ReactNode;
 };
+
 export default function Card({ header, contents, footer }: CardProps) {
   return (
     <div className="space-y-1 rounded-md bg-primary-600 p-4">
