@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, useCallback } from "react";
 import { DragDropContext, Draggable } from "react-beautiful-dnd";
 import { DragHandleIcon } from "~/assets/icons/_icons";
 import type { MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
@@ -12,9 +12,16 @@ type ItemProps = {
   muscle: MusclePriorityType;
   index: number;
   handle: ReactNode;
+  onMuscleClick?: (id: MusclePriorityType["id"]) => void;
 };
-function Item({ muscle, index, handle }: ItemProps) {
+function Item({ muscle, index, handle, onMuscleClick }: ItemProps) {
   const colors = getRankColor(muscle.volume.landmark);
+
+  const onClickHandler = useCallback(() => {
+    if (onMuscleClick) {
+      onMuscleClick(muscle.id);
+    }
+  }, [onMuscleClick, muscle]);
 
   return (
     <div className="flex space-x-1">
@@ -22,6 +29,7 @@ function Item({ muscle, index, handle }: ItemProps) {
         {index + 1}
       </div>
       <div
+        onClick={onClickHandler}
         className={`flex ${colors.bg} w-64 cursor-pointer justify-between rounded-md p-1 text-sm text-white hover:scale-x-105 hover:scale-y-110`}
       >
         <div className={`flex space-x-1`}>
@@ -95,7 +103,12 @@ function Item({ muscle, index, handle }: ItemProps) {
 //   );
 // }
 
-export default function MusclePrioritization() {
+type MusclePrioritizationProps = {
+  onMuscleClick?: (id: MusclePriorityType["id"]) => void;
+};
+export default function MusclePrioritization({
+  onMuscleClick,
+}: MusclePrioritizationProps) {
   const { muscle_priority_list, onPriorityListDragEnd } =
     useProgramConfigContext();
 
@@ -121,6 +134,7 @@ export default function MusclePrioritization() {
                       <Item
                         muscle={each}
                         index={index}
+                        onMuscleClick={onMuscleClick}
                         handle={
                           <div
                             {...provided.dragHandleProps}

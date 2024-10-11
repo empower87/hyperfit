@@ -17,7 +17,7 @@ export default function Configuration({ children }: { children: ReactNode }) {
 }
 
 function Layout({ children }: { children: ReactNode }) {
-  return <div className={`flex flex-col space-y-1`}>{children}</div>;
+  return <div className={`flex flex-col space-y-3`}>{children}</div>;
 }
 
 Configuration.Actions = Actions;

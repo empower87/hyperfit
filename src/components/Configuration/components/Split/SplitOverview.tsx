@@ -254,7 +254,7 @@ function SelectSession({ session, splits, onSelect }: SelectSessionProps) {
   );
 }
 
-function Split() {
+export function Split() {
   return (
     <div className="flex items-center space-x-2 p-2 text-sm text-white">
       <div className={`text-xs text-slate-300`}>Choose A Training Split: </div>
@@ -269,3 +269,6 @@ SplitOverview.SplitWeek = TrainingWeek;
 export default function SplitOverview({ children }: { children: ReactNode }) {
   return <CardS title="WORKOUT SPLIT">{children}</CardS>;
 }
+// export default function SplitOverview({ children }: { children: ReactNode }) {
+//   return <CardS title="WORKOUT SPLIT">{children}</CardS>;
+// }
