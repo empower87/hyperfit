@@ -5,8 +5,12 @@ import {
   Split,
   TrainingWeek,
 } from "~/components/Configuration/components/Split/SplitOverview";
-import { useProgramConfigContext } from "~/components/Configuration/hooks/useProgramConfig";
+import {
+  ProgramConfigProvider,
+  useProgramConfigContext,
+} from "~/components/Configuration/hooks/useProgramConfig";
 import { Days } from "~/components/CustomizeMuscleProgression/components/EditorPopout/Contents";
+import { Button } from "~/components/ui/button";
 import { MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
 import { cn } from "~/lib/clsx";
@@ -33,51 +37,54 @@ export default function ProgramConfig() {
   const onMuscleClick = (id: MusclePriorityType["id"]) => {
     setSelectedMuscleId(id);
   };
-
+  const days = prioritized_muscle_list.filter(
+    (muscle) => muscle.id === selectedMuscleId
+  )[0]?.exercises;
+  console.log(days, prioritized_muscle_list, "WHAT DISS?");
   return (
-    <div className="mt-6 flex flex-col">
-      <h1 className="mb-5 text-white">Program Configuration</h1>
-      <div className="flex space-x-3">
-        <div className="h-screen rounded-lg bg-primary-700 p-4">
-          <h2 className="mb-5 border-b border-primary-500 pb-2 text-primary-300">
-            1. Priority
-          </h2>
-          <MusclePrioritization onMuscleClick={onMuscleClick} />
-        </div>
-        {/* <TableOfContents /> */}
+    <ProgramConfigProvider>
+      <div className="mt-6 flex flex-col">
+        <h1 className="mb-5 text-white">Program Configuration</h1>
+        <div className="flex space-x-3">
+          <div className="h-screen rounded-lg bg-primary-700 p-4">
+            <h2 className="mb-5 border-b border-primary-500 pb-2 text-primary-300">
+              1. Priority
+            </h2>
+            <MusclePrioritization onMuscleClick={onMuscleClick} />
+          </div>
+          {/* <TableOfContents /> */}
 
-        <div className="flex flex-col space-y-3">
-          <Configuration>
-            <Configuration.Layout>
-              <div className="flex space-x-3">
-                <TempCard header="2. Frequency">
-                  <FrequencySelection />
-                </TempCard>
+          <div className="flex flex-col space-y-3">
+            <Configuration>
+              <Configuration.Layout>
+                <div className="flex space-x-3">
+                  <TempCard header="2. Frequency">
+                    <FrequencySelection />
+                  </TempCard>
 
-                <TempCard header="3. Split">
-                  <Split />
-                </TempCard>
-              </div>
+                  <TempCard header="3. Split">
+                    <Split />
+                  </TempCard>
+                </div>
 
-              <TrainingWeek />
-              {/* <Configuration.Actions /> */}
-            </Configuration.Layout>
-          </Configuration>
+                <TrainingWeek />
+                <Configuration.Actions />
+              </Configuration.Layout>
+            </Configuration>
 
-          <div className="flex rounded-lg bg-primary-500 p-4">
-            {selectedMuscleId ? (
-              <Days
-                days={
-                  prioritized_muscle_list.filter(
-                    (muscle) => muscle.id === selectedMuscleId
-                  )[0].exercises
-                }
-              />
-            ) : null}
+            <div className="flex rounded-lg bg-primary-500 p-4">
+              {/* {selectedMuscleId ? (
+                <Card>
+                  <CardHeader>Day</CardHeader>
+                  <CardContent>STUFF</CardContent>
+                </Card>
+              ) : null} */}
+              {selectedMuscleId ? <Days days={days} /> : null}
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </ProgramConfigProvider>
   );
 }
 
@@ -109,18 +116,35 @@ function FrequencySelection() {
     [frequency, onFrequencyChange]
   );
 
-  const selectedButtonClasses = "scale-110 border-secondary-300";
+  const selectedButtonClasses = "scale-110 border-secondary-300 bg-primary-500";
   return (
     <div className="flex">
       <div></div>
       <div className="flex space-x-1">
         {OPTIONS.map((option) => {
           return (
-            <FrequencyButton
-              value={option}
-              className={option === frequency[0] ? selectedButtonClasses : ""}
+            <Button
+              variant="outline"
+              className={
+                option === frequency[0]
+                  ? selectedButtonClasses
+                  : "bg-primary-500"
+              }
               onClick={() => handleSelectChange(option)}
-            />
+            >
+              <div
+                className={`${
+                  option === frequency[0] ? "text-white" : "text-primary-300"
+                }`}
+              >
+                {option}
+              </div>
+            </Button>
+            // <FrequencyButton
+            //   value={option}
+            //   className={option === frequency[0] ? selectedButtonClasses : ""}
+            //   onClick={() => handleSelectChange(option)}
+            // />
           );
         })}
       </div>

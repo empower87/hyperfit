@@ -4,36 +4,33 @@ import MuscleEditor from "~/components/CustomizeMuscleProgression/MuscleEditor";
 import { SectionH2 as Section } from "~/components/Layout/Sections";
 import TrainingBlockOverview from "~/components/TrainingBlockOverview";
 import TrainingWeekOverview from "~/components/TrainingWeekOverview/TrainingWeekOverview";
-import { TrainingProgramProvider } from "~/hooks/useTrainingProgram/useTrainingProgram";
 const Home: NextPage = () => {
   return (
     <div id="modal-body" className={"h-full w-full bg-primary-800"}>
-      <TrainingProgramProvider>
-        <Configuration>
-          <Configuration.Layout>
-            <Configuration.Periodization />
-            <Configuration.Split>
-              <Configuration.SplitSelect />
-              <Configuration.SplitWeek />
-            </Configuration.Split>
+      <Configuration>
+        <Configuration.Layout>
+          <Configuration.Periodization />
+          <Configuration.Split>
+            <Configuration.SplitSelect />
+            <Configuration.SplitWeek />
+          </Configuration.Split>
 
-            <Configuration.Actions />
-          </Configuration.Layout>
-          <Configuration.MusclePrioritization />
-        </Configuration>
+          <Configuration.Actions />
+        </Configuration.Layout>
+        <Configuration.MusclePrioritization />
+      </Configuration>
 
-        <Section title="CUSTOMIZE MUSCLE PROGRESSION">
-          <MuscleEditor />
-        </Section>
+      <Section title="CUSTOMIZE MUSCLE PROGRESSION">
+        <MuscleEditor />
+      </Section>
 
-        <Section title="TRAINING WEEK OVERVIEW">
-          <TrainingWeekOverview />
-        </Section>
+      <Section title="TRAINING WEEK OVERVIEW">
+        <TrainingWeekOverview />
+      </Section>
 
-        <Section title="TRAINING BLOCK OVERVIEW">
-          <TrainingBlockOverview />
-        </Section>
-      </TrainingProgramProvider>
+      <Section title="TRAINING BLOCK OVERVIEW">
+        <TrainingBlockOverview />
+      </Section>
     </div>
   );
 };
