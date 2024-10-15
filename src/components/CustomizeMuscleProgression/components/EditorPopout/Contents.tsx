@@ -1,9 +1,10 @@
 import { ReactNode } from "react";
 import { PlusIcon } from "~/assets/icons/_icons";
 import { Button } from "~/components/Layout/Buttons";
-import { Card, CardContent, CardHeader } from "~/components/ui/card";
+import { Card } from "~/components/ui/card";
 import { MuscleType } from "~/constants/workoutSplits";
 import { ExerciseType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
+import DayItem from "./DayItem";
 
 type DaysProps = {
   days: ExerciseType[][];
@@ -18,12 +19,14 @@ export function Days({ days }: DaysProps) {
       <div className="flex">
         <ul className="flex space-x-2 overflow-x-auto p-1">
           {days.map((day, dayIndex) => {
-            // return <DayItem index={dayIndex} />;
             return (
-              <Card>
-                <CardHeader>Day {dayIndex}</CardHeader>
-                <CardContent>STUFF</CardContent>
-              </Card>
+              // <Card>
+              //   <CardHeader>Day {dayIndex + 1}</CardHeader>
+              //   <CardContent>
+              //     <ExerciseItem index={1} />
+              //   </CardContent>
+              // </Card>
+              <DayItem index={dayIndex} />
             );
           })}
           <Card className="flex items-center justify-center bg-primary-500">

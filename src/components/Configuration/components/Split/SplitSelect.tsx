@@ -25,15 +25,15 @@ const SPLITS = {
 };
 
 function SelectSplit({ selectedOption, onSelect }: SelectSplitProps) {
-  const handleSelectChange = (event: string) => {
-    // const value = event.target.value;
+  const handleSelectChange = (value: string) => {
     const result: SplitSessionsNameType | undefined = (
       Object.keys(SPLITS) as (keyof typeof SPLITS)[]
-    ).find((key) => SPLITS[key] === event);
-    console.log(result, event, "WHAT?");
+    ).find((key) => key === value);
+    console.log(value, result, "WHAT?");
     if (!result) return;
     onSelect(result);
   };
+
   // const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
   //   const value = event.target.value;
   //   const result: SplitSessionsNameType | undefined = (
@@ -47,20 +47,13 @@ function SelectSplit({ selectedOption, onSelect }: SelectSplitProps) {
   const selected = SPLITS[selectedOption];
   return (
     <div className="flex w-full">
-      <Select>
+      <Select onValueChange={handleSelectChange}>
         <SelectTrigger className="w-[180px]">
           <SelectValue placeholder={SPLITS.OPT} />
         </SelectTrigger>
         <SelectContent>
           {Object.entries(SPLITS).map((split, index) => {
-            return (
-              <SelectItem
-                value={split[0]}
-                onSelect={() => handleSelectChange(split[0])}
-              >
-                {split[1]}
-              </SelectItem>
-            );
+            return <SelectItem value={split[0]}>{split[1]}</SelectItem>;
           })}
         </SelectContent>
       </Select>
