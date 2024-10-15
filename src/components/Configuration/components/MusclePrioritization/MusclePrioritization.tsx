@@ -2,6 +2,7 @@ import { ReactNode, useCallback } from "react";
 import { DragDropContext, Draggable } from "react-beautiful-dnd";
 import { DragHandleIcon } from "~/assets/icons/_icons";
 import type { MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
+import { cn } from "~/lib/clsx";
 import StrictModeDroppable from "~/lib/react-beautiful-dnd/StrictModeDroppable";
 import { getRankColor } from "~/utils/getIndicatorColors";
 import getMuscleTitleForUI from "~/utils/getMuscleTitleForUI";
@@ -12,9 +13,28 @@ type ItemProps = {
   muscle: MusclePriorityType;
   index: number;
   handle: ReactNode;
+  isCollapsed: boolean;
   onMuscleClick?: (id: MusclePriorityType["id"]) => void;
 };
-function Item({ muscle, index, handle, onMuscleClick }: ItemProps) {
+
+type CollapsedItemProps = {
+  bgColor: string;
+  text: string;
+};
+
+function CollapsedItem({ bgColor, text }: CollapsedItemProps) {
+  const clippedText = text.slice(0, 4);
+  return (
+    <div className={cn(`rounded p-1 text-white`, bgColor)}>{clippedText}</div>
+  );
+}
+function Item({
+  muscle,
+  index,
+  handle,
+  isCollapsed,
+  onMuscleClick,
+}: ItemProps) {
   const colors = getRankColor(muscle.volume.landmark);
 
   const onClickHandler = useCallback(() => {
@@ -23,6 +43,8 @@ function Item({ muscle, index, handle, onMuscleClick }: ItemProps) {
     }
   }, [onMuscleClick, muscle]);
 
+  if (isCollapsed)
+    return <CollapsedItem bgColor={colors.bg} text={muscle.muscle} />;
   return (
     <div className="flex space-x-1">
       <div className="flex w-4 items-center text-xs font-semibold text-primary-300">
@@ -104,9 +126,11 @@ function Item({ muscle, index, handle, onMuscleClick }: ItemProps) {
 // }
 
 type MusclePrioritizationProps = {
+  isCollapsed: boolean;
   onMuscleClick?: (id: MusclePriorityType["id"]) => void;
 };
 export default function MusclePrioritization({
+  isCollapsed,
   onMuscleClick,
 }: MusclePrioritizationProps) {
   const { muscle_priority_list, onPriorityListDragEnd } =
@@ -135,6 +159,7 @@ export default function MusclePrioritization({
                         muscle={each}
                         index={index}
                         onMuscleClick={onMuscleClick}
+                        isCollapsed={isCollapsed}
                         handle={
                           <div
                             {...provided.dragHandleProps}

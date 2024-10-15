@@ -17,7 +17,7 @@ const Home: NextPage = () => {
 
           <Configuration.Actions />
         </Configuration.Layout>
-        <Configuration.MusclePrioritization />
+        <Configuration.MusclePrioritization isCollapsed={false} />
       </Configuration>
 
       <Section title="CUSTOMIZE MUSCLE PROGRESSION">

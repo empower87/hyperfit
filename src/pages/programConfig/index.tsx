@@ -1,3 +1,4 @@
+import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
 import { HTMLAttributes, ReactNode, useCallback, useState } from "react";
 import Configuration from "~/components/Configuration";
 import MusclePrioritization from "~/components/Configuration/components/MusclePrioritization/MusclePrioritization";
@@ -11,6 +12,7 @@ import {
 } from "~/components/Configuration/hooks/useProgramConfig";
 import { Days } from "~/components/CustomizeMuscleProgression/components/EditorPopout/Contents";
 import { Button } from "~/components/ui/button";
+import { Card, CardContent, CardHeader } from "~/components/ui/card";
 import { MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
 import { cn } from "~/lib/clsx";
@@ -33,38 +35,69 @@ export default function ProgramConfig() {
   const { prioritized_muscle_list } = useTrainingProgramContext();
   const [selectedMuscleId, setSelectedMuscleId] =
     useState<MusclePriorityType["id"]>("");
+  const [isPriorityListCollapsed, setIsPriorityListCollapsed] = useState(false);
+  const onCollapsePriorityList = () => setIsPriorityListCollapsed(true);
+  const onExpandPriorityList = () => setIsPriorityListCollapsed(false);
 
   const onMuscleClick = (id: MusclePriorityType["id"]) => {
     setSelectedMuscleId(id);
   };
   const days = prioritized_muscle_list.filter(
     (muscle) => muscle.id === selectedMuscleId
-  )[0]?.exercises;
-  console.log(days, prioritized_muscle_list, "WHAT DISS?");
+  )[0];
+
   return (
     <ProgramConfigProvider>
       <div className="mt-6 flex flex-col">
         <h1 className="mb-5 text-white">Program Configuration</h1>
         <div className="flex space-x-3">
-          <div className="h-screen rounded-lg bg-primary-700 p-4">
-            <h2 className="mb-5 border-b border-primary-500 pb-2 text-primary-300">
-              1. Priority
-            </h2>
-            <MusclePrioritization onMuscleClick={onMuscleClick} />
-          </div>
-          {/* <TableOfContents /> */}
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between border-b border-primary-500 pb-2 ">
+                <h2 className="">1. Priority</h2>
+                {isPriorityListCollapsed ? (
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={onExpandPriorityList}
+                  >
+                    <ChevronRightIcon className="" />
+                  </Button>
+                ) : (
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={onCollapsePriorityList}
+                  >
+                    <ChevronLeftIcon className="" />
+                  </Button>
+                )}
+              </div>
+            </CardHeader>
+            <CardContent>
+              <MusclePrioritization
+                onMuscleClick={onMuscleClick}
+                isCollapsed={isPriorityListCollapsed}
+              />
+            </CardContent>
+          </Card>
 
           <div className="flex flex-col space-y-3">
             <Configuration>
               <Configuration.Layout>
                 <div className="flex space-x-3">
-                  <TempCard header="2. Frequency">
-                    <FrequencySelection />
-                  </TempCard>
-
-                  <TempCard header="3. Split">
-                    <Split />
-                  </TempCard>
+                  <Card>
+                    <CardHeader>2. Frequency</CardHeader>
+                    <CardContent>
+                      <FrequencySelection />
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardHeader>3. Split</CardHeader>
+                    <CardContent>
+                      <Split />
+                    </CardContent>
+                  </Card>
                 </div>
 
                 <TrainingWeek />
@@ -79,7 +112,7 @@ export default function ProgramConfig() {
                   <CardContent>STUFF</CardContent>
                 </Card>
               ) : null} */}
-              {selectedMuscleId ? <Days days={days} /> : null}
+              {selectedMuscleId ? <Days muscleGroup={days} /> : null}
             </div>
           </div>
         </div>

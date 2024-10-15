@@ -45,12 +45,20 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #64748b;
 }
+/* primary-800 = 217 32.6% 17.5% */
+/* primary-700 = 215 25% 26.7% */
+/* primary-600 = 215 19.3% 34.5% */
+
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --background: 217 32.6% 17.5%;
+    /* --background: 0 0% 100%; */
+    --foreground: 215 25% 26.7%;
+    /* --foreground: 222.2 84% 4.9%; */
+    --card: 215 25% 26.7%;
+    /* --card: 0 0% 100%; */
+    --card-foreground: 0 0% 100%;
+    /* --card-foreground: 222.2 84% 4.9%; */
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
     --primary: 222.2 47.4% 11.2%;
@@ -59,8 +67,10 @@ body {
     --secondary-foreground: 222.2 47.4% 11.2%;
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 215 19.3% 34.5%;
+    /* --accent: 210 40% 96.1%; */
+    --accent-foreground: 0 0% 100%%;
+    /* --accent-foreground: 222.2 47.4% 11.2%; */
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
     --border: 214.3 31.8% 91.4%;
@@ -75,6 +85,7 @@ body {
   }
   .dark {
     --background: 222.2 84% 4.9%;
+    /* --background: 222.2 84% 4.9%; */
     --foreground: 210 40% 98%;
     --card: 222.2 84% 4.9%;
     --card-foreground: 210 40% 98%;

@@ -1,18 +1,20 @@
 import { ReactNode, useRef } from "react";
 import { AddIcon, SubtractIcon } from "~/assets/icons/_icons";
+import { ExerciseType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import Counter from "./Counter";
 
 type ExerciseItemProps = {
   index: number;
+  exercise: ExerciseType;
 };
-export default function ExerciseItem({ index }: ExerciseItemProps) {
+export default function ExerciseItem({ index, exercise }: ExerciseItemProps) {
   return (
     <li className="flex flex-col rounded bg-primary-500">
       <div className="flex ">
         <div className="flex w-6 items-center justify-center text-xs text-primary-300">
           {index + 1}
         </div>
-        <div className="indent-1 text-sm text-white">Long Exercise Name</div>
+        <div className="indent-1 text-sm text-white">{exercise.name}</div>
       </div>
 
       <div className="flex p-1">

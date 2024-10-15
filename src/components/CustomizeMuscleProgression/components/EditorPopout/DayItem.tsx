@@ -1,19 +1,21 @@
 import { Card, CardContent, CardHeader } from "~/components/ui/card";
+import { ExerciseType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import ExerciseItem from "./ExerciseItem";
 
 type DayItemProps = {
   index: number;
+  exercises: ExerciseType[];
 };
 
-export default function DayItem({ index }: DayItemProps) {
-  const sessions: number[] = [1, 2];
+export default function DayItem({ index, exercises }: DayItemProps) {
+  const sessions: number[] = [1];
   return (
     <Card>
       <CardHeader>Day {index + 1}</CardHeader>
       <CardContent>
         <ul className="space-y-2">
           {sessions.map((session, sessionIndex) => {
-            return <Session index={sessionIndex} />;
+            return <Session index={sessionIndex} exercises={exercises} />;
           })}
         </ul>
       </CardContent>
@@ -40,9 +42,9 @@ export default function DayItem({ index }: DayItemProps) {
 
 type SessionProps = {
   index: number;
+  exercises: ExerciseType[];
 };
-function Session({ index }: SessionProps) {
-  const exercises: number[] = [1];
+function Session({ index, exercises }: SessionProps) {
   return (
     <div className="">
       <div className="flex pb-2 indent-1 text-sm text-white">
@@ -50,7 +52,7 @@ function Session({ index }: SessionProps) {
       </div>
       <ul className="space-y-1 p-1">
         {exercises.map((exercise, exerciseIndex) => {
-          return <ExerciseItem index={exerciseIndex} />;
+          return <ExerciseItem index={exerciseIndex} exercise={exercise} />;
         })}
       </ul>
     </div>
