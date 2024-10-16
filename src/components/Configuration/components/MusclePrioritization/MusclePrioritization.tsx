@@ -25,7 +25,7 @@ type CollapsedItemProps = {
 function CollapsedItem({ bgColor, text }: CollapsedItemProps) {
   const clippedText = text.slice(0, 4);
   return (
-    <div className={cn(`rounded p-1 text-white`, bgColor)}>{clippedText}</div>
+    <div className={cn(`rounded p-1 text-sm text-white`, bgColor)}>{text}</div>
   );
 }
 function Item({
@@ -36,15 +36,14 @@ function Item({
   onMuscleClick,
 }: ItemProps) {
   const colors = getRankColor(muscle.volume.landmark);
-
+  const title = getMuscleTitleForUI(muscle.muscle);
   const onClickHandler = useCallback(() => {
     if (onMuscleClick) {
       onMuscleClick(muscle.id);
     }
   }, [onMuscleClick, muscle]);
 
-  if (isCollapsed)
-    return <CollapsedItem bgColor={colors.bg} text={muscle.muscle} />;
+  if (isCollapsed) return <CollapsedItem bgColor={colors.bg} text={title} />;
   return (
     <div className="flex space-x-1">
       <div className="flex w-4 items-center text-xs font-semibold text-primary-300">
@@ -57,9 +56,7 @@ function Item({
         <div className={`flex space-x-1`}>
           {handle}
 
-          <div className="flex w-20 items-center justify-start">
-            {getMuscleTitleForUI(muscle.muscle)}
-          </div>
+          <div className="flex w-20 items-center justify-start">{title}</div>
           <div className="flex items-center justify-center px-1">
             {`${muscle.frequency.range[0]} - ${muscle.frequency.range[1]}`}
           </div>

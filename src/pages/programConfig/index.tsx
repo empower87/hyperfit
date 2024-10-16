@@ -1,5 +1,5 @@
 import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
-import { HTMLAttributes, ReactNode, useCallback, useState } from "react";
+import { useCallback, useState } from "react";
 import Configuration from "~/components/Configuration";
 import MusclePrioritization from "~/components/Configuration/components/MusclePrioritization/MusclePrioritization";
 import {
@@ -12,25 +12,10 @@ import {
 } from "~/components/Configuration/hooks/useProgramConfig";
 import { Days } from "~/components/CustomizeMuscleProgression/components/EditorPopout/Contents";
 import { Button } from "~/components/ui/button";
-import { Card, CardContent, CardHeader } from "~/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
-import { cn } from "~/lib/clsx";
 
-type TempCardProps = {
-  header: string;
-  children: ReactNode;
-};
-function TempCard({ header, children }: TempCardProps) {
-  return (
-    <div className="rounded-lg bg-primary-700 p-4">
-      <h2 className="mb-5 border-b border-primary-500 pb-2 text-primary-300">
-        {header}
-      </h2>
-      {children}
-    </div>
-  );
-}
 export default function ProgramConfig() {
   const { prioritized_muscle_list } = useTrainingProgramContext();
   const [selectedMuscleId, setSelectedMuscleId] =
@@ -53,8 +38,8 @@ export default function ProgramConfig() {
         <div className="flex space-x-3">
           <Card>
             <CardHeader>
-              <div className="flex items-center justify-between border-b border-primary-500 pb-2 ">
-                <h2 className="">1. Priority</h2>
+              <div className="flex items-center justify-between space-x-2 border-b border-primary-500 pb-2 ">
+                <CardTitle>1. Priority</CardTitle>
                 {isPriorityListCollapsed ? (
                   <Button
                     variant="outline"
@@ -102,16 +87,22 @@ export default function ProgramConfig() {
 
                 <TrainingWeek />
                 <Configuration.Actions />
+                {/* <Tabs defaultValue="training-week" className="w-full">
+                  <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="training-week">
+                      Training Week Overview
+                    </TabsTrigger>
+                    <TabsTrigger value="edit-muscle">Edit Muscle</TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="training-week"></TabsContent>
+                  <TabsContent value="edit-muscle">
+         
+                  </TabsContent>
+                </Tabs> */}
               </Configuration.Layout>
             </Configuration>
 
-            <div className="flex rounded-lg bg-primary-500 p-4">
-              {/* {selectedMuscleId ? (
-                <Card>
-                  <CardHeader>Day</CardHeader>
-                  <CardContent>STUFF</CardContent>
-                </Card>
-              ) : null} */}
+            <div className="flex overflow-x-scroll rounded-lg bg-primary-500 p-4">
               {selectedMuscleId ? <Days muscleGroup={days} /> : null}
             </div>
           </div>
@@ -123,22 +114,6 @@ export default function ProgramConfig() {
 
 const OPTIONS = [1, 2, 3, 4, 5, 6, 7];
 
-interface FrequencyButtonProps extends HTMLAttributes<HTMLButtonElement> {
-  value: number;
-}
-function FrequencyButton({ value, className, ...props }: FrequencyButtonProps) {
-  return (
-    <button
-      {...props}
-      className={cn(
-        "h-8 w-8 rounded-md border border-primary-500 bg-primary-600 text-sm font-semibold text-primary-300 hover:bg-primary-500",
-        className
-      )}
-    >
-      {value}
-    </button>
-  );
-}
 function FrequencySelection() {
   const { frequency, onFrequencyChange } = useProgramConfigContext();
 
@@ -149,20 +124,16 @@ function FrequencySelection() {
     [frequency, onFrequencyChange]
   );
 
-  const selectedButtonClasses = "scale-110 border-secondary-300 bg-primary-500";
+  const selectedButtonClasses = "scale-110 border-secondary-300";
   return (
     <div className="flex">
       <div></div>
-      <div className="flex space-x-1">
+      <div className="flex space-x-2">
         {OPTIONS.map((option) => {
           return (
             <Button
               variant="outline"
-              className={
-                option === frequency[0]
-                  ? selectedButtonClasses
-                  : "bg-primary-500"
-              }
+              className={option === frequency[0] ? selectedButtonClasses : ""}
               onClick={() => handleSelectChange(option)}
             >
               <div

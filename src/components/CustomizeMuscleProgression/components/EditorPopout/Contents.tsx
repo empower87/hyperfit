@@ -10,7 +10,7 @@ type DaysProps = {
   muscleGroup: MusclePriorityType;
 };
 export function Days({ muscleGroup }: DaysProps) {
-  const exercises = muscleGroup.exercises;
+  const exercises = muscleGroup?.exercises;
   return (
     <div className="flex w-full flex-col rounded bg-primary-500/50 p-1">
       <div className="flex p-1 indent-1 text-sm text-white">
@@ -18,8 +18,8 @@ export function Days({ muscleGroup }: DaysProps) {
       </div>
 
       <div className="flex">
-        <ul className="flex space-x-2 overflow-x-auto p-1">
-          {exercises.map((day, dayIndex) => {
+        <ul className="flex w-full space-x-2 overflow-x-auto p-1">
+          {exercises?.map((day, dayIndex) => {
             return (
               // <Card>
               //   <CardHeader>Day {dayIndex + 1}</CardHeader>
