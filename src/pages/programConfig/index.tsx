@@ -16,17 +16,22 @@ import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
 
+const TABS = ["training-week-overview", "edit-muscle"];
+
 export default function ProgramConfig() {
   const { prioritized_muscle_list } = useTrainingProgramContext();
   const [selectedMuscleId, setSelectedMuscleId] =
     useState<MusclePriorityType["id"]>("");
   const [isPriorityListCollapsed, setIsPriorityListCollapsed] = useState(false);
+  const [selectedTab, setSelectedTab] = useState("training-week-overview");
   const onCollapsePriorityList = () => setIsPriorityListCollapsed(true);
   const onExpandPriorityList = () => setIsPriorityListCollapsed(false);
+  const onSelectTab = (tab: string) => setSelectedTab(tab);
 
   const onMuscleClick = (id: MusclePriorityType["id"]) => {
     setSelectedMuscleId(id);
   };
+
   const days = prioritized_muscle_list.filter(
     (muscle) => muscle.id === selectedMuscleId
   )[0];
@@ -85,30 +90,60 @@ export default function ProgramConfig() {
                   </Card>
                 </div>
 
-                <TrainingWeek />
-                <Configuration.Actions />
-                {/* <Tabs defaultValue="training-week" className="w-full">
-                  <TabsList className="grid w-full grid-cols-2">
-                    <TabsTrigger value="training-week">
-                      Training Week Overview
-                    </TabsTrigger>
-                    <TabsTrigger value="edit-muscle">Edit Muscle</TabsTrigger>
-                  </TabsList>
-                  <TabsContent value="training-week"></TabsContent>
-                  <TabsContent value="edit-muscle">
-         
-                  </TabsContent>
-                </Tabs> */}
+                {/* <TrainingWeek /> */}
+                {/* <Configuration.Actions /> */}
               </Configuration.Layout>
             </Configuration>
 
-            <div className="flex overflow-x-scroll rounded-lg bg-primary-500 p-4">
-              {selectedMuscleId ? <Days muscleGroup={days} /> : null}
+            <div className="flex flex-col rounded-lg">
+              <UnderlineTabs
+                tabList={TABS}
+                selectedTab={selectedTab}
+                onSelectTab={onSelectTab}
+              />
+              {selectedTab === "training-week-overview" ? (
+                <TrainingWeek />
+              ) : null}
+              {selectedMuscleId && selectedTab === "edit-muscle" ? (
+                <Days muscleGroup={days} />
+              ) : null}
             </div>
           </div>
         </div>
       </div>
     </ProgramConfigProvider>
+  );
+}
+
+type UnderlineTabsProps = {
+  tabList: string[];
+  selectedTab: string;
+  onSelectTab: (tab: string) => void;
+};
+function UnderlineTabs({
+  tabList,
+  selectedTab,
+  onSelectTab,
+}: UnderlineTabsProps) {
+  const unselectedClasses = "rounded-none text-primary-300 hover:bg-background";
+  const selectedClasses =
+    "border-b border-foreground rounded-none hover:bg-background";
+  return (
+    <div className="mb-6 w-full border-b border-primary-600">
+      {tabList.map((tab, index) => {
+        const isSelected = tab === selectedTab;
+
+        return (
+          <Button
+            variant="ghost"
+            className={isSelected ? selectedClasses : unselectedClasses}
+            onClick={() => onSelectTab(tab)}
+          >
+            {tab}
+          </Button>
+        );
+      })}
+    </div>
   );
 }
 
