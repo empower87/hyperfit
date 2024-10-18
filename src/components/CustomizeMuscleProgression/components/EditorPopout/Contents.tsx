@@ -12,31 +12,27 @@ type DaysProps = {
 export function Days({ muscleGroup }: DaysProps) {
   const exercises = muscleGroup?.exercises;
   return (
-    <div className="flex w-full flex-col rounded bg-primary-500/50 p-1">
-      <div className="flex p-1 indent-1 text-sm text-white">
-        Training Day Frequency
-      </div>
+    <div className="flex w-full flex-col rounded">
+      <div className="mb-3 flex p-1 indent-1 text-sm text-white">Exercises</div>
 
-      <div className="flex">
-        <ul className="flex w-full space-x-2 overflow-x-auto p-1">
-          {exercises?.map((day, dayIndex) => {
-            return (
-              // <Card>
-              //   <CardHeader>Day {dayIndex + 1}</CardHeader>
-              //   <CardContent>
-              //     <ExerciseItem index={1} />
-              //   </CardContent>
-              // </Card>
-              <DayItem index={dayIndex} exercises={day} />
-            );
-          })}
-          <Card className="flex items-center justify-center ">
-            <Button>
-              <PlusIcon fill="white" />
-            </Button>
-          </Card>
-        </ul>
-      </div>
+      <ul className="flex w-full space-x-2 overflow-x-auto p-1">
+        {exercises?.map((day, dayIndex) => {
+          return (
+            // <Card>
+            //   <CardHeader>Day {dayIndex + 1}</CardHeader>
+            //   <CardContent>
+            //     <ExerciseItem index={1} />
+            //   </CardContent>
+            // </Card>
+            <DayItem index={dayIndex} exercises={day} />
+          );
+        })}
+        <Card className="flex items-center justify-center ">
+          <Button>
+            <PlusIcon fill="white" />
+          </Button>
+        </Card>
+      </ul>
     </div>
   );
 }

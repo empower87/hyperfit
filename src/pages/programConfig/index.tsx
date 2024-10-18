@@ -91,7 +91,7 @@ export default function ProgramConfig() {
                 </div>
 
                 {/* <TrainingWeek /> */}
-                {/* <Configuration.Actions /> */}
+                <Configuration.Actions />
               </Configuration.Layout>
             </Configuration>
 
