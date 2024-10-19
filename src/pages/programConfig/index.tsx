@@ -10,7 +10,7 @@ import {
   ProgramConfigProvider,
   useProgramConfigContext,
 } from "~/components/Configuration/hooks/useProgramConfig";
-import { Days } from "~/components/CustomizeMuscleProgression/components/EditorPopout/Contents";
+import { Contents } from "~/components/CustomizeMuscleProgression/components/EditorPopout/MuscleGroup";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
@@ -32,7 +32,7 @@ export default function ProgramConfig() {
     setSelectedMuscleId(id);
   };
 
-  const days = prioritized_muscle_list.filter(
+  const selectedMuscle = prioritized_muscle_list.filter(
     (muscle) => muscle.id === selectedMuscleId
   )[0];
 
@@ -105,7 +105,8 @@ export default function ProgramConfig() {
                 <TrainingWeek />
               ) : null}
               {selectedMuscleId && selectedTab === "edit-muscle" ? (
-                <Days muscleGroup={days} />
+                // <Days muscleGroup={selectedMuscle} />
+                <Contents selectedMuscle={selectedMuscle} />
               ) : null}
             </div>
           </div>
@@ -132,14 +133,17 @@ function UnderlineTabs({
     <div className="mb-6 w-full border-b border-primary-600">
       {tabList.map((tab, index) => {
         const isSelected = tab === selectedTab;
-
+        const presentationalTab = tab
+          .split("-")
+          .map((tab) => tab.charAt(0).toUpperCase() + tab.slice(1))
+          .join(" ");
         return (
           <Button
             variant="ghost"
             className={isSelected ? selectedClasses : unselectedClasses}
             onClick={() => onSelectTab(tab)}
           >
-            {tab}
+            {presentationalTab}
           </Button>
         );
       })}

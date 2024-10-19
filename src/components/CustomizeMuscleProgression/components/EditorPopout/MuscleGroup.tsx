@@ -1,5 +1,8 @@
 import { ReactNode } from "react";
-import { ActionCard, Actions, Days } from "./Contents";
+import { MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
+import { useMuscleEditorContext } from "../../context/MuscleEditorContext";
+import { ActionCard, Actions, Exercises } from "./Contents";
+import { EditFrequency } from "./EditFrequency";
 
 const TEST_DATA = {
   id: "back-002",
@@ -55,27 +58,38 @@ type ContentsPlaceholderProps = {
   children: ReactNode;
 };
 
-const EXERCISES = TEST_DATA.exercises;
-function Contents() {
+type ContentsProps = {
+  selectedMuscle: MusclePriorityType;
+};
+export function Contents({ selectedMuscle }: ContentsProps) {
+  const {
+    selectedMesocycleIndex,
+    muscleGroup,
+    onSelectMesocycle,
+    volumes,
+    mesocyclesArray,
+    onResetMuscleGroup,
+    onSaveMuscleGroupChanges,
+    onSelectedFrequencyProgressionIncrement,
+    onSelectedFrequencyProgressionDecrement,
+  } = useMuscleEditorContext();
+
+  const muscle_name = muscleGroup.muscle;
+  const v_landmark = muscleGroup.volume.landmark;
+  const frequency_progression = selectedMuscle?.frequency.progression;
+
   return (
-    <div className="flex flex-col p-2">
+    <div className="flex space-x-1 p-2">
       <ContentsPlaceholder>
         <Actions>
+          <div className="flex rounded-lg bg-card">
+            <h1>{selectedMuscle?.muscle}</h1>
+          </div>
           <ActionCard title="Frequency">
-            <div className="flex space-x-1">
-              <div className="flex items-center justify-center rounded bg-primary-500 p-1 text-xs text-white">
-                1
-              </div>
-              <div className="flex items-center justify-center rounded bg-primary-500 p-1 text-xs text-white">
-                2
-              </div>
-              <div className="flex items-center justify-center rounded bg-primary-500 p-1 text-xs text-white">
-                3
-              </div>
-            </div>
+            <EditFrequency frequency_progression={frequency_progression} />
           </ActionCard>
         </Actions>
-        <Days days={EXERCISES} />
+        <Exercises muscleGroup={selectedMuscle} />
       </ContentsPlaceholder>
     </div>
   );

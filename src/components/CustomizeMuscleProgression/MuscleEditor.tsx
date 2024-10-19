@@ -106,7 +106,7 @@ function MuscleItem({ order }: MuscleProps) {
             </Button>
           </MusclePopout.Header>
 
-          <MusclePopout.Contents />
+          {/* <MusclePopout.Contents /> */}
 
           <MusclePopout.Footer>
             <div className="flex space-x-1">

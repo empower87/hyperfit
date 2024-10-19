@@ -6,10 +6,10 @@ import { MuscleType } from "~/constants/workoutSplits";
 import { MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import DayItem from "./DayItem";
 
-type DaysProps = {
+type ExercisesProps = {
   muscleGroup: MusclePriorityType;
 };
-export function Days({ muscleGroup }: DaysProps) {
+export function Exercises({ muscleGroup }: ExercisesProps) {
   const exercises = muscleGroup?.exercises;
   return (
     <div className="flex w-full flex-col rounded">
@@ -17,15 +17,7 @@ export function Days({ muscleGroup }: DaysProps) {
 
       <ul className="flex w-full space-x-2 overflow-x-auto p-1">
         {exercises?.map((day, dayIndex) => {
-          return (
-            // <Card>
-            //   <CardHeader>Day {dayIndex + 1}</CardHeader>
-            //   <CardContent>
-            //     <ExerciseItem index={1} />
-            //   </CardContent>
-            // </Card>
-            <DayItem index={dayIndex} exercises={day} />
-          );
+          return <DayItem index={dayIndex} exercises={day} />;
         })}
         <Card className="flex items-center justify-center ">
           <Button>

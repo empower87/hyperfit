@@ -37,19 +37,19 @@ export function Button({
   );
 }
 
-interface ValueProps extends HTMLAttributes<HTMLInputElement> {
+interface InputProps extends HTMLAttributes<HTMLInputElement> {
   value: number;
   variant?: "sm" | "md" | "lg";
 }
-const Value = forwardRef<HTMLInputElement, ValueProps>((props, ref) => {
+const Input = forwardRef<HTMLInputElement, InputProps>((props, ref) => {
   const [value, setValue] = useState<string>(props.value.toString());
   const [width, setWidth] = useState<number>(1);
   const inputRef = useRef<HTMLInputElement>(null);
   useImperativeHandle(ref, () => inputRef.current as HTMLInputElement);
 
-  const DEFAULT = "h-4";
-  const MD = "h-5";
-  const LG = "h-6";
+  const DEFAULT = "h-4 mx-0.5";
+  const MD = "h-5 mx-1";
+  const LG = "h-6 mx-1.5";
   const sizeVariant =
     props.variant === "lg" ? LG : props.variant === "md" ? MD : DEFAULT;
 
@@ -84,12 +84,8 @@ const Value = forwardRef<HTMLInputElement, ValueProps>((props, ref) => {
   );
 });
 
-Counter.Value = Value;
+Counter.Input = Input;
 Counter.Button = Button;
 export default function Counter({ children }: { children: ReactNode }) {
-  return (
-    <div className={`flex items-center justify-center space-x-0.5`}>
-      {children}
-    </div>
-  );
+  return <div className={`flex items-center justify-center`}>{children}</div>;
 }
