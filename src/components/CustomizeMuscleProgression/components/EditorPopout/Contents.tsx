@@ -2,7 +2,6 @@ import { ReactNode } from "react";
 import { PlusIcon } from "~/assets/icons/_icons";
 import { Button } from "~/components/Layout/Buttons";
 import { Card } from "~/components/ui/card";
-import { MuscleType } from "~/constants/workoutSplits";
 import { MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import DayItem from "./DayItem";
 
@@ -33,7 +32,11 @@ type ActionsProps = {
   children: ReactNode;
 };
 export function Actions({ children }: ActionsProps) {
-  return <div className="flex w-full ">{children}</div>;
+  return (
+    <div className="flex w-full space-x-2 rounded-lg border border-input p-4">
+      {children}
+    </div>
+  );
 }
 
 type ActionCardProps = {
@@ -42,20 +45,9 @@ type ActionCardProps = {
 };
 export function ActionCard({ title, children }: ActionCardProps) {
   return (
-    <div className=" flex flex-col rounded bg-primary-500/50 p-1">
+    <div className=" flex flex-col rounded p-1">
       <div className="indent-1 text-sm text-white">{title}</div>
       {children}
-    </div>
-  );
-}
-
-type TitleCardProps = {
-  muscle: MuscleType;
-};
-function TitleCard({ muscle }: TitleCardProps) {
-  return (
-    <div>
-      <div>{muscle}</div>
     </div>
   );
 }

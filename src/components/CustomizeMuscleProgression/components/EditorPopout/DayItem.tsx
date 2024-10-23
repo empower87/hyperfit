@@ -23,23 +23,6 @@ export default function DayItem({ index, exercises }: DayItemProps) {
   );
 }
 
-// export default function DayItem({ index }: DayItemProps) {
-//   const sessions: number[] = [1, 2];
-//   return (
-//     <div className="flex flex-col rounded bg-primary-500">
-//       <div className="flex p-1 indent-1 text-sm text-white">
-//         Day {index + 1}
-//       </div>
-
-//       <ul className="flex flex-col space-y-1 border-primary-500 p-1">
-//         {sessions.map((session, sessionIndex) => {
-//           return <Session index={sessionIndex} />;
-//         })}
-//       </ul>
-//     </div>
-//   );
-// }
-
 type SessionProps = {
   index: number;
   exercises: ExerciseType[];

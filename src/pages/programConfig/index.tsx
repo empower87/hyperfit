@@ -183,11 +183,6 @@ function FrequencySelection() {
                 {option}
               </div>
             </Button>
-            // <FrequencyButton
-            //   value={option}
-            //   className={option === frequency[0] ? selectedButtonClasses : ""}
-            //   onClick={() => handleSelectChange(option)}
-            // />
           );
         })}
       </div>

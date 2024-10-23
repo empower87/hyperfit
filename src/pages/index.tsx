@@ -4,6 +4,7 @@ import MuscleEditor from "~/components/CustomizeMuscleProgression/MuscleEditor";
 import { SectionH2 as Section } from "~/components/Layout/Sections";
 import TrainingBlockOverview from "~/components/TrainingBlockOverview";
 import TrainingWeekOverview from "~/components/TrainingWeekOverview/TrainingWeekOverview";
+
 const Home: NextPage = () => {
   return (
     <div id="modal-body" className={"h-full w-full bg-primary-800"}>

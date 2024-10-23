@@ -1,5 +1,7 @@
 import { ReactNode } from "react";
 import { MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
+import { cn } from "~/lib/clsx";
+import { getRankColor } from "~/utils/getIndicatorColors";
 import { useMuscleEditorContext } from "../../context/MuscleEditorContext";
 import { ActionCard, Actions, Exercises } from "./Contents";
 import { EditFrequency } from "./EditFrequency";
@@ -42,6 +44,7 @@ function Header({ children }: HeaderProps) {
       <div className="text-m indent-1 font-semibold text-white">
         Edit Muscle
       </div>
+
       {children}
     </div>
   );
@@ -53,10 +56,6 @@ type FooterProps = {
 function Footer({ children }: FooterProps) {
   return <div className="p-1">{children}</div>;
 }
-
-type ContentsPlaceholderProps = {
-  children: ReactNode;
-};
 
 type ContentsProps = {
   selectedMuscle: MusclePriorityType;
@@ -74,27 +73,37 @@ export function Contents({ selectedMuscle }: ContentsProps) {
     onSelectedFrequencyProgressionDecrement,
   } = useMuscleEditorContext();
 
-  const muscle_name = muscleGroup.muscle;
-  const v_landmark = muscleGroup.volume.landmark;
+  const muscle_name = selectedMuscle?.muscle;
+  const presentational_muscle_name =
+    muscle_name.charAt(0).toUpperCase() + muscle_name.slice(1);
+  const v_landmark = selectedMuscle?.volume.landmark;
   const frequency_progression = selectedMuscle?.frequency.progression;
 
+  const muscle_rank_color = getRankColor(v_landmark);
   return (
-    <div className="flex space-x-1 p-2">
+    <div className="flex space-x-1 p-2 border-input ">
       <ContentsPlaceholder>
+
         <Actions>
-          <div className="flex rounded-lg bg-card">
-            <h1>{selectedMuscle?.muscle}</h1>
+          <div className={cn(`flex rounded-md p-2 ${muscle_rank_color.bg}`)}>
+            <h1>{presentational_muscle_name}</h1>
           </div>
+
           <ActionCard title="Frequency">
             <EditFrequency frequency_progression={frequency_progression} />
           </ActionCard>
+
         </Actions>
+
         <Exercises muscleGroup={selectedMuscle} />
       </ContentsPlaceholder>
     </div>
   );
 }
 
+type ContentsPlaceholderProps = {
+  children: ReactNode;
+};
 function ContentsPlaceholder({ children }: ContentsPlaceholderProps) {
   return <div className="flex flex-col space-y-2">{children}</div>;
 }
