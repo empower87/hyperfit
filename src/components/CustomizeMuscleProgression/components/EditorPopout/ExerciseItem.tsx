@@ -1,5 +1,5 @@
 import { DotsVerticalIcon } from "@radix-ui/react-icons";
-import { HTMLAttributes, ReactNode, useRef } from "react";
+import { HTMLAttributes, ReactNode, useRef, useState } from "react";
 import { AddIcon, SubtractIcon } from "~/assets/icons/_icons";
 import { Button } from "~/components/ui/button";
 import {
@@ -22,6 +22,12 @@ type ExerciseItemProps = {
   exercise: ExerciseType;
 };
 export default function ExerciseItem({ index, exercise }: ExerciseItemProps) {
+  const [selectedModality, setSelectedModality] = useState("S");
+
+  const onSelectModality = (selected: string) => {
+    setSelectedModality(selected);
+  };
+
   return (
     <li className="flex">
       <div className="flex pr-2 text-xs text-primary-300">{index + 1}</div>
@@ -43,36 +49,61 @@ export default function ExerciseItem({ index, exercise }: ExerciseItemProps) {
                 <DropdownMenuSubTrigger>
                   Training Modality
                 </DropdownMenuSubTrigger>
-
                 <DropdownMenuPortal>
                   <DropdownMenuSubContent>
-                    <DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => onSelectModality("S")}>
                       <span className="w-4">S</span>
                       Straight Set
                     </DropdownMenuItem>
-                    <DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => onSelectModality("D")}>
                       <span className="w-4">D</span>
                       Drop Set
                     </DropdownMenuItem>
-                    <DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => onSelectModality("G")}>
                       <span className="w-4">G</span>
                       Giant Set
                     </DropdownMenuItem>
-                    <DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => onSelectModality("M")}>
                       <span className="w-4">M</span>
                       Myrorep Set
                     </DropdownMenuItem>
-                    <DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => onSelectModality("E")}>
                       <span className="w-4">E</span>
                       Eccentric Set
                     </DropdownMenuItem>
-                    <DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => onSelectModality("LP")}>
                       <span className="w-4">LP</span>
                       Lengthened Partials
                     </DropdownMenuItem>
-                    <DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => onSelectModality("SS")}>
                       <span className="w-4">SS</span>
                       Superset
+                    </DropdownMenuItem>
+                  </DropdownMenuSubContent>
+                </DropdownMenuPortal>
+              </DropdownMenuSub>
+
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger>Set Progression</DropdownMenuSubTrigger>
+                <DropdownMenuPortal>
+                  <DropdownMenuSubContent>
+                    <DropdownMenuItem onClick={() => onSelectModality("S")}>
+                      Add One Per Exercise
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => onSelectModality("D")}>
+                      Add One - Per Week
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => onSelectModality("G")}>
+                      Add One - Flat
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => onSelectModality("M")}>
+                      Add One - Odd Weeks
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => onSelectModality("E")}>
+                      Add One - Even Weeks
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => onSelectModality("LP")}>
+                      No Add
                     </DropdownMenuItem>
                   </DropdownMenuSubContent>
                 </DropdownMenuPortal>
@@ -102,23 +133,26 @@ export default function ExerciseItem({ index, exercise }: ExerciseItemProps) {
 
         <div className="flex flex-col">
           <div className="flex space-x-1 p-2 pt-0 text-xs">
+            <div className="flex items-end px-1.5 py-1 text-xs text-secondary-300">
+              {selectedModality}
+            </div>
             <div className="flex flex-col items-center justify-center space-y-1">
               <div className="text-xxs text-primary-400">SETS</div>
-              <InputCell placeholder={"3"} width="w-10" />
+              <InputCell placeholder={"3"} width="w-8" />
             </div>
 
             <div className="flex space-x-1 text-primary-400">
               <div className="flex w-8 flex-col space-y-1">
                 <WeekCell value={"WK 2"} className="text-xxs" />
-                <WeekCell value={4} />
+                <WeekCell value={4} className="p-1" />
               </div>
               <div className="flex w-8 flex-col space-y-1">
                 <WeekCell value={"WK 3"} className="text-xxs" />
-                <WeekCell value={5} />
+                <WeekCell value={5} className="p-1" />
               </div>
               <div className="flex w-8 flex-col space-y-1">
                 <WeekCell value={"WK 4"} className="text-xxs" />
-                <WeekCell value={6} />
+                <WeekCell value={6} className="p-1" />
               </div>
             </div>
 
@@ -226,7 +260,7 @@ function InputCell({ placeholder, width }: CellProps) {
       <Input
         type="text"
         placeholder={placeholder}
-        className="placeholder:text-secondary-300"
+        className="placeholder:text-primary-400"
       />
     </div>
   );

@@ -31,7 +31,7 @@ function Session({ index, exercises }: SessionProps) {
   return (
     <div className="">
       <div className="flex pb-2 text-sm text-white">Session {index + 1}</div>
-      <ul className="space-y-1">
+      <ul className="space-y-2">
         {exercises.map((exercise, exerciseIndex) => {
           return <ExerciseItem index={exerciseIndex} exercise={exercise} />;
         })}
