@@ -109,7 +109,7 @@ export default function ExerciseItem({ index, exercise }: ExerciseItemProps) {
                 </DropdownMenuPortal>
               </DropdownMenuSub>
 
-              <DropdownMenuItem>Team</DropdownMenuItem>
+              <DropdownMenuItem>Replace Exercise</DropdownMenuItem>
               <DropdownMenuItem>Subscription</DropdownMenuItem>
               <DropdownMenuItem>
                 <div className="text-red-500">Delete</div>
@@ -118,7 +118,7 @@ export default function ExerciseItem({ index, exercise }: ExerciseItemProps) {
           </DropdownMenu>
         </div>
 
-        <div className="flex space-x-2 p-2 pt-0">
+        <div className="flex space-x-2 p-2 ">
           {exercise.data.requirements.map((each) => {
             return (
               <div className="rounded-md border border-input px-1.5 py-0.5 text-xs text-white">

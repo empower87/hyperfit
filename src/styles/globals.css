@@ -49,6 +49,8 @@ body {
 /* primary-700 = 215 25% 26.7% */
 /* primary-600 = 215 19.3% 34.5% */
 /* primary-500 = 215 16.3% 46.9% */
+/* primary-400 = 215 20.2% 65.1 */
+/* primary-300 = 213 26.8% 83.9% */
 
 @layer base {
   :root {
@@ -58,7 +60,7 @@ body {
     /* --foreground: 222.2 84% 4.9%; */
     --card: 215 25% 26.7%;
     /* --card: 0 0% 100%; */
-    --card-foreground: 0 0% 100%;
+    --card-foreground: 213 26.8% 83.9%;
     /* --card-foreground: 222.2 84% 4.9%; */
     --popover: 215 25% 26.7%;
     /* --popover: 0 0% 100%; */

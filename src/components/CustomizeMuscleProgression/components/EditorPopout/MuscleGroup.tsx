@@ -6,22 +6,6 @@ import { useMuscleEditorContext } from "../../context/MuscleEditorContext";
 import { ActionCard, Actions, Exercises } from "./Contents";
 import { EditFrequency } from "./EditFrequency";
 
-const TEST_DATA = {
-  id: "back-002",
-  muscle: "back",
-  exercises: [[], [], [], []],
-  volume: {
-    landmark: "MRV",
-    exercisesPerSessionSchema: 2,
-  },
-  frequency: {
-    range: [3, 4],
-    target: 0,
-    progression: [2, 3, 4],
-    setProgressionMatrix: [[], [], []],
-  },
-};
-
 type MusclePopoutProps = {
   children: ReactNode;
 };
@@ -81,9 +65,8 @@ export function Contents({ selectedMuscle }: ContentsProps) {
 
   const muscle_rank_color = getRankColor(v_landmark);
   return (
-    <div className="flex space-x-1 p-2 border-input ">
+    <div className="flex space-x-1 p-2">
       <ContentsPlaceholder>
-
         <Actions>
           <div className={cn(`flex rounded-md p-2 ${muscle_rank_color.bg}`)}>
             <h1>{presentational_muscle_name}</h1>
@@ -92,7 +75,6 @@ export function Contents({ selectedMuscle }: ContentsProps) {
           <ActionCard title="Frequency">
             <EditFrequency frequency_progression={frequency_progression} />
           </ActionCard>
-
         </Actions>
 
         <Exercises muscleGroup={selectedMuscle} />
