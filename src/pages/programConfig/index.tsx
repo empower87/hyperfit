@@ -95,7 +95,7 @@ export default function ProgramConfig() {
               </Configuration.Layout>
             </Configuration>
 
-            <div className="flex flex-col rounded-lg">
+            <div className="flex flex-col overflow-scroll rounded-lg">
               <UnderlineTabs
                 tabList={TABS}
                 selectedTab={selectedTab}

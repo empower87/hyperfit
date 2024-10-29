@@ -1,7 +1,13 @@
-import { Cross2Icon } from "@radix-ui/react-icons";
+import { Cross2Icon, DotsVerticalIcon } from "@radix-ui/react-icons";
 import React, { useState } from "react";
 import { Button } from "~/components/ui/button";
-import { Card, CardContent, CardHeader } from "~/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "~/components/ui/dropdown-menu";
 import { ExerciseType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import ExerciseItem from "./ExerciseItem";
 
@@ -16,9 +22,27 @@ export default function DayItem({ index, exercises }: DayItemProps) {
   const onAddSession = () => {
     setSessions((prev) => [...prev, 1]);
   };
+
   return (
     <Card>
-      <CardHeader>Day {index + 1}</CardHeader>
+      <CardHeader className="flex-row items-center justify-between space-y-0 ">
+        <CardTitle>Day {index + 1}</CardTitle>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button size="icon" variant="ghost">
+              <DotsVerticalIcon fill="white" />
+            </Button>
+          </DropdownMenuTrigger>
+
+          <DropdownMenuContent className="w-44">
+            <DropdownMenuItem>Replace Exercise</DropdownMenuItem>
+            <DropdownMenuItem>Subscription</DropdownMenuItem>
+            <DropdownMenuItem>
+              <div className="text-red-500">Remove Training Day</div>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </CardHeader>
       <CardContent>
         <ul className="space-y-3">
           {sessions.map((session, sessionIndex) => {

@@ -6,9 +6,7 @@ export default function Layout({ children }: { children: ReactNode }) {
   return (
     <>
       <Navbar>
-        <Navbar.Sidebar
-          contents={<Link href="/programConfig">Configure Program</Link>}
-        />
+        <Navbar.Sidebar contents={<Link href="/programConfig">Program</Link>} />
         <Navbar.Topbar />
       </Navbar>
 
@@ -21,7 +19,7 @@ export default function Layout({ children }: { children: ReactNode }) {
 
 function HomeWrapper({ children }: { children: ReactNode }) {
   return (
-    <div className=" h-screen w-full bg-primary-800 pl-24 pr-6">{children}</div>
+    <div className=" h-full w-full bg-primary-800 pl-24 pr-6">{children}</div>
   );
 }
 

@@ -1,6 +1,6 @@
+import { PlusIcon } from "@radix-ui/react-icons";
 import { ReactNode } from "react";
-import { PlusIcon } from "~/assets/icons/_icons";
-import { Button } from "~/components/Layout/Buttons";
+import { Button } from "~/components/ui/button";
 import { Card } from "~/components/ui/card";
 import { MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import DayItem from "./DayItem";
@@ -18,10 +18,13 @@ export function Exercises({ muscleGroup }: ExercisesProps) {
         {exercises?.map((day, dayIndex) => {
           return <DayItem index={dayIndex} exercises={day} />;
         })}
-        <Card className="flex items-center justify-center ">
-          <Button>
-            <PlusIcon fill="white" />
-          </Button>
+        <Card className="flex items-center justify-center">
+          <div className="p-4">
+            <Button variant="outline" className="">
+              <PlusIcon fill="white" />
+              <span className="pl-2">Add Training Day</span>
+            </Button>
+          </div>
         </Card>
       </ul>
     </div>
