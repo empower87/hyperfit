@@ -8,15 +8,19 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
-import { ExerciseType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
+import {
+  ExerciseType,
+  MusclePriorityType,
+} from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import ExerciseItem from "./ExerciseItem";
 
 type DayItemProps = {
   index: number;
   exercises: ExerciseType[];
+  muscle: MusclePriorityType;
 };
 
-export default function DayItem({ index, exercises }: DayItemProps) {
+export default function DayItem({ index, exercises, muscle }: DayItemProps) {
   const [sessions, setSessions] = useState([1]);
 
   const onAddSession = () => {
@@ -48,7 +52,11 @@ export default function DayItem({ index, exercises }: DayItemProps) {
           {sessions.map((session, sessionIndex) => {
             const isSingleSession = sessions.length <= 1;
             return (
-              <Session index={sessionIndex} exercises={exercises}>
+              <Session
+                index={sessionIndex}
+                exercises={exercises}
+                muscle={muscle}
+              >
                 {isSingleSession ? (
                   <></>
                 ) : (
@@ -81,15 +89,22 @@ export default function DayItem({ index, exercises }: DayItemProps) {
 type SessionProps = {
   index: number;
   exercises: ExerciseType[];
+  muscle: MusclePriorityType;
   children: React.ReactNode;
 };
-function Session({ index, exercises, children }: SessionProps) {
+function Session({ index, exercises, muscle, children }: SessionProps) {
   return (
     <div className="pt-3">
       {children}
       <ul className="space-y-2">
         {exercises.map((exercise, exerciseIndex) => {
-          return <ExerciseItem index={exerciseIndex} exercise={exercise} />;
+          return (
+            <ExerciseItem
+              index={exerciseIndex}
+              exercise={exercise}
+              muscle={muscle}
+            />
+          );
         })}
       </ul>
       <Button variant="ghost" className="mt-2 w-full">

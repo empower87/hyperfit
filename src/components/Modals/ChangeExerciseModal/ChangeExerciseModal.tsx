@@ -1,5 +1,7 @@
+import { Cross2Icon } from "@radix-ui/react-icons";
 import { ReactNode, useCallback, useState } from "react";
 import { FilterIcon, SearchIcon } from "~/assets/icons/_icons";
+import { Button } from "~/components/ui/button";
 import { useOutsideClick } from "~/hooks/useOnOutsideClick";
 import { MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { JSONExercise } from "~/hooks/useTrainingProgram/utils/exercises/getExercises";
@@ -15,7 +17,7 @@ function Header({ children }: { children: ReactNode }) {
 }
 function Search() {
   return (
-    <div className={cn(`m-1 flex w-1/2 indent-1 text-white bg-primary-800`)}>
+    <div className={cn(`flex w-1/2 bg-primary-800 p-2 indent-1 text-white`)}>
       <div className="mx-1 flex items-center justify-center">
         <SearchIcon className="fill:white text-sm" />
       </div>
@@ -48,7 +50,7 @@ function Category({ title, children }: CategoryProps) {
   return (
     <div className={cn(`mb-2 flex flex-col`)}>
       <div
-        className={cn(`flex bg-primary-600 mb-2 indent-1 text-xs text-white`)}
+        className={cn(`mb-2 flex bg-primary-600 indent-1 text-xs text-white`)}
       >
         {title}
       </div>
@@ -64,16 +66,13 @@ function FilterTag({ tag, onRemoveTag }: FilterTagProps) {
   return (
     <div
       className={cn(
-        `m-0.5 flex h-5 items-center justify-center p-1 text-white border-primary-500 bg-primary-600`
+        `flex items-center justify-center space-x-1 rounded-md border-primary-500 bg-primary-600 px-2 text-white`
       )}
     >
-      <div className="p-0.5">{tag}</div>
-      <button
-        className={cn(`flex items-center justify-center p-0.5`)}
-        onClick={() => onRemoveTag(tag)}
-      >
-        x
-      </button>
+      <p className="text-sm">{tag}</p>
+      <Button variant="ghost" size="icon" onClick={() => onRemoveTag(tag)}>
+        <Cross2Icon fill="white" />
+      </Button>
     </div>
   );
 }
@@ -85,7 +84,7 @@ function FilterMenu({ onSelectTag }: FilterMenuProps) {
   return (
     <div
       className={cn(
-        `absolute right-0 flex flex-col space-y-1 p-2 bg-primary-700 border border-primary-500`
+        `absolute right-0 flex flex-col space-y-1 border border-primary-500 bg-primary-700 p-2`
       )}
     >
       <div className={cn(`mb-2 border-b-2 text-sm text-white`)}>Filters</div>
@@ -152,7 +151,7 @@ function Filter() {
 
   return (
     <div ref={ref} className={cn(`relative flex w-1/2`)}>
-      <div className={`flex w-11/12 flex-wrap text-xxs`}>
+      <div className={`flex w-11/12 flex-wrap`}>
         {Object.values(filterTags).map((each) => {
           if (each == null) return null;
           return (
@@ -176,29 +175,8 @@ function Filter() {
   );
 }
 
-function Layout({
-  children,
-  onClose,
-}: {
-  children: ReactNode;
-  onClose: () => void;
-}) {
-  return (
-    <div className={cn(`flex flex-col bg-primary-700 w-[900px]`)}>
-      <div className={cn(`flex justify-between bg-primary-600 mb-2 p-1`)}>
-        <div className={cn(`indent-1 text-sm text-white`)}>Select Exercise</div>
-        <button
-          onClick={onClose}
-          className={cn(
-            `mr-1 flex h-5 w-5 items-center justify-center text-white hover:bg-primary-500`
-          )}
-        >
-          x
-        </button>
-      </div>
-      {children}
-    </div>
-  );
+function Layout({ children }: { children: ReactNode }) {
+  return <div className={cn(`flex w-[900px] flex-col`)}>{children}</div>;
 }
 
 type ItemTagProps = {
@@ -220,10 +198,10 @@ function Item({ exercise, selected }: ItemProps) {
   const { onSelectExerciseHandler, selectedExerciseId, exerciseId } =
     useChangeExerciseContext();
   return (
-    <div
+    <li
       onClick={() => onSelectExerciseHandler(exercise.id)}
       className={cn(
-        `flex p-1 indent-1 text-xs text-slate-400 bg-primary-600 cursor-pointer hover:bg-primary-500`,
+        `flex cursor-pointer rounded-md bg-card indent-1 text-xs text-muted-foreground hover:bg-primary-500`,
         {
           [`bg-primary-500`]:
             exerciseId === exercise.id || exercise.id === selectedExerciseId,
@@ -231,13 +209,13 @@ function Item({ exercise, selected }: ItemProps) {
       )}
     >
       <div className={"flex w-4/12 flex-col"}>
-        <div className={`mr-2 flex`}>
+        <div className={`mr-2 flex p-2`}>
           <div>{exercise.name}</div>
           {selected ? (
             <div className={`text-xxs font-bold text-white `}>Selected</div>
           ) : null}
         </div>
-        <div className={`flex space-x-1`}>
+        <div className={`flex space-x-1 p-2 pt-0`}>
           <ItemTag name={exercise.movement_type} selected={""} />
           {exercise.limbs_involved ? (
             <ItemTag name={exercise.limbs_involved} selected={""} />
@@ -265,9 +243,66 @@ function Item({ exercise, selected }: ItemProps) {
       <div className={"w-1/12"}>
         {exercise.hypertrophy_criteria?.time_efficiency}
       </div>
-    </div>
+    </li>
   );
 }
+// type ItemProps = {
+//   exercise: JSONExercise;
+//   selected: boolean;
+// };
+// function Item({ exercise, selected }: ItemProps) {
+//   const { onSelectExerciseHandler, selectedExerciseId, exerciseId } =
+//     useChangeExerciseContext();
+//   return (
+//     <div
+//       onClick={() => onSelectExerciseHandler(exercise.id)}
+//       className={cn(
+//         `flex p-1 indent-1 text-xs text-slate-400 bg-primary-600 cursor-pointer hover:bg-primary-500`,
+//         {
+//           [`bg-primary-500`]:
+//             exerciseId === exercise.id || exercise.id === selectedExerciseId,
+//         }
+//       )}
+//     >
+//       <div className={"flex w-4/12 flex-col"}>
+//         <div className={`mr-2 flex`}>
+//           <div>{exercise.name}</div>
+//           {selected ? (
+//             <div className={`text-xxs font-bold text-white `}>Selected</div>
+//           ) : null}
+//         </div>
+//         <div className={`flex space-x-1`}>
+//           <ItemTag name={exercise.movement_type} selected={""} />
+//           {exercise.limbs_involved ? (
+//             <ItemTag name={exercise.limbs_involved} selected={""} />
+//           ) : null}
+//         </div>
+//       </div>
+
+//       <div className={"w-1/12"}>{exercise.rank}</div>
+//       <div className={"w-1/12"}>
+//         {exercise.hypertrophy_criteria?.stretch.lengthened}
+//       </div>
+//       <div className={"w-1/12"}>
+//         {exercise.hypertrophy_criteria?.stretch.challenging}
+//       </div>
+//       <div className={"w-1/12"}>
+//         {exercise.hypertrophy_criteria?.limiting_factor}
+//       </div>
+//       <div className={"w-1/12"}>
+//         {exercise.hypertrophy_criteria?.loadability}
+//       </div>
+//       <div className={"w-1/12"}>{exercise.hypertrophy_criteria?.stability}</div>
+//       <div className={"w-1/12"}>
+//         {exercise.hypertrophy_criteria?.target_function}
+//       </div>
+//       <div className={"w-1/12"}>
+//         {exercise.hypertrophy_criteria?.time_efficiency}
+//       </div>
+//     </div>
+//   );
+// }
+
 function List({ children }: { children: ReactNode }) {
   const { onSortHandler } = useChangeExerciseContext();
   const [sortedByIndicator, setSortedByIndicator] = useState<string | null>(
@@ -281,8 +316,10 @@ function List({ children }: { children: ReactNode }) {
     setSortedByIndicator(secondKey ? secondKey : key);
   };
   return (
-    <div className={cn(`flex flex-col p-2`)}>
-      <div className={cn(`mb-2 flex border-b-2 indent-1 text-xs text-white`)}>
+    <div className={cn(`flex flex-col`)}>
+      <div
+        className={cn(`mb-2 flex border-b py-2 indent-1 text-xs text-white`)}
+      >
         <div className={`w-4/12`}>Exercise</div>
         <div
           onClick={() => onClickHandler("rank")}
@@ -350,7 +387,11 @@ function List({ children }: { children: ReactNode }) {
         </div>
       </div>
 
-      <div className={cn(`flex h-60 flex-col overflow-y-auto`)}>{children}</div>
+      <ul
+        className={cn(`flex h-60 flex-col space-y-2 overflow-y-auto py-3 pr-3`)}
+      >
+        {children}
+      </ul>
     </div>
   );
 }
@@ -385,7 +426,7 @@ function SelectExerciseContents({
     onClose();
   };
   return (
-    <SelectExercise.Layout onClose={onClose}>
+    <SelectExercise.Layout>
       <SelectExercise.Header>
         <SelectExercise.Search />
         <SelectExercise.Filter />
@@ -408,17 +449,6 @@ function SelectExerciseContents({
           );
         })}
       </SelectExercise.List>
-
-      <div className={`flex items-center justify-end p-2`}>
-        <button
-          onClick={() => {
-            onSelectHandler();
-          }}
-          className={cn(`bg-rose-400 px-2 text-xs text-white`)}
-        >
-          Select
-        </button>
-      </div>
     </SelectExercise.Layout>
   );
 }

@@ -1,7 +1,17 @@
 import { DotsVerticalIcon } from "@radix-ui/react-icons";
 import { HTMLAttributes, ReactNode, useRef, useState } from "react";
 import { AddIcon, SubtractIcon } from "~/assets/icons/_icons";
+import SelectExercise from "~/components/Modals/ChangeExerciseModal/ChangeExerciseModal";
 import { Button } from "~/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "~/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,15 +23,23 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import { Input } from "~/components/ui/input";
-import { ExerciseType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
+import {
+  ExerciseType,
+  MusclePriorityType,
+} from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { cn } from "~/lib/utils";
 import Counter from "./Counter";
 
 type ExerciseItemProps = {
   index: number;
   exercise: ExerciseType;
+  muscle: MusclePriorityType;
 };
-export default function ExerciseItem({ index, exercise }: ExerciseItemProps) {
+export default function ExerciseItem({
+  index,
+  exercise,
+  muscle,
+}: ExerciseItemProps) {
   const [selectedModality, setSelectedModality] = useState("S");
 
   const onSelectModality = (selected: string) => {
@@ -109,8 +127,37 @@ export default function ExerciseItem({ index, exercise }: ExerciseItemProps) {
                 </DropdownMenuPortal>
               </DropdownMenuSub>
 
-              <DropdownMenuItem>Replace Exercise</DropdownMenuItem>
-              <DropdownMenuItem>Subscription</DropdownMenuItem>
+              <DropdownMenuItem>
+                <Dialog>
+                  <DialogTrigger onClick={(e) => e.stopPropagation()}>
+                    Replace Exercise
+                  </DialogTrigger>
+
+                  <DialogContent
+                    className="sm:max-w-[960px]"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <DialogHeader>
+                      <DialogTitle>Replace Exercise</DialogTitle>
+                      <DialogDescription>
+                        Make changes to your profile here. Click save when
+                        you're done.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <SelectExercise
+                      muscle={muscle}
+                      exerciseId={exercise.id}
+                      onSelect={() => {}}
+                      onClose={() => {}}
+                    />
+
+                    <DialogFooter>
+                      <Button type="submit">Save changes</Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              </DropdownMenuItem>
+
               <DropdownMenuItem>
                 <div className="text-red-500">Delete</div>
               </DropdownMenuItem>

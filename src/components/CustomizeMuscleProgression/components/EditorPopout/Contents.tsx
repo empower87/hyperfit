@@ -15,8 +15,14 @@ export function Exercises({ muscleGroup }: ExercisesProps) {
       <div className="mb-3 flex p-1 indent-1 text-sm text-white">Exercises</div>
 
       <ul className="flex w-full space-x-2 overflow-x-auto p-1">
-        {exercises?.map((day, dayIndex) => {
-          return <DayItem index={dayIndex} exercises={day} />;
+        {exercises?.map((exercise, dayIndex) => {
+          return (
+            <DayItem
+              index={dayIndex}
+              exercises={exercise}
+              muscle={muscleGroup}
+            />
+          );
         })}
         <Card className="flex items-center justify-center">
           <div className="p-4">
