@@ -14,7 +14,7 @@ interface ButtonProps extends HTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
   variant?: "sm" | "md" | "lg";
 }
-export function Button({
+export function Button1({
   children,
   className,
   variant,
@@ -41,7 +41,7 @@ interface InputProps extends HTMLAttributes<HTMLInputElement> {
   value: number;
   variant?: "sm" | "md" | "lg";
 }
-const Input = forwardRef<HTMLInputElement, InputProps>((props, ref) => {
+const Input1 = forwardRef<HTMLInputElement, InputProps>((props, ref) => {
   const [value, setValue] = useState<string>(props.value.toString());
   const [width, setWidth] = useState<number>(1);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -84,8 +84,24 @@ const Input = forwardRef<HTMLInputElement, InputProps>((props, ref) => {
   );
 });
 
-Counter.Input = Input;
-Counter.Button = Button;
-export default function Counter({ children }: { children: ReactNode }) {
-  return <div className={`flex items-center justify-center`}>{children}</div>;
+Counter.Input = Input1;
+Counter.Button = Button1;
+
+type CounterProps = {
+  minus: React.ReactNode;
+  input: React.ReactNode;
+  plus: React.ReactNode;
+};
+export default function Counter({ minus, input, plus }: CounterProps) {
+  return (
+    <div className={`flex items-center justify-center`}>
+      {minus}
+      <div className="mx-1 w-8">{input}</div>
+      {plus}
+    </div>
+  );
 }
+
+// export default function Counter({ children }: { children: ReactNode }) {
+//   return <div className={`flex items-center justify-center`}>{children}</div>;
+// }

@@ -1,6 +1,5 @@
-import { DotsVerticalIcon } from "@radix-ui/react-icons";
+import { DotsVerticalIcon, MinusIcon } from "@radix-ui/react-icons";
 import { HTMLAttributes, ReactNode, useRef, useState } from "react";
-import { AddIcon, SubtractIcon } from "~/assets/icons/_icons";
 import SelectExercise from "~/components/Modals/ChangeExerciseModal/ChangeExerciseModal";
 import { Button } from "~/components/ui/button";
 import {
@@ -55,114 +54,112 @@ export default function ExerciseItem({
           <h3 className="p-2 text-sm font-semibold leading-none tracking-tight text-secondary-400">
             {exercise.name}
           </h3>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button size="icon" variant="ghost">
-                <DotsVerticalIcon fill="white" />
-              </Button>
-            </DropdownMenuTrigger>
+          <Dialog>
+            <DropdownMenu>
+              <DropdownMenuTrigger>
+                <Button size="icon" variant="ghost">
+                  <DotsVerticalIcon fill="white" />
+                </Button>
+              </DropdownMenuTrigger>
 
-            <DropdownMenuContent className="w-44">
-              <DropdownMenuSub>
-                <DropdownMenuSubTrigger>
-                  Training Modality
-                </DropdownMenuSubTrigger>
-                <DropdownMenuPortal>
-                  <DropdownMenuSubContent>
-                    <DropdownMenuItem onClick={() => onSelectModality("S")}>
-                      <span className="w-4">S</span>
-                      Straight Set
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => onSelectModality("D")}>
-                      <span className="w-4">D</span>
-                      Drop Set
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => onSelectModality("G")}>
-                      <span className="w-4">G</span>
-                      Giant Set
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => onSelectModality("M")}>
-                      <span className="w-4">M</span>
-                      Myrorep Set
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => onSelectModality("E")}>
-                      <span className="w-4">E</span>
-                      Eccentric Set
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => onSelectModality("LP")}>
-                      <span className="w-4">LP</span>
-                      Lengthened Partials
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => onSelectModality("SS")}>
-                      <span className="w-4">SS</span>
-                      Superset
-                    </DropdownMenuItem>
-                  </DropdownMenuSubContent>
-                </DropdownMenuPortal>
-              </DropdownMenuSub>
+              <DropdownMenuContent className="w-44">
+                <DropdownMenuSub>
+                  <DropdownMenuSubTrigger>
+                    Training Modality
+                  </DropdownMenuSubTrigger>
+                  <DropdownMenuPortal>
+                    <DropdownMenuSubContent>
+                      <DropdownMenuItem onClick={() => onSelectModality("S")}>
+                        <span className="w-4">S</span>
+                        Straight Set
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => onSelectModality("D")}>
+                        <span className="w-4">D</span>
+                        Drop Set
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => onSelectModality("G")}>
+                        <span className="w-4">G</span>
+                        Giant Set
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => onSelectModality("M")}>
+                        <span className="w-4">M</span>
+                        Myrorep Set
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => onSelectModality("E")}>
+                        <span className="w-4">E</span>
+                        Eccentric Set
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => onSelectModality("LP")}>
+                        <span className="w-4">LP</span>
+                        Lengthened Partials
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => onSelectModality("SS")}>
+                        <span className="w-4">SS</span>
+                        Superset
+                      </DropdownMenuItem>
+                    </DropdownMenuSubContent>
+                  </DropdownMenuPortal>
+                </DropdownMenuSub>
 
-              <DropdownMenuSub>
-                <DropdownMenuSubTrigger>Set Progression</DropdownMenuSubTrigger>
-                <DropdownMenuPortal>
-                  <DropdownMenuSubContent>
-                    <DropdownMenuItem onClick={() => onSelectModality("S")}>
-                      Add One Per Exercise
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => onSelectModality("D")}>
-                      Add One - Per Week
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => onSelectModality("G")}>
-                      Add One - Flat
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => onSelectModality("M")}>
-                      Add One - Odd Weeks
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => onSelectModality("E")}>
-                      Add One - Even Weeks
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => onSelectModality("LP")}>
-                      No Add
-                    </DropdownMenuItem>
-                  </DropdownMenuSubContent>
-                </DropdownMenuPortal>
-              </DropdownMenuSub>
+                <DropdownMenuSub>
+                  <DropdownMenuSubTrigger>
+                    Set Progression
+                  </DropdownMenuSubTrigger>
+                  <DropdownMenuPortal>
+                    <DropdownMenuSubContent>
+                      <DropdownMenuItem onClick={() => onSelectModality("S")}>
+                        Add One Per Exercise
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => onSelectModality("D")}>
+                        Add One - Per Week
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => onSelectModality("G")}>
+                        Add One - Flat
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => onSelectModality("M")}>
+                        Add One - Odd Weeks
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => onSelectModality("E")}>
+                        Add One - Even Weeks
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => onSelectModality("LP")}>
+                        No Add
+                      </DropdownMenuItem>
+                    </DropdownMenuSubContent>
+                  </DropdownMenuPortal>
+                </DropdownMenuSub>
 
-              <DropdownMenuItem>
-                <Dialog>
-                  <DialogTrigger onClick={(e) => e.stopPropagation()}>
-                    Replace Exercise
-                  </DialogTrigger>
+                <DialogTrigger asChild>
+                  <DropdownMenuItem>Replace Exercise</DropdownMenuItem>
+                </DialogTrigger>
 
-                  <DialogContent
-                    className="sm:max-w-[960px]"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <DialogHeader>
-                      <DialogTitle>Replace Exercise</DialogTitle>
-                      <DialogDescription>
-                        Make changes to your profile here. Click save when
-                        you're done.
-                      </DialogDescription>
-                    </DialogHeader>
-                    <SelectExercise
-                      muscle={muscle}
-                      exerciseId={exercise.id}
-                      onSelect={() => {}}
-                      onClose={() => {}}
-                    />
+                <DropdownMenuItem>
+                  <div className="text-red-500">Delete</div>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
 
-                    <DialogFooter>
-                      <Button type="submit">Save changes</Button>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
-              </DropdownMenuItem>
+            <DialogContent className="sm:max-w-[960px]">
+              <DialogHeader>
+                <DialogTitle>Replace Exercise</DialogTitle>
+                <DialogDescription>
+                  Make changes to your profile here. Click save when you're
+                  done.
+                </DialogDescription>
+              </DialogHeader>
 
-              <DropdownMenuItem>
-                <div className="text-red-500">Delete</div>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+              <SelectExercise
+                muscle={muscle}
+                exerciseId={exercise.id}
+                onSelect={() => {}}
+                onClose={() => {}}
+              />
+
+              <DialogFooter>
+                <Button type="submit">Save changes</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
 
         <div className="flex space-x-2 p-2 ">
@@ -336,15 +333,19 @@ function ExerciseCounter({ type, initialValue }: ExerciseCounterProps) {
   };
 
   return (
-    <Counter>
-      <Counter.Button onClick={onDecrement}>
-        <SubtractIcon fill="white" />
-      </Counter.Button>
-      <Counter.Input value={initialValue} ref={inputRef} />
-      <Counter.Button onClick={onIncrement}>
-        <AddIcon fill="white" />
-      </Counter.Button>
-    </Counter>
+    <Counter
+      minus={
+        <Button variant="outline" size="icon">
+          <MinusIcon fill="white" />
+        </Button>
+      }
+      input={<Input />}
+      plus={
+        <Button variant="outline" size="icon">
+          <MinusIcon fill="white" />
+        </Button>
+      }
+    />
   );
 }
 

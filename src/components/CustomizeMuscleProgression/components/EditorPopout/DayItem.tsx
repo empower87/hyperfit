@@ -1,7 +1,17 @@
 import { Cross2Icon, DotsVerticalIcon } from "@radix-ui/react-icons";
 import React, { useState } from "react";
+import SelectExercise from "~/components/Modals/ChangeExerciseModal/ChangeExerciseModal";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "~/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -39,8 +49,6 @@ export default function DayItem({ index, exercises, muscle }: DayItemProps) {
           </DropdownMenuTrigger>
 
           <DropdownMenuContent className="w-44">
-            <DropdownMenuItem>Replace Exercise</DropdownMenuItem>
-            <DropdownMenuItem>Subscription</DropdownMenuItem>
             <DropdownMenuItem>
               <div className="text-red-500">Remove Training Day</div>
             </DropdownMenuItem>
@@ -107,9 +115,34 @@ function Session({ index, exercises, muscle, children }: SessionProps) {
           );
         })}
       </ul>
-      <Button variant="ghost" className="mt-2 w-full">
-        Add Exercise
-      </Button>
+
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button variant="ghost" className="mt-2 w-full">
+            Add Exercise
+          </Button>
+        </DialogTrigger>
+
+        <DialogContent className="sm:max-w-[960px]">
+          <DialogHeader>
+            <DialogTitle>Replace Exercise</DialogTitle>
+            <DialogDescription>
+              Make changes to your profile here. Click save when you're done.
+            </DialogDescription>
+          </DialogHeader>
+
+          <SelectExercise
+            muscle={muscle}
+            exerciseId={""}
+            onSelect={() => {}}
+            onClose={() => {}}
+          />
+
+          <DialogFooter>
+            <Button type="submit">Save changes</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

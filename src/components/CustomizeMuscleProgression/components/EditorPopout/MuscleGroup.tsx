@@ -1,10 +1,13 @@
+import { MinusIcon, PlusIcon } from "@radix-ui/react-icons";
 import { ReactNode } from "react";
+import { Button } from "~/components/ui/button";
+import { Input } from "~/components/ui/input";
 import { MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { cn } from "~/lib/clsx";
 import { getRankColor } from "~/utils/getIndicatorColors";
 import { useMuscleEditorContext } from "../../context/MuscleEditorContext";
-import { ActionCard, Actions, Exercises } from "./Contents";
-import { EditFrequency } from "./EditFrequency";
+import { Actions, Exercises } from "./Contents";
+import Counter from "./Counter";
 
 type MusclePopoutProps = {
   children: ReactNode;
@@ -68,13 +71,18 @@ export function Contents({ selectedMuscle }: ContentsProps) {
     <div className="flex space-x-1 p-2">
       <ContentsPlaceholder>
         <Actions>
-          <div className={cn(`flex rounded-md p-2 ${muscle_rank_color.bg}`)}>
-            <h1>{presentational_muscle_name}</h1>
+          <div className={cn(`flex items-start rounded-md`)}>
+            <h2
+              className={`rounded-sm px-2 py-1 font-semibold leading-none tracking-tight ${muscle_rank_color.bg}`}
+            >
+              {presentational_muscle_name}
+            </h2>
           </div>
+          <ToggleMesocycle />
 
-          <ActionCard title="Frequency">
+          {/* <ActionCard title="Frequency">
             <EditFrequency frequency_progression={frequency_progression} />
-          </ActionCard>
+          </ActionCard> */}
         </Actions>
 
         <Exercises muscleGroup={selectedMuscle} />
@@ -88,4 +96,66 @@ type ContentsPlaceholderProps = {
 };
 function ContentsPlaceholder({ children }: ContentsPlaceholderProps) {
   return <div className="flex flex-col space-y-2">{children}</div>;
+}
+
+export function ToggleMesocycle() {
+  return (
+    <div className="grid grid-cols-4 grid-rows-3 gap-x-3 gap-y-1">
+      <div className="col-start-2">Mesocycle 1</div>
+      <div className="">Mesocycle 2</div>
+      <div className="">Mesocycle 3</div>
+
+      <div className="mt-1 text-sm text-muted-foreground">Frequency</div>
+      <div className="mt-1">
+        <Counter
+          minus={
+            <Button variant="outline" size="icon">
+              <MinusIcon fill="white" />
+            </Button>
+          }
+          input={<Input placeholder={"3"} />}
+          plus={
+            <Button variant="outline" size="icon">
+              <PlusIcon fill="white" />
+            </Button>
+          }
+        />
+      </div>
+      <div className="mt-1">
+        <Counter
+          minus={
+            <Button variant="outline" size="icon">
+              <MinusIcon fill="white" />
+            </Button>
+          }
+          input={<Input placeholder={"4"} />}
+          plus={
+            <Button variant="outline" size="icon">
+              <PlusIcon fill="white" />
+            </Button>
+          }
+        />
+      </div>
+      <div className="mt-1">
+        <Counter
+          minus={
+            <Button variant="outline" size="icon">
+              <MinusIcon fill="white" />
+            </Button>
+          }
+          input={<Input placeholder={"5"} />}
+          plus={
+            <Button variant="outline" size="icon">
+              <PlusIcon fill="white" />
+            </Button>
+          }
+        />
+      </div>
+
+      <div className="text-sm text-muted-foreground">Volume</div>
+      <div className="flex items-center justify-center">20</div>
+      <div className="flex items-center justify-center">22</div>
+      <div className="flex items-center justify-center">24</div>
+    </div>
+  );
 }

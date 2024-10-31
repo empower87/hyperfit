@@ -1,4 +1,6 @@
 import { MinusIcon, PlusIcon } from "@radix-ui/react-icons";
+import { Button } from "~/components/ui/button";
+import { Input } from "~/components/ui/input";
 import { useMuscleEditorContext } from "../../context/MuscleEditorContext";
 import Counter from "./Counter";
 
@@ -33,23 +35,27 @@ function FrequencyCounter({ index, frequency }: FrequencyCounterProps) {
       </div>
 
       <div className="p-2">
-        <Counter>
-          <Counter.Button
-            variant="md"
-            onClick={() => onSelectedFrequencyProgressionDecrement(index)}
-          >
-            <MinusIcon fill="white" />
-          </Counter.Button>
-
-          <Counter.Input variant="md" value={frequency} />
-
-          <Counter.Button
-            variant="md"
-            onClick={() => onSelectedFrequencyProgressionIncrement(index)}
-          >
-            <PlusIcon fill="white" />
-          </Counter.Button>
-        </Counter>
+        <Counter
+          minus={
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => onSelectedFrequencyProgressionDecrement(index)}
+            >
+              <MinusIcon fill="white" />
+            </Button>
+          }
+          input={<Input placeholder={frequency.toString()} />}
+          plus={
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => onSelectedFrequencyProgressionIncrement(index)}
+            >
+              <PlusIcon fill="white" />
+            </Button>
+          }
+        />
       </div>
     </div>
   );
