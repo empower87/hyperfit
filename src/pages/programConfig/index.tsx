@@ -11,6 +11,7 @@ import {
   useProgramConfigContext,
 } from "~/components/Configuration/hooks/useProgramConfig";
 import { Contents } from "~/components/CustomizeMuscleProgression/components/EditorPopout/MuscleGroup";
+import TrainingWeekOverview from "~/components/TrainingWeekOverview/TrainingWeekOverview";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
@@ -77,6 +78,19 @@ export default function ProgramConfig() {
               <Configuration.Layout>
                 <div className="flex space-x-3">
                   <Card>
+                    <CardHeader>2. Training Week</CardHeader>
+                    <CardContent>
+                      <div className="flex space-x-3 pb-3">
+                        <FrequencySelection />
+                        <Split />
+                      </div>
+
+                      <TrainingWeek />
+                    </CardContent>
+                  </Card>
+                </div>
+                {/* <div className="flex space-x-3">
+                  <Card>
                     <CardHeader>2. Frequency</CardHeader>
                     <CardContent>
                       <FrequencySelection />
@@ -88,10 +102,9 @@ export default function ProgramConfig() {
                       <Split />
                     </CardContent>
                   </Card>
-                </div>
+                </div> */}
 
-                {/* <TrainingWeek /> */}
-                <Configuration.Actions />
+                {/* <Configuration.Actions /> */}
               </Configuration.Layout>
             </Configuration>
 
@@ -102,7 +115,7 @@ export default function ProgramConfig() {
                 onSelectTab={onSelectTab}
               />
               {selectedTab === "training-week-overview" ? (
-                <TrainingWeek />
+                <TrainingWeekOverview />
               ) : null}
               {selectedMuscleId && selectedTab === "edit-muscle" ? (
                 // <Days muscleGroup={selectedMuscle} />
@@ -165,8 +178,10 @@ function FrequencySelection() {
 
   const selectedButtonClasses = "scale-110 border-secondary-300";
   return (
-    <div className="flex">
-      <div></div>
+    <div className="flex flex-col items-center">
+      <h2 className="p-2 text-sm font-semibold text-primary-300">
+        2a. Frequency
+      </h2>
       <div className="flex space-x-2">
         {OPTIONS.map((option) => {
           return (

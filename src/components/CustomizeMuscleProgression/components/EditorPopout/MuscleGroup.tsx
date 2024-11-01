@@ -68,12 +68,12 @@ export function Contents({ selectedMuscle }: ContentsProps) {
 
   const muscle_rank_color = getRankColor(v_landmark);
   return (
-    <div className="flex space-x-1 p-2">
+    <div className="flex space-x-1">
       <ContentsPlaceholder>
         <Actions>
-          <div className={cn(`flex items-start rounded-md`)}>
+          <div className={cn(`flex w-24 items-start rounded-md`)}>
             <h2
-              className={`rounded-sm px-2 py-1 font-semibold leading-none tracking-tight ${muscle_rank_color.bg}`}
+              className={`w-full rounded-sm px-2 py-1 font-semibold leading-none tracking-tight ${muscle_rank_color.bg}`}
             >
               {presentational_muscle_name}
             </h2>
@@ -95,15 +95,16 @@ type ContentsPlaceholderProps = {
   children: ReactNode;
 };
 function ContentsPlaceholder({ children }: ContentsPlaceholderProps) {
-  return <div className="flex flex-col space-y-2">{children}</div>;
+  return <div className="flex flex-col space-y-3">{children}</div>;
 }
 
 export function ToggleMesocycle() {
   return (
     <div className="grid grid-cols-4 grid-rows-3 gap-x-3 gap-y-1">
-      <div className="col-start-2">Mesocycle 1</div>
-      <div className="">Mesocycle 2</div>
-      <div className="">Mesocycle 3</div>
+      <div className="">Mesocycle</div>
+      <div className="flex items-center justify-center">1</div>
+      <div className="flex items-center justify-center">2</div>
+      <div className="flex items-center justify-center">3</div>
 
       <div className="mt-1 text-sm text-muted-foreground">Frequency</div>
       <div className="mt-1">

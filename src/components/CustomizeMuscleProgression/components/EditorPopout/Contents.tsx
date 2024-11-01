@@ -42,7 +42,7 @@ type ActionsProps = {
 };
 export function Actions({ children }: ActionsProps) {
   return (
-    <div className="flex w-full space-x-2 rounded-lg border border-input p-4">
+    <div className="flex w-full space-x-3 rounded-lg border border-input p-3">
       {children}
     </div>
   );

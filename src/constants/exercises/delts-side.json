@@ -166,5 +166,29 @@
       },
       "fatigue": 7
     }
+  },
+  {
+    "id": "0008-deltsside-inclinesidelateralraise",
+    "name": "Incline Side Lateral Raise",
+    "rank": 8,
+    "group": "delts_side",
+    "region": "",
+    "requirements": ["dumbbell", "bench"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "isolation",
+    "hypertrophy_criteria": {
+      "target_function": 9,
+      "stability": 3,
+      "limiting_factor": 5,
+      "time_efficiency": 3,
+      "loadability": 9,
+      "stretch": {
+        "lengthened": 10,
+        "challenging": 10,
+        "partial_friendly": 10
+      },
+      "fatigue": 7
+    }
   }
 ]

@@ -256,8 +256,8 @@ function SelectSession({ session, splits, onSelect }: SelectSessionProps) {
 
 export function Split() {
   return (
-    <div className="flex items-center space-x-2 p-2 text-sm text-white">
-      <div className={`text-xs text-slate-300`}>Choose A Training Split: </div>
+    <div className="flex flex-col items-center space-x-2 text-sm text-white">
+      <h2 className={`p-2 font-semibold text-primary-300`}>2b. Split</h2>
       <SplitSelect />
     </div>
   );
