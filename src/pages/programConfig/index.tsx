@@ -41,7 +41,7 @@ export default function ProgramConfig() {
     <ProgramConfigProvider>
       <div className="mt-6 flex flex-col">
         <h1 className="mb-5 text-white">Program Configuration</h1>
-        <div className="flex space-x-3">
+        <div className="flex space-x-5">
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between space-x-2 border-b border-primary-500 pb-2 ">
@@ -76,35 +76,32 @@ export default function ProgramConfig() {
           <div className="flex flex-col space-y-3">
             <Configuration>
               <Configuration.Layout>
-                <div className="flex space-x-3">
-                  <Card>
-                    <CardHeader>2. Training Week</CardHeader>
-                    <CardContent>
-                      <div className="flex space-x-3 pb-3">
+                <div className="flex flex-col space-y-3">
+                  <div className="flex w-full space-x-3">
+                    <Card>
+                      <CardHeader>2. Frequency</CardHeader>
+                      <CardContent>
                         <FrequencySelection />
-                        <Split />
-                      </div>
+                      </CardContent>
+                    </Card>
 
+                    <Card className="w-full">
+                      <CardHeader>3. Split</CardHeader>
+                      <CardContent>
+                        <Split />
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  <Card>
+                    <CardHeader>Split Overview</CardHeader>
+                    <CardContent>
                       <TrainingWeek />
                     </CardContent>
                   </Card>
                 </div>
-                {/* <div className="flex space-x-3">
-                  <Card>
-                    <CardHeader>2. Frequency</CardHeader>
-                    <CardContent>
-                      <FrequencySelection />
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardHeader>3. Split</CardHeader>
-                    <CardContent>
-                      <Split />
-                    </CardContent>
-                  </Card>
-                </div> */}
 
-                {/* <Configuration.Actions /> */}
+                <Configuration.Actions />
               </Configuration.Layout>
             </Configuration>
 
@@ -179,9 +176,6 @@ function FrequencySelection() {
   const selectedButtonClasses = "scale-110 border-secondary-300";
   return (
     <div className="flex flex-col items-center">
-      <h2 className="p-2 text-sm font-semibold text-primary-300">
-        2a. Frequency
-      </h2>
       <div className="flex space-x-2">
         {OPTIONS.map((option) => {
           return (

@@ -1,7 +1,14 @@
+import { DragHandleDots2Icon } from "@radix-ui/react-icons";
 import { ReactNode, useCallback } from "react";
 import { DragDropContext, Draggable, DropResult } from "react-beautiful-dnd";
-import { DragHandleIcon } from "~/assets/icons/_icons";
 import { CardS } from "~/components/Layout/Sections";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "~/components/ui/select";
 import {
   DayType,
   SessionType,
@@ -10,6 +17,7 @@ import {
 import { cn } from "~/lib/clsx";
 import StrictModeDroppable from "~/lib/react-beautiful-dnd/StrictModeDroppable";
 import { getSplitColor } from "~/utils/getIndicatorColors";
+import { capitalizeFirstCharInString } from "~/utils/uiHelpers";
 import { useProgramConfigContext } from "../../hooks/useProgramConfig";
 import SplitSelect from "./SplitSelect";
 
@@ -84,8 +92,8 @@ export function TrainingWeek() {
   };
 
   return (
-    <div className={"p-1"}>
-      <div className="mb-1 flex space-x-1 overflow-x-auto">
+    <div className={"flex flex-col items-center"}>
+      <div className="mb-1 flex space-x-2 overflow-x-auto">
         <DragDropContext onDragEnd={onDragEnd}>
           {trainingWeek?.map((each, index) => {
             const day = DAYS[index];
@@ -117,21 +125,19 @@ const DroppableDay = ({
   onSplitChange: (newSplit: SplitType | "off", id: string) => void;
 }) => {
   return (
-    <div className={cn(`flex flex-col rounded bg-primary-500`)}>
+    <div className={cn(`flex flex-col rounded-md`)}>
       <div
-        className={cn(
-          `flex w-full justify-center border-b-2 border-primary-700 p-1 text-xs font-bold text-white`
-        )}
+        className={`flex w-full justify-center pb-3 pt-0 text-xs font-semibold text-muted-foreground`}
       >
         {day}
       </div>
 
-      <div className={`flex flex-col space-y-1 p-1.5`}>
+      <div className={`flex flex-col`}>
         <StrictModeDroppable droppableId={droppableId} type={"sessionx"}>
           {(provided, snapshot) => (
             <ul
               id="sessionx"
-              className="flex w-full flex-col space-y-1"
+              className="flex w-full flex-col space-y-1 rounded-md border border-dashed border-input p-2"
               {...provided.droppableProps}
               ref={provided.innerRef}
             >
@@ -150,9 +156,9 @@ const DroppableDay = ({
                         >
                           <div
                             {...provided.dragHandleProps}
-                            className={`flex items-center justify-start`}
+                            className={`flex items-center justify-start `}
                           >
-                            <DragHandleIcon fill="white" />
+                            <DragHandleDots2Icon fill="white" />
                           </div>
                         </SessionItem>
                       </div>
@@ -197,24 +203,37 @@ function SessionItem({ session, onSplitChange, children }: SessionItemProps) {
   return (
     <li
       className={cn(
-        `flex py-1 ${bgColor} rounded border-2 focus-within:border-rose-400`,
-        {
-          [`border-primary-400`]: session.split === ("off" as SplitType),
-        }
+        `flex rounded-md border border-input bg-primary-800/40 py-1 pr-1`
       )}
     >
       {children}
-      <div className={`relative flex w-14 text-xxs text-white`}>
+      <div className={`relative flex w-20 text-xxs text-white`}>
         {session.split === "off" ? (
           <div className="h-full w-full bg-inherit py-0.5 indent-2 text-xxs font-bold text-white">
             off
           </div>
         ) : (
-          <SelectSession
-            session={session.split}
-            splits={SPLIT_NAMES}
-            onSelect={onSelectChange}
-          />
+          <Select onValueChange={onSelectChange}>
+            <SelectTrigger className={`${bgColor} h-7 px-2`}>
+              <SelectValue
+                placeholder={capitalizeFirstCharInString(session.split)}
+              />
+            </SelectTrigger>
+            <SelectContent>
+              {SPLIT_NAMES.map((split, index) => {
+                return (
+                  <SelectItem value={split}>
+                    {capitalizeFirstCharInString(split)}
+                  </SelectItem>
+                );
+              })}
+            </SelectContent>
+          </Select>
+          // <SelectSession
+          //   session={session.split}
+          //   splits={SPLIT_NAMES}
+          //   onSelect={onSelectChange}
+          // />
         )}
       </div>
     </li>
@@ -257,7 +276,6 @@ function SelectSession({ session, splits, onSelect }: SelectSessionProps) {
 export function Split() {
   return (
     <div className="flex flex-col items-center space-x-2 text-sm text-white">
-      <h2 className={`p-2 font-semibold text-primary-300`}>2b. Split</h2>
       <SplitSelect />
     </div>
   );
