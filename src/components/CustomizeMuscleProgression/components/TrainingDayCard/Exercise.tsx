@@ -27,18 +27,14 @@ import {
   MusclePriorityType,
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { cn } from "~/lib/utils";
-import Counter from "./Counter";
+import Counter from "../EditorPopout/Counter";
 
-type ExerciseItemProps = {
+type ExerciseProps = {
   index: number;
   exercise: ExerciseType;
   muscle: MusclePriorityType;
 };
-export default function ExerciseItem({
-  index,
-  exercise,
-  muscle,
-}: ExerciseItemProps) {
+export default function Exercise({ index, exercise, muscle }: ExerciseProps) {
   const [selectedModality, setSelectedModality] = useState("S");
 
   const onSelectModality = (selected: string) => {

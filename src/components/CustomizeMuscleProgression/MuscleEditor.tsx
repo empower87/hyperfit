@@ -1,14 +1,12 @@
 import { useMemo, useState } from "react";
-import { AddIcon, CloseIcon, SubtractIcon } from "~/assets/icons/_icons";
+import { AddIcon, SubtractIcon } from "~/assets/icons/_icons";
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
 import { getRankColor } from "~/utils/getIndicatorColors";
 import { getMuscleData } from "~/utils/getMuscleData";
 import getMuscleTitleForUI from "~/utils/getMuscleTitleForUI";
-import { Button } from "../Layout/Buttons";
 import CollapsibleHeader from "../Layout/CollapsibleHeader";
-import Modal from "../Modals/Modal";
 import Counter from "./components/Counter";
-import MusclePopout from "./components/EditorPopout/MuscleGroup";
+
 import SideMenu from "./components/SideMenu";
 import TrainingDays from "./components/TrainingDay";
 import {
@@ -97,25 +95,6 @@ function MuscleItem({ order }: MuscleProps) {
           onCollapse={onCollapseHandler}
         />
       </CollapsibleHeader>
-
-      <Modal isOpen={isPopoutOpen} onClose={closePopout}>
-        <MusclePopout>
-          <MusclePopout.Header>
-            <Button onClick={closePopout}>
-              <CloseIcon fill="white" />
-            </Button>
-          </MusclePopout.Header>
-
-          {/* <MusclePopout.Contents /> */}
-
-          <MusclePopout.Footer>
-            <div className="flex space-x-1">
-              <Button>Cancel</Button>
-              <Button>Save</Button>
-            </div>
-          </MusclePopout.Footer>
-        </MusclePopout>
-      </Modal>
 
       {!isCollapsed ? (
         <div className={`flex`}>

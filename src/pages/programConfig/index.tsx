@@ -10,7 +10,7 @@ import {
   ProgramConfigProvider,
   useProgramConfigContext,
 } from "~/components/Configuration/hooks/useProgramConfig";
-import { Contents } from "~/components/CustomizeMuscleProgression/components/EditorPopout/MuscleGroup";
+import { EditMuscleProgressionWithProvider } from "~/components/CustomizeMuscleProgression/EditMuscleProgression";
 import TrainingWeekOverview from "~/components/TrainingWeekOverview/TrainingWeekOverview";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
@@ -115,8 +115,9 @@ export default function ProgramConfig() {
                 <TrainingWeekOverview />
               ) : null}
               {selectedMuscleId && selectedTab === "edit-muscle" ? (
-                // <Days muscleGroup={selectedMuscle} />
-                <Contents selectedMuscle={selectedMuscle} />
+                <EditMuscleProgressionWithProvider
+                  selectedMuscle={selectedMuscle}
+                />
               ) : null}
             </div>
           </div>

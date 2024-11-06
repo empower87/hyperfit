@@ -92,23 +92,21 @@ export function TrainingWeek() {
   };
 
   return (
-    <div className={"flex flex-col items-center"}>
-      <div className="mb-1 flex space-x-2 overflow-x-auto">
-        <DragDropContext onDragEnd={onDragEnd}>
-          {trainingWeek?.map((each, index) => {
-            const day = DAYS[index];
-            return (
-              <DroppableDay
-                key={`${each.day}_${index}`}
-                day={day}
-                droppableId={each.day}
-                sessions={each.sessions}
-                onSplitChange={onSplitChange}
-              />
-            );
-          })}
-        </DragDropContext>
-      </div>
+    <div className="flex space-x-2">
+      <DragDropContext onDragEnd={onDragEnd}>
+        {trainingWeek?.map((each, index) => {
+          const day = DAYS[index];
+          return (
+            <DroppableDay
+              key={`${each.day}_${index}`}
+              day={day}
+              droppableId={each.day}
+              sessions={each.sessions}
+              onSplitChange={onSplitChange}
+            />
+          );
+        })}
+      </DragDropContext>
     </div>
   );
 }
@@ -137,7 +135,7 @@ const DroppableDay = ({
           {(provided, snapshot) => (
             <ul
               id="sessionx"
-              className="flex w-full flex-col space-y-1 rounded-md border border-dashed border-input p-2"
+              className="min-w-20 flex h-10 w-24 flex-col space-y-1 rounded-md border border-dashed border-input p-1"
               {...provided.droppableProps}
               ref={provided.innerRef}
             >
@@ -200,76 +198,30 @@ function SessionItem({ session, onSplitChange, children }: SessionItemProps) {
     "off",
   ];
 
+  if (session.split === "off") return null;
   return (
-    <li
-      className={cn(
-        `flex rounded-md border border-input bg-primary-800/40 py-1 pr-1`
-      )}
-    >
+    <li className={cn(`flex rounded-sm border border-white ${bgColor} py-1`)}>
       {children}
-      <div className={`relative flex w-20 text-xxs text-white`}>
-        {session.split === "off" ? (
-          <div className="h-full w-full bg-inherit py-0.5 indent-2 text-xxs font-bold text-white">
-            off
-          </div>
-        ) : (
-          <Select onValueChange={onSelectChange}>
-            <SelectTrigger className={`${bgColor} h-7 px-2`}>
-              <SelectValue
-                placeholder={capitalizeFirstCharInString(session.split)}
-              />
-            </SelectTrigger>
-            <SelectContent>
-              {SPLIT_NAMES.map((split, index) => {
-                return (
-                  <SelectItem value={split}>
-                    {capitalizeFirstCharInString(split)}
-                  </SelectItem>
-                );
-              })}
-            </SelectContent>
-          </Select>
-          // <SelectSession
-          //   session={session.split}
-          //   splits={SPLIT_NAMES}
-          //   onSelect={onSelectChange}
-          // />
-        )}
+      <div className={`relative flex text-xxs text-white`}>
+        <Select onValueChange={onSelectChange}>
+          <SelectTrigger className="h-5 w-16 border-none px-1.5">
+            <SelectValue
+              placeholder={capitalizeFirstCharInString(session.split)}
+            />
+          </SelectTrigger>
+
+          <SelectContent>
+            {SPLIT_NAMES.map((split, index) => {
+              return (
+                <SelectItem value={split}>
+                  {capitalizeFirstCharInString(split)}
+                </SelectItem>
+              );
+            })}
+          </SelectContent>
+        </Select>
       </div>
     </li>
-  );
-}
-
-type SelectSessionProps = {
-  session: SplitType | "off";
-  splits: (SplitType | "off")[];
-  onSelect: (newSplit: SplitType | "off") => void;
-};
-function SelectSession({ session, splits, onSelect }: SelectSessionProps) {
-  const onSelectHandler = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const newSplit = event.target.value as SplitType | "off";
-    onSelect(newSplit);
-  };
-  return (
-    <select
-      className={
-        "h-full w-full bg-inherit py-0.5 text-xxs font-bold text-white outline-none"
-      }
-      onChange={onSelectHandler}
-    >
-      {splits.map((split, index) => {
-        return (
-          <option
-            key={`${split}_${index}`}
-            className={`bg-primary-700 p-1 text-xxs font-bold text-white`}
-            selected={split === session}
-            value={split}
-          >
-            {split}
-          </option>
-        );
-      })}
-    </select>
   );
 }
 
