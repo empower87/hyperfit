@@ -27,6 +27,7 @@ import {
   MusclePriorityType,
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { cn } from "~/lib/utils";
+import { useMuscleEditorContext } from "../../context/MuscleEditorContext copy";
 import Counter from "../EditorPopout/Counter";
 
 type ExerciseProps = {
@@ -35,6 +36,7 @@ type ExerciseProps = {
   muscle: MusclePriorityType;
 };
 export default function Exercise({ index, exercise, muscle }: ExerciseProps) {
+  const { onRemoveExercise } = useMuscleEditorContext();
   const [selectedModality, setSelectedModality] = useState("S");
 
   const onSelectModality = (selected: string) => {
@@ -130,7 +132,12 @@ export default function Exercise({ index, exercise, muscle }: ExerciseProps) {
                 </DialogTrigger>
 
                 <DropdownMenuItem>
-                  <div className="text-red-500">Delete</div>
+                  <div
+                    className="text-red-500"
+                    onClick={() => onRemoveExercise(exercise.id)}
+                  >
+                    Delete
+                  </div>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

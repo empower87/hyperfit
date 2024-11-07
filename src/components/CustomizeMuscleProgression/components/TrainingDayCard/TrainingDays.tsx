@@ -2,19 +2,22 @@ import { PlusIcon } from "@radix-ui/react-icons";
 import { Button } from "~/components/ui/button";
 import { Card } from "~/components/ui/card";
 import { MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
+import { useMuscleEditorContext } from "../../context/MuscleEditorContext";
 import TrainingDay from "./TrainingDay";
 
 type TrainingDaysProps = {
   muscleGroup: MusclePriorityType;
 };
 export function TrainingDays({ muscleGroup }: TrainingDaysProps) {
-  const exercises = muscleGroup?.exercises;
+  // const exercises = muscleGroup?.exercises;
+  const { exercisesInView } = useMuscleEditorContext();
+  console.log(exercisesInView, "WHAT IS GOING ON EHRE");
   return (
     <div className="flex w-full flex-col rounded">
       <div className="mb-3 flex p-1 indent-1 text-sm text-white">Exercises</div>
 
       <ul className="flex w-full space-x-2 overflow-x-auto p-1">
-        {exercises?.map((exercise, dayIndex) => {
+        {exercisesInView.map((exercise, dayIndex) => {
           return (
             <TrainingDay
               index={dayIndex}

@@ -4,8 +4,10 @@ import {
   type MusclePriorityType,
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
-import { getExerciseSetsOverMicrocycles, JSONExercise } from "~/hooks/useTrainingProgram/utils/exercises/getExercises";
-import { setProgression_addOnePerMicrocycle_TEST } from "~/hooks/useTrainingProgram/utils/exercises/setProgressionOverMicrocycles";
+import {
+  getExerciseSetsOverMicrocycles,
+  JSONExercise,
+} from "~/hooks/useTrainingProgram/utils/exercises/getExercises";
 import { calculateTotalSetsOverMesocycles } from "../utils/calculateTotalSetsPerMesocycle";
 import { muscleEditorReducer } from "../utils/muscleEditorReducer";
 
@@ -74,12 +76,16 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
     []
   );
 
-  const onRemoveExercise = useCallback((id: ExerciseType["id"]) => {
-    dispatch({
-      type: "REMOVE_EXERCISE",
-      payload: { id },
-    });
-  }, []);
+  const onRemoveExercise = useCallback(
+    (id: ExerciseType["id"]) => {
+      console.log(id, "REMOVING THIS EXERCISE");
+      dispatch({
+        type: "REMOVE_EXERCISE",
+        payload: { id },
+      });
+    },
+    [muscleGroup]
+  );
 
   const onChangeExercise = useCallback(
     (old_exerciseId: ExerciseType["id"], new_exercise: JSONExercise) => {
@@ -93,7 +99,6 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
 
   const getSetsByExerciseId = useCallback(
     (exerciseId: ExerciseType["id"]) => {
-      
       // const setProgressionMatrix = muscleGroup.frequency.setProgressionMatrix;
       // const setProgressionLengths = Array.from(
       //   setProgressionMatrix,
@@ -140,7 +145,12 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
       // );
       // console.log(foundExercise, sets, initialSets, "GOT SETS");
       // return sets;
-      return getExerciseSetsOverMicrocycles(exerciseId, muscleGroup, selectedMesocycleIndex, microcycles)
+      return getExerciseSetsOverMicrocycles(
+        exerciseId,
+        muscleGroup,
+        selectedMesocycleIndex,
+        microcycles
+      );
     },
     [muscleGroup, selectedMesocycleIndex]
   );

@@ -12,6 +12,7 @@ import {
   ExerciseType,
   MusclePriorityType,
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
+import { useMuscleEditorContext } from "../../context/MuscleEditorContext";
 import { Session, SessionDelete, SessionHeader, SessionTitle } from "./Session";
 
 type TrainingDayProps = {
@@ -25,6 +26,7 @@ export default function TrainingDay({
   exercises,
   muscle,
 }: TrainingDayProps) {
+  const { onRemoveTrainingDay } = useMuscleEditorContext();
   const [sessions, setSessions] = useState([1]);
 
   const onAddSession = () => {
@@ -43,12 +45,13 @@ export default function TrainingDay({
           </DropdownMenuTrigger>
 
           <DropdownMenuContent className="w-44">
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onRemoveTrainingDay(index)}>
               <div className="text-red-500">Remove Training Day</div>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </CardHeader>
+
       <CardContent>
         <ul className="space-y-3">
           {sessions.map((session, sessionIndex) => {
