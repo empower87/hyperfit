@@ -47,7 +47,7 @@ export default function Exercise({ index, exercise, muscle }: ExerciseProps) {
     <li className="flex">
       <div className="flex pr-2 text-xs text-primary-300">{index + 1}</div>
 
-      <div className="flex flex-col rounded-md border border-input">
+      <div className="flex flex-col rounded-md border border-input bg-background/30">
         <div className="flex justify-between">
           <h3 className="p-2 text-sm font-semibold leading-none tracking-tight text-secondary-400">
             {exercise.name}
@@ -191,15 +191,24 @@ export default function Exercise({ index, exercise, muscle }: ExerciseProps) {
             <div className="flex space-x-1 text-primary-400">
               <div className="flex w-8 flex-col space-y-1">
                 <WeekCell value={"WK 2"} className="text-xxs" />
-                <WeekCell value={4} className="p-1" />
+                <WeekCell
+                  value={4}
+                  className="rounded-md bg-background/50 p-1"
+                />
               </div>
               <div className="flex w-8 flex-col space-y-1">
                 <WeekCell value={"WK 3"} className="text-xxs" />
-                <WeekCell value={5} className="p-1" />
+                <WeekCell
+                  value={5}
+                  className="rounded-md bg-background/50 p-1"
+                />
               </div>
               <div className="flex w-8 flex-col space-y-1">
                 <WeekCell value={"WK 4"} className="text-xxs" />
-                <WeekCell value={6} className="p-1" />
+                <WeekCell
+                  value={6}
+                  className="rounded-md bg-background/50 p-1"
+                />
               </div>
             </div>
 

@@ -10,7 +10,7 @@ function Toggle({ selected, children, ...props }: ToggleProps) {
   return (
     <button
       className={cn(
-        `flex cursor-pointer items-center justify-center px-2 text-sm last:rounded-r bg-primary-700 hover:bg-primary-500`,
+        `flex cursor-pointer items-center justify-center bg-primary-700 px-2 text-sm last:rounded-r hover:bg-primary-500`,
         {
           [`bg-primary-500 text-white`]: selected,
           [`bg-primary-600 text-slate-400`]: !selected,
@@ -31,7 +31,7 @@ function ToggleLayout({ label, children }: ToggleLayoutProps) {
   return (
     <div className={`flex justify-center rounded border border-primary-700`}>
       <div
-        className={`flex items-center justify-center px-2 py-1 text-sm text-white bg-primary-700`}
+        className={`flex items-center justify-center bg-primary-700 px-2 py-1 text-sm text-white`}
       >
         {label}
       </div>
@@ -59,7 +59,7 @@ export default function MesocycleToggle({
   const selectedMesocycle = mesocycles[selectedMesocycleIndex];
   const selectedMicrocycle = microcycles[selectedMicrocycleIndex];
   return (
-    <div className={`flex w-full items-center space-x-2 rounded p-2`}>
+    <div className={`flex w-full items-center space-x-2 rounded`}>
       <ToggleLayout label="Mesocycle">
         {mesocycles.map((each, index) => {
           const isSelected = selectedMesocycle === each;

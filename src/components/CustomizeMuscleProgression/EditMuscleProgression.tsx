@@ -1,4 +1,3 @@
-import { ReactNode } from "react";
 import { MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { cn } from "~/lib/clsx";
 import { getRankColor } from "~/utils/getIndicatorColors";
@@ -8,28 +7,6 @@ import {
   MuscleEditorProvider,
   useMuscleEditorContext,
 } from "./context/MuscleEditorContext";
-
-type HeaderProps = {
-  children: ReactNode;
-};
-function Header({ children }: HeaderProps) {
-  return (
-    <div className="flex justify-between bg-primary-700 p-1">
-      <div className="text-m indent-1 font-semibold text-white">
-        Edit Muscle
-      </div>
-
-      {children}
-    </div>
-  );
-}
-
-type FooterProps = {
-  children: ReactNode;
-};
-function Footer({ children }: FooterProps) {
-  return <div className="p-1">{children}</div>;
-}
 
 export function EditMuscleProgression() {
   const {

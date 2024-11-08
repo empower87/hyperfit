@@ -35,7 +35,7 @@ export default function TrainingDay({
 
   return (
     <Card>
-      <CardHeader className="flex-row items-center justify-between space-y-0 ">
+      <CardHeader className="flex-row items-center justify-between space-y-0">
         <CardTitle>Day {index + 1}</CardTitle>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

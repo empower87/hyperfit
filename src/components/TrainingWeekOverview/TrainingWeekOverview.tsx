@@ -1,3 +1,4 @@
+import { DotsVerticalIcon } from "@radix-ui/react-icons";
 import {
   FC,
   HTMLAttributes,
@@ -10,10 +11,9 @@ import { DragDropContext, Draggable } from "react-beautiful-dnd";
 import ReactDOM from "react-dom";
 import { DotsIcon } from "~/assets/icons/_icons";
 import Dropdown from "~/components/Layout/Dropdown";
-import { CardS as Card } from "~/components/Layout/Sections";
 import Modal from "~/components/Modals/Modal";
+import { MuscleType } from "~/constants/workoutSplits";
 import {
-  EXERCISE_TRAINING_MODALITIES,
   ExerciseType,
   SessionSplitType,
   SplitType,
@@ -28,6 +28,14 @@ import StrictModeDroppable from "~/lib/react-beautiful-dnd/StrictModeDroppable";
 import { getRankColor, getSplitColor } from "~/utils/getIndicatorColors";
 import { capitalizeFirstLetter } from "~/utils/uiHelpers";
 import Settings from "../Configuration/components/MusclePrioritization/Settings";
+import { Button } from "../ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
 import MesocycleToggle from "./components/MesocycleToggle";
 import SessionDurationVariables from "./components/Settings/SessionDuration/SessionDurationVariables";
 import {
@@ -242,7 +250,41 @@ function DaySessionItemHeaders() {
   );
 }
 
-type DaySessionItemProps = {
+const ITEM_CELL_WIDTHS = {
+  index: "w-4",
+  sets: "w-6",
+  reps: "w-6",
+  lbs: "w-6",
+  exercise: "w-36",
+  actions: "w-4",
+  modality: "w-14",
+};
+
+type ExerciseItemLayoutProps = {
+  index: number;
+  exerciseName: string;
+  muscle: MuscleType;
+  muscleColor: string;
+};
+function ExerciseItemLayout({
+  index,
+  exerciseName,
+  muscle,
+  muscleColor,
+}: ExerciseItemLayoutProps) {
+  return (
+    <li className="flex">
+      <div className="p-2 text-sm text-white">{index}</div>
+      <div className="rounded-md border border-input">
+        <div className="flex p-2 text-sm text-sm text-secondary-300">
+          <div className="text-secondary-300">{exerciseName}</div>
+          <div className={`${muscleColor}`}>{muscle}</div>
+        </div>
+      </div>
+    </li>
+  );
+}
+type ExerciseItemProps = {
   index: number;
   exercise: ExerciseType;
   sessionId: string;
@@ -255,18 +297,7 @@ type DaySessionItemProps = {
     sessionId: string
   ) => void;
 };
-
-const ITEM_CELL_WIDTHS = {
-  index: "w-4",
-  sets: "w-6",
-  reps: "w-6",
-  lbs: "w-6",
-  exercise: "w-36",
-  actions: "w-4",
-  modality: "w-14",
-};
-
-function DaySessionItem({
+function ExerciseItem({
   index,
   exercise,
   sessionId,
@@ -274,7 +305,7 @@ function DaySessionItem({
   selectedMicrocycleIndex,
   selectedMesocycleIndex,
   onSupersetUpdate,
-}: DaySessionItemProps) {
+}: ExerciseItemProps) {
   const { training_program_params, prioritized_muscle_list } =
     useTrainingProgramContext();
   const { microcycles } = training_program_params;
@@ -343,7 +374,7 @@ function DaySessionItem({
       bgColor = supersettedColor;
     } else {
       const bgColorByRank = getRankColor(exercise.rank);
-      bgColor = bgColorByRank.bg;
+      bgColor = bgColorByRank.text;
     }
     setBgColor(bgColor);
   }, [supersets, exercise]);
@@ -352,89 +383,95 @@ function DaySessionItem({
     ? "border-white"
     : `border-primary-700`;
   return (
-    <li className={cn(`relative mb-0.5 flex text-white`)}>
-      <ItemCell
-        className={cn(
-          `${BORDER_COLOR} ${ITEM_CELL_WIDTHS.index} justify-center`
-        )}
-      >
-        {index}
-      </ItemCell>
+    <ExerciseItemLayout
+      index={index}
+      exerciseName={exercise.name}
+      muscle={muscleGroup.muscle}
+      muscleColor={bgColor}
+    />
+    // <li className={cn(`relative mb-0.5 flex text-white`)}>
+    //   <ItemCell
+    //     className={cn(
+    //       `${BORDER_COLOR} ${ITEM_CELL_WIDTHS.index} justify-center`
+    //     )}
+    //   >
+    //     {index}
+    //   </ItemCell>
 
-      <div
-        className={cn(
-          `flex space-x-0.5 overflow-hidden rounded border-2 border-primary-700 bg-primary-700`
-        )}
-      >
-        <div className="flex flex-col space-y-0.5">
-          <div className={cn(`flex space-x-0.5`)}>
-            <ItemCell
-              className={`${bgColor} ${ITEM_CELL_WIDTHS.sets} justify-center`}
-            >
-              {sets}
-            </ItemCell>
-            <ItemCell
-              className={`${bgColor} ${ITEM_CELL_WIDTHS.reps} justify-center`}
-            >
-              {reps}
-            </ItemCell>
-            <ItemCell
-              className={`${bgColor} ${ITEM_CELL_WIDTHS.lbs} justify-center`}
-            >
-              {lbs}
-            </ItemCell>
-          </div>
-          <ItemCell className={`${bgColor}`}>
-            <SelectDropdown
-              options={[...EXERCISE_TRAINING_MODALITIES]}
-              className={`${ITEM_CELL_WIDTHS.modality}`}
-              selectedOption={modality}
-            />
-          </ItemCell>
-        </div>
+    //   <div
+    //     className={cn(
+    //       `flex space-x-0.5 overflow-hidden rounded border-2 border-primary-700 bg-primary-700`
+    //     )}
+    //   >
+    //     <div className="flex flex-col space-y-0.5">
+    //       <div className={cn(`flex space-x-0.5`)}>
+    //         <ItemCell
+    //           className={`${bgColor} ${ITEM_CELL_WIDTHS.sets} justify-center`}
+    //         >
+    //           {sets}
+    //         </ItemCell>
+    //         <ItemCell
+    //           className={`${bgColor} ${ITEM_CELL_WIDTHS.reps} justify-center`}
+    //         >
+    //           {reps}
+    //         </ItemCell>
+    //         <ItemCell
+    //           className={`${bgColor} ${ITEM_CELL_WIDTHS.lbs} justify-center`}
+    //         >
+    //           {lbs}
+    //         </ItemCell>
+    //       </div>
+    //       <ItemCell className={`${bgColor}`}>
+    //         <SelectDropdown
+    //           options={[...EXERCISE_TRAINING_MODALITIES]}
+    //           className={`${ITEM_CELL_WIDTHS.modality}`}
+    //           selectedOption={modality}
+    //         />
+    //       </ItemCell>
+    //     </div>
 
-        <div className=" flex flex-col space-y-0.5 text-xxs">
-          <ItemCell className={`${bgColor} ${ITEM_CELL_WIDTHS.exercise}`}>
-            <SelectDropdown
-              className={`w-full truncate`}
-              options={allExercises}
-              selectedOption={selectedExerciseName}
-            />
-          </ItemCell>
-          <ItemCell
-            className={`${bgColor} ${ITEM_CELL_WIDTHS.exercise} truncate indent-1 text-slate-300`}
-          >
-            {exercise.muscle}
-          </ItemCell>
-        </div>
+    //     <div className=" flex flex-col space-y-0.5 text-xxs">
+    //       <ItemCell className={`${bgColor} ${ITEM_CELL_WIDTHS.exercise}`}>
+    //         <SelectDropdown
+    //           className={`w-full truncate`}
+    //           options={allExercises}
+    //           selectedOption={selectedExerciseName}
+    //         />
+    //       </ItemCell>
+    //       <ItemCell
+    //         className={`${bgColor} ${ITEM_CELL_WIDTHS.exercise} truncate indent-1 text-slate-300`}
+    //       >
+    //         {exercise.muscle}
+    //       </ItemCell>
+    //     </div>
 
-        <ItemCell className={`${bgColor} ${ITEM_CELL_WIDTHS.actions}`}>
-          <DropdownButton onDropdownClick={onDropdownClick} />
-          {isOpen ? (
-            <div className="absolute -bottom-0 right-0">
-              <Dropdown className={``} onClose={onDropdownClose}>
-                <Dropdown.Header title="Actions" onClose={onDropdownClose} />
-                <Dropdown.Item onClick={onModalOpen}>
-                  Create Superset
-                </Dropdown.Item>
-              </Dropdown>
-            </div>
-          ) : null}
-        </ItemCell>
+    //     <ItemCell className={`${bgColor} ${ITEM_CELL_WIDTHS.actions}`}>
+    //       <DropdownButton onDropdownClick={onDropdownClick} />
+    //       {isOpen ? (
+    //         <div className="absolute -bottom-0 right-0">
+    //           <Dropdown className={``} onClose={onDropdownClose}>
+    //             <Dropdown.Header title="Actions" onClose={onDropdownClose} />
+    //             <Dropdown.Item onClick={onModalOpen}>
+    //               Create Superset
+    //             </Dropdown.Item>
+    //           </Dropdown>
+    //         </div>
+    //       ) : null}
+    //     </ItemCell>
 
-        {isModalOpen ? (
-          <Modal isOpen={isModalOpen} onClose={onModalClose}>
-            <DropdownListModal
-              items={exercises}
-              supersets={supersets}
-              selectedId={exercise.id}
-              onClose={onDropdownClose}
-              onItemClick={onItemClick}
-            />
-          </Modal>
-        ) : null}
-      </div>
-    </li>
+    //     {isModalOpen ? (
+    //       <Modal isOpen={isModalOpen} onClose={onModalClose}>
+    //         <DropdownListModal
+    //           items={exercises}
+    //           supersets={supersets}
+    //           selectedId={exercise.id}
+    //           onClose={onDropdownClose}
+    //           onItemClick={onItemClick}
+    //         />
+    //       </Modal>
+    //     ) : null}
+    //   </div>
+    // </li>
   );
 }
 
@@ -475,18 +512,19 @@ function DroppableSession({
   const onOpenDurationModal = () => setIsDurationModalOpen(true);
   const onCloseDurationModal = () => setIsDurationModalOpen(false);
   return (
-    <li className={`rounded bg-primary-500 p-1`}>
+    <li className={`rounded-md border border-primary-500 `}>
       <div className={"flex flex-col pb-1"}>
         <div
-          className={
-            getSplitColor(split).bg +
-            " mx-1 mb-2 mt-1 flex items-center rounded-sm p-0.5 indent-1 text-sm font-bold text-white"
-          }
+          className={cn(
+            `flex items-center rounded-sm p-2 indent-1 text-sm font-semibold ${
+              getSplitColor(split).text
+            }`
+          )}
         >
           {split.charAt(0).toUpperCase() + split.slice(1)}
         </div>
 
-        <DaySessionItemHeaders />
+        {/* <DaySessionItemHeaders /> */}
       </div>
 
       <StrictModeDroppable
@@ -496,7 +534,7 @@ function DroppableSession({
         {(provided, snapshot) => (
           <ul
             id={`week_${mesocycleIndex}`}
-            className="w-full pr-0.5"
+            className="w-full p-2 pt-0"
             {...provided.droppableProps}
             ref={provided.innerRef}
           >
@@ -513,7 +551,7 @@ function DroppableSession({
                       {...provided.draggableProps}
                       {...provided.dragHandleProps}
                     >
-                      <DaySessionItem
+                      <ExerciseItem
                         index={index + 1}
                         exercise={each}
                         sessionId={droppableId}
@@ -589,41 +627,57 @@ function DayLayout({
   const { day, sessions } = session;
 
   return (
-    <li className={`mb-2 rounded border-2 border-primary-700`}>
-      <div className={`border-primary-700 bg-primary-700 p-1`}>
-        <h3 className="indent-1 text-white">{day}</h3>
-      </div>
+    <li className={``}>
+      <Card>
+        <CardHeader className="flex-row items-center justify-between space-y-0 p-3">
+          <CardTitle>{day}</CardTitle>
 
-      <SessionDurationVariablesProvider>
-        <StrictModeDroppable
-          droppableId={`${day}_${mesocycleIndex}`}
-          type={`session_${mesocycleIndex}`}
-        >
-          {(provided, snapshot) => (
-            <ul
-              id={`session_${mesocycleIndex}`}
-              className="flex flex-col p-1"
-              {...provided.droppableProps}
-              ref={provided.innerRef}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button size="icon" variant="ghost">
+                <DotsVerticalIcon fill="white" />
+              </Button>
+            </DropdownMenuTrigger>
+
+            <DropdownMenuContent className="w-44">
+              <DropdownMenuItem>??</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </CardHeader>
+
+        <CardContent className="p-3 pt-0">
+          <SessionDurationVariablesProvider>
+            <StrictModeDroppable
+              droppableId={`${day}_${mesocycleIndex}`}
+              type={`session_${mesocycleIndex}`}
             >
-              {sessions.map((each, index) => {
-                return (
-                  <DroppableSession
-                    key={`${each.id}_${index}_${mesocycleIndex}`}
-                    split={each.split}
-                    mesocycleIndex={mesocycleIndex}
-                    droppableId={each.id}
-                    exercises={each.exercises}
-                    selectedMicrocycleIndex={selectedMicrocycleIndex}
-                    onSupersetUpdate={onSupersetUpdate}
-                  />
-                );
-              })}
-              {provided.placeholder}
-            </ul>
-          )}
-        </StrictModeDroppable>
-      </SessionDurationVariablesProvider>
+              {(provided, snapshot) => (
+                <ul
+                  id={`session_${mesocycleIndex}`}
+                  className="flex flex-col"
+                  {...provided.droppableProps}
+                  ref={provided.innerRef}
+                >
+                  {sessions.map((each, index) => {
+                    return (
+                      <DroppableSession
+                        key={`${each.id}_${index}_${mesocycleIndex}`}
+                        split={each.split}
+                        mesocycleIndex={mesocycleIndex}
+                        droppableId={each.id}
+                        exercises={each.exercises}
+                        selectedMicrocycleIndex={selectedMicrocycleIndex}
+                        onSupersetUpdate={onSupersetUpdate}
+                      />
+                    );
+                  })}
+                  {provided.placeholder}
+                </ul>
+              )}
+            </StrictModeDroppable>
+          </SessionDurationVariablesProvider>
+        </CardContent>
+      </Card>
     </li>
   );
 }
@@ -670,7 +724,7 @@ export default function TrainingWeekOverview() {
   return (
     <div
       id="exercise_editor"
-      className={`flex flex-col items-center rounded bg-primary-600`}
+      className={`flex flex-col items-center space-y-5 rounded`}
     >
       <MesocycleToggle
         mesocycles={mesocycleTitles}
@@ -708,22 +762,12 @@ function WeekSessions({
     onDragEnd,
   } = useExerciseSelection(training_week, selectedMesocycleIndex);
 
-  const [isModalPrompted, setIsModalPrompted] = useState<boolean>(false);
-
   // NOTE: a lot of logic missing here to determine if an exercise CAN move to another split
   //       as well as if it can should it change the split type??
 
   return (
-    <div className={"flex w-full flex-col p-2"}>
-      {modalOptions && isModalPrompted ? (
-        <Prompt
-          splitOptions={modalOptions}
-          isOpen={isModalPrompted}
-          onClose={onSplitChange}
-        />
-      ) : null}
-
-      <ul className="flex space-x-1 overflow-x-auto">
+    <div className={"flex w-full flex-col"}>
+      <ul className="flex space-x-2 overflow-x-auto">
         <DragDropContext onDragEnd={onDragEnd}>
           {draggableExercises?.map((each, index) => {
             // NOTE: to not display days w/o any sessions
