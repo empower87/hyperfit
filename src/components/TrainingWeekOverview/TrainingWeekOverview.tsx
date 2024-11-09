@@ -36,6 +36,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../ui/tooltip";
 import MesocycleToggle from "./components/MesocycleToggle";
 import SessionDurationVariables from "./components/Settings/SessionDuration/SessionDurationVariables";
 import {
@@ -265,20 +271,60 @@ type ExerciseItemLayoutProps = {
   exerciseName: string;
   muscle: MuscleType;
   muscleColor: string;
+  sets: number;
+  reps: number;
+  lbs: number;
 };
 function ExerciseItemLayout({
   index,
   exerciseName,
   muscle,
   muscleColor,
+  sets,
+  reps,
+  lbs,
 }: ExerciseItemLayoutProps) {
   return (
     <li className="flex">
-      <div className="p-2 text-sm text-white">{index}</div>
-      <div className="rounded-md border border-input">
-        <div className="flex p-2 text-sm text-sm text-secondary-300">
-          <div className="text-secondary-300">{exerciseName}</div>
-          <div className={`${muscleColor}`}>{muscle}</div>
+      <div className="p-2 pl-0 text-sm text-white">{index}</div>
+      <div className="w-44 rounded-md border border-input bg-background/40">
+        <div className="flex justify-between">
+          <div className="flex w-16 p-2 pr-0">
+            <div className="text-semibold flex text-xs">
+              {sets} x {reps}
+            </div>
+          </div>
+          <div className="flex w-full cursor-default flex-col overflow-hidden p-2 text-xs leading-tight">
+            {/* <div className="truncate text-secondary-300">{exerciseName}</div> */}
+
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger className="cursor-default" asChild>
+                  <div className="truncate text-secondary-300">
+                    {exerciseName}
+                  </div>
+                </TooltipTrigger>
+
+                <TooltipContent className="bg-primary-600">
+                  <p>{exerciseName}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+
+            <div className={`${muscleColor}`}>{muscle}</div>
+          </div>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger className="mt-2" asChild>
+              <Button size="icon" variant="ghost">
+                <DotsVerticalIcon fill="white" />
+              </Button>
+            </DropdownMenuTrigger>
+
+            <DropdownMenuContent className="w-44">
+              <DropdownMenuItem>??</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
     </li>
@@ -388,6 +434,9 @@ function ExerciseItem({
       exerciseName={exercise.name}
       muscle={muscleGroup.muscle}
       muscleColor={bgColor}
+      sets={sets}
+      reps={reps}
+      lbs={lbs}
     />
     // <li className={cn(`relative mb-0.5 flex text-white`)}>
     //   <ItemCell
@@ -513,7 +562,7 @@ function DroppableSession({
   const onCloseDurationModal = () => setIsDurationModalOpen(false);
   return (
     <li className={`rounded-md border border-primary-500 `}>
-      <div className={"flex flex-col pb-1"}>
+      <div className={"flex flex-col"}>
         <div
           className={cn(
             `flex items-center rounded-sm p-2 indent-1 text-sm font-semibold ${
@@ -534,7 +583,7 @@ function DroppableSession({
         {(provided, snapshot) => (
           <ul
             id={`week_${mesocycleIndex}`}
-            className="w-full p-2 pt-0"
+            className="w-full space-y-2 p-2 pt-1"
             {...provided.droppableProps}
             ref={provided.innerRef}
           >
