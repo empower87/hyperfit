@@ -3,7 +3,6 @@ import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { cn } from "~/lib/clsx";
 import { useMuscleEditorContext } from "../../context/MuscleEditorContext";
-import Counter from "../EditorPopout/Counter";
 
 type ToggleMesocycleProps = {};
 export default function ToggleMesocycle({}: ToggleMesocycleProps) {
@@ -90,5 +89,20 @@ function MesocycleTab({
     >
       {mesocycleIndex}
     </button>
+  );
+}
+
+type CounterProps = {
+  minus: React.ReactNode;
+  input: React.ReactNode;
+  plus: React.ReactNode;
+};
+function Counter({ minus, input, plus }: CounterProps) {
+  return (
+    <div className={`flex items-center justify-center`}>
+      {minus}
+      <div className="mx-1 w-8">{input}</div>
+      {plus}
+    </div>
   );
 }

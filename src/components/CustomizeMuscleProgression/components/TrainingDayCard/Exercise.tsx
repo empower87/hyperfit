@@ -1,5 +1,5 @@
-import { DotsVerticalIcon, MinusIcon } from "@radix-ui/react-icons";
-import { HTMLAttributes, ReactNode, useRef, useState } from "react";
+import { DotsVerticalIcon } from "@radix-ui/react-icons";
+import { HTMLAttributes, ReactNode, useState } from "react";
 import SelectExercise from "~/components/Modals/ChangeExerciseModal/ChangeExerciseModal";
 import { Button } from "~/components/ui/button";
 import {
@@ -27,8 +27,7 @@ import {
   MusclePriorityType,
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { cn } from "~/lib/utils";
-import { useMuscleEditorContext } from "../../context/MuscleEditorContext copy";
-import Counter from "../EditorPopout/Counter";
+import { useMuscleEditorContext } from "../../context/MuscleEditorContext";
 
 type ExerciseProps = {
   index: number;
@@ -36,12 +35,14 @@ type ExerciseProps = {
   muscle: MusclePriorityType;
 };
 export default function Exercise({ index, exercise, muscle }: ExerciseProps) {
-  const { onRemoveExercise } = useMuscleEditorContext();
+  const { onRemoveExercise, getSetsByExerciseId } = useMuscleEditorContext();
   const [selectedModality, setSelectedModality] = useState("S");
 
   const onSelectModality = (selected: string) => {
     setSelectedModality(selected);
   };
+
+  const setsPerWeek = getSetsByExerciseId(exercise.id);
 
   return (
     <li className="flex">
@@ -185,31 +186,21 @@ export default function Exercise({ index, exercise, muscle }: ExerciseProps) {
             </div>
             <div className="flex flex-col items-center justify-center space-y-1">
               <div className="text-xxs text-primary-400">SETS</div>
-              <InputCell placeholder={"3"} width="w-8" />
+              <InputCell placeholder={setsPerWeek[0]} width="w-8" />
             </div>
 
             <div className="flex space-x-1 text-primary-400">
-              <div className="flex w-8 flex-col space-y-1">
-                <WeekCell value={"WK 2"} className="text-xxs" />
-                <WeekCell
-                  value={4}
-                  className="rounded-md bg-background/50 p-1"
-                />
-              </div>
-              <div className="flex w-8 flex-col space-y-1">
-                <WeekCell value={"WK 3"} className="text-xxs" />
-                <WeekCell
-                  value={5}
-                  className="rounded-md bg-background/50 p-1"
-                />
-              </div>
-              <div className="flex w-8 flex-col space-y-1">
-                <WeekCell value={"WK 4"} className="text-xxs" />
-                <WeekCell
-                  value={6}
-                  className="rounded-md bg-background/50 p-1"
-                />
-              </div>
+              {setsPerWeek.slice(1).map((set, index) => {
+                return (
+                  <div className="flex w-8 flex-col space-y-1">
+                    <WeekCell value={`WK ${index + 2}`} className="text-xxs" />
+                    <WeekCell
+                      value={set}
+                      className="rounded-md bg-background/50 p-1"
+                    />
+                  </div>
+                );
+              })}
             </div>
 
             <div className="flex flex-col items-center justify-center space-y-1">
@@ -306,58 +297,21 @@ function WeekCell({ value, className, ...props }: WeekCellProps) {
 // }
 
 type CellProps = {
-  placeholder: string;
+  placeholder: string | number;
   width: string;
 };
 function InputCell({ placeholder, width }: CellProps) {
   // console.log(placeholder, "WTF PLACEHOLDER");
+  const placeholderString =
+    typeof placeholder === "number" ? placeholder.toString() : placeholder;
   return (
     <div className={cn("flex w-10", width)}>
       <Input
         type="text"
-        placeholder={placeholder}
+        placeholder={placeholderString}
         className="placeholder:text-primary-400"
       />
     </div>
-  );
-}
-
-type ExerciseCounterProps = {
-  type: "SETS" | "REPS" | "LBS";
-  initialValue: number;
-};
-function ExerciseCounter({ type, initialValue }: ExerciseCounterProps) {
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  const onDecrement = () => {
-    if (inputRef.current) {
-      const parsedInt = parseFloat(inputRef.current.value);
-      const decrementedInt = parsedInt - 1 >= 0 ? parsedInt - 1 : 0;
-      inputRef.current.value = decrementedInt.toString();
-    }
-  };
-
-  const onIncrement = () => {
-    if (inputRef.current) {
-      const parsedInt = parseFloat(inputRef.current.value) + 1;
-      inputRef.current.value = parsedInt.toString();
-    }
-  };
-
-  return (
-    <Counter
-      minus={
-        <Button variant="outline" size="icon">
-          <MinusIcon fill="white" />
-        </Button>
-      }
-      input={<Input />}
-      plus={
-        <Button variant="outline" size="icon">
-          <MinusIcon fill="white" />
-        </Button>
-      }
-    />
   );
 }
 

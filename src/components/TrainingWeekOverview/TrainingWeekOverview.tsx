@@ -10,7 +10,6 @@ import {
 import { DragDropContext, Draggable } from "react-beautiful-dnd";
 import ReactDOM from "react-dom";
 import { DotsIcon } from "~/assets/icons/_icons";
-import Dropdown from "~/components/Layout/Dropdown";
 import Modal from "~/components/Modals/Modal";
 import { MuscleType } from "~/constants/workoutSplits";
 import {
@@ -27,7 +26,6 @@ import { cn } from "~/lib/clsx";
 import StrictModeDroppable from "~/lib/react-beautiful-dnd/StrictModeDroppable";
 import { getRankColor, getSplitColor } from "~/utils/getIndicatorColors";
 import { capitalizeFirstLetter } from "~/utils/uiHelpers";
-import Settings from "../Configuration/components/MusclePrioritization/Settings";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import {
@@ -215,47 +213,6 @@ const ItemCell: FC<ItemCellProps> = ({ children, className, ...props }) => {
   );
 };
 
-function DaySessionItemHeaders() {
-  return (
-    <div className="flex text-white">
-      <ItemCell
-        className={`border-primary-500 bg-primary-500 ${ITEM_CELL_WIDTHS.index} text-xxxs`}
-      >
-        {" "}
-      </ItemCell>
-      <div className="flex w-full overflow-hidden rounded-sm">
-        <ItemCell
-          className={`border-primary-500 bg-primary-600 ${ITEM_CELL_WIDTHS.sets} justify-center text-xxxs`}
-        >
-          Sets
-        </ItemCell>
-        <ItemCell
-          className={`border-primary-500 bg-primary-600 ${ITEM_CELL_WIDTHS.reps} justify-center text-xxxs`}
-        >
-          Reps
-        </ItemCell>
-        <ItemCell
-          className={`border-primary-500 bg-primary-600 ${ITEM_CELL_WIDTHS.lbs} justify-center text-xxxs`}
-        >
-          Lbs
-        </ItemCell>
-        <div className="flex flex-col">
-          <ItemCell
-            className={`border-primary-500 bg-primary-600 ${ITEM_CELL_WIDTHS.exercise} text-xxxs`}
-          >
-            Exercise
-          </ItemCell>
-        </div>
-        <ItemCell
-          className={`border-primary-600 bg-primary-600 ${ITEM_CELL_WIDTHS.actions} rounded-r-sm text-xxxs`}
-        >
-          {" "}
-        </ItemCell>
-      </div>
-    </div>
-  );
-}
-
 const ITEM_CELL_WIDTHS = {
   index: "w-4",
   sets: "w-6",
@@ -330,6 +287,7 @@ function ExerciseItemLayout({
     </li>
   );
 }
+
 type ExerciseItemProps = {
   index: number;
   exercise: ExerciseType;
@@ -428,6 +386,7 @@ function ExerciseItem({
   const BORDER_COLOR = exercise.supersetWith
     ? "border-white"
     : `border-primary-700`;
+
   return (
     <ExerciseItemLayout
       index={index}
@@ -560,6 +519,7 @@ function DroppableSession({
   const onCloseDropdown = () => setIsdropdownOpen(false);
   const onOpenDurationModal = () => setIsDurationModalOpen(true);
   const onCloseDurationModal = () => setIsDurationModalOpen(false);
+
   return (
     <li className={`rounded-md border border-primary-500 `}>
       <div className={"flex flex-col"}>
@@ -572,8 +532,6 @@ function DroppableSession({
         >
           {split.charAt(0).toUpperCase() + split.slice(1)}
         </div>
-
-        {/* <DaySessionItemHeaders /> */}
       </div>
 
       <StrictModeDroppable
@@ -620,15 +578,26 @@ function DroppableSession({
       </StrictModeDroppable>
 
       <div className={`m-1 flex justify-between p-1`}>
-        <Settings>
+        <div className="grid grid-cols-4 grid-rows-2 text-xs">
+          <div>Totals</div>
+          <div className=" text-muted-foreground">Sets</div>
+          <div className=" text-muted-foreground">Reps</div>
+          <div className=" text-muted-foreground">Duration</div>
+
+          <div className="col-start-2  text-white">10</div>
+          <div className=" text-white">100</div>
+          <div className=" text-white">{totalDuration}min</div>
+        </div>
+
+        {/* <Settings>
           <Settings.Section title="Total Duration">
             <div className="indent-1 text-xxs text-white">
               {totalDuration}min
             </div>
           </Settings.Section>
-        </Settings>
+        </Settings> */}
 
-        <div
+        {/* <div
           onClick={() => onOpenDropdown()}
           className="relative flex cursor-pointer items-center justify-center"
         >
@@ -640,7 +609,7 @@ function DroppableSession({
               </Dropdown.Item>
             </Dropdown>
           ) : null}
-        </div>
+        </div> */}
 
         {isDurationModalOpen ? (
           <Modal isOpen={isDurationModalOpen} onClose={onCloseDurationModal}>

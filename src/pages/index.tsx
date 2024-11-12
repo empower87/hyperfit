@@ -1,6 +1,5 @@
 import { type NextPage } from "next";
 import Configuration from "~/components/Configuration";
-import MuscleEditor from "~/components/CustomizeMuscleProgression/MuscleEditor";
 import { SectionH2 as Section } from "~/components/Layout/Sections";
 import TrainingBlockOverview from "~/components/TrainingBlockOverview";
 import TrainingWeekOverview from "~/components/TrainingWeekOverview/TrainingWeekOverview";
@@ -22,7 +21,7 @@ const Home: NextPage = () => {
       </Configuration>
 
       <Section title="CUSTOMIZE MUSCLE PROGRESSION">
-        <MuscleEditor />
+        <h2>Muscle Editor has been moved.</h2>
       </Section>
 
       <Section title="TRAINING WEEK OVERVIEW">
