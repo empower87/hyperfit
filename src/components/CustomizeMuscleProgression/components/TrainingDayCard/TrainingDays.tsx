@@ -9,7 +9,6 @@ type TrainingDaysProps = {
   muscleGroup: MusclePriorityType;
 };
 export function TrainingDays({ muscleGroup }: TrainingDaysProps) {
-  // const exercises = muscleGroup?.exercises;
   const { exercisesInView } = useMuscleEditorContext();
   console.log(exercisesInView, "WHAT IS GOING ON EHRE");
   return (
@@ -18,13 +17,7 @@ export function TrainingDays({ muscleGroup }: TrainingDaysProps) {
 
       <ul className="flex w-full space-x-2 overflow-x-auto p-1">
         {exercisesInView.map((exercise, dayIndex) => {
-          return (
-            <TrainingDay
-              index={dayIndex}
-              exercises={exercise}
-              muscle={muscleGroup}
-            />
-          );
+          return <TrainingDay index={dayIndex} exercises={exercise} />;
         })}
         <Card className="flex items-center justify-center">
           <div className="p-4">

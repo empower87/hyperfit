@@ -8,24 +8,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
-import {
-  ExerciseType,
-  MusclePriorityType,
-} from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
+import { ExerciseType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { useMuscleEditorContext } from "../../context/MuscleEditorContext";
 import { Session, SessionDelete, SessionHeader, SessionTitle } from "./Session";
 
 type TrainingDayProps = {
   index: number;
   exercises: ExerciseType[];
-  muscle: MusclePriorityType;
 };
 
-export default function TrainingDay({
-  index,
-  exercises,
-  muscle,
-}: TrainingDayProps) {
+export default function TrainingDay({ index, exercises }: TrainingDayProps) {
   const { onRemoveTrainingDay } = useMuscleEditorContext();
   const [sessions, setSessions] = useState([1]);
 
@@ -57,11 +49,7 @@ export default function TrainingDay({
           {sessions.map((session, sessionIndex) => {
             const isSingleSession = sessions.length <= 1;
             return (
-              <Session
-                index={sessionIndex}
-                exercises={exercises}
-                muscle={muscle}
-              >
+              <Session index={sessionIndex} exercises={exercises}>
                 {isSingleSession ? (
                   <></>
                 ) : (

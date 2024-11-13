@@ -521,7 +521,7 @@ function DroppableSession({
   const onCloseDurationModal = () => setIsDurationModalOpen(false);
 
   return (
-    <li className={`rounded-md border border-primary-500 `}>
+    <li className={``}>
       <div className={"flex flex-col"}>
         <div
           className={cn(

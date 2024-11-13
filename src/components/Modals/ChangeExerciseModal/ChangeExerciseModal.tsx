@@ -190,20 +190,20 @@ function ItemTag({ name, selected }: ItemTagProps) {
     </div>
   );
 }
-type ItemProps = {
+interface ItemProps extends React.HTMLAttributes<HTMLLIElement> {
   exercise: JSONExercise;
   selected: boolean;
-};
-function Item({ exercise, selected }: ItemProps) {
-  const { onSelectExerciseHandler, selectedExerciseId, exerciseId } =
-    useChangeExerciseContext();
+}
+function Item({ exercise, selected, ...props }: ItemProps) {
+  const { selectedExerciseId, exerciseId } = useChangeExerciseContext();
+
   return (
     <li
-      onClick={() => onSelectExerciseHandler(exercise.id)}
+      {...props}
       className={cn(
-        `flex cursor-pointer rounded-md bg-card indent-1 text-xs text-muted-foreground hover:bg-primary-500`,
+        `flex cursor-pointer rounded-md bg-card indent-1 text-xs text-muted-foreground hover:bg-primary-500/50`,
         {
-          [`bg-primary-500`]:
+          [`bg-primary-500 hover:bg-primary-500`]:
             exerciseId === exercise.id || exercise.id === selectedExerciseId,
         }
       )}
@@ -246,62 +246,6 @@ function Item({ exercise, selected }: ItemProps) {
     </li>
   );
 }
-// type ItemProps = {
-//   exercise: JSONExercise;
-//   selected: boolean;
-// };
-// function Item({ exercise, selected }: ItemProps) {
-//   const { onSelectExerciseHandler, selectedExerciseId, exerciseId } =
-//     useChangeExerciseContext();
-//   return (
-//     <div
-//       onClick={() => onSelectExerciseHandler(exercise.id)}
-//       className={cn(
-//         `flex p-1 indent-1 text-xs text-slate-400 bg-primary-600 cursor-pointer hover:bg-primary-500`,
-//         {
-//           [`bg-primary-500`]:
-//             exerciseId === exercise.id || exercise.id === selectedExerciseId,
-//         }
-//       )}
-//     >
-//       <div className={"flex w-4/12 flex-col"}>
-//         <div className={`mr-2 flex`}>
-//           <div>{exercise.name}</div>
-//           {selected ? (
-//             <div className={`text-xxs font-bold text-white `}>Selected</div>
-//           ) : null}
-//         </div>
-//         <div className={`flex space-x-1`}>
-//           <ItemTag name={exercise.movement_type} selected={""} />
-//           {exercise.limbs_involved ? (
-//             <ItemTag name={exercise.limbs_involved} selected={""} />
-//           ) : null}
-//         </div>
-//       </div>
-
-//       <div className={"w-1/12"}>{exercise.rank}</div>
-//       <div className={"w-1/12"}>
-//         {exercise.hypertrophy_criteria?.stretch.lengthened}
-//       </div>
-//       <div className={"w-1/12"}>
-//         {exercise.hypertrophy_criteria?.stretch.challenging}
-//       </div>
-//       <div className={"w-1/12"}>
-//         {exercise.hypertrophy_criteria?.limiting_factor}
-//       </div>
-//       <div className={"w-1/12"}>
-//         {exercise.hypertrophy_criteria?.loadability}
-//       </div>
-//       <div className={"w-1/12"}>{exercise.hypertrophy_criteria?.stability}</div>
-//       <div className={"w-1/12"}>
-//         {exercise.hypertrophy_criteria?.target_function}
-//       </div>
-//       <div className={"w-1/12"}>
-//         {exercise.hypertrophy_criteria?.time_efficiency}
-//       </div>
-//     </div>
-//   );
-// }
 
 function List({ children }: { children: ReactNode }) {
   const { onSortHandler } = useChangeExerciseContext();
@@ -388,7 +332,7 @@ function List({ children }: { children: ReactNode }) {
       </div>
 
       <ul
-        className={cn(`flex h-60 flex-col space-y-2 overflow-y-auto py-3 pr-3`)}
+        className={cn(`flex h-72 flex-col space-y-2 overflow-y-auto py-3 pr-3`)}
       >
         {children}
       </ul>
@@ -406,25 +350,28 @@ SelectExercise.Filter = Filter;
 type SelectExerciseProps = {
   muscle: MusclePriorityType;
   exerciseId: string;
-  onSelect: (newExercise: JSONExercise) => void;
-  onClose: () => void;
+  onSelect: (exercise: JSONExercise) => void;
 };
 function SelectExerciseContents({
   onSelect,
-  onClose,
 }: {
-  onSelect: (newExercise: JSONExercise) => void;
-  onClose: () => void;
+  onSelect: (exercise: JSONExercise) => void;
 }) {
-  const { exercises, allExercises, selectedExerciseId, onSaveExerciseHandler } =
-    useChangeExerciseContext();
+  const {
+    exercises,
+    allExercises,
+    selectedExerciseId,
+    onSelectExerciseHandler,
+    onSaveExerciseHandler,
+  } = useChangeExerciseContext();
 
-  const onSelectHandler = () => {
-    const exercise = onSaveExerciseHandler();
-    if (!exercise) return;
-    onSelect(exercise);
-    onClose();
+  const onSelectHandler = (id: JSONExercise["id"]) => {
+    onSelectExerciseHandler(id);
+    const new_exercise = exercises.find((each) => each.id === id);
+    if (!new_exercise) return;
+    onSelect(new_exercise);
   };
+
   return (
     <SelectExercise.Layout>
       <SelectExercise.Header>
@@ -445,6 +392,7 @@ function SelectExerciseContents({
               key={`${each.id}_changeExerciseItem`}
               exercise={each}
               selected={isSelected}
+              onClick={() => onSelectHandler(each.id)}
             />
           );
         })}
@@ -456,11 +404,10 @@ export default function SelectExercise({
   muscle,
   exerciseId,
   onSelect,
-  onClose,
 }: SelectExerciseProps) {
   return (
     <ChangeExerciseProvider muscle={muscle} exerciseId={exerciseId}>
-      <SelectExerciseContents onSelect={onSelect} onClose={onClose} />
+      <SelectExerciseContents onSelect={onSelect} />
     </ChangeExerciseProvider>
   );
 }

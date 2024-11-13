@@ -1,5 +1,5 @@
 import { DotsVerticalIcon } from "@radix-ui/react-icons";
-import { HTMLAttributes, ReactNode, useState } from "react";
+import { HTMLAttributes, ReactNode, useCallback, useState } from "react";
 import SelectExercise from "~/components/Modals/ChangeExerciseModal/ChangeExerciseModal";
 import { Button } from "~/components/ui/button";
 import {
@@ -22,25 +22,40 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import { Input } from "~/components/ui/input";
-import {
-  ExerciseType,
-  MusclePriorityType,
-} from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
+import { ExerciseType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
+import { JSONExercise } from "~/hooks/useTrainingProgram/utils/exercises/getExercises";
 import { cn } from "~/lib/utils";
 import { useMuscleEditorContext } from "../../context/MuscleEditorContext";
 
 type ExerciseProps = {
   index: number;
   exercise: ExerciseType;
-  muscle: MusclePriorityType;
 };
-export default function Exercise({ index, exercise, muscle }: ExerciseProps) {
-  const { onRemoveExercise, getSetsByExerciseId } = useMuscleEditorContext();
+export default function Exercise({ index, exercise }: ExerciseProps) {
+  const {
+    onRemoveExercise,
+    onChangeExercise,
+    getSetsByExerciseId,
+    muscleGroup,
+  } = useMuscleEditorContext();
   const [selectedModality, setSelectedModality] = useState("S");
+  const [selectedExercise, setSelectedExercise] = useState<JSONExercise | null>(
+    null
+  );
 
   const onSelectModality = (selected: string) => {
     setSelectedModality(selected);
   };
+
+  const selectExerciseHandler = (exerciseData: JSONExercise) => {
+    setSelectedExercise(exerciseData);
+  };
+
+  const replaceExerciseHandler = useCallback(() => {
+    if (selectedExercise) {
+      onChangeExercise(exercise.id, selectedExercise);
+    }
+  }, [selectedExercise, exercise]);
 
   const setsPerWeek = getSetsByExerciseId(exercise.id);
 
@@ -53,6 +68,7 @@ export default function Exercise({ index, exercise, muscle }: ExerciseProps) {
           <h3 className="p-2 text-sm font-semibold leading-none tracking-tight text-secondary-400">
             {exercise.name}
           </h3>
+
           <Dialog>
             <DropdownMenu>
               <DropdownMenuTrigger>
@@ -153,14 +169,15 @@ export default function Exercise({ index, exercise, muscle }: ExerciseProps) {
               </DialogHeader>
 
               <SelectExercise
-                muscle={muscle}
+                muscle={muscleGroup}
                 exerciseId={exercise.id}
-                onSelect={() => {}}
-                onClose={() => {}}
+                onSelect={(exercise) => selectExerciseHandler(exercise)}
               />
 
               <DialogFooter>
-                <Button type="submit">Save changes</Button>
+                <Button type="submit" onClick={replaceExerciseHandler}>
+                  Save changes
+                </Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
