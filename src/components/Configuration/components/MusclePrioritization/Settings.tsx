@@ -33,5 +33,5 @@ Settings.Breakpoints = Breakpoints;
 Settings.Toggles = Toggles;
 Settings.Section = Section;
 export default function Settings({ children }: SettingsProps) {
-  return <div className={cn(`flex space-x-1`)}>{children}</div>;
+  return <div className={cn(`flex space-x-2 p-2 pt-0`)}>{children}</div>;
 }

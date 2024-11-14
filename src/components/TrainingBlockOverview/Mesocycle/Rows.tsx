@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { DraggableExercises } from "~/components/TrainingWeekOverview/components/hooks/useExerciseSelection";
+import { DraggableExercises } from "~/components/TrainingWeekOverview/hooks/useExerciseSelection";
 import {
   DayType,
   ExerciseType,

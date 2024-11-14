@@ -1,6 +1,6 @@
 import { useState } from "react";
 import CollapsibleHeader from "~/components/Layout/CollapsibleHeader";
-import { DraggableExercises } from "~/components/TrainingWeekOverview/components/hooks/useExerciseSelection";
+import { DraggableExercises } from "~/components/TrainingWeekOverview/hooks/useExerciseSelection";
 
 import { cn } from "~/lib/clsx";
 import { HeaderRow, SessionRow } from "./Rows";
@@ -52,7 +52,7 @@ export default function Mesocycle({
   }
   return (
     <div
-      className={cn(`bg-primary-600 mb-3 flex max-w-[1200px] flex-col rounded`)}
+      className={cn(`mb-3 flex max-w-[1200px] flex-col rounded bg-primary-600`)}
     >
       <CollapsibleHeader className={`bg-rose-400`}>
         <CollapsibleHeader.Title

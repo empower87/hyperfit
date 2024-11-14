@@ -59,7 +59,7 @@ export default function MesocycleToggle({
   const selectedMesocycle = mesocycles[selectedMesocycleIndex];
   const selectedMicrocycle = microcycles[selectedMicrocycleIndex];
   return (
-    <div className={`flex w-full items-center space-x-2 rounded`}>
+    <div className={`flex w-full items-center space-x-2 rounded p-2`}>
       <ToggleLayout label="Mesocycle">
         {mesocycles.map((each, index) => {
           const isSelected = selectedMesocycle === each;

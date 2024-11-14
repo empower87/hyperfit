@@ -1,21 +1,10 @@
 import { DotsVerticalIcon } from "@radix-ui/react-icons";
-import {
-  FC,
-  HTMLAttributes,
-  ReactNode,
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
+import { useCallback, useEffect, useState } from "react";
 import { DragDropContext, Draggable } from "react-beautiful-dnd";
-import ReactDOM from "react-dom";
-import { DotsIcon } from "~/assets/icons/_icons";
 import Modal from "~/components/Modals/Modal";
-import { MuscleType } from "~/constants/workoutSplits";
 import {
   ExerciseType,
   SessionSplitType,
-  SplitType,
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
 import {
@@ -25,7 +14,6 @@ import {
 import { cn } from "~/lib/clsx";
 import StrictModeDroppable from "~/lib/react-beautiful-dnd/StrictModeDroppable";
 import { getRankColor, getSplitColor } from "~/utils/getIndicatorColors";
-import { capitalizeFirstLetter } from "~/utils/uiHelpers";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import {
@@ -34,72 +22,18 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "../ui/tooltip";
+import ExerciseItemLayout from "./components/Exercise/Exercise";
 import MesocycleToggle from "./components/MesocycleToggle";
 import SessionDurationVariables from "./components/Settings/SessionDuration/SessionDurationVariables";
 import {
   SessionDurationVariablesProvider,
   useSessionDurationVariablesContext,
 } from "./components/Settings/SessionDuration/sessionDurationVariablesContext";
+import { getSupersetMap } from "./components/utils/exerciseSelectUtils";
 import useExerciseSelection, {
   DraggableExercises,
-} from "./components/hooks/useExerciseSelection";
-import useTrainingWeek from "./components/hooks/useTrainingWeek";
-import { getSupersetMap } from "./components/utils/exerciseSelectUtils";
-
-type PromptProps = {
-  splitOptions: { id: string; options: SplitType[] } | undefined;
-  isOpen: boolean;
-  onClose: (sessionId: string, split: SplitType) => void;
-};
-
-// probably don't even need to prompt user for this, just automatically change it.
-function Prompt({ splitOptions, isOpen, onClose }: PromptProps) {
-  const root = document.getElementById("modal-body")!;
-
-  if (!isOpen) return null;
-  return ReactDOM.createPortal(
-    <div
-      className="absolute flex h-full w-full items-center justify-center"
-      style={{ background: "#00000082" }}
-    >
-      <div className="flex w-64 flex-col bg-primary-700 p-2">
-        <div className=" flex flex-col text-xxs text-white">
-          <div className=" mb-0.5 text-slate-300">
-            Adding this Exercise to this day would change the Training Split for
-            that day.
-          </div>
-          <div className=" mb-1">
-            Please select the Split you want to change it to:
-          </div>
-        </div>
-
-        <ul>
-          {splitOptions?.options.map((each, index) => {
-            return (
-              <li
-                key={`${each}_${index}`}
-                className={cn(
-                  `flex cursor-pointer bg-primary-600 text-sm text-white hover:bg-primary-500`
-                )}
-                onClick={() => onClose(splitOptions.id, each)}
-              >
-                <div className=" mr-1 indent-1">{index + 1}</div>
-                <div className=" ">{each}</div>
-              </li>
-            );
-          })}
-        </ul>
-      </div>
-    </div>,
-    root
-  );
-}
+} from "./hooks/useExerciseSelection";
+import useTrainingWeek from "./hooks/useTrainingWeek";
 
 type DropdownProps = {
   onDropdownClick: () => void;
@@ -113,7 +47,7 @@ type DropdownListProps = {
   onItemClick: (exercise: ExerciseType) => void;
 };
 
-function DropdownListModal({
+export function DropdownListModal({
   items,
   supersets,
   selectedId,
@@ -125,14 +59,14 @@ function DropdownListModal({
       className="flex h-full w-full flex-col items-center justify-center"
       onClick={() => onClose()}
     >
-      <ul className={cn(`w-52 bg-primary-600`)}>
+      <ul className={cn(`w-44 space-y-2`)}>
         {items.map((each, index) => {
           const getBGColor = supersets.get(each.id);
           const bgColor = getBGColor ? getBGColor : "";
           return (
             <li
               className={cn(
-                `m-0.5 cursor-pointer border-2 border-primary-700 text-xs text-white hover:bg-primary-500`,
+                `cursor-pointer rounded-sm bg-card p-2 text-xs text-white hover:bg-primary-500`,
                 getRankColor(each.rank),
                 {
                   [`border-white bg-primary-500`]: each.id === selectedId,
@@ -147,144 +81,7 @@ function DropdownListModal({
           );
         })}
       </ul>
-
-      <div className="">
-        <button className="text-xs text-white">Cancel</button>
-        <button className="text-xs text-white">Select</button>
-      </div>
     </div>
-  );
-}
-
-function DropdownButton({ onDropdownClick }: DropdownProps) {
-  return (
-    <div
-      id="dropdown-modal"
-      className={
-        "relative flex w-full cursor-pointer flex-col items-center justify-center"
-      }
-      onClick={() => onDropdownClick()}
-    >
-      <DotsIcon />
-    </div>
-  );
-}
-
-interface SelectDropdownProps extends HTMLAttributes<HTMLSelectElement> {
-  options: string[];
-  selectedOption: string;
-}
-const SelectDropdown: FC<SelectDropdownProps> = ({
-  options,
-  selectedOption,
-  className,
-  ...props
-}) => {
-  return (
-    <select
-      {...props}
-      className={cn(`bg-inherit`, className)}
-      defaultValue={selectedOption}
-    >
-      {options.map((option, index) => {
-        return (
-          <option
-            key={`${option}_${index}`}
-            className="bg-primary-600"
-            value={option}
-            selected={option === selectedOption}
-          >
-            {capitalizeFirstLetter(option)}
-          </option>
-        );
-      })}
-    </select>
-  );
-};
-
-interface ItemCellProps extends HTMLAttributes<HTMLDivElement> {
-  children: ReactNode;
-}
-const ItemCell: FC<ItemCellProps> = ({ children, className, ...props }) => {
-  return (
-    <div {...props} className={cn(`flex p-0.5 text-xxs`, className)}>
-      {children}
-    </div>
-  );
-};
-
-const ITEM_CELL_WIDTHS = {
-  index: "w-4",
-  sets: "w-6",
-  reps: "w-6",
-  lbs: "w-6",
-  exercise: "w-36",
-  actions: "w-4",
-  modality: "w-14",
-};
-
-type ExerciseItemLayoutProps = {
-  index: number;
-  exerciseName: string;
-  muscle: MuscleType;
-  muscleColor: string;
-  sets: number;
-  reps: number;
-  lbs: number;
-};
-function ExerciseItemLayout({
-  index,
-  exerciseName,
-  muscle,
-  muscleColor,
-  sets,
-  reps,
-  lbs,
-}: ExerciseItemLayoutProps) {
-  return (
-    <li className="flex">
-      <div className="p-2 pl-0 text-sm text-white">{index}</div>
-      <div className="w-44 rounded-md border border-input bg-background/40">
-        <div className="flex justify-between">
-          <div className="flex w-16 p-2 pr-0">
-            <div className="text-semibold flex text-xs">
-              {sets} x {reps}
-            </div>
-          </div>
-          <div className="flex w-full cursor-default flex-col overflow-hidden p-2 text-xs leading-tight">
-            {/* <div className="truncate text-secondary-300">{exerciseName}</div> */}
-
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger className="cursor-default" asChild>
-                  <div className="truncate text-secondary-300">
-                    {exerciseName}
-                  </div>
-                </TooltipTrigger>
-
-                <TooltipContent className="bg-primary-600">
-                  <p>{exerciseName}</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-
-            <div className={`${muscleColor}`}>{muscle}</div>
-          </div>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger className="mt-2" asChild>
-              <Button size="icon" variant="ghost">
-                <DotsVerticalIcon fill="white" />
-              </Button>
-            </DropdownMenuTrigger>
-
-            <DropdownMenuContent className="w-44">
-              <DropdownMenuItem>??</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </div>
-    </li>
   );
 }
 
@@ -362,15 +159,6 @@ function ExerciseItem({
     setIsOpen(false);
   };
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const onModalOpen = () => {
-    setIsModalOpen(true);
-    onDropdownClose();
-  };
-  const onModalClose = () => {
-    setIsModalOpen(false);
-  };
-
   useEffect(() => {
     const supersettedColor = supersets?.get(exercise.id);
     let bgColor = "";
@@ -396,90 +184,16 @@ function ExerciseItem({
       sets={sets}
       reps={reps}
       lbs={lbs}
+      supersetModal={
+        <DropdownListModal
+          items={exercises}
+          supersets={supersets}
+          selectedId={exercise.id}
+          onClose={() => console.log("lol")}
+          onItemClick={() => console.log("lol")}
+        />
+      }
     />
-    // <li className={cn(`relative mb-0.5 flex text-white`)}>
-    //   <ItemCell
-    //     className={cn(
-    //       `${BORDER_COLOR} ${ITEM_CELL_WIDTHS.index} justify-center`
-    //     )}
-    //   >
-    //     {index}
-    //   </ItemCell>
-
-    //   <div
-    //     className={cn(
-    //       `flex space-x-0.5 overflow-hidden rounded border-2 border-primary-700 bg-primary-700`
-    //     )}
-    //   >
-    //     <div className="flex flex-col space-y-0.5">
-    //       <div className={cn(`flex space-x-0.5`)}>
-    //         <ItemCell
-    //           className={`${bgColor} ${ITEM_CELL_WIDTHS.sets} justify-center`}
-    //         >
-    //           {sets}
-    //         </ItemCell>
-    //         <ItemCell
-    //           className={`${bgColor} ${ITEM_CELL_WIDTHS.reps} justify-center`}
-    //         >
-    //           {reps}
-    //         </ItemCell>
-    //         <ItemCell
-    //           className={`${bgColor} ${ITEM_CELL_WIDTHS.lbs} justify-center`}
-    //         >
-    //           {lbs}
-    //         </ItemCell>
-    //       </div>
-    //       <ItemCell className={`${bgColor}`}>
-    //         <SelectDropdown
-    //           options={[...EXERCISE_TRAINING_MODALITIES]}
-    //           className={`${ITEM_CELL_WIDTHS.modality}`}
-    //           selectedOption={modality}
-    //         />
-    //       </ItemCell>
-    //     </div>
-
-    //     <div className=" flex flex-col space-y-0.5 text-xxs">
-    //       <ItemCell className={`${bgColor} ${ITEM_CELL_WIDTHS.exercise}`}>
-    //         <SelectDropdown
-    //           className={`w-full truncate`}
-    //           options={allExercises}
-    //           selectedOption={selectedExerciseName}
-    //         />
-    //       </ItemCell>
-    //       <ItemCell
-    //         className={`${bgColor} ${ITEM_CELL_WIDTHS.exercise} truncate indent-1 text-slate-300`}
-    //       >
-    //         {exercise.muscle}
-    //       </ItemCell>
-    //     </div>
-
-    //     <ItemCell className={`${bgColor} ${ITEM_CELL_WIDTHS.actions}`}>
-    //       <DropdownButton onDropdownClick={onDropdownClick} />
-    //       {isOpen ? (
-    //         <div className="absolute -bottom-0 right-0">
-    //           <Dropdown className={``} onClose={onDropdownClose}>
-    //             <Dropdown.Header title="Actions" onClose={onDropdownClose} />
-    //             <Dropdown.Item onClick={onModalOpen}>
-    //               Create Superset
-    //             </Dropdown.Item>
-    //           </Dropdown>
-    //         </div>
-    //       ) : null}
-    //     </ItemCell>
-
-    //     {isModalOpen ? (
-    //       <Modal isOpen={isModalOpen} onClose={onModalClose}>
-    //         <DropdownListModal
-    //           items={exercises}
-    //           supersets={supersets}
-    //           selectedId={exercise.id}
-    //           onClose={onDropdownClose}
-    //           onItemClick={onItemClick}
-    //         />
-    //       </Modal>
-    //     ) : null}
-    //   </div>
-    // </li>
   );
 }
 
@@ -588,28 +302,6 @@ function DroppableSession({
           <div className=" text-white">100</div>
           <div className=" text-white">{totalDuration}min</div>
         </div>
-
-        {/* <Settings>
-          <Settings.Section title="Total Duration">
-            <div className="indent-1 text-xxs text-white">
-              {totalDuration}min
-            </div>
-          </Settings.Section>
-        </Settings> */}
-
-        {/* <div
-          onClick={() => onOpenDropdown()}
-          className="relative flex cursor-pointer items-center justify-center"
-        >
-          <DotsIcon fill="#1E293B" />
-          {isDropdownOpen ? (
-            <Dropdown onClose={onCloseDropdown}>
-              <Dropdown.Item onClick={onOpenDurationModal}>
-                Edit Duration Settings
-              </Dropdown.Item>
-            </Dropdown>
-          ) : null}
-        </div> */}
 
         {isDurationModalOpen ? (
           <Modal isOpen={isDurationModalOpen} onClose={onCloseDurationModal}>
@@ -740,17 +432,18 @@ export default function TrainingWeekOverview() {
   };
 
   return (
-    <div
-      id="exercise_editor"
-      className={`flex flex-col items-center space-y-5 rounded`}
-    >
-      <MesocycleToggle
-        mesocycles={mesocycleTitles}
-        microcycles={microcycleTitles}
-        selectedMesocycleIndex={selectedMesocycleIndex}
-        selectedMicrocycleIndex={selectedMicrocycleIndex}
-        onClickHandler={onClickHandler}
-      />
+    <div id="exercise_editor" className={`flex flex-col space-y-5 rounded`}>
+      <div className="flex flex-col rounded-md border border-primary-700">
+        <MesocycleToggle
+          mesocycles={mesocycleTitles}
+          microcycles={microcycleTitles}
+          selectedMesocycleIndex={selectedMesocycleIndex}
+          selectedMicrocycleIndex={selectedMicrocycleIndex}
+          onClickHandler={onClickHandler}
+        />
+
+        <SessionDurationVariables />
+      </div>
 
       <WeekSessions
         selectedMesocycleIndex={selectedMesocycleIndex}

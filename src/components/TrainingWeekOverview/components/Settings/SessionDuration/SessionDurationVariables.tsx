@@ -16,7 +16,7 @@ const IncrementBtn = ({ operation, onClick }: IncrementBtnProps) => {
   return (
     <button
       className={cn(
-        `bg-primary-500 m-1 flex h-4 w-4 items-center justify-center p-1 text-xs text-white`
+        `m-1 flex h-4 w-4 items-center justify-center bg-primary-500 p-1 text-xs text-white`
       )}
       onClick={onClick}
     >
@@ -73,8 +73,8 @@ const TimeIncrementFrame = ({ label }: TimeIncrementFrameProps) => {
 
 export default function SessionDurationVariables() {
   return (
-    <div className="flex flex-col">
-      <div className="mb-0.5 flex items-center justify-center text-sm">
+    <div className="flex w-96 flex-col">
+      <div className="flex items-center justify-center p-2 text-sm">
         Workout Duration Variables
       </div>
       <Settings>
