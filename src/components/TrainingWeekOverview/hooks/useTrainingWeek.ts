@@ -6,7 +6,7 @@ import {
   DraggableSessionType,
 } from "./useExerciseSelection";
 
-const hydrateTrainingWeek = (
+export const hydrateTrainingWeek = (
   training_week: NewTrainingWeek[],
   muscle_priority_list: MusclePriorityType[]
 ) => {

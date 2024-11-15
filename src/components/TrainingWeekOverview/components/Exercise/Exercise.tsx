@@ -33,6 +33,7 @@ type ExerciseItemLayoutProps = {
   reps: number;
   lbs: number;
   supersetModal: ReactNode;
+  children: ReactNode;
 };
 export default function ExerciseItemLayout({
   index,
@@ -43,11 +44,13 @@ export default function ExerciseItemLayout({
   reps,
   lbs,
   supersetModal,
+  children,
 }: ExerciseItemLayoutProps) {
   return (
     <li className="flex">
       <div className="p-2 pl-0 text-sm text-white">{index}</div>
-      <div className="w-44 rounded-md border border-input bg-background/40">
+      <div className="flex w-44 rounded-md border border-input bg-background/40">
+        {children}
         <div className="flex justify-between">
           <div className="flex w-16 p-2 pr-0">
             <div className="text-semibold flex text-xs">

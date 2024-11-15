@@ -1,6 +1,6 @@
-import { DotsVerticalIcon } from "@radix-ui/react-icons";
-import { useCallback, useEffect, useState } from "react";
-import { DragDropContext, Draggable } from "react-beautiful-dnd";
+import { DotsVerticalIcon, DragHandleDots2Icon } from "@radix-ui/react-icons";
+import { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
+import { DragDropContext, Draggable, DropResult } from "react-beautiful-dnd";
 import Modal from "~/components/Modals/Modal";
 import {
   ExerciseType,
@@ -33,7 +33,7 @@ import { getSupersetMap } from "./components/utils/exerciseSelectUtils";
 import useExerciseSelection, {
   DraggableExercises,
 } from "./hooks/useExerciseSelection";
-import useTrainingWeek from "./hooks/useTrainingWeek";
+import { hydrateTrainingWeek } from "./hooks/useTrainingWeek";
 
 type DropdownProps = {
   onDropdownClick: () => void;
@@ -97,6 +97,7 @@ type ExerciseItemProps = {
     exercise: ExerciseType,
     sessionId: string
   ) => void;
+  children: ReactNode;
 };
 function ExerciseItem({
   index,
@@ -106,6 +107,7 @@ function ExerciseItem({
   selectedMicrocycleIndex,
   selectedMesocycleIndex,
   onSupersetUpdate,
+  children,
 }: ExerciseItemProps) {
   const { training_program_params, prioritized_muscle_list } =
     useTrainingProgramContext();
@@ -193,7 +195,9 @@ function ExerciseItem({
           onItemClick={() => console.log("lol")}
         />
       }
-    />
+    >
+      {children}
+    </ExerciseItemLayout>
   );
 }
 
@@ -267,11 +271,7 @@ function DroppableSession({
                   index={index}
                 >
                   {(provided, snapshot) => (
-                    <div
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                      {...provided.dragHandleProps}
-                    >
+                    <div ref={provided.innerRef} {...provided.draggableProps}>
                       <ExerciseItem
                         index={index + 1}
                         exercise={each}
@@ -280,7 +280,14 @@ function DroppableSession({
                         selectedMicrocycleIndex={selectedMicrocycleIndex}
                         selectedMesocycleIndex={mesocycleIndex}
                         onSupersetUpdate={onSupersetUpdate}
-                      />
+                      >
+                        <div
+                          className="flex items-center justify-start border-r border-input"
+                          {...provided.dragHandleProps}
+                        >
+                          <DragHandleDots2Icon fill="white" />
+                        </div>
+                      </ExerciseItem>
                     </div>
                   )}
                 </Draggable>
@@ -403,11 +410,19 @@ export default function TrainingWeekOverview() {
     mesocycles - 1
   );
 
-  const { hydratedTrainingBlock } = useTrainingWeek(
-    training_block,
-    prioritized_muscle_list,
-    selectedMesocycleIndex
+  const hydratedTrainingBlock = useMemo(
+    () =>
+      training_block.map((each) =>
+        hydrateTrainingWeek(each, prioritized_muscle_list)
+      ),
+    [training_block, prioritized_muscle_list]
   );
+
+  // const { hydratedTrainingBlock } = useTrainingWeek(
+  //   training_block,
+  //   prioritized_muscle_list,
+  //   selectedMesocycleIndex
+  // );
 
   const mesocycleTitles = Array.from(
     Array(mesocycles),
@@ -467,14 +482,127 @@ function WeekSessions({
 }: WeekSessionsProps) {
   const {
     draggableExercises,
+    setDraggableExercises,
     onSplitChange,
     onSupersetUpdate,
     modalOptions,
-    onDragEnd,
+    // onDragEnd,
   } = useExerciseSelection(training_week, selectedMesocycleIndex);
 
   // NOTE: a lot of logic missing here to determine if an exercise CAN move to another split
   //       as well as if it can should it change the split type??
+
+  const onDragEnd = useCallback(
+    (result: DropResult) => {
+      if (!result.destination) return;
+      let outerDestinationId = 0;
+      let outerDestinationSessionId = 0;
+      const outerDestinationExerciseIndex = result.destination.index;
+
+      let outerSourceId = 0;
+      let outerSourceSessionId = 0;
+      const innerSourceId = result.source.index;
+
+      const getInnerAndOuterIndices = (droppableId: string) => {
+        const splitId = droppableId.split("_");
+        const index = parseInt(splitId[1]);
+        console.log(droppableId, splitId, index, "OK LETS CHECK ");
+        switch (splitId[0]) {
+          case "Monday":
+            return [1, index];
+          case "Tuesday":
+            return [2, index];
+          case "Wednesday":
+            return [3, index];
+          case "Thursday":
+            return [4, index];
+          case "Friday":
+            return [5, index];
+          case "Saturday":
+            return [6, index];
+          default:
+            return [0, index];
+        }
+      };
+
+      const destIndices = getInnerAndOuterIndices(
+        result.destination.droppableId
+      );
+      outerDestinationId = destIndices[0];
+      outerDestinationSessionId = destIndices[1];
+
+      const sourceIndices = getInnerAndOuterIndices(result.source.droppableId);
+      outerSourceId = sourceIndices[0];
+      outerSourceSessionId = sourceIndices[1];
+
+      const destination = {
+        dayIndex: outerDestinationId,
+        sessionIndex: outerDestinationSessionId,
+        exerciseIndex: outerDestinationExerciseIndex,
+      };
+      const source = {
+        dayIndex: outerSourceId,
+        sessionIndex: outerSourceSessionId,
+        exerciseIndex: innerSourceId,
+      };
+      // const { destination, source } = onDragResults;
+      const sourceDayIndex = source.dayIndex;
+      const sourceSessionIndex = source.sessionIndex;
+      const sourceExerciseIndex = source.exerciseIndex;
+      const destinationDayIndex = destination.dayIndex;
+      const destinationSessionIndex = destination.sessionIndex;
+      const destinationExerciseIndex = destination.exerciseIndex;
+
+      const items = structuredClone(draggableExercises);
+
+      console.log(
+        items,
+        items[sourceDayIndex],
+        sourceDayIndex,
+        sourceSessionIndex,
+        result.source,
+        result.destination,
+        sourceIndices,
+        destIndices,
+        result,
+        "OK LETS CHECK"
+      );
+      const sourceExercise =
+        items[sourceDayIndex].sessions[sourceSessionIndex].exercises[
+          sourceExerciseIndex
+        ];
+      const targetSplit =
+        items[destinationDayIndex].sessions[destinationSessionIndex];
+      // const canAdd = canAddExerciseToSplit(
+      //   sourceExercise.muscle,
+      //   targetSplit.split as SplitType
+      // );
+
+      // if (!canAdd) {
+      //   const splitOptions = findOptimalSplit(
+      //     sourceExercise.muscle,
+      //     targetSplit.exercises
+      //   );
+
+      //   setModalOptions({
+      //     id: targetSplit.id,
+      //     options: splitOptions,
+      //     isOpen: true,
+      //   });
+      // }
+
+      const [removed] = items[sourceDayIndex].sessions[
+        sourceSessionIndex
+      ].exercises.splice(sourceExerciseIndex, 1);
+
+      items[destinationDayIndex].sessions[
+        destinationSessionIndex
+      ].exercises.splice(destinationExerciseIndex, 0, removed);
+
+      setDraggableExercises(items);
+    },
+    [draggableExercises]
+  );
 
   return (
     <div className={"flex w-full flex-col"}>

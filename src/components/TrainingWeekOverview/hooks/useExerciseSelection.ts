@@ -208,6 +208,13 @@ export default function useExerciseSelection(
 
     const items = structuredClone(draggableExercises);
 
+    console.log(
+      items,
+      items[sourceDayIndex],
+      sourceDayIndex,
+      sourceSessionIndex,
+      "OK LETS CHECK"
+    );
     const sourceExercise =
       items[sourceDayIndex].sessions[sourceSessionIndex].exercises[
         sourceExerciseIndex
@@ -280,6 +287,7 @@ export default function useExerciseSelection(
 
   return {
     draggableExercises,
+    setDraggableExercises,
     onSplitChange,
     onSupersetUpdate,
     modalOptions,
