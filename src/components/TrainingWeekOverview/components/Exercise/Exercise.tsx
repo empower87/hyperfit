@@ -48,16 +48,17 @@ export default function ExerciseItemLayout({
 }: ExerciseItemLayoutProps) {
   return (
     <li className="flex">
-      <div className="p-2 pl-0 text-sm text-white">{index}</div>
-      <div className="flex w-44 rounded-md border border-input bg-background/40">
+      <div className="pr-2 text-sm text-white">{index}</div>
+      <div className="flex rounded-md border border-input bg-background/40">
         {children}
         <div className="flex justify-between">
-          <div className="flex w-16 p-2 pr-0">
-            <div className="text-semibold flex text-xs">
+          <div className="flex p-2 pr-0">
+            <div className="text-semibold flex truncate text-xs leading-tight text-secondary-300">
               {sets} x {reps}
             </div>
           </div>
-          <div className="flex w-full cursor-default flex-col overflow-hidden p-2 text-xs leading-tight">
+
+          <div className="flex w-40 cursor-default flex-col overflow-hidden p-2 text-xs leading-tight">
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger className="cursor-default" asChild>
@@ -77,7 +78,7 @@ export default function ExerciseItemLayout({
 
           <Dialog>
             <DropdownMenu>
-              <DropdownMenuTrigger className="mt-2" asChild>
+              <DropdownMenuTrigger className="mt-1" asChild>
                 <Button size="icon" variant="ghost">
                   <DotsVerticalIcon fill="white" />
                 </Button>

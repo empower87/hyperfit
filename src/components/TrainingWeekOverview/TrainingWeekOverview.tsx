@@ -506,7 +506,7 @@ function WeekSessions({
       const getInnerAndOuterIndices = (droppableId: string) => {
         const splitId = droppableId.split("_");
         const index = parseInt(splitId[1]);
-        console.log(droppableId, splitId, index, "OK LETS CHECK ");
+        console.log(droppableId, splitId, index, "OK LETS CHECK");
         switch (splitId[0]) {
           case "Monday":
             return [1, index];
