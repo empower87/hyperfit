@@ -10,7 +10,7 @@ import {
 import {
   canAddExerciseToSplit,
   findOptimalSplit,
-} from "../components/utils/exerciseSelectUtils";
+} from "../utils/exerciseSelectUtils";
 
 export type DraggableSessionType = Pick<SessionType, "id" | "split"> & {
   exercises: ExerciseType[];

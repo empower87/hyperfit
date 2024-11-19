@@ -29,11 +29,11 @@ import {
   SessionDurationVariablesProvider,
   useSessionDurationVariablesContext,
 } from "./components/Settings/SessionDuration/sessionDurationVariablesContext";
-import { getSupersetMap } from "./components/utils/exerciseSelectUtils";
 import useExerciseSelection, {
   DraggableExercises,
 } from "./hooks/useExerciseSelection";
 import { hydrateTrainingWeek } from "./hooks/useTrainingWeek";
+import { getSupersetMap } from "./utils/exerciseSelectUtils";
 
 type DropdownProps = {
   onDropdownClick: () => void;
