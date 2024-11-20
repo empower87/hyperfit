@@ -1,7 +1,13 @@
 import { Cross2Icon, DotsVerticalIcon } from "@radix-ui/react-icons";
 import { useState } from "react";
 import { Button } from "~/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "~/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,7 +32,7 @@ export default function TrainingDay({ index, exercises }: TrainingDayProps) {
   };
 
   return (
-    <Card>
+    <Card className="relative">
       <CardHeader className="flex-row items-center justify-between space-y-0">
         <CardTitle>Day {index + 1}</CardTitle>
         <DropdownMenu>
@@ -44,7 +50,7 @@ export default function TrainingDay({ index, exercises }: TrainingDayProps) {
         </DropdownMenu>
       </CardHeader>
 
-      <CardContent>
+      <CardContent className="mb-12">
         <ul className="space-y-3">
           {sessions.map((session, sessionIndex) => {
             const isSingleSession = sessions.length <= 1;
@@ -66,7 +72,8 @@ export default function TrainingDay({ index, exercises }: TrainingDayProps) {
             );
           })}
         </ul>
-
+      </CardContent>
+      <CardFooter className="absolute bottom-0 left-0 w-full">
         <Button
           variant="outline"
           className="mt-3 w-full"
@@ -74,7 +81,7 @@ export default function TrainingDay({ index, exercises }: TrainingDayProps) {
         >
           Add Session
         </Button>
-      </CardContent>
+      </CardFooter>
     </Card>
   );
 }

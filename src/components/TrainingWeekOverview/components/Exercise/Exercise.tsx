@@ -47,7 +47,7 @@ export default function ExerciseItemLayout({
   children,
 }: ExerciseItemLayoutProps) {
   return (
-    <li className="flex">
+    <li className={`flex`}>
       <div className="pr-2 text-sm text-white">{index}</div>
       <div className="flex rounded-md border border-input bg-background/40">
         {children}
@@ -73,7 +73,7 @@ export default function ExerciseItemLayout({
               </Tooltip>
             </TooltipProvider>
 
-            <div className={`${muscleColor}`}>{muscle}</div>
+            <div>{muscle}</div>
           </div>
 
           <Dialog>

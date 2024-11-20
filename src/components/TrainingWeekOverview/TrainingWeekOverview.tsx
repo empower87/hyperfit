@@ -168,7 +168,7 @@ function ExerciseItem({
       bgColor = supersettedColor;
     } else {
       const bgColorByRank = getRankColor(exercise.rank);
-      bgColor = bgColorByRank.text;
+      bgColor = bgColorByRank.bg;
     }
     setBgColor(bgColor);
   }, [supersets, exercise]);
@@ -243,7 +243,7 @@ function DroppableSession({
       <div className={"flex flex-col"}>
         <div
           className={cn(
-            `flex items-center rounded-sm p-2 indent-1 text-sm font-semibold ${
+            `flex items-center rounded-sm p-2 pl-0 indent-1 text-sm font-semibold ${
               getSplitColor(split).text
             }`
           )}
@@ -264,6 +264,7 @@ function DroppableSession({
             ref={provided.innerRef}
           >
             {exercises.map((each, index) => {
+              const bgColorByRank = getRankColor(each.rank).bg;
               return (
                 <Draggable
                   key={`${each.id}_${mesocycleIndex}`}
@@ -282,7 +283,7 @@ function DroppableSession({
                         onSupersetUpdate={onSupersetUpdate}
                       >
                         <div
-                          className="flex items-center justify-start border-r border-input"
+                          className={`flex items-center justify-start border-r border-input ${bgColorByRank} rounded-l`}
                           {...provided.dragHandleProps}
                         >
                           <DragHandleDots2Icon fill="white" />
