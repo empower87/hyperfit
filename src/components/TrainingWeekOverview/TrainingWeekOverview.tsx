@@ -225,7 +225,6 @@ function DroppableSession({
   const { sessionDurationCalculator, durationTimeConstants } =
     useSessionDurationVariablesContext();
 
-  const [isDropdownOpen, setIsdropdownOpen] = useState(false);
   const [isDurationModalOpen, setIsDurationModalOpen] = useState(false);
 
   const totalDuration = sessionDurationCalculator(
@@ -233,13 +232,10 @@ function DroppableSession({
     selectedMicrocycleIndex
   );
 
-  const onOpenDropdown = () => setIsdropdownOpen(true);
-  const onCloseDropdown = () => setIsdropdownOpen(false);
-  const onOpenDurationModal = () => setIsDurationModalOpen(true);
   const onCloseDurationModal = () => setIsDurationModalOpen(false);
 
   return (
-    <li className={``}>
+    <li className={`overflow`}>
       <div className={"flex flex-col"}>
         <div
           className={cn(
@@ -283,7 +279,7 @@ function DroppableSession({
                         onSupersetUpdate={onSupersetUpdate}
                       >
                         <div
-                          className={`flex items-center justify-start border-r border-input ${bgColorByRank} rounded-l`}
+                          className={`flex items-center justify-start border-r border-input ${bgColorByRank}`}
                           {...provided.dragHandleProps}
                         >
                           <DragHandleDots2Icon fill="white" />
@@ -508,33 +504,34 @@ function WeekSessions({
         const splitId = droppableId.split("_");
         const index = parseInt(splitId[1]);
         console.log(droppableId, splitId, index, "OK LETS CHECK");
-        switch (splitId[0]) {
-          case "Monday":
-            return [1, index];
-          case "Tuesday":
-            return [2, index];
-          case "Wednesday":
-            return [3, index];
-          case "Thursday":
-            return [4, index];
-          case "Friday":
-            return [5, index];
-          case "Saturday":
-            return [6, index];
-          default:
-            return [0, index];
-        }
+        return parseInt(splitId[0]);
+        // switch (splitId[0]) {
+        //   case "Monday":
+        //     return [1, index];
+        //   case "Tuesday":
+        //     return [2, index];
+        //   case "Wednesday":
+        //     return [3, index];
+        //   case "Thursday":
+        //     return [4, index];
+        //   case "Friday":
+        //     return [5, index];
+        //   case "Saturday":
+        //     return [6, index];
+        //   default:
+        //     return [0, index];
+        // }
       };
 
       const destIndices = getInnerAndOuterIndices(
         result.destination.droppableId
       );
-      outerDestinationId = destIndices[0];
-      outerDestinationSessionId = destIndices[1];
+      outerDestinationId = destIndices;
+      outerDestinationSessionId = 0;
 
       const sourceIndices = getInnerAndOuterIndices(result.source.droppableId);
-      outerSourceId = sourceIndices[0];
-      outerSourceSessionId = sourceIndices[1];
+      outerSourceId = sourceIndices;
+      outerSourceSessionId = 0;
 
       const destination = {
         dayIndex: outerDestinationId,
@@ -594,11 +591,11 @@ function WeekSessions({
 
       const [removed] = items[sourceDayIndex].sessions[
         sourceSessionIndex
-      ].exercises.splice(sourceExerciseIndex, 1);
+      ]?.exercises.splice(sourceExerciseIndex, 1);
 
       items[destinationDayIndex].sessions[
         destinationSessionIndex
-      ].exercises.splice(destinationExerciseIndex, 0, removed);
+      ]?.exercises.splice(destinationExerciseIndex, 0, removed);
 
       setDraggableExercises(items);
     },

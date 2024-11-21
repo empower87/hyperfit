@@ -49,7 +49,7 @@ export default function ExerciseItemLayout({
   return (
     <li className={`flex`}>
       <div className="pr-2 text-sm text-white">{index}</div>
-      <div className="flex rounded-md border border-input bg-background/40">
+      <div className="flex overflow-hidden rounded-md border border-input bg-background/40">
         {children}
         <div className="flex justify-between">
           <div className="flex p-2 pr-0">

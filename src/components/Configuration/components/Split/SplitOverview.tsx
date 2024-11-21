@@ -139,22 +139,23 @@ const DroppableDay = ({
               {...provided.droppableProps}
               ref={provided.innerRef}
             >
-              {sessions.map((each, index) => {
+              {sessions.map((session, index) => {
+                const bgColor = getSplitColor(session.split).bg;
                 return (
                   <Draggable
-                    key={`${each.id}_${index}_DroppableDay`}
-                    draggableId={each.id}
+                    key={`${session.id}_${index}_DroppableDay`}
+                    draggableId={session.id}
                     index={index}
                   >
                     {(provided, snapshot) => (
                       <div ref={provided.innerRef} {...provided.draggableProps}>
                         <SessionItem
-                          session={each}
+                          session={session}
                           onSplitChange={onSplitChange}
                         >
                           <div
                             {...provided.dragHandleProps}
-                            className={`flex items-center justify-start `}
+                            className={`flex h-full w-[14px] items-center justify-start border-r border-primary-400 ${bgColor}`}
                           >
                             <DragHandleDots2Icon fill="white" />
                           </div>
@@ -182,7 +183,7 @@ function SessionItem({ session, onSplitChange, children }: SessionItemProps) {
   const onSelectChange = (newSplit: SplitType | "off") => {
     onSplitChange(newSplit, session.id);
   };
-  const bgColor = getSplitColor(session.split).bg;
+  // const bgColor = getSplitColor(session.split).bg;
 
   const SPLIT_NAMES: (SplitType | "off")[] = [
     "upper",
@@ -200,9 +201,15 @@ function SessionItem({ session, onSplitChange, children }: SessionItemProps) {
 
   if (session.split === "off") return null;
   return (
-    <li className={cn(`flex rounded-sm border border-white ${bgColor} py-1`)}>
+    <li
+      className={cn(
+        `flex h-7 overflow-hidden rounded-sm border border-primary-400`
+      )}
+    >
       {children}
-      <div className={`relative flex text-xxs text-white`}>
+      <div
+        className={`flex w-full items-center justify-center bg-card text-xxs text-white`}
+      >
         <Select onValueChange={onSelectChange}>
           <SelectTrigger className="h-5 w-16 border-none px-1.5">
             <SelectValue
