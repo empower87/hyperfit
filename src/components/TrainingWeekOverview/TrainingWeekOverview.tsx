@@ -5,6 +5,7 @@ import Modal from "~/components/Modals/Modal";
 import {
   ExerciseType,
   SessionSplitType,
+  SplitType,
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
 import {
@@ -33,7 +34,10 @@ import useExerciseSelection, {
   DraggableExercises,
 } from "./hooks/useExerciseSelection";
 import { hydrateTrainingWeek } from "./hooks/useTrainingWeek";
-import { getSupersetMap } from "./utils/exerciseSelectUtils";
+import {
+  canAddExerciseToSplit,
+  getSupersetMap,
+} from "./utils/exerciseSelectUtils";
 
 type DropdownProps = {
   onDropdownClick: () => void;
@@ -492,110 +496,43 @@ function WeekSessions({
   const onDragEnd = useCallback(
     (result: DropResult) => {
       if (!result.destination) return;
-      let outerDestinationId = 0;
-      let outerDestinationSessionId = 0;
-      const outerDestinationExerciseIndex = result.destination.index;
-
-      let outerSourceId = 0;
-      let outerSourceSessionId = 0;
-      const innerSourceId = result.source.index;
-
-      const getInnerAndOuterIndices = (droppableId: string) => {
-        const splitId = droppableId.split("_");
-        const index = parseInt(splitId[1]);
-        console.log(droppableId, splitId, index, "OK LETS CHECK");
-        return parseInt(splitId[0]);
-        // switch (splitId[0]) {
-        //   case "Monday":
-        //     return [1, index];
-        //   case "Tuesday":
-        //     return [2, index];
-        //   case "Wednesday":
-        //     return [3, index];
-        //   case "Thursday":
-        //     return [4, index];
-        //   case "Friday":
-        //     return [5, index];
-        //   case "Saturday":
-        //     return [6, index];
-        //   default:
-        //     return [0, index];
-        // }
-      };
-
-      const destIndices = getInnerAndOuterIndices(
-        result.destination.droppableId
-      );
-      outerDestinationId = destIndices;
-      outerDestinationSessionId = 0;
-
-      const sourceIndices = getInnerAndOuterIndices(result.source.droppableId);
-      outerSourceId = sourceIndices;
-      outerSourceSessionId = 0;
-
-      const destination = {
-        dayIndex: outerDestinationId,
-        sessionIndex: outerDestinationSessionId,
-        exerciseIndex: outerDestinationExerciseIndex,
-      };
-      const source = {
-        dayIndex: outerSourceId,
-        sessionIndex: outerSourceSessionId,
-        exerciseIndex: innerSourceId,
-      };
-      // const { destination, source } = onDragResults;
-      const sourceDayIndex = source.dayIndex;
-      const sourceSessionIndex = source.sessionIndex;
-      const sourceExerciseIndex = source.exerciseIndex;
-      const destinationDayIndex = destination.dayIndex;
-      const destinationSessionIndex = destination.sessionIndex;
-      const destinationExerciseIndex = destination.exerciseIndex;
+      const destination_id = result.destination.droppableId;
+      const source_id = result.source.droppableId;
+      const destination_day_index = parseInt(destination_id.split("_")[0]);
+      const source_day_index = parseInt(source_id.split("_")[0]);
+      const destination_session_index = 0;
+      const source_session_index = 0;
+      const destination_exercise_index = result.destination.index;
+      const source_exercise_index = result.source.index;
 
       const items = structuredClone(draggableExercises);
 
-      console.log(
-        items,
-        items[sourceDayIndex],
-        sourceDayIndex,
-        sourceSessionIndex,
-        result.source,
-        result.destination,
-        sourceIndices,
-        destIndices,
-        result,
-        "OK LETS CHECK"
-      );
       const sourceExercise =
-        items[sourceDayIndex].sessions[sourceSessionIndex].exercises[
-          sourceExerciseIndex
+        items[source_day_index].sessions[source_session_index].exercises[
+          source_exercise_index
         ];
       const targetSplit =
-        items[destinationDayIndex].sessions[destinationSessionIndex];
-      // const canAdd = canAddExerciseToSplit(
-      //   sourceExercise.muscle,
-      //   targetSplit.split as SplitType
-      // );
+        items[destination_day_index].sessions[destination_session_index];
 
-      // if (!canAdd) {
-      //   const splitOptions = findOptimalSplit(
-      //     sourceExercise.muscle,
-      //     targetSplit.exercises
-      //   );
+      const can_add_exercise_to_session = canAddExerciseToSplit(
+        sourceExercise.muscle,
+        targetSplit.split as SplitType
+      );
 
-      //   setModalOptions({
-      //     id: targetSplit.id,
-      //     options: splitOptions,
-      //     isOpen: true,
-      //   });
-      // }
+      if (!can_add_exercise_to_session) {
+        console.log(
+          can_add_exercise_to_session,
+          `ERROR: Cannot place an exercise of the ${sourceExercise.muscle} muscle type in a ${targetSplit.split} session.`
+        );
+      }
 
-      const [removed] = items[sourceDayIndex].sessions[
-        sourceSessionIndex
-      ]?.exercises.splice(sourceExerciseIndex, 1);
+      const [removed] = items[source_day_index].sessions[
+        source_session_index
+      ].exercises.splice(source_exercise_index, 1);
 
-      items[destinationDayIndex].sessions[
-        destinationSessionIndex
-      ]?.exercises.splice(destinationExerciseIndex, 0, removed);
+      items[destination_day_index].sessions[
+        destination_session_index
+      ].exercises.splice(destination_exercise_index, 0, removed);
 
       setDraggableExercises(items);
     },
