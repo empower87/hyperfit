@@ -39,9 +39,9 @@ export default function ProgramConfig() {
 
   return (
     <ProgramConfigProvider>
-      <div className="mt-6 flex flex-col">
+      <div className="flex h-full flex-col pt-10">
         <h1 className="mb-5 text-white">Program Configuration</h1>
-        <div className="flex space-x-5">
+        <div className="flex h-full space-x-5">
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between space-x-2 border-b border-primary-500 pb-2 ">
@@ -73,7 +73,7 @@ export default function ProgramConfig() {
             </CardContent>
           </Card>
 
-          <div className="flex flex-col space-y-3">
+          <div className="flex h-full flex-col space-y-3 overflow-y-scroll">
             <Configuration>
               <Configuration.Layout>
                 <div className="flex flex-col space-y-3">

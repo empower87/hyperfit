@@ -12,18 +12,20 @@ export const hydrateTrainingWeek = (
 ) => {
   const hydratedTrainingWeek: DraggableExercises[] = [];
 
-  for (let i = 0; i < training_week.length; i++) {
+  const clonedWeek = structuredClone(training_week);
+
+  for (let i = 0; i < clonedWeek.length; i++) {
     const hydratedDay: DraggableExercises = {
-      day: training_week[i].day,
-      isTrainingDay: training_week[i].isTrainingDay,
+      day: clonedWeek[i].day,
+      isTrainingDay: clonedWeek[i].isTrainingDay,
       sessions: [],
     };
 
-    for (let j = 0; j < training_week[i].sessions.length; j++) {
-      const exerciseIds = training_week[i].sessions[j].exercises;
+    for (let j = 0; j < clonedWeek[i].sessions.length; j++) {
+      const exerciseIds = clonedWeek[i].sessions[j].exercises;
       const session: DraggableSessionType = {
-        id: training_week[i].sessions[j].id,
-        split: training_week[i].sessions[j].split,
+        id: clonedWeek[i].sessions[j].id,
+        split: clonedWeek[i].sessions[j].split,
         exercises: [],
       };
 

@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from "react";
-import { DropResult } from "react-beautiful-dnd";
 import {
   ExerciseTrainingModality,
   ExerciseType,
@@ -7,10 +6,6 @@ import {
   SplitType,
   TrainingDayType,
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
-import {
-  canAddExerciseToSplit,
-  findOptimalSplit,
-} from "../utils/exerciseSelectUtils";
 
 export type DraggableSessionType = Pick<SessionType, "id" | "split"> & {
   exercises: ExerciseType[];
@@ -159,138 +154,11 @@ export default function useExerciseSelection(
     [draggableExercises]
   );
 
-  const getInnerAndOuterIndices = (droppableId: string) => {
-    const splitId = droppableId.split("_");
-    const index = parseInt(splitId[1]);
-    switch (splitId[0]) {
-      case "Monday":
-        return [1, index];
-      case "Tuesday":
-        return [2, index];
-      case "Wednesday":
-        return [3, index];
-      case "Thursday":
-        return [4, index];
-      case "Friday":
-        return [5, index];
-      case "Saturday":
-        return [6, index];
-      default:
-        return [0, index];
-    }
-  };
-
-  const onDragEndIndices = {
-    destination: {
-      dayIndex: 0,
-      sessionIndex: 0,
-      exerciseIndex: 0,
-    },
-    source: {
-      dayIndex: 0,
-      sessionIndex: 0,
-      exerciseIndex: 0,
-    },
-  };
-  const [onDragResults, setOnDragResults] = useState<
-    typeof onDragEndIndices | null
-  >(null);
-
-  useEffect(() => {
-    if (!onDragResults) return;
-    const { destination, source } = onDragResults;
-    const sourceDayIndex = source.dayIndex;
-    const sourceSessionIndex = source.sessionIndex;
-    const sourceExerciseIndex = source.exerciseIndex;
-    const destinationDayIndex = destination.dayIndex;
-    const destinationSessionIndex = destination.sessionIndex;
-    const destinationExerciseIndex = destination.exerciseIndex;
-
-    const items = structuredClone(draggableExercises);
-
-    console.log(
-      items,
-      items[sourceDayIndex],
-      sourceDayIndex,
-      sourceSessionIndex,
-      "OK LETS CHECK"
-    );
-    const sourceExercise =
-      items[sourceDayIndex].sessions[sourceSessionIndex].exercises[
-        sourceExerciseIndex
-      ];
-    const targetSplit =
-      items[destinationDayIndex].sessions[destinationSessionIndex];
-    const canAdd = canAddExerciseToSplit(
-      sourceExercise.muscle,
-      targetSplit.split as SplitType
-    );
-
-    if (!canAdd) {
-      const splitOptions = findOptimalSplit(
-        sourceExercise.muscle,
-        targetSplit.exercises
-      );
-
-      setModalOptions({
-        id: targetSplit.id,
-        options: splitOptions,
-        isOpen: true,
-      });
-    }
-
-    const [removed] = items[sourceDayIndex].sessions[
-      sourceSessionIndex
-    ].exercises.splice(sourceExerciseIndex, 1);
-
-    items[destinationDayIndex].sessions[
-      destinationSessionIndex
-    ].exercises.splice(destinationExerciseIndex, 0, removed);
-
-    setDraggableExercises(items);
-    setOnDragResults(null);
-  }, [onDragResults]);
-
-  // TODO: Needs to check if exercise has a superset and drag that along with it.
-  //       This will extend to moving a exercise across week.
-  const onDragEnd = useCallback((result: DropResult) => {
-    if (!result.destination) return;
-    let outerDestinationId = 0;
-    let outerDestinationSessionId = 0;
-    const outerDestinationExerciseIndex = result.destination.index;
-
-    let outerSourceId = 0;
-    let outerSourceSessionId = 0;
-    const innerSourceId = result.source.index;
-
-    const destIndices = getInnerAndOuterIndices(result.destination.droppableId);
-    outerDestinationId = destIndices[0];
-    outerDestinationSessionId = destIndices[1];
-
-    const sourceIndices = getInnerAndOuterIndices(result.source.droppableId);
-    outerSourceId = sourceIndices[0];
-    outerSourceSessionId = sourceIndices[1];
-
-    setOnDragResults({
-      destination: {
-        dayIndex: outerDestinationId,
-        sessionIndex: outerDestinationSessionId,
-        exerciseIndex: outerDestinationExerciseIndex,
-      },
-      source: {
-        dayIndex: outerSourceId,
-        sessionIndex: outerSourceSessionId,
-        exerciseIndex: innerSourceId,
-      },
-    });
-  }, []);
-
   return {
     draggableExercises,
     setDraggableExercises,
     onSplitChange,
     onSupersetUpdate,
     modalOptions,
-    onDragEnd,
   };
 }

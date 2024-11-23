@@ -1,5 +1,5 @@
 import { DotsVerticalIcon, DragHandleDots2Icon } from "@radix-ui/react-icons";
-import { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
+import { ReactNode, useCallback, useEffect, useState } from "react";
 import { DragDropContext, Draggable, DropResult } from "react-beautiful-dnd";
 import Modal from "~/components/Modals/Modal";
 import {
@@ -30,9 +30,7 @@ import {
   SessionDurationVariablesProvider,
   useSessionDurationVariablesContext,
 } from "./components/Settings/SessionDuration/sessionDurationVariablesContext";
-import useExerciseSelection, {
-  DraggableExercises,
-} from "./hooks/useExerciseSelection";
+import { DraggableExercises } from "./hooks/useExerciseSelection";
 import { hydrateTrainingWeek } from "./hooks/useTrainingWeek";
 import {
   canAddExerciseToSplit,
@@ -411,13 +409,23 @@ export default function TrainingWeekOverview() {
     mesocycles - 1
   );
 
-  const hydratedTrainingBlock = useMemo(
-    () =>
-      training_block.map((each) =>
-        hydrateTrainingWeek(each, prioritized_muscle_list)
-      ),
-    [training_block, prioritized_muscle_list]
-  );
+  const [draggableExercises, setDraggableExercises] = useState<
+    DraggableExercises[][]
+  >([]);
+  // const hydratedTrainingBlock = useMemo(
+  //   () =>
+  //     training_block.map((each) =>
+  //       hydrateTrainingWeek(each, prioritized_muscle_list)
+  //     ),
+  //   [training_block, prioritized_muscle_list]
+  // );
+
+  useEffect(() => {
+    const hydratedTrainingBlock = training_block.map((each) =>
+      hydrateTrainingWeek(each, prioritized_muscle_list)
+    );
+    setDraggableExercises(hydratedTrainingBlock);
+  }, [training_block, prioritized_muscle_list]);
 
   // const { hydratedTrainingBlock } = useTrainingWeek(
   //   training_block,
@@ -447,6 +455,17 @@ export default function TrainingWeekOverview() {
     }
   };
 
+  const onExerciseReorder = useCallback(
+    (exercises: DraggableExercises[]) => {
+      const lol = draggableExercises.map((meso, mesoIndex) => {
+        if (mesoIndex === selectedMesocycleIndex) return exercises;
+        else return meso;
+      });
+      setDraggableExercises(lol);
+    },
+    [selectedMesocycleIndex]
+  );
+
   return (
     <div id="exercise_editor" className={`flex flex-col space-y-5 rounded`}>
       <div className="flex flex-col rounded-md border border-primary-700">
@@ -464,7 +483,8 @@ export default function TrainingWeekOverview() {
       <WeekSessions
         selectedMesocycleIndex={selectedMesocycleIndex}
         selectedMicrocycleIndex={selectedMicrocycleIndex}
-        training_week={hydratedTrainingBlock[selectedMesocycleIndex]}
+        training_week={draggableExercises}
+        setDraggableExercises={onExerciseReorder}
       />
     </div>
   );
@@ -473,23 +493,19 @@ export default function TrainingWeekOverview() {
 type WeekSessionsProps = {
   selectedMesocycleIndex: number;
   selectedMicrocycleIndex: number;
-  training_week: DraggableExercises[];
+  training_week: DraggableExercises[][];
+  setDraggableExercises: (exercises: DraggableExercises[]) => void;
 };
 
 function WeekSessions({
   selectedMesocycleIndex,
   selectedMicrocycleIndex,
   training_week,
+  setDraggableExercises,
 }: WeekSessionsProps) {
-  const {
-    draggableExercises,
-    setDraggableExercises,
-    onSplitChange,
-    onSupersetUpdate,
-    modalOptions,
-    // onDragEnd,
-  } = useExerciseSelection(training_week, selectedMesocycleIndex);
-
+  // const { draggableExercises, setDraggableExercises, onSupersetUpdate } =
+  //   useExerciseSelection(training_week, selectedMesocycleIndex);
+  const exercises_selected_meso = training_week[selectedMesocycleIndex];
   // NOTE: a lot of logic missing here to determine if an exercise CAN move to another split
   //       as well as if it can should it change the split type??
 
@@ -500,12 +516,13 @@ function WeekSessions({
       const source_id = result.source.droppableId;
       const destination_day_index = parseInt(destination_id.split("_")[0]);
       const source_day_index = parseInt(source_id.split("_")[0]);
+      // NOTE: only deals with days with 1 session as seen by the hardcoded zero.
       const destination_session_index = 0;
       const source_session_index = 0;
       const destination_exercise_index = result.destination.index;
       const source_exercise_index = result.source.index;
 
-      const items = structuredClone(draggableExercises);
+      const items = structuredClone(exercises_selected_meso);
 
       const sourceExercise =
         items[source_day_index].sessions[source_session_index].exercises[
@@ -536,14 +553,15 @@ function WeekSessions({
 
       setDraggableExercises(items);
     },
-    [draggableExercises]
+    [exercises_selected_meso]
   );
 
+  const onSupersetUpdate = () => {};
   return (
     <div className={"flex w-full flex-col"}>
       <ul className="flex space-x-2 overflow-x-auto">
         <DragDropContext onDragEnd={onDragEnd}>
-          {draggableExercises?.map((each, index) => {
+          {exercises_selected_meso?.map((each, index) => {
             // NOTE: to not display days w/o any sessions
             const hasSessions = each.sessions.find((ea) => ea.exercises.length);
             if (!hasSessions) return null;

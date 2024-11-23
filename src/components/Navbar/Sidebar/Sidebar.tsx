@@ -12,9 +12,12 @@ export default function Sidebar({ contents }: SidebarProps) {
   const onClickHandler = () => setIsExpanded((prev) => !prev);
   return (
     <div
-      className={cn(`fixed z-20 h-full w-16 space-y-2 bg-primary-700 p-3`, {
-        ["w-48"]: isExpanded,
-      })}
+      className={cn(
+        `fixed top-0 z-20 h-full w-16 space-y-2 bg-primary-700 p-3`,
+        {
+          ["w-48"]: isExpanded,
+        }
+      )}
     >
       <div className="flex items-center justify-center">
         <h1 className="text-lg font-bold text-rose-400">

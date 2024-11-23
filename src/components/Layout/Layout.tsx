@@ -19,15 +19,15 @@ export default function Layout({ children }: { children: ReactNode }) {
 
 function HomeWrapper({ children }: { children: ReactNode }) {
   return (
-    <div className=" h-full w-full bg-primary-800 pl-24 pr-6">{children}</div>
+    <div className="mt-12 h-full w-full bg-primary-800 pl-24 pr-6">
+      {children}
+    </div>
   );
 }
 
 function PageContainer({ children }: { children: ReactNode }) {
   return (
-    <div className="mb-20 mt-6 max-w-[1350px] md:mx-auto lg:p-0">
-      {children}
-    </div>
+    <div className="h-full max-w-[1350px] md:mx-auto lg:p-0">{children}</div>
   );
 }
 
