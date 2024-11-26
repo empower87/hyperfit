@@ -1,5 +1,5 @@
 import { DragHandleDots2Icon } from "@radix-ui/react-icons";
-import { ReactNode, useCallback } from "react";
+import React, { ReactNode, useCallback } from "react";
 import { DragDropContext, Draggable, DropResult } from "react-beautiful-dnd";
 import { CardS } from "~/components/Layout/Sections";
 import {
@@ -173,6 +173,16 @@ const DroppableDay = ({
     </div>
   );
 };
+
+interface ReactDnDDragHandleProps
+  extends React.HTMLAttributes<HTMLDivElement> {}
+function ReactDnDDragHandle({ className, ...props }: ReactDnDDragHandleProps) {
+  return (
+    <div {...props} className={cn(``, className)}>
+      <DragHandleDots2Icon fill="white" />
+    </div>
+  );
+}
 
 type SessionItemProps = {
   session: SessionType;

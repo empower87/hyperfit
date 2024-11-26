@@ -7,7 +7,6 @@ import StrictModeDroppable from "~/lib/react-beautiful-dnd/StrictModeDroppable";
 import { getRankColor } from "~/utils/getIndicatorColors";
 import getMuscleTitleForUI from "~/utils/getMuscleTitleForUI";
 import { useProgramConfigContext } from "../../hooks/useProgramConfig";
-import { Select } from "./VolumeLandmark";
 
 type ItemProps = {
   muscle: MusclePriorityType;
@@ -45,19 +44,20 @@ function Item({
 
   if (isCollapsed) return <CollapsedItem bgColor={colors.bg} text={title} />;
   return (
-    <div className="flex space-x-1">
+    <div className="flex">
       <div className="flex w-4 items-center text-xs font-semibold text-primary-300">
         {index + 1}
       </div>
       <div
         onClick={onClickHandler}
-        className={`flex ${colors.bg} w-64 cursor-pointer justify-between rounded-md p-1 text-sm text-white hover:scale-x-105 hover:scale-y-110`}
+        className={`flex cursor-pointer justify-between overflow-hidden rounded-md border border-input bg-background/50 text-sm text-white hover:scale-x-105 hover:scale-y-110`}
       >
-        <div className={`flex space-x-1`}>
-          {handle}
-
-          <div className="flex w-20 items-center justify-start">{title}</div>
-          <div className="flex items-center justify-center px-1">
+        <div className="flex">{handle}</div>
+        <div className={`flex`}>
+          <div className="flex w-24 items-center justify-start p-1">
+            {title}
+          </div>
+          <div className="flex w-10 items-center justify-center p-1">
             {`${muscle.frequency.range[0]} - ${muscle.frequency.range[1]}`}
           </div>
           <div className="mx-1 flex items-center justify-center font-bold text-primary-700">
@@ -69,12 +69,12 @@ function Item({
         </div>
 
         <div className={`flex items-center justify-center pr-2`}>
-          <Select
+          {/* <Select
             id={muscle.id}
             volume_landmark={muscle.volume.landmark}
             options={["MRV", "MEV", "MV"]}
             bgColor={colors.bg}
-          />
+          /> */}
         </div>
       </div>
     </div>
@@ -143,24 +143,25 @@ export default function MusclePrioritization({
             {...provided.droppableProps}
             ref={provided.innerRef}
           >
-            {muscle_priority_list.map((each, index) => {
+            {muscle_priority_list.map((muscle, index) => {
+              const colors = getRankColor(muscle.volume.landmark);
               return (
                 <Draggable
-                  key={`${each.id}_draggable`}
-                  draggableId={each.id}
+                  key={`${muscle.id}_draggable`}
+                  draggableId={muscle.id}
                   index={index}
                 >
                   {(provided, snapshot) => (
                     <div ref={provided.innerRef} {...provided.draggableProps}>
                       <Item
-                        muscle={each}
+                        muscle={muscle}
                         index={index}
                         onMuscleClick={onMuscleClick}
                         isCollapsed={isCollapsed}
                         handle={
                           <div
                             {...provided.dragHandleProps}
-                            className={`flex w-4 items-center justify-center`}
+                            className={`${colors.bg} flex h-full w-4 items-center justify-center border-r border-input`}
                           >
                             <DragHandleIcon fill="white" />
                           </div>
