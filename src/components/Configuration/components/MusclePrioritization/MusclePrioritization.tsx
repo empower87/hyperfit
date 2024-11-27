@@ -1,6 +1,13 @@
 import { ReactNode, useCallback } from "react";
 import { DragDropContext, Draggable } from "react-beautiful-dnd";
 import { DragHandleIcon } from "~/assets/icons/_icons";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "~/components/ui/select";
 import type { MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { cn } from "~/lib/clsx";
 import StrictModeDroppable from "~/lib/react-beautiful-dnd/StrictModeDroppable";
@@ -42,6 +49,9 @@ function Item({
     }
   }, [onMuscleClick, muscle]);
 
+  const handleSelectChange = () => {};
+
+  const progression = muscle.frequency.progression;
   if (isCollapsed) return <CollapsedItem bgColor={colors.bg} text={title} />;
   return (
     <div className="flex">
@@ -54,32 +64,52 @@ function Item({
       >
         <div className="flex">{handle}</div>
         <div className={`flex`}>
-          <div className="flex w-24 items-center justify-start p-1">
+          <div className="flex w-24 items-center justify-start p-1 px-2">
             {title}
           </div>
-          <div className="flex w-10 items-center justify-center p-1">
+
+          <div className="flex items-center justify-center">
+            {progression.map((prog, index) => {
+              const isLastMeso = progression.length - 1 === index;
+              return (
+                <div
+                  className={cn(
+                    `flex items-center justify-center p-1 text-xs text-muted-foreground`,
+                    { ["font-semibold text-white"]: isLastMeso }
+                  )}
+                >
+                  {prog}
+                </div>
+              );
+            })}
+          </div>
+
+          {/* <div className="flex items-center justify-center truncate p-1 px-2 font-bold text-primary-700">
             {`${muscle.frequency.range[0]} - ${muscle.frequency.range[1]}`}
           </div>
-          <div className="mx-1 flex items-center justify-center font-bold text-primary-700">
-            {muscle.frequency.target}
-          </div>
-          <div className="mx-1 flex items-center justify-center font-bold text-primary-700">
+
+          <div className="flex items-center justify-center font-bold text-primary-700">
             {muscle.frequency.progression}
-          </div>
+          </div> */}
         </div>
 
-        <div className={`flex items-center justify-center pr-2`}>
-          {/* <Select
-            id={muscle.id}
-            volume_landmark={muscle.volume.landmark}
-            options={["MRV", "MEV", "MV"]}
-            bgColor={colors.bg}
-          /> */}
+        <div className={`flex items-center justify-center pl-3`}>
+          <Select onValueChange={handleSelectChange}>
+            <SelectTrigger className="h-6 w-[55px] border-none px-1 text-xs">
+              <SelectValue placeholder={muscle.volume.landmark} />
+            </SelectTrigger>
+            <SelectContent>
+              {["MRV", "MEV", "MV"].map((split, index) => {
+                return <SelectItem value={split}>{split}</SelectItem>;
+              })}
+            </SelectContent>
+          </Select>
         </div>
       </div>
     </div>
   );
 }
+
 // function Item({ muscle, index, handle }: ItemProps) {
 //   const colors = getRankColor(muscle.volume.landmark);
 
