@@ -1,6 +1,7 @@
+import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
+
 import { ReactNode, useState } from "react";
-import { ArrowLeftIcon, ArrowRightIcon } from "~/assets/icons/_icons";
-import { Button } from "~/components/Layout/Buttons";
+import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/clsx";
 
 type SidebarProps = {
@@ -27,13 +28,14 @@ export default function Sidebar({ contents }: SidebarProps) {
 
       <div className="flex rounded border-primary-600">
         <Button
-          className="rounded border border-primary-500"
+          size="icon"
+          className="border border-input bg-card"
           onClick={onClickHandler}
         >
           {isExpanded ? (
-            <ArrowLeftIcon fill="white" />
+            <ChevronLeftIcon fill="white" />
           ) : (
-            <ArrowRightIcon fill="white" />
+            <ChevronRightIcon fill="white" />
           )}
         </Button>
       </div>

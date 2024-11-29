@@ -1,5 +1,11 @@
 import { DotsVerticalIcon, DragHandleDots2Icon } from "@radix-ui/react-icons";
-import { ReactNode, useCallback, useEffect, useState } from "react";
+import {
+  ReactNode,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import { DragDropContext, Draggable, DropResult } from "react-beautiful-dnd";
 import Modal from "~/components/Modals/Modal";
 import {
@@ -408,17 +414,11 @@ export default function TrainingWeekOverview() {
   const [selectedMesocycleIndex, setSelectedMesocycleIndex] = useState<number>(
     mesocycles - 1
   );
-
+  const [selectedMicrocycleIndex, setSelectedMicrocycleIndex] =
+    useState<number>(microcycles - 1);
   const [draggableExercises, setDraggableExercises] = useState<
     DraggableExercises[][]
   >([]);
-  // const hydratedTrainingBlock = useMemo(
-  //   () =>
-  //     training_block.map((each) =>
-  //       hydrateTrainingWeek(each, prioritized_muscle_list)
-  //     ),
-  //   [training_block, prioritized_muscle_list]
-  // );
 
   useEffect(() => {
     const hydratedTrainingBlock = training_block.map((each) =>
@@ -426,12 +426,6 @@ export default function TrainingWeekOverview() {
     );
     setDraggableExercises(hydratedTrainingBlock);
   }, [training_block, prioritized_muscle_list]);
-
-  // const { hydratedTrainingBlock } = useTrainingWeek(
-  //   training_block,
-  //   prioritized_muscle_list,
-  //   selectedMesocycleIndex
-  // );
 
   const mesocycleTitles = Array.from(
     Array(mesocycles),
@@ -442,9 +436,6 @@ export default function TrainingWeekOverview() {
     (e, i) => `Week ${i + 1}`
   );
 
-  const [selectedMicrocycleIndex, setSelectedMicrocycleIndex] =
-    useState<number>(microcycles - 1);
-
   const onClickHandler = (value: string) => {
     const type = value.split(" ");
     const valueAsNumber = parseInt(type[1]) - 1;
@@ -454,17 +445,6 @@ export default function TrainingWeekOverview() {
       setSelectedMicrocycleIndex(valueAsNumber);
     }
   };
-
-  const onExerciseReorder = useCallback(
-    (exercises: DraggableExercises[]) => {
-      const lol = draggableExercises.map((meso, mesoIndex) => {
-        if (mesoIndex === selectedMesocycleIndex) return exercises;
-        else return meso;
-      });
-      setDraggableExercises(lol);
-    },
-    [selectedMesocycleIndex]
-  );
 
   return (
     <div id="exercise_editor" className={`flex flex-col space-y-5 rounded`}>
@@ -484,7 +464,7 @@ export default function TrainingWeekOverview() {
         selectedMesocycleIndex={selectedMesocycleIndex}
         selectedMicrocycleIndex={selectedMicrocycleIndex}
         training_week={draggableExercises}
-        setDraggableExercises={onExerciseReorder}
+        setDraggableExercises={setDraggableExercises}
       />
     </div>
   );
@@ -494,7 +474,7 @@ type WeekSessionsProps = {
   selectedMesocycleIndex: number;
   selectedMicrocycleIndex: number;
   training_week: DraggableExercises[][];
-  setDraggableExercises: (exercises: DraggableExercises[]) => void;
+  setDraggableExercises: React.Dispatch<SetStateAction<DraggableExercises[][]>>;
 };
 
 function WeekSessions({
@@ -506,8 +486,6 @@ function WeekSessions({
   // const { draggableExercises, setDraggableExercises, onSupersetUpdate } =
   //   useExerciseSelection(training_week, selectedMesocycleIndex);
   const exercises_selected_meso = training_week[selectedMesocycleIndex];
-  // NOTE: a lot of logic missing here to determine if an exercise CAN move to another split
-  //       as well as if it can should it change the split type??
 
   const onDragEnd = useCallback(
     (result: DropResult) => {
@@ -551,9 +529,19 @@ function WeekSessions({
         destination_session_index
       ].exercises.splice(destination_exercise_index, 0, removed);
 
-      setDraggableExercises(items);
+      const lol = training_week.map((meso, mesoIndex) => {
+        if (mesoIndex === selectedMesocycleIndex) return items;
+        else return meso;
+      });
+
+      setDraggableExercises(lol);
+      console.log(
+        training_week,
+        exercises_selected_meso,
+        "WHERE'd MY LIST GO YO?"
+      );
     },
-    [exercises_selected_meso]
+    [exercises_selected_meso, selectedMicrocycleIndex]
   );
 
   const onSupersetUpdate = () => {};

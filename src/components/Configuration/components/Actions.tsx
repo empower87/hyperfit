@@ -1,14 +1,14 @@
-import { Button } from "~/components/Layout/Buttons";
+import { Button } from "~/components/ui/button";
 import { useProgramConfigContext } from "../hooks/useProgramConfig";
 
 export default function Actions() {
   const { onSaveConfig, onResetConfig } = useProgramConfigContext();
 
   return (
-    <div className={`flex justify-end space-x-1 rounded p-2 bg-primary-700`}>
+    <div className={`flex justify-end space-x-1 rounded bg-primary-700 p-2`}>
       <Button
         onClick={onResetConfig}
-        className={`flex rounded px-2 text-slate-700 bg-primary-500`}
+        className={`flex rounded bg-primary-500 px-2 text-slate-700`}
       >
         Reset
       </Button>

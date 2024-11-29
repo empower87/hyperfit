@@ -42,36 +42,38 @@ export default function ProgramConfig() {
       <div className="flex h-full flex-col pt-10">
         <h1 className="mb-5 text-white">Program Configuration</h1>
         <div className="flex h-full space-x-5">
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between space-x-2 border-b border-primary-500 pb-2 ">
-                <CardTitle>1. Priority</CardTitle>
-                {isPriorityListCollapsed ? (
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={onExpandPriorityList}
-                  >
-                    <ChevronRightIcon className="" />
-                  </Button>
-                ) : (
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={onCollapsePriorityList}
-                  >
-                    <ChevronLeftIcon className="" />
-                  </Button>
-                )}
-              </div>
-            </CardHeader>
-            <CardContent>
-              <MusclePrioritization
-                onMuscleClick={onMuscleClick}
-                isCollapsed={isPriorityListCollapsed}
-              />
-            </CardContent>
-          </Card>
+          <div className="h-full">
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between space-x-2 border-b border-primary-500 pb-2 ">
+                  <CardTitle>1. Priority</CardTitle>
+                  {isPriorityListCollapsed ? (
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={onExpandPriorityList}
+                    >
+                      <ChevronRightIcon className="" />
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={onCollapsePriorityList}
+                    >
+                      <ChevronLeftIcon className="" />
+                    </Button>
+                  )}
+                </div>
+              </CardHeader>
+              <CardContent>
+                <MusclePrioritization
+                  onMuscleClick={onMuscleClick}
+                  isCollapsed={isPriorityListCollapsed}
+                />
+              </CardContent>
+            </Card>
+          </div>
 
           <div className="flex h-full flex-col space-y-3 overflow-y-scroll">
             <Configuration>
@@ -105,7 +107,7 @@ export default function ProgramConfig() {
               </Configuration.Layout>
             </Configuration>
 
-            <div className="flex flex-col overflow-scroll rounded-lg">
+            <div className="flex flex-col rounded-lg">
               <UnderlineTabs
                 tabList={TABS}
                 selectedTab={selectedTab}

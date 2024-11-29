@@ -110,48 +110,6 @@ function Item({
   );
 }
 
-// function Item({ muscle, index, handle }: ItemProps) {
-//   const colors = getRankColor(muscle.volume.landmark);
-
-//   return (
-//     <div
-//       className={`flex ${colors.bg} cursor-pointer justify-between rounded-sm text-xs text-white hover:scale-x-105 hover:scale-y-110`}
-//     >
-//       <div className={`flex`}>
-//         {handle}
-
-//         <Cell value={index + 1} className="w-4" />
-//         <Cell
-//           value={getMuscleTitleForUI(muscle.muscle)}
-//           className="w-20 justify-start"
-//         />
-
-//         <Cell
-//           value={`${muscle.frequency.range[0]} - ${muscle.frequency.range[1]}`}
-//           className=""
-//         />
-//         <Cell
-//           value={`${muscle.frequency.target}`}
-//           className="mx-1 font-bold text-slate-700"
-//         />
-//         <Cell
-//           value={`${muscle.frequency.progression}`}
-//           className="mx-1 font-bold text-slate-700"
-//         />
-//       </div>
-
-//       <div className={`flex items-center justify-center pr-2`}>
-//         <Select
-//           id={muscle.id}
-//           volume_landmark={muscle.volume.landmark}
-//           options={["MRV", "MEV", "MV"]}
-//           bgColor={colors.bg}
-//         />
-//       </div>
-//     </div>
-//   );
-// }
-
 type MusclePrioritizationProps = {
   isCollapsed: boolean;
   onMuscleClick?: (id: MusclePriorityType["id"]) => void;
@@ -169,7 +127,7 @@ export default function MusclePrioritization({
         {(provided, snapshot) => (
           <div
             id="droppable"
-            className=" flex w-full flex-col space-y-2"
+            className=" flex w-full flex-col space-y-1.5"
             {...provided.droppableProps}
             ref={provided.innerRef}
           >
