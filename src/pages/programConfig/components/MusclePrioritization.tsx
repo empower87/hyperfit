@@ -13,7 +13,7 @@ import { cn } from "~/lib/clsx";
 import StrictModeDroppable from "~/lib/react-beautiful-dnd/StrictModeDroppable";
 import { getRankColor } from "~/utils/getIndicatorColors";
 import getMuscleTitleForUI from "~/utils/getMuscleTitleForUI";
-import { useProgramConfigContext } from "../../hooks/useProgramConfig";
+import { useProgramConfigContext } from "../hooks/useProgramConfig";
 
 type ItemProps = {
   muscle: MusclePriorityType;
@@ -52,6 +52,7 @@ function Item({
   const handleSelectChange = () => {};
 
   const progression = muscle.frequency.progression;
+  console.log(muscle, progression, "WTF ");
   if (isCollapsed) return <CollapsedItem bgColor={colors.bg} text={title} />;
   return (
     <div className="flex">
@@ -110,14 +111,14 @@ function Item({
   );
 }
 
-type MusclePrioritizationProps = {
+type MusclePrioritizationListProps = {
   isCollapsed: boolean;
   onMuscleClick?: (id: MusclePriorityType["id"]) => void;
 };
-export default function MusclePrioritization({
+export default function MusclePrioritizationList({
   isCollapsed,
   onMuscleClick,
-}: MusclePrioritizationProps) {
+}: MusclePrioritizationListProps) {
   const { muscle_priority_list, onPriorityListDragEnd } =
     useProgramConfigContext();
 
@@ -167,61 +168,3 @@ export default function MusclePrioritization({
     </DragDropContext>
   );
 }
-
-// export default function MusclePrioritization() {
-//   const { muscle_priority_list, onPriorityListDragEnd } =
-//     useProgramConfigContext();
-
-//   return (
-//     <Card title="PRIORITIZE MUSCLES" className={`w-full`}>
-//       <div className={`pb-2`}>
-//         <Settings>
-//           <Settings.Section title="Breakpoints">
-//             <Settings.Breakpoints />
-//           </Settings.Section>
-
-//           <Settings.Section title="Toggles">
-//             <Settings.Toggles />
-//           </Settings.Section>
-//         </Settings>
-//       </div>
-
-//     <DragDropContext onDragEnd={onPriorityListDragEnd}>
-//       <StrictModeDroppable droppableId="droppable">
-//         {(provided, snapshot) => (
-//           <ul
-//             id="droppable"
-//             className=" flex w-full flex-col space-y-0.5"
-//             {...provided.droppableProps}
-//             ref={provided.innerRef}
-//           >
-//             {muscle_priority_list.map((each, index) => {
-//               return (
-//                 <Draggable
-//                   key={`${each.id}_draggable`}
-//                   draggableId={each.id}
-//                   index={index}
-//                 >
-//                   {(provided, snapshot) => (
-//                     <div ref={provided.innerRef} {...provided.draggableProps}>
-//                       <Item muscle={each} index={index}>
-//                         <div
-//                           {...provided.dragHandleProps}
-//                           className={`flex w-4 items-center justify-center`}
-//                         >
-//                           <DragHandleIcon fill="white" />
-//                         </div>
-//                       </Item>
-//                     </div>
-//                   )}
-//                 </Draggable>
-//               );
-//             })}
-//             {provided.placeholder}
-//           </ul>
-//         )}
-//       </StrictModeDroppable>
-//     </DragDropContext>
-//     </Card>
-//   );
-// }

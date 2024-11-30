@@ -1,6 +1,6 @@
 import { cn } from "~/lib/clsx";
+import { useProgramConfigContext } from "~/pages/programConfig/hooks/useProgramConfig";
 import { getRankColor } from "~/utils/getIndicatorColors";
-import { useProgramConfigContext } from "../../hooks/useProgramConfig";
 
 type VolumeSettingFrameProps = {
   title: "MRV" | "MEV";
@@ -15,7 +15,7 @@ function VolumeSettingFrame({
 }: VolumeSettingFrameProps) {
   const textColor = getRankColor(title);
   return (
-    <div className={cn(`bg-primary-600 flex justify-between text-xxs`)}>
+    <div className={cn(`flex justify-between bg-primary-600 text-xxs`)}>
       <div
         className={cn(
           `flex items-center justify-center px-1 indent-1 font-bold ${textColor.text}`
@@ -26,7 +26,7 @@ function VolumeSettingFrame({
       <div className="flex">
         <button
           className={
-            "bg-primary-500 flex h-4 w-4 items-center justify-center text-xxs font-bold text-slate-300"
+            "flex h-4 w-4 items-center justify-center bg-primary-500 text-xxs font-bold text-slate-300"
           }
           onClick={() => onChange(title, breakpoint - 1)}
         >
@@ -38,7 +38,7 @@ function VolumeSettingFrame({
         <button
           onClick={() => onChange(title, breakpoint + 1)}
           className={
-            "bg-primary-500 flex h-4 w-4 items-center justify-center text-xxs font-bold text-slate-300"
+            "flex h-4 w-4 items-center justify-center bg-primary-500 text-xxs font-bold text-slate-300"
           }
         >
           +
@@ -79,7 +79,7 @@ function ToggleButton({
     <button
       onClick={onClick}
       className={cn(
-        `rounded border-primary-600 flex items-center justify-center border px-1 py-0.5 hover:bg-primary-500`,
+        `flex items-center justify-center rounded border border-primary-600 px-1 py-0.5 hover:bg-primary-500`,
         { ["border-white bg-rose-400"]: isToggled }
       )}
     >

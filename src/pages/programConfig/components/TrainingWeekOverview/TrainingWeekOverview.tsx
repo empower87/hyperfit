@@ -8,6 +8,14 @@ import {
 } from "react";
 import { DragDropContext, Draggable, DropResult } from "react-beautiful-dnd";
 import Modal from "~/components/Modals/Modal";
+import { Button } from "~/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "~/components/ui/dropdown-menu";
 import {
   ExerciseType,
   SessionSplitType,
@@ -21,14 +29,6 @@ import {
 import { cn } from "~/lib/clsx";
 import StrictModeDroppable from "~/lib/react-beautiful-dnd/StrictModeDroppable";
 import { getRankColor, getSplitColor } from "~/utils/getIndicatorColors";
-import { Button } from "../ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
 import ExerciseItemLayout from "./components/Exercise/Exercise";
 import MesocycleToggle from "./components/MesocycleToggle";
 import SessionDurationVariables from "./components/Settings/SessionDuration/SessionDurationVariables";
@@ -42,10 +42,6 @@ import {
   canAddExerciseToSplit,
   getSupersetMap,
 } from "./utils/exerciseSelectUtils";
-
-type DropdownProps = {
-  onDropdownClick: () => void;
-};
 
 type DropdownListProps = {
   items: ExerciseType[];

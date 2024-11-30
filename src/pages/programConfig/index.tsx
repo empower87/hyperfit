@@ -1,33 +1,35 @@
 import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
 import { useCallback, useState } from "react";
-import Configuration from "~/components/Configuration";
-import MusclePrioritization from "~/components/Configuration/components/MusclePrioritization/MusclePrioritization";
-import {
-  Split,
-  TrainingWeek,
-} from "~/components/Configuration/components/Split/SplitOverview";
-import {
-  ProgramConfigProvider,
-  useProgramConfigContext,
-} from "~/components/Configuration/hooks/useProgramConfig";
-import { EditMuscleProgressionWithProvider } from "~/components/CustomizeMuscleProgression/EditMuscleProgression";
-import TrainingWeekOverview from "~/components/TrainingWeekOverview/TrainingWeekOverview";
+
+import { Split, TrainingWeek } from "./components/Split/SplitOverview";
+
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
+import Actions from "./components/Actions";
+import { EditMuscleProgressionWithProvider } from "./components/CustomizeMuscleProgression/EditMuscleProgression";
+import MusclePrioritizationList from "./components/MusclePrioritization";
+import TrainingWeekOverview from "./components/TrainingWeekOverview/TrainingWeekOverview";
+import {
+  ProgramConfigProvider,
+  useProgramConfigContext,
+} from "./hooks/useProgramConfig";
 
-const TABS = ["training-week-overview", "edit-muscle"];
+const TABS = ["training-week-overview", "edit-muscle"] as const;
+type TabKey = (typeof TABS)[number];
 
 export default function ProgramConfig() {
   const { prioritized_muscle_list } = useTrainingProgramContext();
   const [selectedMuscleId, setSelectedMuscleId] =
     useState<MusclePriorityType["id"]>("");
   const [isPriorityListCollapsed, setIsPriorityListCollapsed] = useState(false);
-  const [selectedTab, setSelectedTab] = useState("training-week-overview");
+  const [selectedTab, setSelectedTab] = useState<TabKey>(
+    "training-week-overview"
+  );
   const onCollapsePriorityList = () => setIsPriorityListCollapsed(true);
   const onExpandPriorityList = () => setIsPriorityListCollapsed(false);
-  const onSelectTab = (tab: string) => setSelectedTab(tab);
+  const onSelectTab = (tab: TabKey) => setSelectedTab(tab);
 
   const onMuscleClick = (id: MusclePriorityType["id"]) => {
     setSelectedMuscleId(id);
@@ -36,6 +38,19 @@ export default function ProgramConfig() {
   const selectedMuscle = prioritized_muscle_list.filter(
     (muscle) => muscle.id === selectedMuscleId
   )[0];
+
+  const SelectedTab = useCallback(() => {
+    switch (selectedTab) {
+      case "training-week-overview":
+        return <TrainingWeekOverview />;
+      case "edit-muscle":
+        return (
+          <EditMuscleProgressionWithProvider selectedMuscle={selectedMuscle} />
+        );
+      default:
+        return;
+    }
+  }, [selectedTab, selectedMuscle]);
 
   return (
     <ProgramConfigProvider>
@@ -49,25 +64,27 @@ export default function ProgramConfig() {
                   <CardTitle>1. Priority</CardTitle>
                   {isPriorityListCollapsed ? (
                     <Button
+                      className="bg-card"
                       variant="outline"
                       size="icon"
                       onClick={onExpandPriorityList}
                     >
-                      <ChevronRightIcon className="" />
+                      <ChevronRightIcon />
                     </Button>
                   ) : (
                     <Button
+                      className="bg-card"
                       variant="outline"
                       size="icon"
                       onClick={onCollapsePriorityList}
                     >
-                      <ChevronLeftIcon className="" />
+                      <ChevronLeftIcon />
                     </Button>
                   )}
                 </div>
               </CardHeader>
               <CardContent>
-                <MusclePrioritization
+                <MusclePrioritizationList
                   onMuscleClick={onMuscleClick}
                   isCollapsed={isPriorityListCollapsed}
                 />
@@ -76,36 +93,32 @@ export default function ProgramConfig() {
           </div>
 
           <div className="flex h-full flex-col space-y-3 overflow-y-scroll">
-            <Configuration>
-              <Configuration.Layout>
-                <div className="flex flex-col space-y-3">
-                  <div className="flex w-full space-x-3">
-                    <Card>
-                      <CardHeader>2. Frequency</CardHeader>
-                      <CardContent>
-                        <FrequencySelection />
-                      </CardContent>
-                    </Card>
+            <div className="flex flex-col space-y-3">
+              <div className="flex w-full space-x-3">
+                <Card>
+                  <CardHeader>2. Frequency</CardHeader>
+                  <CardContent>
+                    <FrequencySelection />
+                  </CardContent>
+                </Card>
 
-                    <Card className="w-full">
-                      <CardHeader>3. Split</CardHeader>
-                      <CardContent>
-                        <Split />
-                      </CardContent>
-                    </Card>
-                  </div>
+                <Card className="w-full">
+                  <CardHeader>3. Split</CardHeader>
+                  <CardContent>
+                    <Split />
+                  </CardContent>
+                </Card>
+              </div>
 
-                  <Card>
-                    <CardHeader>Split Overview</CardHeader>
-                    <CardContent>
-                      <TrainingWeek />
-                    </CardContent>
-                  </Card>
-                </div>
+              <Card>
+                <CardHeader>Split Overview</CardHeader>
+                <CardContent>
+                  <TrainingWeek />
+                </CardContent>
+              </Card>
+            </div>
 
-                <Configuration.Actions />
-              </Configuration.Layout>
-            </Configuration>
+            <Actions />
 
             <div className="flex flex-col rounded-lg">
               <UnderlineTabs
@@ -113,14 +126,7 @@ export default function ProgramConfig() {
                 selectedTab={selectedTab}
                 onSelectTab={onSelectTab}
               />
-              {selectedTab === "training-week-overview" ? (
-                <TrainingWeekOverview />
-              ) : null}
-              {selectedMuscleId && selectedTab === "edit-muscle" ? (
-                <EditMuscleProgressionWithProvider
-                  selectedMuscle={selectedMuscle}
-                />
-              ) : null}
+              {SelectedTab()}
             </div>
           </div>
         </div>
@@ -130,9 +136,9 @@ export default function ProgramConfig() {
 }
 
 type UnderlineTabsProps = {
-  tabList: string[];
-  selectedTab: string;
-  onSelectTab: (tab: string) => void;
+  tabList: readonly TabKey[];
+  selectedTab: TabKey;
+  onSelectTab: (tab: TabKey) => void;
 };
 function UnderlineTabs({
   tabList,
@@ -176,6 +182,7 @@ function FrequencySelection() {
     [frequency, onFrequencyChange]
   );
 
+  const unselectedButtonClasses = "bg-card";
   const selectedButtonClasses = "scale-110 border-secondary-300";
   return (
     <div className="flex flex-col items-center">
@@ -184,7 +191,11 @@ function FrequencySelection() {
           return (
             <Button
               variant="outline"
-              className={option === frequency[0] ? selectedButtonClasses : ""}
+              className={
+                option === frequency[0]
+                  ? selectedButtonClasses
+                  : unselectedButtonClasses
+              }
               onClick={() => handleSelectChange(option)}
             >
               <div

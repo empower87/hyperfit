@@ -1,7 +1,8 @@
 import { HTMLAttributes, ReactNode } from "react";
 import { ArrowDownIcon, ArrowUpIcon } from "~/assets/icons/_icons";
+
+import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/clsx";
-import { Button } from "./Buttons";
 
 interface TitleProps extends HTMLAttributes<HTMLDivElement> {
   label: string;

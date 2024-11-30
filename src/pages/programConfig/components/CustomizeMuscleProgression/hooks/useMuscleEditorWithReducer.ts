@@ -12,10 +12,19 @@ import { calculateTotalSetsOverMesocycles } from "../utils/calculateTotalSetsPer
 import { muscleEditorReducer } from "../utils/muscleEditorReducer";
 
 export default function useMuscleEditor(muscle: MusclePriorityType) {
-  const { training_program_params, handleUpdateMuscle, split_sessions } =
-    useTrainingProgramContext();
+  const {
+    training_program_params,
+    handleUpdateMuscle,
+    split_sessions,
+    prioritized_muscle_list,
+  } = useTrainingProgramContext();
   const { microcycles, mesocycles } = training_program_params;
-  const [muscleGroup, dispatch] = useReducer(muscleEditorReducer, muscle);
+  const muscle_checked = muscle ? muscle : prioritized_muscle_list[0];
+
+  const [muscleGroup, dispatch] = useReducer(
+    muscleEditorReducer,
+    muscle_checked
+  );
   const [selectedMesocycleIndex, setSelectedMesocycleIndex] = useState(
     mesocycles - 1
   );
@@ -25,12 +34,12 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
   const microcyclesArray = Array.from(Array(microcycles), (e, i) => i);
 
   useEffect(() => {
-    const cloned_muscle_params = structuredClone(muscle);
+    const cloned_muscle_params = structuredClone(muscle_checked);
     dispatch({
       type: "INITIALIZE_STATE",
       payload: { state: cloned_muscle_params },
     });
-  }, [muscle]);
+  }, [muscle_checked]);
 
   useEffect(() => {
     const exercises = muscleGroup.exercises;

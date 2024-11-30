@@ -1,13 +1,11 @@
 import { type NextPage } from "next";
-import Configuration from "~/components/Configuration";
 import { SectionH2 as Section } from "~/components/Layout/Sections";
 import TrainingBlockOverview from "~/components/TrainingBlockOverview";
-import TrainingWeekOverview from "~/components/TrainingWeekOverview/TrainingWeekOverview";
 
 const Home: NextPage = () => {
   return (
     <div id="modal-body" className={"h-full w-full bg-primary-800"}>
-      <Configuration>
+      {/* <Configuration>
         <Configuration.Layout>
           <Configuration.Periodization />
           <Configuration.Split>
@@ -18,14 +16,14 @@ const Home: NextPage = () => {
           <Configuration.Actions />
         </Configuration.Layout>
         <Configuration.MusclePrioritization isCollapsed={false} />
-      </Configuration>
+      </Configuration> */}
 
       <Section title="CUSTOMIZE MUSCLE PROGRESSION">
         <h2>Muscle Editor has been moved.</h2>
       </Section>
 
       <Section title="TRAINING WEEK OVERVIEW">
-        <TrainingWeekOverview />
+        <h2>Training Week Overview has been moved.</h2>
       </Section>
 
       <Section title="TRAINING BLOCK OVERVIEW">
