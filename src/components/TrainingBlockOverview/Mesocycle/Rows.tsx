@@ -1,5 +1,4 @@
 import { ReactNode } from "react";
-import { DraggableExercises } from "~/components/TrainingWeekOverview/hooks/useExerciseSelection";
 import {
   DayType,
   ExerciseType,
@@ -7,6 +6,7 @@ import {
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
 import { getExerciseSetsOverMicrocycles } from "~/hooks/useTrainingProgram/utils/exercises/getExercises";
 import { cn } from "~/lib/clsx";
+import { DraggableExercises } from "~/pages/programConfig/components/TrainingWeekOverview/hooks/useExerciseSelection";
 import {
   DayCell,
   ExerciseCellGroup,
