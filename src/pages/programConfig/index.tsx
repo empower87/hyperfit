@@ -5,10 +5,8 @@ import { Split, TrainingWeek } from "./components/Split/SplitOverview";
 
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
-import { MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
-import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
 import Actions from "./components/Actions";
-import { EditMuscleProgressionWithProvider } from "./components/CustomizeMuscleProgression/EditMuscleProgression";
+import { EditMuscleProgressionWithProvider } from "./components/EditMuscleProgression/EditMuscleProgression";
 import MusclePrioritizationList from "./components/MusclePrioritization";
 import TrainingWeekOverview from "./components/TrainingWeekOverview/TrainingWeekOverview";
 import {
@@ -20,9 +18,6 @@ const TABS = ["training-week-overview", "edit-muscle"] as const;
 type TabKey = (typeof TABS)[number];
 
 export default function ProgramConfig() {
-  const { prioritized_muscle_list } = useTrainingProgramContext();
-  const [selectedMuscleId, setSelectedMuscleId] =
-    useState<MusclePriorityType["id"]>("");
   const [isPriorityListCollapsed, setIsPriorityListCollapsed] = useState(false);
   const [selectedTab, setSelectedTab] = useState<TabKey>(
     "training-week-overview"
@@ -31,26 +26,16 @@ export default function ProgramConfig() {
   const onExpandPriorityList = () => setIsPriorityListCollapsed(false);
   const onSelectTab = (tab: TabKey) => setSelectedTab(tab);
 
-  const onMuscleClick = (id: MusclePriorityType["id"]) => {
-    setSelectedMuscleId(id);
-  };
-
-  const selectedMuscle = prioritized_muscle_list.filter(
-    (muscle) => muscle.id === selectedMuscleId
-  )[0];
-
   const SelectedTab = useCallback(() => {
     switch (selectedTab) {
       case "training-week-overview":
         return <TrainingWeekOverview />;
       case "edit-muscle":
-        return (
-          <EditMuscleProgressionWithProvider selectedMuscle={selectedMuscle} />
-        );
+        return <EditMuscleProgressionWithProvider />;
       default:
         return;
     }
-  }, [selectedTab, selectedMuscle]);
+  }, [selectedTab]);
 
   return (
     <ProgramConfigProvider>
@@ -85,7 +70,6 @@ export default function ProgramConfig() {
               </CardHeader>
               <CardContent>
                 <MusclePrioritizationList
-                  onMuscleClick={onMuscleClick}
                   isCollapsed={isPriorityListCollapsed}
                 />
               </CardContent>

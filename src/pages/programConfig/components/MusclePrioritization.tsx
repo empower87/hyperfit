@@ -1,4 +1,4 @@
-import { ReactNode, useCallback } from "react";
+import { ReactNode } from "react";
 import { DragDropContext, Draggable } from "react-beautiful-dnd";
 import { DragHandleIcon } from "~/assets/icons/_icons";
 import {
@@ -20,7 +20,6 @@ type ItemProps = {
   index: number;
   handle: ReactNode;
   isCollapsed: boolean;
-  onMuscleClick?: (id: MusclePriorityType["id"]) => void;
 };
 
 type CollapsedItemProps = {
@@ -34,20 +33,9 @@ function CollapsedItem({ bgColor, text }: CollapsedItemProps) {
     <div className={cn(`rounded p-1 text-sm text-white`, bgColor)}>{text}</div>
   );
 }
-function Item({
-  muscle,
-  index,
-  handle,
-  isCollapsed,
-  onMuscleClick,
-}: ItemProps) {
+function Item({ muscle, index, handle, isCollapsed }: ItemProps) {
   const colors = getRankColor(muscle.volume.landmark);
   const title = getMuscleTitleForUI(muscle.muscle);
-  const onClickHandler = useCallback(() => {
-    if (onMuscleClick) {
-      onMuscleClick(muscle.id);
-    }
-  }, [onMuscleClick, muscle]);
 
   const handleSelectChange = () => {};
 
@@ -60,7 +48,6 @@ function Item({
         {index + 1}
       </div>
       <div
-        onClick={onClickHandler}
         className={`flex cursor-pointer justify-between overflow-hidden rounded-md border border-input bg-background/50 text-sm text-white hover:scale-x-105 hover:scale-y-110`}
       >
         <div className="flex">{handle}</div>
@@ -145,7 +132,6 @@ export default function MusclePrioritizationList({
                       <Item
                         muscle={muscle}
                         index={index}
-                        onMuscleClick={onMuscleClick}
                         isCollapsed={isCollapsed}
                         handle={
                           <div
