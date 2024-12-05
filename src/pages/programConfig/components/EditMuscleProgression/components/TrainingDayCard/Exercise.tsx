@@ -183,6 +183,7 @@ export default function Exercise({ index, exercise }: ExerciseProps) {
           </Dialog>
         </div>
 
+        {/* --- NOTE: Would like to add specific muscle type---*/}
         <div className="flex space-x-2 p-2 ">
           {exercise.data.requirements.map((each) => {
             return (
