@@ -6,36 +6,18 @@ import { Split, TrainingWeek } from "./components/Split/SplitOverview";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import Actions from "./components/Actions";
-import { EditMuscleProgressionWithProvider } from "./components/EditMuscleProgression/EditMuscleProgression";
 import MusclePrioritizationList from "./components/MusclePrioritization";
-import TrainingWeekOverview from "./components/TrainingWeekOverview/TrainingWeekOverview";
+import { EditTabs } from "./components/Tabs";
 import {
   ProgramConfigProvider,
   useProgramConfigContext,
 } from "./hooks/useProgramConfig";
 
-const TABS = ["training-week-overview", "edit-muscle"] as const;
-type TabKey = (typeof TABS)[number];
-
 export default function ProgramConfig() {
   const [isPriorityListCollapsed, setIsPriorityListCollapsed] = useState(false);
-  const [selectedTab, setSelectedTab] = useState<TabKey>(
-    "training-week-overview"
-  );
+
   const onCollapsePriorityList = () => setIsPriorityListCollapsed(true);
   const onExpandPriorityList = () => setIsPriorityListCollapsed(false);
-  const onSelectTab = (tab: TabKey) => setSelectedTab(tab);
-
-  const SelectedTab = useCallback(() => {
-    switch (selectedTab) {
-      case "training-week-overview":
-        return <TrainingWeekOverview />;
-      case "edit-muscle":
-        return <EditMuscleProgressionWithProvider />;
-      default:
-        return;
-    }
-  }, [selectedTab]);
 
   return (
     <ProgramConfigProvider>
@@ -105,52 +87,12 @@ export default function ProgramConfig() {
             <Actions />
 
             <div className="flex flex-col rounded-lg">
-              <UnderlineTabs
-                tabList={TABS}
-                selectedTab={selectedTab}
-                onSelectTab={onSelectTab}
-              />
-              {SelectedTab()}
+              <EditTabs />
             </div>
           </div>
         </div>
       </div>
     </ProgramConfigProvider>
-  );
-}
-
-type UnderlineTabsProps = {
-  tabList: readonly TabKey[];
-  selectedTab: TabKey;
-  onSelectTab: (tab: TabKey) => void;
-};
-function UnderlineTabs({
-  tabList,
-  selectedTab,
-  onSelectTab,
-}: UnderlineTabsProps) {
-  const unselectedClasses = "rounded-none text-primary-300 hover:bg-background";
-  const selectedClasses =
-    "border-b border-foreground rounded-none hover:bg-background";
-  return (
-    <div className="mb-6 w-full border-b border-primary-600">
-      {tabList.map((tab, index) => {
-        const isSelected = tab === selectedTab;
-        const presentationalTab = tab
-          .split("-")
-          .map((tab) => tab.charAt(0).toUpperCase() + tab.slice(1))
-          .join(" ");
-        return (
-          <Button
-            variant="ghost"
-            className={isSelected ? selectedClasses : unselectedClasses}
-            onClick={() => onSelectTab(tab)}
-          >
-            {presentationalTab}
-          </Button>
-        );
-      })}
-    </div>
   );
 }
 
