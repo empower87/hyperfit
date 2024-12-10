@@ -5,18 +5,12 @@ export default function Actions() {
   const { onSaveConfig, onResetConfig } = useProgramConfigContext();
 
   return (
-    <div className={`flex justify-end space-x-1 rounded bg-primary-700 p-2`}>
-      <Button
-        onClick={onResetConfig}
-        className={`flex rounded bg-primary-500 px-2 text-slate-700`}
-      >
+    <div className={`flex justify-start space-x-1 pt-5`}>
+      <Button onClick={onResetConfig} variant="outline">
         Reset
       </Button>
 
-      <Button
-        onClick={() => onSaveConfig()}
-        className={`flex rounded bg-rose-400 px-3 font-bold text-white`}
-      >
+      <Button onClick={() => onSaveConfig()} className={`bg-rose-400`}>
         Save Changes
       </Button>
     </div>

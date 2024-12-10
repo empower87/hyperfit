@@ -1,8 +1,8 @@
 import { useState } from "react";
 import CollapsibleHeader from "~/components/Layout/CollapsibleHeader";
-import { DraggableExercises } from "~/pages//programConfig/components/TrainingWeekOverview/hooks/useExerciseSelection";
 
 import { cn } from "~/lib/clsx";
+import { DraggableExercises } from "../../TrainingWeekOverview/hooks/useExerciseSelection";
 import { HeaderRow, SessionRow } from "./Rows";
 
 type MesocycleProps = {

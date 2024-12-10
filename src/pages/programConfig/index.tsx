@@ -1,17 +1,15 @@
 import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 
 import { Split, TrainingWeek } from "./components/Split/SplitOverview";
 
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import Actions from "./components/Actions";
+import FrequencySelection from "./components/FrequencySelection";
 import MusclePrioritizationList from "./components/MusclePrioritization";
-import { EditTabs } from "./components/Tabs";
-import {
-  ProgramConfigProvider,
-  useProgramConfigContext,
-} from "./hooks/useProgramConfig";
+import CustomizationTabs from "./components/Tabs";
+import { ProgramConfigProvider } from "./hooks/useProgramConfig";
 
 export default function ProgramConfig() {
   const [isPriorityListCollapsed, setIsPriorityListCollapsed] = useState(false);
@@ -80,61 +78,17 @@ export default function ProgramConfig() {
                 <CardHeader>Split Overview</CardHeader>
                 <CardContent>
                   <TrainingWeek />
+                  <Actions />
                 </CardContent>
               </Card>
             </div>
 
-            <Actions />
-
             <div className="flex flex-col rounded-lg">
-              <EditTabs />
+              <CustomizationTabs />
             </div>
           </div>
         </div>
       </div>
     </ProgramConfigProvider>
-  );
-}
-
-const OPTIONS = [1, 2, 3, 4, 5, 6, 7];
-
-function FrequencySelection() {
-  const { frequency, onFrequencyChange } = useProgramConfigContext();
-
-  const handleSelectChange = useCallback(
-    (value: number) => {
-      onFrequencyChange([value, frequency[1]]);
-    },
-    [frequency, onFrequencyChange]
-  );
-
-  const unselectedButtonClasses = "bg-card";
-  const selectedButtonClasses = "scale-110 border-secondary-300";
-  return (
-    <div className="flex flex-col items-center">
-      <div className="flex space-x-2">
-        {OPTIONS.map((option) => {
-          return (
-            <Button
-              variant="outline"
-              className={
-                option === frequency[0]
-                  ? selectedButtonClasses
-                  : unselectedButtonClasses
-              }
-              onClick={() => handleSelectChange(option)}
-            >
-              <div
-                className={`${
-                  option === frequency[0] ? "text-white" : "text-primary-300"
-                }`}
-              >
-                {option}
-              </div>
-            </Button>
-          );
-        })}
-      </div>
-    </div>
   );
 }

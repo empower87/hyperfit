@@ -3,7 +3,7 @@ import { ToggleGroup, ToggleGroupItem } from "~/components/ui/toggle-group";
 import { MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { cn } from "~/lib/clsx";
 import { getRankColor } from "~/utils/getIndicatorColors";
-import { useProgramConfigContext } from "../../hooks/useProgramConfig";
+import { useProgramConfigContext } from "../../../hooks/useProgramConfig";
 import ToggleMesocycle from "./components/ActionsCard/ToggleMesocycle";
 import { TrainingDays } from "./components/TrainingDayCard/TrainingDays";
 import {
@@ -59,7 +59,7 @@ export function EditMuscleProgression({
   );
 }
 
-export function EditMuscleProgressionWithProvider() {
+export default function EditMuscleProgressionWithProvider() {
   const { muscle_priority_list: prioritized_muscle_list } =
     useProgramConfigContext();
   const [selectedMuscleId, setSelectedMuscleId] = useState<

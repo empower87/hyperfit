@@ -1,18 +1,25 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
-import { EditMuscleProgressionWithProvider } from "../EditMuscleProgression/EditMuscleProgression";
-import TrainingWeekOverview from "../TrainingWeekOverview/TrainingWeekOverview";
+import EditMuscleProgressionWithProvider from "./EditMuscleProgression/EditMuscleProgression";
+import TrainingBlock from "./TrainingBlockOverview";
+import TrainingWeekOverview from "./TrainingWeekOverview/TrainingWeekOverview";
 
-const TABS = ["training-week-overview", "edit-muscle"] as const;
+const TABS = [
+  "training-week-overview",
+  "edit-muscle",
+  "training-block-overview",
+] as const;
 type TabKey = (typeof TABS)[number];
 
-export function EditTabs() {
+export default function CustomizationTabs() {
   const getSelectedTabContent = (selectedTab: TabKey) => {
     switch (selectedTab) {
       case "training-week-overview":
         return <TrainingWeekOverview />;
       case "edit-muscle":
         return <EditMuscleProgressionWithProvider />;
-
+      case "training-block-overview":
+        // NOTE: takes a few seconds to load and causes tab to pause.
+        return <TrainingBlock />;
       default:
         return;
     }

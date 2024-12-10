@@ -33,6 +33,7 @@ function CollapsedItem({ bgColor, text }: CollapsedItemProps) {
     <div className={cn(`rounded p-1 text-sm text-white`, bgColor)}>{text}</div>
   );
 }
+
 function Item({ muscle, index, handle, isCollapsed }: ItemProps) {
   const colors = getRankColor(muscle.volume.landmark);
   const title = getMuscleTitleForUI(muscle.muscle);

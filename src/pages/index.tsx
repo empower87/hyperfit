@@ -1,6 +1,5 @@
 import { type NextPage } from "next";
 import { SectionH2 as Section } from "~/components/Layout/Sections";
-import TrainingBlockOverview from "~/components/TrainingBlockOverview";
 
 const Home: NextPage = () => {
   return (
@@ -27,7 +26,7 @@ const Home: NextPage = () => {
       </Section>
 
       <Section title="TRAINING BLOCK OVERVIEW">
-        <TrainingBlockOverview />
+        <h2>Training Block Overview has been moved.</h2>
       </Section>
     </div>
   );

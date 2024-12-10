@@ -1,5 +1,5 @@
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
-import useTrainingWeek from "~/pages/programConfig/components/TrainingWeekOverview/hooks/useTrainingWeek";
+import useTrainingWeek from "../TrainingWeekOverview/hooks/useTrainingWeek";
 import Mesocycle from "./Mesocycle";
 
 export default function TrainingBlock() {
