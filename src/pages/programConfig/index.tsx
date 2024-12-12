@@ -1,13 +1,11 @@
 import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
 import { useState } from "react";
-
-import { Split, TrainingWeek } from "./components/Split/SplitOverview";
-
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import Actions from "./components/Actions";
 import FrequencySelection from "./components/FrequencySelection";
 import MusclePrioritizationList from "./components/MusclePrioritization";
+import { Split, TrainingWeek } from "./components/Split/SplitOverview";
 import CustomizationTabs from "./components/Tabs";
 import { ProgramConfigProvider } from "./hooks/useProgramConfig";
 
@@ -48,6 +46,7 @@ export default function ProgramConfig() {
                   )}
                 </div>
               </CardHeader>
+
               <CardContent>
                 <MusclePrioritizationList
                   isCollapsed={isPriorityListCollapsed}
@@ -56,7 +55,7 @@ export default function ProgramConfig() {
             </Card>
           </div>
 
-          <div className="flex h-full flex-col space-y-3 overflow-y-scroll pb-14">
+          <div className="flex h-full flex-col space-y-3 overflow-y-scroll pb-14 pr-1">
             <div className="flex flex-col space-y-3">
               <div className="flex w-full space-x-3">
                 <Card>

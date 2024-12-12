@@ -12,7 +12,7 @@ interface CellProps extends HTMLAttributes<HTMLDivElement> {
   value: string | number;
   fontSize?: string;
 }
-function Cell({ value, className, fontSize, ...props }: CellProps) {
+export function Cell({ value, className, fontSize, ...props }: CellProps) {
   return (
     <div {...props} className={cn(`flex justify-center text-white`, className)}>
       <p className={cn(`truncate text-[10px] `, fontSize)}>{value}</p>
@@ -91,7 +91,7 @@ export function HeaderCellGroup({
   fontSize,
 }: HeaderCellGroupProps) {
   return (
-    <div className={cn(`flex space-x-0.5 `)}>
+    <div className="flex space-x-0.5">
       {data?.map((each, index) => {
         const isLeftBorderRounded = index === 0 ? "rounded-l" : "";
         const isRightBorderRounded =
@@ -115,11 +115,7 @@ type HeaderCellProps = {
 };
 export function HeaderCell({ label, children }: HeaderCellProps) {
   return (
-    <div
-      className={cn(
-        `flex flex-col space-y-0.5 overflow-hidden rounded bg-primary-700`
-      )}
-    >
+    <div className={cn(`flex flex-col space-y-0.5 rounded bg-primary-700`)}>
       <div className={`flex justify-center text-[12px]`}>{label}</div>
       <div className={`flex space-x-0.5`}>{children}</div>
     </div>

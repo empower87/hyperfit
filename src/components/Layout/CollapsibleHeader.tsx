@@ -23,9 +23,10 @@ type CollapseButtonProps = {
   onCollapse: () => void;
 };
 function CollapseButton({ isCollapsed, onCollapse }: CollapseButtonProps) {
+  const bgColor = isCollapsed ? "bg-primary-700" : "bg-secondary-400";
   return (
     <div className={`flex items-center justify-center pr-2`}>
-      <Button onClick={onCollapse}>
+      <Button className={bgColor} onClick={onCollapse}>
         {isCollapsed ? (
           <ArrowUpIcon fill="white" />
         ) : (

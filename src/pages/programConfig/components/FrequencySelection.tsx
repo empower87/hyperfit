@@ -18,29 +18,31 @@ export default function FrequencySelection() {
   const selectedButtonClasses = "scale-110 border-secondary-300";
   return (
     <div className="flex flex-col items-center">
-      <div className="flex space-x-2">
+      <ul className="flex space-x-2">
         {OPTIONS.map((option) => {
           return (
-            <Button
-              variant="outline"
-              className={
-                option === frequency[0]
-                  ? selectedButtonClasses
-                  : unselectedButtonClasses
-              }
-              onClick={() => handleSelectChange(option)}
-            >
-              <div
-                className={`${
-                  option === frequency[0] ? "text-white" : "text-primary-300"
-                }`}
+            <li className="" key={`frequency_day_${option}`}>
+              <Button
+                variant="outline"
+                className={
+                  option === frequency[0]
+                    ? selectedButtonClasses
+                    : unselectedButtonClasses
+                }
+                onClick={() => handleSelectChange(option)}
               >
-                {option}
-              </div>
-            </Button>
+                <div
+                  className={`${
+                    option === frequency[0] ? "text-white" : "text-primary-300"
+                  }`}
+                >
+                  {option}
+                </div>
+              </Button>
+            </li>
           );
         })}
-      </div>
+      </ul>
     </div>
   );
 }

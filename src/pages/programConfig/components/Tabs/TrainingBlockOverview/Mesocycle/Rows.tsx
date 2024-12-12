@@ -8,6 +8,7 @@ import { getExerciseSetsOverMicrocycles } from "~/hooks/useTrainingProgram/utils
 import { cn } from "~/lib/clsx";
 import { DraggableExercises } from "../../TrainingWeekOverview/hooks/useExerciseSelection";
 import {
+  Cell,
   DayCell,
   ExerciseCellGroup,
   HeaderCell,
@@ -79,32 +80,43 @@ export function HeaderRow() {
   );
 
   return (
-    <div className={`mb-1 flex space-x-1 text-slate-300`}>
-      <div className={`bg-primary-700 ${CELL_WIDTHS.day} rounded`}>
-        <div className={`flex justify-center text-[12px]`}>Day</div>
-      </div>
+    <div className="w-full overflow-hidden">
+      <div className={`mb-1 flex space-x-1 text-slate-300`}>
+        <div className={`bg-primary-700 ${CELL_WIDTHS.day} rounded`}>
+          <div className={`flex justify-center text-[12px]`}>Day</div>
+        </div>
 
-      <HeaderCell label="Exercise">
-        {CELL_WIDTHS.exercise.widths.map((width) => {
-          return <div className={cn(``, width)}></div>;
+        {/* <HeaderCellGroup
+        data={["", "", "", "", ""]}
+        widths={CELL_WIDTHS.exercise.widths}
+        bgColor={`bg-primary-700`}
+        fontSize="text-xxs"
+        label={
+          <div className={`flex justify-center text-[12px]`}>Exercise</div>
+        }
+      /> */}
+        <HeaderCell label="Exercise">
+          {CELL_WIDTHS.exercise.widths.map((width) => {
+            return <Cell value="" className={cn(``, width)}></Cell>;
+          })}
+        </HeaderCell>
+
+        {MICROCYCLE_HEADERS.map((each, index) => {
+          return (
+            <HeaderCell label={each} key={`${each}_MicrocycleHeader_${index}`}>
+              {CELL_WIDTHS.week.widths.map((width) => (
+                <div className={`${width}`}></div>
+              ))}
+            </HeaderCell>
+          );
         })}
-      </HeaderCell>
 
-      {MICROCYCLE_HEADERS.map((each, index) => {
-        return (
-          <HeaderCell label={each} key={`${each}_MicrocycleHeader_${index}`}>
-            {CELL_WIDTHS.week.widths.map((width) => (
-              <div className={`${width}`}></div>
-            ))}
-          </HeaderCell>
-        );
-      })}
-
-      <HeaderCell label="Deload">
-        {CELL_WIDTHS.week.widths.map((width) => (
-          <div className={`${width}`}></div>
-        ))}
-      </HeaderCell>
+        <HeaderCell label="Deload">
+          {CELL_WIDTHS.week.widths.map((width) => (
+            <div className={`${width}`}></div>
+          ))}
+        </HeaderCell>
+      </div>
     </div>
   );
 }

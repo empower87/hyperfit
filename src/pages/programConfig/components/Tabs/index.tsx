@@ -43,6 +43,7 @@ export default function CustomizationTabs() {
           );
         })}
       </TabsList>
+
       {TABS.map((tab, index) => {
         const tabContent = getSelectedTabContent(tab);
         return <TabsContent value={tab}>{tabContent}</TabsContent>;

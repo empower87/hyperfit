@@ -1,15 +1,19 @@
-import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
-import useTrainingWeek from "../TrainingWeekOverview/hooks/useTrainingWeek";
+import { useMemo } from "react";
+import { useProgramConfigContext } from "~/pages/programConfig/hooks/useProgramConfig";
+import { hydrateTrainingWeek } from "../TrainingWeekOverview/hooks/useTrainingWeek";
 import Mesocycle from "./Mesocycle";
 
 export default function TrainingBlock() {
-  const { training_block, prioritized_muscle_list } =
-    useTrainingProgramContext();
-  const { hydratedTrainingBlock } = useTrainingWeek(
-    training_block,
-    prioritized_muscle_list,
-    0
+  const { trainingBlock, muscle_priority_list } = useProgramConfigContext();
+
+  const hydratedTrainingBlock = useMemo(
+    () =>
+      trainingBlock.map((each) =>
+        hydrateTrainingWeek(each, muscle_priority_list)
+      ),
+    [trainingBlock, muscle_priority_list]
   );
+
   return (
     <div id="training_block" className={"flex w-full flex-col"}>
       {hydratedTrainingBlock.map((each, index) => {

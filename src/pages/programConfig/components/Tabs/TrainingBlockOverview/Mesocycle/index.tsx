@@ -54,7 +54,7 @@ export default function Mesocycle({
     <div
       className={cn(`mb-3 flex max-w-[1200px] flex-col rounded bg-primary-600`)}
     >
-      <CollapsibleHeader className={`bg-rose-400`}>
+      <CollapsibleHeader className={`rounded-t bg-rose-400`}>
         <CollapsibleHeader.Title
           label={`Mesocycle ${currentMesocycleIndex + 1}`}
         />
