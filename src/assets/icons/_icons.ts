@@ -7,11 +7,13 @@ import { default as ArrowRightIcon } from "./arrowRight-svg.svg";
 import { default as ArrowUpIcon } from "./arrowUp-svg.svg";
 import { default as DotsIcon } from "./dots-svg.svg";
 import { default as DragHandleIcon } from "./dragDots-svg.svg";
+import { default as DumbbellIcon } from "./dumbbell-svg.svg";
 import filterIcon from "./filter-svg.svg";
 import plusIcon, { default as PlusIcon } from "./plus-svg.svg";
 import searchIcon from "./search-svg.svg";
 import { default as SubtractIcon } from "./subtract-svg.svg";
 import { default as DeleteIcon } from "./trashCan-svg.svg";
+import { default as WrenchIcon } from "./wrench-svg.svg";
 import { default as CloseIcon } from "./x-svg.svg";
 
 export {
@@ -24,6 +26,7 @@ export {
   DeleteIcon,
   DotsIcon,
   DragHandleIcon,
+  DumbbellIcon,
   FilterIcon,
   filterIcon,
   PlusIcon,
@@ -31,4 +34,5 @@ export {
   SearchIcon,
   searchIcon,
   SubtractIcon,
+  WrenchIcon,
 };

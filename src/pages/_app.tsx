@@ -2,7 +2,6 @@ import { type Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
 import { type AppType } from "next/app";
 import Head from "next/head";
-import Link from "next/link";
 import { ReactNode } from "react";
 import Navbar from "~/components/Navbar";
 import { TrainingProgramProvider } from "~/hooks/useTrainingProgram/useTrainingProgram";
@@ -36,7 +35,19 @@ function Layout({ children }: { children: ReactNode }) {
   return (
     <>
       <Navbar>
-        <Navbar.Sidebar contents={<Link href="/programConfig">Program</Link>} />
+        <Navbar.Sidebar
+          contents={
+            <>
+              {/* <Link href="/programConfig">
+                <div>
+                  <DumbbellIcon fill="white" />
+                  Program
+                </div>
+              </Link>
+              <Link href="/workout">Workout</Link> */}
+            </>
+          }
+        />
         <Navbar.Topbar />
       </Navbar>
 

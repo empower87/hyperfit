@@ -6,6 +6,7 @@ import {
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
 import { getExerciseSetsOverMicrocycles } from "~/hooks/useTrainingProgram/utils/exercises/getExercises";
 import { cn } from "~/lib/clsx";
+import { useProgramConfigContext } from "~/pages/programConfig/hooks/useProgramConfig";
 import { DraggableExercises } from "../../TrainingWeekOverview/hooks/useExerciseSelection";
 import {
   Cell,
@@ -132,8 +133,8 @@ function SessionSplitRow({
   currentMesocycleIndex,
   split,
 }: SessionSplitRowType) {
-  const { training_program_params, prioritized_muscle_list } =
-    useTrainingProgramContext();
+  const { training_program_params } = useTrainingProgramContext();
+  const { muscle_priority_list } = useProgramConfigContext();
   const { microcycles } = training_program_params;
 
   return (
@@ -146,7 +147,7 @@ function SessionSplitRow({
 
       <ul className="flex flex-col space-y-0.5 overflow-hidden rounded pr-1">
         {exercises.map((exercise, index) => {
-          const muscleGroup = prioritized_muscle_list.filter(
+          const muscleGroup = muscle_priority_list.filter(
             (muscle) => muscle.muscle === exercise.muscle
           )[0];
           const setsOverWeek = getExerciseSetsOverMicrocycles(
@@ -178,6 +179,7 @@ function DayHeaderRow({ day }: { day: DayType }) {
     Array(microcycles),
     (e, i) => `Week ${i + 1}`
   );
+
   return (
     <div className={"mb-1 flex space-x-1 py-0.5 text-slate-300"}>
       <div className={cn(`pl-1`, CELL_WIDTHS.day)}>

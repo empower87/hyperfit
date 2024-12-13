@@ -1,6 +1,8 @@
 import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
+import Link from "next/link";
 
 import { ReactNode, useState } from "react";
+import { DumbbellIcon, WrenchIcon } from "~/assets/icons/_icons";
 import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/clsx";
 
@@ -14,7 +16,7 @@ export default function Sidebar({ contents }: SidebarProps) {
   return (
     <div
       className={cn(
-        `fixed top-0 z-20 h-full w-16 space-y-2 bg-primary-700 p-3`,
+        `fixed top-0 z-20 flex h-full w-16 flex-col space-y-2 bg-primary-700 p-3`,
         {
           ["w-48"]: isExpanded,
         }
@@ -26,7 +28,7 @@ export default function Sidebar({ contents }: SidebarProps) {
         </h1>
       </div>
 
-      <div className="flex rounded border-primary-600">
+      <div className="flex rounded border-primary-600 pl-2">
         <Button
           size="icon"
           className="border border-input bg-card"
@@ -39,7 +41,24 @@ export default function Sidebar({ contents }: SidebarProps) {
           )}
         </Button>
       </div>
-      {contents}
+      <div className="flex flex-col items-center">
+        <Link href="/programConfig">
+          <div className="flex">
+            <div className="p-2">
+              <DumbbellIcon fill="white" />
+            </div>
+            {isExpanded ? <div className="p-2">Program</div> : null}
+          </div>
+        </Link>
+        <Link href="/workout">
+          <div className="flex">
+            <div className="p-2">
+              <WrenchIcon fill="white" />
+            </div>
+            {isExpanded ? <div className="p-2">Workout</div> : null}
+          </div>
+        </Link>
+      </div>
     </div>
   );
 }

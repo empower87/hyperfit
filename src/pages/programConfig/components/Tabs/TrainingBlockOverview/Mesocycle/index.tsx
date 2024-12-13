@@ -6,12 +6,12 @@ import { DraggableExercises } from "../../TrainingWeekOverview/hooks/useExercise
 import { HeaderRow, SessionRow } from "./Rows";
 
 type MesocycleProps = {
-  training_week: DraggableExercises[];
+  mesocycleExercises: DraggableExercises[];
   currentMesocycleIndex: number;
 };
 
-export default function Mesocycle({
-  training_week,
+export default function MesocycleTrainingWeek({
+  mesocycleExercises,
   currentMesocycleIndex,
 }: MesocycleProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -19,7 +19,7 @@ export default function Mesocycle({
   const onCollapse = () => setIsCollapsed(true);
   const onExpand = () => setIsCollapsed(false);
 
-  const filteredOutOffDays = training_week.filter(
+  const filteredOutOffDays = mesocycleExercises.filter(
     (each) => each.sessions[0].split !== "off"
   );
   const sessionNumbers = filteredOutOffDays.reduce((acc: number[][], cur) => {
