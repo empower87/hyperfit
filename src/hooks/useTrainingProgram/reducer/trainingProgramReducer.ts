@@ -180,13 +180,6 @@ export type SplitSessionsSplitsType =
 export type SessionKeys<T> = T extends T ? keyof T : never;
 export type SplitType = SessionKeys<SplitSessionsSplitsType> & {};
 
-export type ExerciseDetails = {
-  sets: number;
-  reps: number;
-  weight: number;
-  rir: number;
-};
-
 export type ExerciseMesocycleProgressionType = {
   week: number;
   sets: number;
@@ -218,17 +211,20 @@ export type SetProgressionType =
 export type ExerciseTrainingModality =
   (typeof EXERCISE_TRAINING_MODALITIES)[number];
 
-export type ExerciseDataType = {
-  movement_type: string;
-  requirements: string[];
-};
-
 type FrequencyProgressionType = number[];
 type Frequency = FrequencyProgressionType[number];
 type InitialSets = {
   [key: Frequency]: number;
 };
 
+export type ExerciseDataType = {
+  movement_type: string;
+  requirements: string[];
+  region: {
+    primary: string;
+    secondary: string[];
+  };
+};
 export type ExerciseType = {
   id: string;
   name: string;

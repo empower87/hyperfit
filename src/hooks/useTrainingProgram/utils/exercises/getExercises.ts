@@ -344,10 +344,7 @@ export const updateExercisesOnSetProgressionChange = (
         // selected_exercise,
         "CHECK CH CH CHECK IT OUT"
       );
-      const selected_exercise = initNewExercise(
-        exercise_data,
-        volume_landmark
-      );
+      const selected_exercise = initNewExercise(exercise_data, volume_landmark);
       session_exercises.push(selected_exercise);
     }
 
@@ -415,6 +412,10 @@ export const INITIAL_EXERCISE: ExerciseType = {
   data: {
     movement_type: "isolation",
     requirements: ["cable"],
+    region: {
+      primary: "long-head",
+      secondary: [],
+    },
   },
 };
 
@@ -476,7 +477,7 @@ export const getTotalExercisesFromSetMatrix = (
 
       const exercise = initNewExercise(
         allExercises[exercises_index],
-        volume_landmark,
+        volume_landmark
       );
       exercise.sets = finalProgression[i][j];
       session_exercises.push(exercise);
@@ -555,10 +556,7 @@ export const getTotalExercisesForMuscleGroup = (
         j
       );
 
-      const exercise = initNewExercise(
-        allExercises[exercises_index],
-        rank,
-      );
+      const exercise = initNewExercise(allExercises[exercises_index], rank);
 
       session_exercises.push(exercise);
       exercises_index++;
@@ -613,20 +611,19 @@ export const addNewExerciseSetsToSetProgressionMatrix = (
 ) => {
   let sets = 2;
 
-  const matrix = structuredClone(setProgressionMatrix)
+  const matrix = structuredClone(setProgressionMatrix);
   const lastMeso = matrix[matrix.length - 1];
   const isNewSession = lastMeso[sessionIndex] ? true : false;
 
   if (!isNewSession) {
-    const prevMeso = matrix[matrix.length - 1]
+    const prevMeso = matrix[matrix.length - 1];
     const newRow = addSetProgressionMatrixRow(prevMeso, [sets]);
     matrix.push(newRow);
   } else {
-    
     for (let i = 0; i < matrix.length; i++) {
-      const meso = matrix[i]
+      const meso = matrix[i];
       if (meso[sessionIndex]) {
-        matrix[i][sessionIndex].push(sets)
+        matrix[i][sessionIndex].push(sets);
       }
     }
   }
@@ -635,7 +632,7 @@ export const addNewExerciseSetsToSetProgressionMatrix = (
 
 export const initNewExercise = (
   exerciseData: JSONExercise,
-  volume_landmark: VolumeLandmarkType,
+  volume_landmark: VolumeLandmarkType
 ) => {
   const schemas: SetProgressionType[] = Array.from([], (e, i) =>
     volume_landmark === "MRV" ? "ADD_ONE_PER_MICROCYCLE" : "NO_ADD"
@@ -657,6 +654,10 @@ export const initNewExercise = (
     data: {
       movement_type: exerciseData.movement_type,
       requirements: exerciseData.requirements,
+      region: {
+        primary: exerciseData.region,
+        secondary: [],
+      },
     },
   };
   return new_exercise;
@@ -668,50 +669,49 @@ export const getExerciseSetsOverMicrocycles = (
   selectedMesocycleIndex: number,
   microcycles: number
 ) => {
-      const setProgressionMatrix = muscleGroup.frequency.setProgressionMatrix;
-      const setProgressionLengths = Array.from(
-        setProgressionMatrix,
-        (e, i) => e.length
-      );
-      const frequency =
-        muscleGroup.frequency.progression[selectedMesocycleIndex];
-      const setProgressionIndex = setProgressionLengths.indexOf(frequency);
+  const setProgressionMatrix = muscleGroup.frequency.setProgressionMatrix;
+  const setProgressionLengths = Array.from(
+    setProgressionMatrix,
+    (e, i) => e.length
+  );
+  const frequency = muscleGroup.frequency.progression[selectedMesocycleIndex];
+  const setProgressionIndex = setProgressionLengths.indexOf(frequency);
 
-      let dayIndex = 0;
-      let exerciseIndex = 0;
-      let totalExercisesInSession = 0;
-      let foundExercise: ExerciseType | null = null;
+  let dayIndex = 0;
+  let exerciseIndex = 0;
+  let totalExercisesInSession = 0;
+  let foundExercise: ExerciseType | null = null;
 
-      for (let i = 0; i < muscleGroup.exercises.length; i++) {
-        const sessionExercises = muscleGroup.exercises[i];
-        for (let j = 0; j < sessionExercises.length; j++) {
-          const exercise = sessionExercises[j];
-          if (exercise.id === exerciseId) {
-            dayIndex = i;
-            exerciseIndex = j;
-            totalExercisesInSession = sessionExercises.length;
-            foundExercise = exercise;
-            continue;
-          }
-        }
+  for (let i = 0; i < muscleGroup.exercises.length; i++) {
+    const sessionExercises = muscleGroup.exercises[i];
+    for (let j = 0; j < sessionExercises.length; j++) {
+      const exercise = sessionExercises[j];
+      if (exercise.id === exerciseId) {
+        dayIndex = i;
+        exerciseIndex = j;
+        totalExercisesInSession = sessionExercises.length;
+        foundExercise = exercise;
+        continue;
       }
+    }
+  }
 
-      const setsByMatrix =
-        setProgressionMatrix[setProgressionIndex][dayIndex][exerciseIndex];
+  const setsByMatrix =
+    setProgressionMatrix[setProgressionIndex][dayIndex][exerciseIndex];
 
-      const initialSets =
-        foundExercise &&
-        foundExercise.initialSets &&
-        foundExercise.initialSets[frequency]
-          ? foundExercise.initialSets[frequency]
-          : setsByMatrix;
+  const initialSets =
+    foundExercise &&
+    foundExercise.initialSets &&
+    foundExercise.initialSets[frequency]
+      ? foundExercise.initialSets[frequency]
+      : setsByMatrix;
 
-      const sets = setProgression_addOnePerMicrocycle_TEST(
-        microcycles,
-        totalExercisesInSession,
-        exerciseIndex,
-        initialSets
-      );
-      console.log(foundExercise, sets, initialSets, "GOT SETS");
-      return sets;
-}
+  const sets = setProgression_addOnePerMicrocycle_TEST(
+    microcycles,
+    totalExercisesInSession,
+    exerciseIndex,
+    initialSets
+  );
+  console.log(foundExercise, sets, initialSets, "GOT SETS");
+  return sets;
+};
