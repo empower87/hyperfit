@@ -1,3 +1,7 @@
+import { ChevronsUpDown } from "lucide-react";
+import { useState } from "react";
+import { Button } from "~/components/ui/button";
+import { Card, CardContent, CardHeader } from "~/components/ui/card";
 import {
   Collapsible,
   CollapsibleContent,
@@ -34,22 +38,22 @@ const TBLOCK_TEST: NewTrainingWeek[][] | TrainingDayType[][] = [
 ];
 export default function SavedTrainingBlocks() {
   const { training_block } = useTrainingProgramContext();
-
-  const training_blocks = [TBLOCK_TEST];
+  const [openedTrainingBlockId, setOpenedTrainingBlockId] = useState("");
+  const training_blocks = [TBLOCK_TEST, TBLOCK_TEST];
   console.log(training_block, "data here?");
   return (
-    <div className="flex flex-col">
-      <div>
+    <Card className="w-[350px]">
+      <CardHeader>
         <h2>My Training Blocks</h2>
-      </div>
-      <div>
+      </CardHeader>
+      <CardContent>
         <ul>
           {training_blocks.map((block, index) => {
             return <TrainingBlockItem index={index} training_block={block} />;
           })}
         </ul>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -58,24 +62,48 @@ type TrainingBlockItemProps = {
   training_block: NewTrainingWeek[][] | TrainingDayType[][];
 };
 function TrainingBlockItem({ index, training_block }: TrainingBlockItemProps) {
+  const [isTrainingBlockOpen, setIsTrainingBlockOpen] = useState(false);
+  // const [isMesocycleOpen, setIsMesocycleOpen] = useState(false)
   return (
-    <div className="flex ">
-      <Collapsible>
-        <CollapsibleTrigger>Training Block {index + 1}</CollapsibleTrigger>
+    <div className="flex">
+      <Collapsible
+        open={isTrainingBlockOpen}
+        onOpenChange={setIsTrainingBlockOpen}
+        className="w-[350px]"
+      >
+        <CollapsibleTrigger asChild>
+          <Button
+            className={`${isTrainingBlockOpen ? "bg-card" : ""}`}
+            variant="ghost"
+            size="sm"
+          >
+            <div className="text-sm">Training Block {index + 1}</div>
+            <ChevronsUpDown className="h-4 w-4" />
+          </Button>
+        </CollapsibleTrigger>
+
         <CollapsibleContent>
-          <Collapsible>
+          <Collapsible className="flex w-full flex-col items-start pl-5">
             {training_block.map((meso, index) => {
               return (
                 <>
-                  <CollapsibleTrigger>Mesocycle {index + 1}</CollapsibleTrigger>
+                  <CollapsibleTrigger>
+                    <Button variant="ghost" size="sm">
+                      <div className="text-sm">Mesocycle {index + 1}</div>
+                      <ChevronsUpDown className="h-4 w-4" />
+                    </Button>
+                  </CollapsibleTrigger>
+
                   <CollapsibleContent>
-                    {meso.map((week, i) => {
-                      const hasSession = week.sessions[0]
-                        ? week.sessions[0].split
-                        : false;
-                      if (!hasSession) return null;
-                      return <div>{week.sessions[0].split}</div>;
-                    })}
+                    <div className="flex flex-col pl-4">
+                      {meso.map((week, i) => {
+                        const hasSession = week.sessions[0]
+                          ? week.sessions[0].split
+                          : false;
+                        if (!hasSession) return null;
+                        return <div>{week.sessions[0].split}</div>;
+                      })}
+                    </div>
                   </CollapsibleContent>
                 </>
               );

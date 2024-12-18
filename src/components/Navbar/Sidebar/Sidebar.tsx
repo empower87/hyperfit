@@ -41,11 +41,11 @@ export default function Sidebar({ contents }: SidebarProps) {
           )}
         </Button>
       </div>
-      <div className="flex flex-col items-center">
+      <div className="flex flex-col">
         <Link href="/programConfig">
           <div className="flex">
             <div className="p-2">
-              <DumbbellIcon fill="white" />
+              <WrenchIcon fill="white" />
             </div>
             {isExpanded ? <div className="p-2">Program</div> : null}
           </div>
@@ -53,7 +53,7 @@ export default function Sidebar({ contents }: SidebarProps) {
         <Link href="/workout">
           <div className="flex">
             <div className="p-2">
-              <WrenchIcon fill="white" />
+              <DumbbellIcon fill="white" />
             </div>
             {isExpanded ? <div className="p-2">Workout</div> : null}
           </div>
