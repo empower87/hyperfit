@@ -7,6 +7,7 @@ import Navbar from "~/components/Navbar";
 import { TrainingProgramProvider } from "~/hooks/useTrainingProgram/useTrainingProgram";
 import "~/styles/globals.css";
 import { api } from "~/utils/api";
+import { ProgramConfigProvider } from "./programConfig/hooks/useProgramConfig";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -23,9 +24,11 @@ const MyApp: AppType<{ session: Session | null }> = ({
       </Head>
 
       <TrainingProgramProvider>
-        <Layout>
-          <Component {...pageProps} />
-        </Layout>
+        <ProgramConfigProvider>
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
+        </ProgramConfigProvider>
       </TrainingProgramProvider>
     </SessionProvider>
   );
