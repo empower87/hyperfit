@@ -13,6 +13,7 @@ import { NewTrainingWeek } from "~/hooks/useTrainingProgram/utils/training_block
 import { cn } from "~/lib/utils";
 import { useProgramConfigContext } from "~/pages/programConfig/hooks/useProgramConfig";
 import { getSplitColor } from "~/utils/getIndicatorColors";
+import { useActiveWorkoutContext } from "../hooks/useActiveWorkout";
 
 const createTrainingBlockData = (
   training_block: NewTrainingWeek[][] | TrainingDayType[][]
@@ -46,7 +47,6 @@ export default function SavedTrainingBlocks() {
   const { trainingBlock } = useProgramConfigContext();
   const [openedTrainingBlockId, setOpenedTrainingBlockId] = useState("");
   const training_blocks = [trainingBlock, TBLOCK_TEST, TBLOCK_TEST];
-  console.log(training_block, "data here?");
 
   return (
     <Card className="w-[350px]">
@@ -71,10 +71,19 @@ type TrainingBlockItemProps = {
 function TrainingBlockItem({ index, training_block }: TrainingBlockItemProps) {
   const { training_program_params } = useTrainingProgramContext();
   const { microcycles } = training_program_params;
+  const { onSelectWorkout } = useActiveWorkoutContext();
   const [isTrainingBlockOpen, setIsTrainingBlockOpen] = useState(false);
   // const [isMesocycleOpen, setIsMesocycleOpen] = useState(false)
 
   const weeks = Array.from(Array(microcycles), (e, i) => `WK ${i + 1}`);
+
+  const [selectedMesocycleIndex, setSelectedMesocycleIndex] = useState(0);
+  const [selectedMicrocycleIndex, setSelectedMicrocycleIndex] = useState(0);
+
+  const onWeekClickHandler = (mesoIndex: number, microIndex: number) => {
+    setSelectedMesocycleIndex(mesoIndex);
+    setSelectedMicrocycleIndex(microIndex);
+  };
   return (
     <div className="flex">
       <Collapsible
@@ -94,19 +103,19 @@ function TrainingBlockItem({ index, training_block }: TrainingBlockItemProps) {
         </CollapsibleTrigger>
 
         <CollapsibleContent>
-          {training_block.map((meso, index) => {
+          {training_block.map((meso, tbIndex) => {
             return (
               <Collapsible className="flex w-full flex-col items-start pl-5">
                 <CollapsibleTrigger asChild>
                   <Button variant="ghost" size="sm">
-                    <div className="text-sm">Mesocycle {index + 1}</div>
+                    <div className="text-sm">Mesocycle {tbIndex + 1}</div>
                     <ChevronsUpDown className="h-4 w-4" />
                   </Button>
                 </CollapsibleTrigger>
 
                 <CollapsibleContent>
                   <div className="flex flex-col space-y-1 pl-4">
-                    {meso.map((week, i) => {
+                    {meso.map((week, mesoIndex) => {
                       const hasSession =
                         week.sessions[0] && week.sessions[0].split !== "off"
                           ? week.sessions[0].split
@@ -133,6 +142,14 @@ function TrainingBlockItem({ index, training_block }: TrainingBlockItemProps) {
                               <Button
                                 variant="outline"
                                 size="sm"
+                                onClick={() =>
+                                  onSelectWorkout(
+                                    index,
+                                    tbIndex,
+                                    mesoIndex,
+                                    index
+                                  )
+                                }
                                 // className={`w-10 rounded border border-input px-1 text-xs font-semibold`}
                               >
                                 {micro}
