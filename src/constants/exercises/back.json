@@ -1,6 +1,6 @@
 [
   {
-    "id": "0001-back-exercise",
+    "id": "0001-back-barbellrow",
     "name": "Barbell Row",
     "alt_names": [],
     "rank": 1,
@@ -26,7 +26,7 @@
     }
   },
   {
-    "id": "0002-back-exercise",
+    "id": "0002-back-seatedrow",
     "name": "Seated Row",
     "alt_names": [],
     "rank": 2,
@@ -52,7 +52,7 @@
     }
   },
   {
-    "id": "0003-back-exercise",
+    "id": "0003-back-meadowsrow",
     "name": "Meadow's Row",
     "alt_names": [],
     "rank": 3,
@@ -78,7 +78,7 @@
     }
   },
   {
-    "id": "0004-back-exercise",
+    "id": "0004-back-dumbbellrow",
     "name": "Dumbbell Row",
     "alt_names": [],
     "rank": 4,
@@ -104,7 +104,7 @@
     }
   },
   {
-    "id": "0005-back-exercise",
+    "id": "0005-back-pullup",
     "name": "Pull Up",
     "alt_names": [],
     "rank": 5,
@@ -130,7 +130,7 @@
     }
   },
   {
-    "id": "0006-back-exercise",
+    "id": "0006-back-pulldown",
     "name": "Pulldown",
     "alt_names": [],
     "rank": 6,
@@ -156,7 +156,7 @@
     }
   },
   {
-    "id": "0007-back-exercise",
+    "id": "0007-back-closegripbarbellrow",
     "name": "Close-Grip Barbell Row",
     "alt_names": [],
     "rank": 1,
@@ -182,7 +182,7 @@
     }
   },
   {
-    "id": "0008-back-exercise",
+    "id": "0008-back-latfocusedseatedrow",
     "name": "Lat-Focused Seated Row",
     "alt_names": [],
     "rank": 2,
@@ -208,7 +208,7 @@
     }
   },
   {
-    "id": "0009-back-exercise",
+    "id": "0009-back-chestsupporteddumbbellrow",
     "name": "Chest-Supported Dumbbell Row",
     "alt_names": [],
     "rank": 3,
@@ -234,7 +234,7 @@
     }
   },
   {
-    "id": "0010-back-exercise",
+    "id": "0010-back-singlearmpulldown",
     "name": "Single-Arm Pulldown",
     "alt_names": [],
     "rank": 4,
@@ -260,7 +260,7 @@
     }
   },
   {
-    "id": "0011-back-exercise",
+    "id": "0011-back-dumbbellpullover",
     "name": "Dumbbell Pullover",
     "alt_names": [],
     "rank": 7,
@@ -286,7 +286,7 @@
     }
   },
   {
-    "id": "0012-back-exercise",
+    "id": "0012-back-cablepullover",
     "name": "Cable Pullover",
     "alt_names": ["Straight-Arm Pulldown", "Lat Prayer"],
     "rank": 6,
@@ -312,7 +312,7 @@
     }
   },
   {
-    "id": "0013-back-exercise",
+    "id": "0013-back-tbarrow",
     "name": "T-Bar Row",
     "alt_names": [],
     "rank": 8,
@@ -338,7 +338,7 @@
     }
   },
   {
-    "id": "0014-back-exercise",
+    "id": "0014-back-chestsupportedtbarrow",
     "name": "Chest-Supported T-Bar Row",
     "alt_names": [],
     "rank": 8,
@@ -364,7 +364,7 @@
     }
   },
   {
-    "id": "0015-back-exercise",
+    "id": "0015-back-isolateralrow",
     "name": "Iso-Lateral Row",
     "alt_names": [],
     "rank": 8,
@@ -390,7 +390,7 @@
     }
   },
   {
-    "id": "0016-back-exercise",
+    "id": "0016-back-inclinecablepullover",
     "name": "Incline Cable Pullover",
     "alt_names": [],
     "rank": 21,
@@ -416,7 +416,7 @@
     }
   },
   {
-    "id": "0017-back-exercise",
+    "id": "0017-back-benchsupportedtbarrow",
     "name": "Bench-Supported Low Row",
     "alt_names": [],
     "rank": 21,
