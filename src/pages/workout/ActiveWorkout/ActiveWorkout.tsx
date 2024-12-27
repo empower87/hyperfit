@@ -1,3 +1,4 @@
+import { Input } from "~/components/ui/input";
 import {
   ExerciseType,
   TrainingDayType,
@@ -14,7 +15,7 @@ export default function ActiveWorkout() {
     <div className="flex flex-col">
       {active_workout?.day}
 
-      <div>
+      <div className="space-y-2 overflow-auto">
         {active_workout?.session?.split}
         {active_workout?.session?.exercises.map((exercise, index) => {
           return (
@@ -33,13 +34,30 @@ type ExerciseItemProps = {
   exercise: ExerciseType;
 };
 
+const WIDTHS = ["w-10", "w-24", "w-24", "w-24", "w-10"];
+const TITLES = ["SET", "PREVIOUS", "LBS", "REPS", ""];
+function ExerciseHeaders() {
+  return (
+    <div className="flex">
+      {WIDTHS.map((width, index) => {
+        return (
+          <div key={`exerciseHeader_${width}_${index}`} className={width}>
+            {TITLES[index]}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
 function ExerciseItem({ exercise }: ExerciseItemProps) {
   const sets_array = Array.from(Array(exercise.sets), (_, i) => i + 1);
+  const grid_rows = sets_array.length;
   return (
-    <div className="flex flex-col space-y-1">
-      <div>{exercise.name}</div>
+    <div className="flex flex-col space-y-1 rounded-lg border border-input">
+      <div className="p-2">{exercise.name}</div>
 
-      <div>
+      <ExerciseHeaders />
+      <div className="flex flex-col space-y-2 p-2">
         {sets_array.map((set, index) => {
           return (
             <SetItem
@@ -52,6 +70,25 @@ function ExerciseItem({ exercise }: ExerciseItemProps) {
           );
         })}
       </div>
+
+      {/* <div className={`grid grid-cols-8 grid-rows-${grid_rows} text-sm`}>
+        <div className="">SETS</div>
+        <div className="col-span-2">PREVIOUS</div>
+        <div className="col-span-2">LBS</div>
+        <div className="col-span-2">Reps</div>
+        <div className=""></div>
+        {sets_array.map((set, index) => {
+          return (
+            <SetItem
+              key={`exerciseSet_${exercise.id}_${set}_${index}`}
+              set={set}
+              previous={[0, 0]}
+              lbs={0}
+              reps={0}
+            />
+          );
+        })}
+      </div> */}
     </div>
   );
 }
@@ -65,13 +102,16 @@ type SetItemProps = {
 
 function SetItem({ set, previous, lbs, reps }: SetItemProps) {
   return (
-    <div className="flex space-x-2">
-      <div>{set}</div>
-      <div>
+    <div className="flex">
+      <div className={`${WIDTHS[0]}`}>{set}</div>
+      <div className={`${WIDTHS[1]}`}>
         {previous[0]}lbs x {previous[1]}
       </div>
-      <div>{lbs}</div>
-      <div>{reps}</div>
+      <div className={`${WIDTHS[2]}`}>
+        <Input value={lbs} />
+      </div>
+      <div className={`${WIDTHS[3]}`}>{reps}</div>
+      <div className="">x</div>
     </div>
   );
 }
