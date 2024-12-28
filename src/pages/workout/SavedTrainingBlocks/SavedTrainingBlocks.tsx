@@ -49,7 +49,7 @@ export default function SavedTrainingBlocks() {
   const training_blocks = [trainingBlock, TBLOCK_TEST, TBLOCK_TEST];
 
   return (
-    <Card className="w-[350px]">
+    <Card className="w-[370px]">
       <CardHeader>
         <h2>My Training Blocks</h2>
       </CardHeader>
@@ -68,6 +68,7 @@ type TrainingBlockItemProps = {
   index: number;
   training_block: NewTrainingWeek[][] | TrainingDayType[][];
 };
+
 function TrainingBlockItem({ index, training_block }: TrainingBlockItemProps) {
   const { training_program_params } = useTrainingProgramContext();
   const { microcycles } = training_program_params;
@@ -76,14 +77,22 @@ function TrainingBlockItem({ index, training_block }: TrainingBlockItemProps) {
   // const [isMesocycleOpen, setIsMesocycleOpen] = useState(false)
 
   const weeks = Array.from(Array(microcycles), (e, i) => `WK ${i + 1}`);
-
+  const [selectedWeek, setSelectedWeek] = useState<
+    [number, number, number, number] | null
+  >(null);
   const [selectedMesocycleIndex, setSelectedMesocycleIndex] = useState(0);
   const [selectedMicrocycleIndex, setSelectedMicrocycleIndex] = useState(0);
 
-  const onWeekClickHandler = (mesoIndex: number, microIndex: number) => {
-    setSelectedMesocycleIndex(mesoIndex);
-    setSelectedMicrocycleIndex(microIndex);
+  const onSelectWorkoutHandler = (
+    tbs_index: number,
+    tb_index: number,
+    meso_index: number,
+    micro_index: number
+  ) => {
+    setSelectedWeek([tbs_index, tb_index, meso_index, micro_index]);
+    onSelectWorkout(tbs_index, tb_index, meso_index, micro_index);
   };
+
   return (
     <div className="flex">
       <Collapsible
@@ -137,20 +146,51 @@ function TrainingBlockItem({ index, training_block }: TrainingBlockItemProps) {
                               {week.day}
                             </div>
                           </div>
-                          {weeks.map((micro, index) => {
+                          {weeks.map((micro, microIndex) => {
+                            let isSelected = true;
+                            if (selectedWeek) {
+                              if (selectedWeek[0] !== index) {
+                                isSelected = false;
+                              }
+                              if (selectedWeek[1] !== tbIndex) {
+                                isSelected = false;
+                              }
+                              if (selectedWeek[2] !== mesoIndex) {
+                                isSelected = false;
+                              }
+                              if (selectedWeek[3] !== microIndex) {
+                                isSelected = false;
+                              }
+                            } else {
+                              isSelected = false;
+                            }
+                            const selectedClasses = isSelected
+                              ? "bg-primary-500 border-secondary-300"
+                              : "bg-card";
+                            if (isSelected) {
+                              console.log(
+                                index,
+                                tbIndex,
+                                mesoIndex,
+                                microIndex,
+                                isSelected,
+                                "WHAAAT?"
+                              );
+                            }
+
                             return (
                               <Button
                                 variant="outline"
                                 size="sm"
                                 onClick={() =>
-                                  onSelectWorkout(
+                                  onSelectWorkoutHandler(
                                     index,
                                     tbIndex,
                                     mesoIndex,
-                                    index
+                                    microIndex
                                   )
                                 }
-                                // className={`w-10 rounded border border-input px-1 text-xs font-semibold`}
+                                className={selectedClasses}
                               >
                                 {micro}
                               </Button>

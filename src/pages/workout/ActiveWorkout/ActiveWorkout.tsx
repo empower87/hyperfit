@@ -1,3 +1,5 @@
+import { CheckIcon } from "@radix-ui/react-icons";
+import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import {
   ExerciseType,
@@ -12,7 +14,7 @@ type ActiveWorkoutProps = {
 export default function ActiveWorkout() {
   const { active_workout } = useActiveWorkoutContext();
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col overflow-scroll">
       {active_workout?.day}
 
       <div className="space-y-2 overflow-auto">
@@ -22,6 +24,7 @@ export default function ActiveWorkout() {
             <ExerciseItem
               key={`activeWorkoutExerciseItem_${exercise.id}_${index}`}
               exercise={exercise}
+              order={index + 1}
             />
           );
         })}
@@ -30,18 +33,18 @@ export default function ActiveWorkout() {
   );
 }
 
-type ExerciseItemProps = {
-  exercise: ExerciseType;
-};
-
 const WIDTHS = ["w-10", "w-24", "w-24", "w-24", "w-10"];
 const TITLES = ["SET", "PREVIOUS", "LBS", "REPS", ""];
+
 function ExerciseHeaders() {
   return (
-    <div className="flex">
+    <div className="flex p-2 pt-0 text-sm">
       {WIDTHS.map((width, index) => {
         return (
-          <div key={`exerciseHeader_${width}_${index}`} className={width}>
+          <div
+            key={`exerciseHeader_${width}_${index}`}
+            className={`flex justify-center ${width}`}
+          >
             {TITLES[index]}
           </div>
         );
@@ -49,15 +52,23 @@ function ExerciseHeaders() {
     </div>
   );
 }
-function ExerciseItem({ exercise }: ExerciseItemProps) {
+
+type ExerciseItemProps = {
+  exercise: ExerciseType;
+  order: number;
+};
+function ExerciseItem({ exercise, order }: ExerciseItemProps) {
   const sets_array = Array.from(Array(exercise.sets), (_, i) => i + 1);
   const grid_rows = sets_array.length;
   return (
     <div className="flex flex-col space-y-1 rounded-lg border border-input">
-      <div className="p-2">{exercise.name}</div>
+      <div className="flex">
+        <div className="p-2">{order}</div>
+        <div className="p-2">{exercise.name}</div>
+      </div>
 
       <ExerciseHeaders />
-      <div className="flex flex-col space-y-2 p-2">
+      <div className="flex flex-col space-y-2 p-2 pt-0">
         {sets_array.map((set, index) => {
           return (
             <SetItem
@@ -70,25 +81,6 @@ function ExerciseItem({ exercise }: ExerciseItemProps) {
           );
         })}
       </div>
-
-      {/* <div className={`grid grid-cols-8 grid-rows-${grid_rows} text-sm`}>
-        <div className="">SETS</div>
-        <div className="col-span-2">PREVIOUS</div>
-        <div className="col-span-2">LBS</div>
-        <div className="col-span-2">Reps</div>
-        <div className=""></div>
-        {sets_array.map((set, index) => {
-          return (
-            <SetItem
-              key={`exerciseSet_${exercise.id}_${set}_${index}`}
-              set={set}
-              previous={[0, 0]}
-              lbs={0}
-              reps={0}
-            />
-          );
-        })}
-      </div> */}
     </div>
   );
 }
@@ -102,16 +94,22 @@ type SetItemProps = {
 
 function SetItem({ set, previous, lbs, reps }: SetItemProps) {
   return (
-    <div className="flex">
-      <div className={`${WIDTHS[0]}`}>{set}</div>
-      <div className={`${WIDTHS[1]}`}>
+    <div className="flex items-center text-sm">
+      <div className={`${WIDTHS[0]} flex justify-center`}>{set}</div>
+      <div className={`${WIDTHS[1]} flex justify-center`}>
         {previous[0]}lbs x {previous[1]}
       </div>
-      <div className={`${WIDTHS[2]}`}>
+      <div className={`${WIDTHS[2]} flex justify-center p-1`}>
         <Input value={lbs} />
       </div>
-      <div className={`${WIDTHS[3]}`}>{reps}</div>
-      <div className="">x</div>
+      <div className={`${WIDTHS[3]} flex justify-center p-1`}>
+        <Input value={reps} />
+      </div>
+      <div className={`${WIDTHS[0]} flex justify-center`}>
+        <Button variant="outline" size="icon">
+          <CheckIcon fill="white" />
+        </Button>
+      </div>
     </div>
   );
 }

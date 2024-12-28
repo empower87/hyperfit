@@ -88,6 +88,7 @@ const getExercisesById = (
   }
   return exercises;
 };
+
 const useActiveWorkout = () => {
   const programConfig = useProgramConfigContext();
   const { trainingBlock, muscle_priority_list, training_program_params } =
@@ -109,7 +110,8 @@ const useActiveWorkout = () => {
       day_index: number,
       microcycle_index: number
     ) => {
-      const get_workout = savedTrainingBlocks[0][mesocycle_index][day_index];
+      const get_workout =
+        savedTrainingBlocks[training_block_index][mesocycle_index][day_index];
       const get_exerciseIds = get_workout.sessions[0].exercises.map(
         (e, i) => e[1]
       );
