@@ -167,16 +167,6 @@ function TrainingBlockItem({ index, training_block }: TrainingBlockItemProps) {
                             const selectedClasses = isSelected
                               ? "bg-primary-500 border-secondary-300"
                               : "bg-card";
-                            if (isSelected) {
-                              console.log(
-                                index,
-                                tbIndex,
-                                mesoIndex,
-                                microIndex,
-                                isSelected,
-                                "WHAAAT?"
-                              );
-                            }
 
                             return (
                               <Button

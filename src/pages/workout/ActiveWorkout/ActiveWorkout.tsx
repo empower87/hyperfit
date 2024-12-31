@@ -1,4 +1,5 @@
-import { CheckIcon } from "@radix-ui/react-icons";
+import { CheckIcon, DotsVerticalIcon } from "@radix-ui/react-icons";
+import { useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import {
@@ -62,13 +63,19 @@ function ExerciseItem({ exercise, order }: ExerciseItemProps) {
   const grid_rows = sets_array.length;
   return (
     <div className="flex flex-col space-y-1 rounded-lg border border-input">
-      <div className="flex">
-        <div className="p-2">{order}</div>
-        <div className="p-2">{exercise.name}</div>
+      <div className="flex items-center justify-between">
+        <div className="flex text-secondary-400">
+          <div className="p-2">{order}</div>
+          <div className="p-2">{exercise.name}</div>
+        </div>
+
+        <Button variant="ghost" size="sm">
+          <DotsVerticalIcon fill="white" />
+        </Button>
       </div>
 
       <ExerciseHeaders />
-      <div className="flex flex-col space-y-2 p-2 pt-0">
+      <div className="flex flex-col p-2 pt-0">
         {sets_array.map((set, index) => {
           return (
             <SetItem
@@ -93,8 +100,14 @@ type SetItemProps = {
 };
 
 function SetItem({ set, previous, lbs, reps }: SetItemProps) {
+  const [isSetCompleted, setIsSetCompleted] = useState(false);
+
   return (
-    <div className="flex items-center text-sm">
+    <div
+      className={`flex items-center rounded-md py-1 text-sm ${
+        isSetCompleted ? "bg-card" : ""
+      }`}
+    >
       <div className={`${WIDTHS[0]} flex justify-center`}>{set}</div>
       <div className={`${WIDTHS[1]} flex justify-center`}>
         {previous[0]}lbs x {previous[1]}
@@ -106,7 +119,11 @@ function SetItem({ set, previous, lbs, reps }: SetItemProps) {
         <Input value={reps} />
       </div>
       <div className={`${WIDTHS[0]} flex justify-center`}>
-        <Button variant="outline" size="icon">
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => setIsSetCompleted(!isSetCompleted)}
+        >
           <CheckIcon fill="white" />
         </Button>
       </div>
