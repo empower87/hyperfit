@@ -18,7 +18,7 @@ export default function ActiveWorkout() {
     <div className="flex flex-col overflow-scroll">
       {active_workout?.day}
 
-      <div className="space-y-2 overflow-auto">
+      <div className="space-y-2 overflow-auto pr-2">
         {active_workout?.session?.split}
         {active_workout?.session?.exercises.map((exercise, index) => {
           return (
@@ -60,7 +60,7 @@ type ExerciseItemProps = {
 };
 function ExerciseItem({ exercise, order }: ExerciseItemProps) {
   const sets_array = Array.from(Array(exercise.sets), (_, i) => i + 1);
-  const grid_rows = sets_array.length;
+
   return (
     <div className="flex flex-col space-y-1 rounded-lg border border-input">
       <div className="flex items-center justify-between">
