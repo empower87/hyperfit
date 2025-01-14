@@ -16,10 +16,12 @@ export default function ActiveWorkout() {
   const { active_workout } = useActiveWorkoutContext();
   return (
     <div className="flex flex-col overflow-scroll">
-      {active_workout?.day}
+      <div className="flex">
+        <h2 className="p-2">{active_workout?.day}</h2>
+        <h2 className="p-2">{active_workout?.session?.split}</h2>
+      </div>
 
       <div className="space-y-2 overflow-auto pr-2">
-        {active_workout?.session?.split}
         {active_workout?.session?.exercises.map((exercise, index) => {
           return (
             <ExerciseItem
@@ -87,6 +89,9 @@ function ExerciseItem({ exercise, order }: ExerciseItemProps) {
             />
           );
         })}
+        <Button variant="ghost" className="text-secondary-400">
+          Add Set
+        </Button>
       </div>
     </div>
   );

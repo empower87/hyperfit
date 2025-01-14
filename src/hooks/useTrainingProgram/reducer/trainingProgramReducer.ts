@@ -1,4 +1,4 @@
-import { getBroSplit, MuscleType } from "~/constants/workoutSplits";
+import { getBroSplit, type MuscleType } from "~/constants/workoutSplits";
 import {
   attachTargetFrequency,
   MUSCLE_PRIORITY_LIST,
@@ -113,6 +113,7 @@ export type SplitSessionsNameType =
   | "UL"
   | "FB"
   | "CUS";
+
 export type SplitSessionsType = SplitSessionsGenericType<SplitSessionsNameType>;
 
 export type ReturnValidSessionKeys<T extends SplitSessionsType["sessions"]> = {
@@ -225,6 +226,7 @@ export type ExerciseDataType = {
     secondary: string[];
   };
 };
+
 export type ExerciseType = {
   id: string;
   name: string;

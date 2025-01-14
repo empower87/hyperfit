@@ -1,31 +1,35 @@
-import { DayType, ExerciseType, SplitType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
-import { Set } from "./Exercise";
+import {
+  DayType,
+  SplitType,
+} from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 
+import { Set } from "./Exercise";
 
 type TrainingProgram = {
   id: string;
-  user_id: string
+  user_id: string;
   name?: string;
-  training_blocks: string[]
-}
+  training_blocks: string[];
+  created_at: Date;
+  updated_at: Date;
+};
 
 type TrainingBlock = {
   id: string;
-  user_id: string
+  user_id: string;
   name?: string;
-  mesocycles: string[]
-  prioritized_muscles: string[],
-
+  mesocycles: string[];
+  prioritized_muscles: string[];
   created_at: Date;
   updated_at: Date;
-}
+};
 
 type Mesocycle = {
   id: string;
   name?: string;
   training_block_id: string;
-  sessions: Session[]
-}
+  sessions: Session[];
+};
 
 type Session = {
   id: string;
@@ -33,29 +37,79 @@ type Session = {
   training_program_id: string;
   training_block_id: string;
   mesocycle_id: string;
+  name?: string;
   split: SplitType;
   scheduled_day: DayType;
   scheduled_time: Date;
-  exercises: ExerciseType[];
+  exercises: ProgramExercise[];
   created_at: Date;
-}
+  updated_at: Date;
+};
 
 type ProgramExercise = {
   id: string;
   name: string;
   muscle: string;
   session_id: string;
-  sets: Set[]
+  sets: Set[];
   training_modality: string;
   superset_with?: string;
-}
+};
 
-const TrainingProgram = {
+const exercise: ProgramExercise = {
+  id: "exercise_1",
+  name: "Bicep Curl",
+  muscle: "bicep",
+  session_id: "session_1",
+  sets: [
+    {
+      set_num: 1,
+      reps: 12,
+      weight: 100,
+      rir: 3,
+      isCompleted: false,
+    },
+  ],
+  training_modality: "straight",
+};
+
+const session: Session = {
+  id: "session_1",
+  user_id: "user_1",
+  training_program_id: "training_program_1",
+  training_block_id: "training_block_1",
+  mesocycle_id: "mesocycle_1",
+  name: "Block 1 - Mesocycle 1 - Push 1",
+  split: "push",
+  scheduled_day: "Monday",
+  scheduled_time: new Date(),
+  exercises: [exercise],
+  created_at: new Date(),
+  updated_at: new Date(),
+};
+
+const mesocycle: Mesocycle = {
+  id: "mesocycle_1",
+  name: "Arms Focus Year Block 1 - Mesocycle 1",
+  training_block_id: "training_block_1",
+  sessions: [session],
+};
+
+const trainingBlock: TrainingBlock = {
+  id: "training_block_1",
+  user_id: "user_1",
+  name: "Arms Focus Year Block 1",
+  mesocycles: [mesocycle.id],
+  prioritized_muscles: [],
+  created_at: new Date(),
+  updated_at: new Date(),
+};
+
+const trainingProgram: TrainingProgram = {
   id: "training_program_1",
   user_id: "user_1",
   name: "Arms Focus Year",
-  training_blocks: [],
+  training_blocks: [trainingBlock.id],
   created_at: new Date(),
   updated_at: new Date(),
-
-}
+};
