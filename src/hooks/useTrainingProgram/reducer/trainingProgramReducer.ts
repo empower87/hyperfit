@@ -18,7 +18,7 @@ export type DayType =
   | "Wednesday"
   | "Thursday"
   | "Friday"
-  | "Saturday";
+  | "Saturday"
 
 export type FBSessionsType = {
   upper?: never;
@@ -118,7 +118,7 @@ export type SplitSessionsType = SplitSessionsGenericType<SplitSessionsNameType>;
 
 export type ReturnValidSessionKeys<T extends SplitSessionsType["sessions"]> = {
   [key in keyof T]-?: T[key] extends number ? key : never;
-}[keyof T] & {};
+}[keyof T]
 
 export type OPTSessionKeys = ReturnValidSessionKeys<OPTSessionsType>;
 export type BROSessionKeys = ReturnValidSessionKeys<BROSessionsType>;

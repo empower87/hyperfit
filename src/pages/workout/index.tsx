@@ -1,5 +1,6 @@
-import ActiveWorkout from "./ActiveWorkout/ActiveWorkout";
-import SavedTrainingBlocks from "./SavedTrainingBlocks/SavedTrainingBlocks";
+import ActiveWorkout from "./components/ActiveWorkout/ActiveWorkout";
+import { ExerciseHistory } from "./components/ExerciseHistory/ExerciseHistory";
+import SavedTrainingBlocks from "./components/SavedTrainingBlocks/SavedTrainingBlocks";
 import { ActiveWorkoutProvider } from "./hooks/useActiveWorkout";
 
 export default function Workout() {
@@ -7,10 +8,15 @@ export default function Workout() {
     <ActiveWorkoutProvider>
       <div className="flex h-full flex-col pt-10">
         <h1 className="mb-5 text-white">Workout</h1>
-        <div className="flex h-full space-x-5 space-y-5">
-          <SavedTrainingBlocks />
-          <div className="flex h-full flex-col">
+        <div className="flex h-full">
+          <div className="p-4 pt-0">
+            <SavedTrainingBlocks />
+          </div>
+          <div className="p-4 pt-0">
             <ActiveWorkout />
+          </div>
+          <div className="p-4 pt-0">
+            <ExerciseHistory />
           </div>
         </div>
       </div>

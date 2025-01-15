@@ -13,7 +13,7 @@ import { NewTrainingWeek } from "~/hooks/useTrainingProgram/utils/training_block
 import { cn } from "~/lib/utils";
 import { useProgramConfigContext } from "~/pages/programConfig/hooks/useProgramConfig";
 import { getSplitColor } from "~/utils/getIndicatorColors";
-import { useActiveWorkoutContext } from "../hooks/useActiveWorkout";
+import { useActiveWorkoutContext } from "../../hooks/useActiveWorkout";
 
 const createTrainingBlockData = (
   training_block: NewTrainingWeek[][] | TrainingDayType[][]
