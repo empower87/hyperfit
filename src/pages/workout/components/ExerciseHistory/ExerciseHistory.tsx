@@ -1,7 +1,70 @@
+import { Set } from "~/types/Exercise";
+import { useActiveWorkoutContext } from "../../hooks/useActiveWorkout";
+
 export function ExerciseHistory() {
+  const { selectedExerciseHistory } = useActiveWorkoutContext();
   return (
-    <div className="w-[360px]">
-      <div className="flex p-2">History</div>
+    <div className="h-full w-[360px] overflow-scroll pr-2">
+      <div>
+        <h2 className="text-secondary">{selectedExerciseHistory?.name}</h2>
+      </div>
+      <div className="">
+        <div className="flex p-2">History</div>
+        <div className="flex flex-col space-y-4">
+          {PREV_EXERCISE_DATA.map((session) => {
+            return (
+              <ExerciseHistoryCard
+                session_name={session.session_name}
+                session_date={session.session_date}
+                exercise_id={session.exercise_id}
+                sets={session.sets}
+              />
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+type ExerciseHistoryCardProps = {
+  session_name: string;
+  session_date: string;
+  exercise_id: string;
+  sets: Set[];
+};
+function ExerciseHistoryCard({
+  session_name,
+  session_date,
+  exercise_id,
+  sets,
+}: ExerciseHistoryCardProps) {
+  return (
+    <div className="flex flex-col rounded-md border border-input p-3">
+      <div className="pb-2 leading-tight">
+        <h2 className="">{session_name}</h2>
+        <p className="text-sm text-muted-foreground">{session_date}</p>
+      </div>
+      <div className="flex flex-col">
+        <div className="flex justify-between">
+          <h3 className="">Sets Performed</h3>
+          <h3 className="">1RM</h3>
+        </div>
+        {sets.map((set) => {
+          return (
+            <div className="flex justify-between text-sm text-muted-foreground">
+              <div className="flex space-x-2">
+                <p className="">{set.set_num}</p>
+                <p className="">
+                  {set.weight}lbs x {set.reps}
+                </p>
+              </div>
+
+              <p className="">{set.rir}</p>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -10,7 +73,10 @@ export function ExerciseHistory() {
 
 const SESSION_EXERCISE_DATA = {
   session_id: "session_1",
+  session_name: "Session 1",
+  session_date: "2022-01-01",
   exercise_id: "exercise_1",
+  exercise_name: "Bicep Curl",
   sets: [
     {
       set_num: 1,
@@ -34,7 +100,7 @@ const SESSION_EXERCISE_DATA = {
       isCompleted: true,
     },
     {
-      set_num: 3,
+      set_num: 4,
       reps: 12,
       weight: 100,
       rir: 3,
@@ -43,4 +109,26 @@ const SESSION_EXERCISE_DATA = {
   ],
 };
 
-const PREV_EXERCISE_DATA = [{}];
+const PREV_EXERCISE_DATA = [
+  { ...SESSION_EXERCISE_DATA },
+  {
+    ...SESSION_EXERCISE_DATA,
+    session_id: "session_2",
+    session_name: "Session 2",
+  },
+  {
+    ...SESSION_EXERCISE_DATA,
+    session_id: "session_3",
+    session_name: "Session 3",
+  },
+  {
+    ...SESSION_EXERCISE_DATA,
+    session_id: "session_4",
+    session_name: "Session 4",
+  },
+  {
+    ...SESSION_EXERCISE_DATA,
+    session_id: "session_5",
+    session_name: "Session 5",
+  },
+];

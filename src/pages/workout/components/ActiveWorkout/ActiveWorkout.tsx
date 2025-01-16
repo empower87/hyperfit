@@ -61,12 +61,16 @@ type ExerciseItemProps = {
   order: number;
 };
 function ExerciseItem({ exercise, order }: ExerciseItemProps) {
+  const { onExerciseClick } = useActiveWorkoutContext();
   const sets_array = Array.from(Array(exercise.sets), (_, i) => i + 1);
 
   return (
     <div className="flex flex-col space-y-1 rounded-lg border border-input">
       <div className="flex items-center justify-between">
-        <div className="flex text-secondary-400">
+        <div
+          className="flex cursor-pointer text-secondary-400"
+          onClick={() => onExerciseClick(exercise.id)}
+        >
           <div className="p-2">{order}</div>
           <div className="p-2">{exercise.name}</div>
         </div>

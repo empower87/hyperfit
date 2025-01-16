@@ -17,11 +17,13 @@ import { getExerciseSetsOverMicrocycles } from "~/hooks/useTrainingProgram/utils
 import { NewTrainingWeek } from "~/hooks/useTrainingProgram/utils/training_block/trainingBlockHelpers";
 import { useProgramConfigContext } from "~/pages/programConfig/hooks/useProgramConfig";
 
-type TrainingProgramType = ReturnType<typeof useActiveWorkout>;
+type ActiveWorkoutType = ReturnType<typeof useActiveWorkout>;
 
-const ActiveWorkoutContext = createContext<TrainingProgramType>({
+const ActiveWorkoutContext = createContext<ActiveWorkoutType>({
   active_workout: null,
+  selectedExerciseHistory: undefined,
   onSelectWorkout: () => {},
+  onExerciseClick: () => {},
 });
 
 export const ActiveWorkoutProvider = ({
@@ -89,6 +91,10 @@ const getExercisesById = (
   return exercises;
 };
 
+type ActiveWorkout = {
+  day: DayType;
+  session: { id: string; split: SessionSplitType; exercises: ExerciseType[] };
+};
 const useActiveWorkout = () => {
   const programConfig = useProgramConfigContext();
   const { trainingBlock, muscle_priority_list, training_program_params } =
@@ -98,10 +104,11 @@ const useActiveWorkout = () => {
   const [selectedWorkout, setSelectedWorkout] = useState<
     [number, number, number, number]
   >([0, 0, 0, 0]);
-  const [activeWorkout, setActiveWorkout] = useState<{
-    day: DayType;
-    session: { id: string; split: SessionSplitType; exercises: ExerciseType[] };
-  } | null>(null);
+  const [activeWorkout, setActiveWorkout] = useState<ActiveWorkout | null>(
+    null
+  );
+  const [selectedExerciseHistoryId, setSelectedExerciseHistoryId] =
+    useState<string>("");
 
   const onSelectWorkout = useCallback(
     (
@@ -131,27 +138,25 @@ const useActiveWorkout = () => {
         },
       };
 
-      console.log(
-        savedTrainingBlocks,
-        training_block_index,
-        mesocycle_index,
-        day_index,
-        microcycle_index,
-        get_workout,
-        get_exerciseIds,
-        hydrated_exercises,
-        active_workout,
-        muscle_priority_list,
-        "WHAT AM I GETTING HERE??"
-      );
       setSelectedWorkout([0, mesocycle_index, day_index, microcycle_index]);
       setActiveWorkout(active_workout);
     },
     [savedTrainingBlocks, muscle_priority_list, microcycles]
   );
 
+  const onExerciseClick = useCallback((exercise_id: string) => {
+    setSelectedExerciseHistoryId(exercise_id);
+  }, []);
+
+  const selectedExerciseHistory =
+    activeWorkout &&
+    activeWorkout.session.exercises.find(
+      (ex) => ex.id === selectedExerciseHistoryId
+    );
   return {
     active_workout: activeWorkout,
+    selectedExerciseHistory,
     onSelectWorkout,
+    onExerciseClick,
   };
 };
