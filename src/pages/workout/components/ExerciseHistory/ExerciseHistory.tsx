@@ -1,31 +1,75 @@
+import { Cross1Icon } from "@radix-ui/react-icons";
+import { Button } from "~/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Set } from "~/types/Exercise";
 import { useActiveWorkoutContext } from "../../hooks/useActiveWorkout";
 
 export function ExerciseHistory() {
-  const { selectedExerciseHistory } = useActiveWorkoutContext();
+  const { active_workout, selectedExerciseHistoryId, onExerciseClick } =
+    useActiveWorkoutContext();
+  if (!selectedExerciseHistoryId.length) return null;
+
+  const selectedExerciseHistory =
+    active_workout &&
+    active_workout.session.exercises.find(
+      (ex) => ex.id === selectedExerciseHistoryId
+    );
   return (
-    <div className="h-full w-[360px] overflow-scroll pr-2">
-      <div>
-        <h2 className="text-secondary">{selectedExerciseHistory?.name}</h2>
-      </div>
-      <div className="">
+    <Card className="h-full w-[360px]">
+      <CardHeader className="flex-row items-center justify-between space-y-0">
+        <CardTitle className="text-secondary-400">
+          {selectedExerciseHistory?.name}
+        </CardTitle>
+
+        <Button variant="ghost" size="icon" onClick={() => onExerciseClick("")}>
+          <Cross1Icon fill="white" />
+        </Button>
+      </CardHeader>
+
+      <CardContent className="h-full">
         <div className="flex p-2">History</div>
-        <div className="flex flex-col space-y-4">
-          {PREV_EXERCISE_DATA.map((session) => {
-            return (
-              <ExerciseHistoryCard
-                session_name={session.session_name}
-                session_date={session.session_date}
-                exercise_id={session.exercise_id}
-                sets={session.sets}
-              />
-            );
-          })}
+        <div className="flex h-1/2 flex-col space-y-4 overflow-scroll">
+          {selectedExerciseHistory &&
+            PREV_EXERCISE_DATA.map((session) => {
+              return (
+                <ExerciseHistoryCard
+                  session_name={session.session_name}
+                  session_date={session.session_date}
+                  exercise_id={session.exercise_id}
+                  sets={session.sets}
+                />
+              );
+            })}
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }
+// export function ExerciseHistory() {
+//   const { selectedExerciseHistory } = useActiveWorkoutContext();
+//   return (
+//     <div className="h-full w-[360px] overflow-scroll pr-2">
+//       <div>
+//         <h2 className="text-secondary">{selectedExerciseHistory?.name}</h2>
+//       </div>
+//       <div className="">
+//         <div className="flex p-2">History</div>
+//         <div className="flex flex-col space-y-4">
+//           {selectedExerciseHistory && PREV_EXERCISE_DATA.map((session) => {
+//             return (
+//               <ExerciseHistoryCard
+//                 session_name={session.session_name}
+//                 session_date={session.session_date}
+//                 exercise_id={session.exercise_id}
+//                 sets={session.sets}
+//               />
+//             );
+//           })}
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
 
 type ExerciseHistoryCardProps = {
   session_name: string;

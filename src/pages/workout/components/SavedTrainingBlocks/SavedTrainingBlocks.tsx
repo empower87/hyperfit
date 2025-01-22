@@ -49,7 +49,7 @@ export default function SavedTrainingBlocks() {
   const training_blocks = [trainingBlock, TBLOCK_TEST, TBLOCK_TEST];
 
   return (
-    <Card className="w-[370px]">
+    <Card className="w-[360px]">
       <CardHeader>
         <h2>My Training Blocks</h2>
       </CardHeader>

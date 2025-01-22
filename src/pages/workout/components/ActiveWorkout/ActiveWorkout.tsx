@@ -8,20 +8,42 @@ import {
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { NewTrainingWeek } from "~/hooks/useTrainingProgram/utils/training_block/trainingBlockHelpers";
 import { useActiveWorkoutContext } from "../../hooks/useActiveWorkout";
+import { StartWorkout } from "./StartWorkout";
 
 type ActiveWorkoutProps = {
   training_day: NewTrainingWeek | TrainingDayType;
 };
 export default function ActiveWorkout() {
   const { active_workout } = useActiveWorkoutContext();
+  const [today, setToday] = useState(new Date());
+  const dayOfWeek = today.toLocaleDateString("en-US", { weekday: "long" });
+  const hours = today.getHours();
+  const time_of_day =
+    hours < 12 ? "morning" : hours < 18 ? "afternoon" : "evening";
+
+  const unnamed_workout =
+    time_of_day.charAt(0).toUpperCase() + time_of_day.slice(1) + " Workout";
+
   return (
     <div className="flex h-full flex-col overflow-scroll">
-      <div className="flex">
-        <h2 className="p-2">{active_workout?.day}</h2>
-        <h2 className="p-2">{active_workout?.session?.split}</h2>
+      <div className="flex items-center justify-between">
+        <div className="flex flex-col">
+          <h2 className="p-2 pb-0 text-secondary-400">
+            {active_workout?.session?.name ?? unnamed_workout}
+          </h2>
+          <div className="flex space-x-2 p-2 pt-0">
+            <p className=" text-muted-foreground">{dayOfWeek}</p>
+            <p className=" text-muted-foreground">
+              {active_workout?.session?.split}
+            </p>
+          </div>
+        </div>
+        <div className="flex p-2">
+          <StartWorkout active_workout={active_workout} />
+        </div>
       </div>
 
-      <div className="space-y-2 overflow-auto pr-2">
+      <div className="h-5/6 space-y-2 overflow-auto">
         {active_workout?.session?.exercises.map((exercise, index) => {
           return (
             <ExerciseItem

@@ -21,7 +21,7 @@ type ActiveWorkoutType = ReturnType<typeof useActiveWorkout>;
 
 const ActiveWorkoutContext = createContext<ActiveWorkoutType>({
   active_workout: null,
-  selectedExerciseHistory: undefined,
+  selectedExerciseHistoryId: "",
   onSelectWorkout: () => {},
   onExerciseClick: () => {},
 });
@@ -91,9 +91,14 @@ const getExercisesById = (
   return exercises;
 };
 
-type ActiveWorkout = {
+export type ActiveWorkout = {
   day: DayType;
-  session: { id: string; split: SessionSplitType; exercises: ExerciseType[] };
+  session: {
+    id: string;
+    split: SessionSplitType;
+    name?: string;
+    exercises: ExerciseType[];
+  };
 };
 const useActiveWorkout = () => {
   const programConfig = useProgramConfigContext();
@@ -117,6 +122,7 @@ const useActiveWorkout = () => {
       day_index: number,
       microcycle_index: number
     ) => {
+      setActiveWorkout(null);
       const get_workout =
         savedTrainingBlocks[training_block_index][mesocycle_index][day_index];
       const get_exerciseIds = get_workout.sessions[0].exercises.map(
@@ -148,14 +154,9 @@ const useActiveWorkout = () => {
     setSelectedExerciseHistoryId(exercise_id);
   }, []);
 
-  const selectedExerciseHistory =
-    activeWorkout &&
-    activeWorkout.session.exercises.find(
-      (ex) => ex.id === selectedExerciseHistoryId
-    );
   return {
     active_workout: activeWorkout,
-    selectedExerciseHistory,
+    selectedExerciseHistoryId,
     onSelectWorkout,
     onExerciseClick,
   };
