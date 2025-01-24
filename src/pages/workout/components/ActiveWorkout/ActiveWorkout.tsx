@@ -1,58 +1,26 @@
 import { CheckIcon, DotsVerticalIcon } from "@radix-ui/react-icons";
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
-import {
-  ExerciseType,
-  TrainingDayType,
-} from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
-import { NewTrainingWeek } from "~/hooks/useTrainingProgram/utils/training_block/trainingBlockHelpers";
+import { useTimer } from "~/hooks/useTimer";
+import { ExerciseType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { useActiveWorkoutContext } from "../../hooks/useActiveWorkout";
-import { StartWorkout } from "./StartWorkout";
+import { ActiveWorkoutHeader, ActiveWorkoutTitle } from "./ActiveWorkoutHeader";
 
 type ActiveWorkoutProps = {
-  training_day: NewTrainingWeek | TrainingDayType;
+  children: ReactNode;
 };
-export default function ActiveWorkout() {
-  const { active_workout } = useActiveWorkoutContext();
-  const [today, setToday] = useState(new Date());
-  const dayOfWeek = today.toLocaleDateString("en-US", { weekday: "long" });
-  const hours = today.getHours();
-  const time_of_day =
-    hours < 12 ? "morning" : hours < 18 ? "afternoon" : "evening";
 
-  const unnamed_workout =
-    time_of_day.charAt(0).toUpperCase() + time_of_day.slice(1) + " Workout";
-
+ActiveWorkout.Exercises = ExerciseList;
+export default function ActiveWorkout({ children }: ActiveWorkoutProps) {
+  const { start, pause, duration, isRunning } = useTimer();
   return (
     <div className="flex h-full flex-col overflow-scroll">
-      <div className="flex items-center justify-between">
-        <div className="flex flex-col">
-          <h2 className="p-2 pb-0 text-secondary-400">
-            {active_workout?.session?.name ?? unnamed_workout}
-          </h2>
-          <div className="flex space-x-2 p-2 pt-0">
-            <p className=" text-muted-foreground">{dayOfWeek}</p>
-            <p className=" text-muted-foreground">
-              {active_workout?.session?.split}
-            </p>
-          </div>
-        </div>
-        <div className="flex p-2">
-          <StartWorkout active_workout={active_workout} />
-        </div>
-      </div>
+      <ActiveWorkoutHeader start={start} />
 
       <div className="h-5/6 space-y-2 overflow-auto">
-        {active_workout?.session?.exercises.map((exercise, index) => {
-          return (
-            <ExerciseItem
-              key={`activeWorkoutExerciseItem_${exercise.id}_${index}`}
-              exercise={exercise}
-              order={index + 1}
-            />
-          );
-        })}
+        <ActiveWorkoutTitle workout_duration={<p>{duration}</p>} />
+        {children}
       </div>
     </div>
   );
@@ -78,6 +46,22 @@ function ExerciseHeaders() {
   );
 }
 
+function ExerciseList() {
+  const { active_workout } = useActiveWorkoutContext();
+  return (
+    <>
+      {active_workout?.session?.exercises.map((exercise, index) => {
+        return (
+          <ExerciseItem
+            key={`activeWorkoutExerciseItem_${exercise.id}_${index}`}
+            exercise={exercise}
+            order={index + 1}
+          />
+        );
+      })}
+    </>
+  );
+}
 type ExerciseItemProps = {
   exercise: ExerciseType;
   order: number;
