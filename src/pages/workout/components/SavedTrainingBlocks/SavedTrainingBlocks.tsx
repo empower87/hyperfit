@@ -51,7 +51,7 @@ export default function SavedTrainingBlocks() {
   return (
     <Card className="w-[360px]">
       <CardHeader>
-        <h2>My Training Blocks</h2>
+        <h2>Saved Training Blocks</h2>
       </CardHeader>
       <CardContent>
         <ul>

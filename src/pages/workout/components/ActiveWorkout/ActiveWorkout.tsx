@@ -16,7 +16,11 @@ export default function ActiveWorkout({ children }: ActiveWorkoutProps) {
   const { start, pause, duration, isRunning } = useTimer();
   return (
     <div className="flex h-full flex-col overflow-scroll">
-      <ActiveWorkoutHeader start={start} />
+      <ActiveWorkoutHeader
+        startTimer={start}
+        stopTimer={pause}
+        isRunning={isRunning}
+      />
 
       <div className="h-5/6 space-y-2 overflow-auto">
         <ActiveWorkoutTitle workout_duration={<p>{duration}</p>} />
@@ -36,7 +40,7 @@ function ExerciseHeaders() {
         return (
           <div
             key={`exerciseHeader_${width}_${index}`}
-            className={`flex justify-center ${width}`}
+            className={`flex justify-center ${width} text-muted-foreground`}
           >
             {TITLES[index]}
           </div>
@@ -49,7 +53,7 @@ function ExerciseHeaders() {
 function ExerciseList() {
   const { active_workout } = useActiveWorkoutContext();
   return (
-    <>
+    <ul>
       {active_workout?.session?.exercises.map((exercise, index) => {
         return (
           <ExerciseItem
@@ -59,7 +63,7 @@ function ExerciseList() {
           />
         );
       })}
-    </>
+    </ul>
   );
 }
 type ExerciseItemProps = {
@@ -71,7 +75,7 @@ function ExerciseItem({ exercise, order }: ExerciseItemProps) {
   const sets_array = Array.from(Array(exercise.sets), (_, i) => i + 1);
 
   return (
-    <div className="flex flex-col space-y-1 rounded-lg border border-input">
+    <li className="flex flex-col space-y-1 rounded-lg border border-input text-muted-foreground">
       <div className="flex items-center justify-between">
         <div
           className="flex cursor-pointer text-secondary-400"
@@ -103,7 +107,7 @@ function ExerciseItem({ exercise, order }: ExerciseItemProps) {
           Add Set
         </Button>
       </div>
-    </div>
+    </li>
   );
 }
 
