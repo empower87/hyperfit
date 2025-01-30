@@ -1,11 +1,9 @@
-import { CheckIcon, DotsVerticalIcon } from "@radix-ui/react-icons";
 import { ReactNode, useState } from "react";
 import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/input";
 import { useTimer } from "~/hooks/useTimer";
-import { ExerciseType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { useActiveWorkoutContext } from "../../hooks/useActiveWorkout";
-import { ActiveWorkoutHeader, ActiveWorkoutTitle } from "./ActiveWorkoutHeader";
+import ExerciseList from "./Exercises";
+import RestTimer from "./RestTimer";
 
 type ActiveWorkoutProps = {
   children: ReactNode;
@@ -23,129 +21,107 @@ export default function ActiveWorkout({ children }: ActiveWorkoutProps) {
       />
 
       <div className="h-5/6 space-y-2 overflow-auto">
-        <ActiveWorkoutTitle workout_duration={<p>{duration}</p>} />
+        <ActiveWorkoutTitle
+          workout_duration={<p className="text-muted-foreground">{duration}</p>}
+        />
         {children}
+        <ActiveWorkoutFooter stopTimer={pause} isRunning={isRunning} />
       </div>
     </div>
   );
 }
 
-const WIDTHS = ["w-10", "w-24", "w-24", "w-24", "w-10"];
-const TITLES = ["SET", "PREVIOUS", "LBS", "REPS", ""];
-
-function ExerciseHeaders() {
+type ActiveWorkoutHeaderProps = {
+  startTimer: () => void;
+  stopTimer: () => void;
+  isRunning: boolean;
+};
+function ActiveWorkoutHeader({
+  startTimer,
+  stopTimer,
+  isRunning,
+}: ActiveWorkoutHeaderProps) {
   return (
-    <div className="flex p-2 pt-0 text-sm">
-      {WIDTHS.map((width, index) => {
-        return (
-          <div
-            key={`exerciseHeader_${width}_${index}`}
-            className={`flex justify-center ${width} text-muted-foreground`}
+    <div className="flex items-center justify-between shadow-md">
+      <RestTimer />
+
+      <div className="flex p-2">
+        {isRunning ? (
+          <Button
+            className="text-secondary-400"
+            variant="ghost"
+            onClick={() => stopTimer()}
           >
-            {TITLES[index]}
-          </div>
-        );
-      })}
+            Finish
+          </Button>
+        ) : (
+          <Button className="" variant="outline" onClick={() => startTimer()}>
+            Start
+          </Button>
+        )}
+      </div>
+    </div>
+  );
+}
+type ActiveWorkoutFooterProps = {
+  stopTimer: () => void;
+  isRunning: boolean;
+};
+function ActiveWorkoutFooter({
+  stopTimer,
+  isRunning,
+}: ActiveWorkoutFooterProps) {
+  if (!isRunning) return null;
+  return (
+    <div className="flex items-center justify-between shadow-md">
+      <div className="flex w-full flex-col justify-center space-y-4 p-2">
+        <Button
+          className="text-secondary-400"
+          variant="ghost"
+          onClick={() => {}}
+        >
+          Add Exercise
+        </Button>
+
+        <Button className="" variant="destructive" onClick={() => stopTimer()}>
+          Cancel Workout
+        </Button>
+      </div>
     </div>
   );
 }
 
-function ExerciseList() {
+type ActiveWorkoutTitleprops = {
+  workout_duration: JSX.Element;
+};
+function ActiveWorkoutTitle({ workout_duration }: ActiveWorkoutTitleprops) {
   const { active_workout } = useActiveWorkoutContext();
-  return (
-    <ul>
-      {active_workout?.session?.exercises.map((exercise, index) => {
-        return (
-          <ExerciseItem
-            key={`activeWorkoutExerciseItem_${exercise.id}_${index}`}
-            exercise={exercise}
-            order={index + 1}
-          />
-        );
-      })}
-    </ul>
-  );
-}
-type ExerciseItemProps = {
-  exercise: ExerciseType;
-  order: number;
-};
-function ExerciseItem({ exercise, order }: ExerciseItemProps) {
-  const { onExerciseClick } = useActiveWorkoutContext();
-  const sets_array = Array.from(Array(exercise.sets), (_, i) => i + 1);
+  const session_name = active_workout?.session?.name;
+  const session_split = active_workout?.session?.split;
+
+  const [today] = useState(new Date());
+  const dayOfWeek = today.toLocaleDateString("en-US", { weekday: "long" });
+  const hours = today.getHours();
+  const time_of_day =
+    hours < 12 ? "morning" : hours < 18 ? "afternoon" : "evening";
+
+  const unnamed_workout =
+    time_of_day.charAt(0).toUpperCase() + time_of_day.slice(1) + " Workout";
 
   return (
-    <li className="flex flex-col space-y-1 rounded-lg border border-input text-muted-foreground">
-      <div className="flex items-center justify-between">
-        <div
-          className="flex cursor-pointer text-secondary-400"
-          onClick={() => onExerciseClick(exercise.id)}
-        >
-          <div className="p-2">{order}</div>
-          <div className="p-2">{exercise.name}</div>
+    <div className="flex items-center justify-between">
+      <div className="flex flex-col">
+        <h2 className="p-2 pb-0 text-lg font-semibold text-white">
+          {session_name ?? unnamed_workout}
+        </h2>
+
+        <div className="flex space-x-2 p-2 pt-0">
+          <p className=" text-muted-foreground">{dayOfWeek}</p>
+          <p className=" text-muted-foreground">{session_split}</p>
         </div>
-
-        <Button variant="ghost" size="sm">
-          <DotsVerticalIcon fill="white" />
-        </Button>
       </div>
 
-      <ExerciseHeaders />
-      <div className="flex flex-col p-2 pt-0">
-        {sets_array.map((set, index) => {
-          return (
-            <SetItem
-              key={`exerciseSet_${exercise.id}_${set}_${index}`}
-              set={set}
-              previous={[0, 0]}
-              lbs={0}
-              reps={0}
-            />
-          );
-        })}
-        <Button variant="ghost" className="text-secondary-400">
-          Add Set
-        </Button>
-      </div>
-    </li>
-  );
-}
-
-type SetItemProps = {
-  set: number;
-  previous: [number, number];
-  lbs: number;
-  reps: number;
-};
-
-function SetItem({ set, previous, lbs, reps }: SetItemProps) {
-  const [isSetCompleted, setIsSetCompleted] = useState(false);
-
-  return (
-    <div
-      className={`flex items-center rounded-md py-1 text-sm ${
-        isSetCompleted ? "bg-card" : ""
-      }`}
-    >
-      <div className={`${WIDTHS[0]} flex justify-center`}>{set}</div>
-      <div className={`${WIDTHS[1]} flex justify-center`}>
-        {previous[0]}lbs x {previous[1]}
-      </div>
-      <div className={`${WIDTHS[2]} flex justify-center p-1`}>
-        <Input value={lbs} />
-      </div>
-      <div className={`${WIDTHS[3]} flex justify-center p-1`}>
-        <Input value={reps} />
-      </div>
-      <div className={`${WIDTHS[0]} flex justify-center`}>
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() => setIsSetCompleted(!isSetCompleted)}
-        >
-          <CheckIcon fill="white" />
-        </Button>
-      </div>
+      <div className="flex p-2">{workout_duration}</div>
     </div>
   );
 }
