@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import SelectExercise from "~/components/Modals/ChangeExerciseModal/ChangeExerciseModal";
+import SelectExercise from "~/components/Modals/SelectExercise/SelectExerciseModal";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,

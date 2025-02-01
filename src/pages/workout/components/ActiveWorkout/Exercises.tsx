@@ -99,6 +99,8 @@ type SetItemProps = {
 function SetItem({ set, previous, lbs, reps }: SetItemProps) {
   const [isSetCompleted, setIsSetCompleted] = useState(false);
 
+  const onSetComplete = () => {};
+
   const inputBorder = isSetCompleted ? "border-white" : "border-input";
   const bgColor = isSetCompleted ? "bg-secondary-300 text-white" : "";
   const buttonVariant = isSetCompleted ? "ghost" : "outline";

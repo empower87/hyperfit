@@ -10,7 +10,7 @@ import {
   ChangeExerciseProvider,
   FilterTagsKey,
   useChangeExerciseContext,
-} from "./ChangeExerciseContext";
+} from "./SelectExerciseContext";
 
 function Header({ children }: { children: ReactNode }) {
   return <div className={"flex justify-between"}>{children}</div>;

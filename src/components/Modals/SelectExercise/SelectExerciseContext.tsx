@@ -92,6 +92,7 @@ type ChangeExerciseContextType = ReturnType<typeof useChangeExercise>;
 
 const ChangeExerciseContext = createContext<ChangeExerciseContextType>({
   exercises: [],
+  alphabetizedExercises: {},
   exerciseId: "",
   allExercises: [],
   selectedExerciseId: "",
@@ -103,16 +104,16 @@ const ChangeExerciseContext = createContext<ChangeExerciseContextType>({
 });
 
 type ChangeExerciseProviderProps = {
-  muscle: MusclePriorityType;
   exerciseId: string;
   children: ReactNode;
+  muscle?: MusclePriorityType;
 };
 const ChangeExerciseProvider = ({
-  muscle,
   exerciseId,
   children,
+  muscle,
 }: ChangeExerciseProviderProps) => {
-  const values = useChangeExercise(muscle, exerciseId);
+  const values = useChangeExercise(exerciseId, muscle);
   return (
     <ChangeExerciseContext.Provider value={values}>
       {children}
@@ -124,19 +125,133 @@ const useChangeExerciseContext = () => {
   return useContext(ChangeExerciseContext);
 };
 
-function useChangeExercise(muscle: MusclePriorityType, exerciseId: string) {
-  const allExercises = [...muscle.exercises].flat();
+const getAlphabetizedExercises = (
+  exercises: JSONExercise[]
+): GroupedExercisesByFilter => {
+  const groupedExercises: GroupedExercisesByFilter = {};
+
+  exercises.forEach((exercise) => {
+    const firstLetter = exercise.name.charAt(0).toUpperCase();
+    if (!groupedExercises[firstLetter]) {
+      groupedExercises[firstLetter] = [];
+    }
+    groupedExercises[firstLetter].push(exercise);
+  });
+
+  // Sort each group alphabetically by exercise name
+  Object.keys(groupedExercises).forEach((key) => {
+    groupedExercises[key].sort((a, b) => a.name.localeCompare(b.name));
+  });
+
+  return groupedExercises;
+};
+
+const getMuscleExercises = (muscle: string, exercises: JSONExercise[][]) => {
+  const index_of_muscle = MUSCLES.indexOf(muscle);
+  return exercises[index_of_muscle];
+};
+
+const MUSCLES = [
+  "abs",
+  "back",
+  "biceps",
+  "calves",
+  "chest",
+  "delts_front",
+  "delts_rear",
+  "delts_side",
+  "forearms",
+  "glutes",
+  "hamstrings",
+  "quads",
+  "triceps",
+  "traps",
+];
+
+const AZ = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+
+type GroupedExercisesByFilter = {
+  [key: string]: JSONExercise[];
+};
+
+function useChangeExercise(exerciseId: string, muscle?: MusclePriorityType) {
+  const all_api_exercises = MUSCLES.map((muscle) => getGroupList(muscle));
+  const all_api_exercises_flattened = all_api_exercises.flat();
+  const alphabetizedExercises = getAlphabetizedExercises(
+    all_api_exercises_flattened
+  );
+  const selected_muscles_exercises = muscle ? [...muscle.exercises].flat() : [];
+
   const [visibleExercises, setVisibleExercises] = useState<JSONExercise[]>([]);
+  const [groupedExercises, setGroupedExercises] =
+    useState<GroupedExercisesByFilter>({});
   const [selectedExerciseId, setSelectedExerciseId] = useState<string>("");
   const [filterTags, setFilterTags] = useState<FilterTags>({
     ...INITIAL_FILTER_TAGS,
   });
 
   useEffect(() => {
-    const exercises = getGroupList(muscle.muscle);
-    const filteredExercises = filterExercisesByTags([...exercises], filterTags);
-    setVisibleExercises(filteredExercises);
-  }, [filterTags, muscle]);
+    const all_api_exercises_for_console_logging = MUSCLES.map((muscle) =>
+      getGroupList(muscle)
+    );
+    const searchedExercises = binarySearchExercises("triceps");
+    console.log(
+      all_api_exercises_for_console_logging,
+      searchedExercises,
+      "triceps",
+      alphabetizedExercises,
+      "WHAT THESE LOOK LIKE?"
+    );
+
+    if (muscle) {
+      const exercises = getMuscleExercises(muscle.muscle, all_api_exercises);
+      const groupedExercise: GroupedExercisesByFilter = {
+        [muscle.muscle]: exercises,
+      };
+      const filteredExercises = filterExercisesByTags(
+        [...exercises],
+        filterTags
+      );
+      setVisibleExercises(filteredExercises);
+      setGroupedExercises(groupedExercise);
+      console.log(groupedExercises, "GROUPED EXERCISES");
+    }
+  }, [filterTags, muscle, all_api_exercises]);
+
+  const binarySearchExercises = useCallback(
+    (muscle: string) => {
+      let left = 0;
+      let right = all_api_exercises_flattened.length - 1;
+      let startIndex = -1;
+
+      while (left <= right) {
+        const mid = Math.floor((left + right) / 2);
+        if (all_api_exercises_flattened[mid].group === muscle) {
+          startIndex = mid;
+          right = mid - 1; // Continue searching in the left half
+        } else if (all_api_exercises_flattened[mid].group < muscle) {
+          left = mid + 1;
+        } else {
+          right = mid - 1;
+        }
+      }
+
+      if (startIndex === -1) return [];
+
+      const result = [];
+      for (
+        let i = startIndex;
+        i < all_api_exercises_flattened.length &&
+        all_api_exercises_flattened[i].group === muscle;
+        i++
+      ) {
+        result.push(all_api_exercises_flattened[i]);
+      }
+
+      return result;
+    },
+    [all_api_exercises_flattened]
+  );
 
   const onFilterTagChange = useCallback(
     (key: FilterTagsKey, value: string | null) => {
@@ -207,8 +322,9 @@ function useChangeExercise(muscle: MusclePriorityType, exerciseId: string) {
 
   return {
     exercises: visibleExercises,
+    alphabetizedExercises,
     exerciseId,
-    allExercises,
+    allExercises: selected_muscles_exercises,
     selectedExerciseId,
     filterTags,
     onFilterTagChange,

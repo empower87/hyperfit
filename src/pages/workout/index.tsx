@@ -8,18 +8,18 @@ export default function Workout() {
     <ActiveWorkoutProvider>
       <div className="flex h-full flex-col overflow-auto">
         <h1 className="mb-5 text-white">Workout</h1>
-        <div className="flex">
-          <div className="p-4 pt-0">
+        <div className="flex space-x-6">
+          <div className="">
             <SavedTrainingBlocks />
           </div>
 
-          <div className=" p-4 pt-0">
+          <div className=" ">
             <ActiveWorkout>
               <ActiveWorkout.Exercises />
             </ActiveWorkout>
           </div>
 
-          <div className="p-4 pt-0">
+          <div className="">
             <ExerciseHistory />
           </div>
         </div>

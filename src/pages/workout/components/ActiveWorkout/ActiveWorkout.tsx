@@ -1,6 +1,17 @@
-import { ReactNode, useState } from "react";
+import { ReactNode, useCallback, useState } from "react";
+import SelectExercise from "~/components/Modals/SelectExercise/SelectExerciseModal";
 import { Button } from "~/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "~/components/ui/dialog";
 import { useTimer } from "~/hooks/useTimer";
+import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
 import { useActiveWorkoutContext } from "../../hooks/useActiveWorkout";
 import ExerciseList from "./Exercises";
 import RestTimer from "./RestTimer";
@@ -63,6 +74,7 @@ function ActiveWorkoutHeader({
     </div>
   );
 }
+
 type ActiveWorkoutFooterProps = {
   stopTimer: () => void;
   isRunning: boolean;
@@ -72,16 +84,43 @@ function ActiveWorkoutFooter({
   isRunning,
 }: ActiveWorkoutFooterProps) {
   if (!isRunning) return null;
+  const { prioritized_muscle_list } = useTrainingProgramContext();
+  const { active_workout } = useActiveWorkoutContext();
+  const onAddExercise = useCallback(() => {}, []);
+
   return (
     <div className="flex items-center justify-between shadow-md">
       <div className="flex w-full flex-col justify-center space-y-4 p-2">
-        <Button
-          className="text-secondary-400"
-          variant="ghost"
-          onClick={() => {}}
-        >
-          Add Exercise
-        </Button>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button
+              className="text-secondary-400"
+              variant="ghost"
+              onClick={() => {}}
+            >
+              Add Exercise
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[960px]">
+            <DialogHeader>
+              <DialogTitle>Replace Exercise</DialogTitle>
+              <DialogDescription>
+                Make changes to your profile here. Click save when you're done.
+              </DialogDescription>
+            </DialogHeader>
+
+            <SelectExercise
+              muscle={prioritized_muscle_list[0]}
+              exerciseId=""
+              onSelect={onAddExercise}
+            />
+            <DialogFooter>
+              <Button type="submit" onClick={() => {}}>
+                Save changes
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
         <Button className="" variant="destructive" onClick={() => stopTimer()}>
           Cancel Workout
