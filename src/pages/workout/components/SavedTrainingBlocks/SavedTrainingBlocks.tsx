@@ -94,7 +94,7 @@ function TrainingBlockItem({ index, training_block }: TrainingBlockItemProps) {
   };
 
   return (
-    <div className="flex">
+    <li className="flex">
       <Collapsible
         open={isTrainingBlockOpen}
         onOpenChange={setIsTrainingBlockOpen}
@@ -102,7 +102,9 @@ function TrainingBlockItem({ index, training_block }: TrainingBlockItemProps) {
       >
         <CollapsibleTrigger asChild>
           <Button
-            className={`${isTrainingBlockOpen ? "bg-card" : ""}`}
+            className={`flex w-full justify-between text-muted-foreground ${
+              isTrainingBlockOpen ? " bg-card text-white" : ""
+            }`}
             variant="ghost"
             size="sm"
           >
@@ -116,14 +118,18 @@ function TrainingBlockItem({ index, training_block }: TrainingBlockItemProps) {
             return (
               <Collapsible className="flex w-full flex-col items-start pl-5">
                 <CollapsibleTrigger asChild>
-                  <Button variant="ghost" size="sm">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="flex w-full justify-between"
+                  >
                     <div className="text-sm">Mesocycle {tbIndex + 1}</div>
                     <ChevronsUpDown className="h-4 w-4" />
                   </Button>
                 </CollapsibleTrigger>
 
                 <CollapsibleContent>
-                  <div className="flex flex-col space-y-1 pl-4">
+                  <div className="flex flex-col space-y-2 p-2 pl-4 ">
                     {meso.map((week, mesoIndex) => {
                       const hasSession =
                         week.sessions[0] && week.sessions[0].split !== "off"
@@ -133,59 +139,62 @@ function TrainingBlockItem({ index, training_block }: TrainingBlockItemProps) {
                       const splitColor = getSplitColor(week.sessions[0].split);
 
                       return (
-                        <div className="flex w-full space-x-1">
+                        <div
+                          className={`${splitColor.bg} flex w-full flex-col space-x-1 rounded-md`}
+                        >
                           <div
-                            className={cn(
-                              `${splitColor.bg} flex w-full flex-col rounded px-3 py-1 leading-tight`
-                            )}
+                            className={cn(`flex w-full rounded leading-tight`)}
                           >
-                            <div className="font-semibold">
+                            <div className="p-2 pl-4 font-semibold">
                               {week.sessions[0].split}
                             </div>
-                            <div className="text-xs text-primary-400">
+                            <div className=" p-2 text-xs text-primary-400">
                               {week.day}
                             </div>
                           </div>
-                          {weeks.map((micro, microIndex) => {
-                            let isSelected = true;
-                            if (selectedWeek) {
-                              if (selectedWeek[0] !== index) {
-                                isSelected = false;
-                              }
-                              if (selectedWeek[1] !== tbIndex) {
-                                isSelected = false;
-                              }
-                              if (selectedWeek[2] !== mesoIndex) {
-                                isSelected = false;
-                              }
-                              if (selectedWeek[3] !== microIndex) {
-                                isSelected = false;
-                              }
-                            } else {
-                              isSelected = false;
-                            }
-                            const selectedClasses = isSelected
-                              ? "bg-primary-500 border-secondary-300"
-                              : "bg-card";
 
-                            return (
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() =>
-                                  onSelectWorkoutHandler(
-                                    index,
-                                    tbIndex,
-                                    mesoIndex,
-                                    microIndex
-                                  )
+                          <div className="flex space-x-1 p-2 pt-0">
+                            {weeks.map((micro, microIndex) => {
+                              let isSelected = true;
+                              if (selectedWeek) {
+                                if (selectedWeek[0] !== index) {
+                                  isSelected = false;
                                 }
-                                className={selectedClasses}
-                              >
-                                {micro}
-                              </Button>
-                            );
-                          })}
+                                if (selectedWeek[1] !== tbIndex) {
+                                  isSelected = false;
+                                }
+                                if (selectedWeek[2] !== mesoIndex) {
+                                  isSelected = false;
+                                }
+                                if (selectedWeek[3] !== microIndex) {
+                                  isSelected = false;
+                                }
+                              } else {
+                                isSelected = false;
+                              }
+                              const selectedClasses = isSelected
+                                ? "bg-primary-500 border-secondary-300"
+                                : "bg-card";
+
+                              return (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className={`py-1 ${selectedClasses}`}
+                                  onClick={() =>
+                                    onSelectWorkoutHandler(
+                                      index,
+                                      tbIndex,
+                                      mesoIndex,
+                                      microIndex
+                                    )
+                                  }
+                                >
+                                  {micro}
+                                </Button>
+                              );
+                            })}
+                          </div>
                         </div>
                       );
                     })}
@@ -196,6 +205,6 @@ function TrainingBlockItem({ index, training_block }: TrainingBlockItemProps) {
           })}
         </CollapsibleContent>
       </Collapsible>
-    </div>
+    </li>
   );
 }

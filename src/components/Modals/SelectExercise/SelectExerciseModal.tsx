@@ -185,7 +185,11 @@ type ItemTagProps = {
 };
 function ItemTag({ name, selected }: ItemTagProps) {
   return (
-    <div className={cn(`flex items-center justify-center border text-xxs`)}>
+    <div
+      className={cn(
+        `flex rounded-md border p-1 px-2 text-xs text-muted-foreground`
+      )}
+    >
       {name}
     </div>
   );
@@ -210,7 +214,7 @@ function Item({ exercise, selected, ...props }: ItemProps) {
     >
       <div className={"flex w-4/12 flex-col"}>
         <div className={`mr-2 flex p-2`}>
-          <div>{exercise.name}</div>
+          <div className="text-white">{exercise.name}</div>
           {selected ? (
             <div className={`text-xxs font-bold text-white `}>Selected</div>
           ) : null}
@@ -347,11 +351,6 @@ SelectExercise.Header = Header;
 SelectExercise.Search = Search;
 SelectExercise.Filter = Filter;
 
-type SelectExerciseProps = {
-  muscle: MusclePriorityType;
-  exerciseId: string;
-  onSelect: (exercise: JSONExercise) => void;
-};
 function SelectExerciseContents({
   onSelect,
 }: {
@@ -360,6 +359,8 @@ function SelectExerciseContents({
   const {
     exercises,
     allExercises,
+    alphabetizedExercises,
+    groupedExercises,
     selectedExerciseId,
     onSelectExerciseHandler,
     onSaveExerciseHandler,
@@ -380,26 +381,45 @@ function SelectExerciseContents({
       </SelectExercise.Header>
 
       <SelectExercise.List>
-        {exercises.map((each) => {
-          let isSelected = false;
-          const foundExercise = allExercises.find((e) => e.name === each.name);
+        {Object.keys(groupedExercises)
+          .sort()
+          .map((key) => {
+            return (
+              <div key={key} className="pb-2">
+                <div className="p-2">{key}</div>
+                <div className="space-y-2">
+                  {groupedExercises[key].map((each) => {
+                    let isSelected = false;
+                    const foundExercise = allExercises.find(
+                      (e) => e.name === each.name
+                    );
 
-          if (foundExercise) {
-            isSelected = true;
-          }
-          return (
-            <SelectExercise.Item
-              key={`${each.id}_changeExerciseItem`}
-              exercise={each}
-              selected={isSelected}
-              onClick={() => onSelectHandler(each.id)}
-            />
-          );
-        })}
+                    if (foundExercise) {
+                      isSelected = true;
+                    }
+                    return (
+                      <SelectExercise.Item
+                        key={`${each.id}_changeExerciseItem`}
+                        exercise={each}
+                        selected={isSelected}
+                        onClick={() => onSelectHandler(each.id)}
+                      />
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
       </SelectExercise.List>
     </SelectExercise.Layout>
   );
 }
+
+type SelectExerciseProps = {
+  muscle?: MusclePriorityType;
+  exerciseId: string;
+  onSelect: (exercise: JSONExercise) => void;
+};
 export default function SelectExercise({
   muscle,
   exerciseId,

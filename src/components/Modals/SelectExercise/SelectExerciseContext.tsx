@@ -4,6 +4,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useState,
 } from "react";
 import { MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
@@ -93,6 +94,7 @@ type ChangeExerciseContextType = ReturnType<typeof useChangeExercise>;
 const ChangeExerciseContext = createContext<ChangeExerciseContextType>({
   exercises: [],
   alphabetizedExercises: {},
+  groupedExercises: {},
   exerciseId: "",
   allExercises: [],
   selectedExerciseId: "",
@@ -168,18 +170,24 @@ const MUSCLES = [
   "traps",
 ];
 
-const AZ = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
-
 type GroupedExercisesByFilter = {
   [key: string]: JSONExercise[];
 };
 
 function useChangeExercise(exerciseId: string, muscle?: MusclePriorityType) {
-  const all_api_exercises = MUSCLES.map((muscle) => getGroupList(muscle));
-  const all_api_exercises_flattened = all_api_exercises.flat();
-  const alphabetizedExercises = getAlphabetizedExercises(
-    all_api_exercises_flattened
+  const all_api_exercises = useMemo(
+    () => MUSCLES.map((muscle) => getGroupList(muscle)),
+    []
   );
+  const all_api_exercises_flattened = useMemo(
+    () => all_api_exercises.flat(),
+    [all_api_exercises]
+  );
+  const alphabetizedExercises = useMemo(
+    () => getAlphabetizedExercises(all_api_exercises_flattened),
+    [all_api_exercises_flattened]
+  );
+
   const selected_muscles_exercises = muscle ? [...muscle.exercises].flat() : [];
 
   const [visibleExercises, setVisibleExercises] = useState<JSONExercise[]>([]);
@@ -191,32 +199,18 @@ function useChangeExercise(exerciseId: string, muscle?: MusclePriorityType) {
   });
 
   useEffect(() => {
-    const all_api_exercises_for_console_logging = MUSCLES.map((muscle) =>
-      getGroupList(muscle)
-    );
-    const searchedExercises = binarySearchExercises("triceps");
-    console.log(
-      all_api_exercises_for_console_logging,
-      searchedExercises,
-      "triceps",
-      alphabetizedExercises,
-      "WHAT THESE LOOK LIKE?"
-    );
-
     if (muscle) {
       const exercises = getMuscleExercises(muscle.muscle, all_api_exercises);
+      const filteredExercises = filterExercisesByTags(exercises, filterTags);
       const groupedExercise: GroupedExercisesByFilter = {
-        [muscle.muscle]: exercises,
+        [muscle.muscle]: filteredExercises,
       };
-      const filteredExercises = filterExercisesByTags(
-        [...exercises],
-        filterTags
-      );
-      setVisibleExercises(filteredExercises);
       setGroupedExercises(groupedExercise);
-      console.log(groupedExercises, "GROUPED EXERCISES");
+    } else {
+      setGroupedExercises(alphabetizedExercises);
     }
-  }, [filterTags, muscle, all_api_exercises]);
+    console.log(alphabetizedExercises, "HOW MANY TIMES YO?");
+  }, [filterTags, muscle, all_api_exercises, alphabetizedExercises]);
 
   const binarySearchExercises = useCallback(
     (muscle: string) => {
@@ -323,6 +317,7 @@ function useChangeExercise(exerciseId: string, muscle?: MusclePriorityType) {
   return {
     exercises: visibleExercises,
     alphabetizedExercises,
+    groupedExercises,
     exerciseId,
     allExercises: selected_muscles_exercises,
     selectedExerciseId,

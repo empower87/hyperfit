@@ -101,19 +101,17 @@ function ActiveWorkoutFooter({
               Add Exercise
             </Button>
           </DialogTrigger>
+
           <DialogContent className="sm:max-w-[960px]">
             <DialogHeader>
-              <DialogTitle>Replace Exercise</DialogTitle>
+              <DialogTitle>Select Exercise</DialogTitle>
               <DialogDescription>
                 Make changes to your profile here. Click save when you're done.
               </DialogDescription>
             </DialogHeader>
 
-            <SelectExercise
-              muscle={prioritized_muscle_list[0]}
-              exerciseId=""
-              onSelect={onAddExercise}
-            />
+            <SelectExercise exerciseId="" onSelect={onAddExercise} />
+
             <DialogFooter>
               <Button type="submit" onClick={() => {}}>
                 Save changes
