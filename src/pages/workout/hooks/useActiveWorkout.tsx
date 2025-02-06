@@ -150,7 +150,7 @@ const useActiveWorkout = () => {
     [savedTrainingBlocks, muscle_priority_list, microcycles]
   );
 
-  const onExerciseClick = useCallback((exercise_id: string) => {
+  const onExerciseNameClick = useCallback((exercise_id: string) => {
     setSelectedExerciseHistoryId(exercise_id);
   }, []);
 
@@ -158,6 +158,6 @@ const useActiveWorkout = () => {
     active_workout: activeWorkout,
     selectedExerciseHistoryId,
     onSelectWorkout,
-    onExerciseClick,
+    onExerciseNameClick,
   };
 };

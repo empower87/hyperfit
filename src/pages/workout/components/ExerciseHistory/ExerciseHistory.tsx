@@ -45,6 +45,7 @@ export function ExerciseHistory() {
     </Card>
   );
 }
+
 // export function ExerciseHistory() {
 //   const { selectedExerciseHistory } = useActiveWorkoutContext();
 //   return (

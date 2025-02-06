@@ -74,14 +74,11 @@ function TrainingBlockItem({ index, training_block }: TrainingBlockItemProps) {
   const { microcycles } = training_program_params;
   const { onSelectWorkout } = useActiveWorkoutContext();
   const [isTrainingBlockOpen, setIsTrainingBlockOpen] = useState(false);
-  // const [isMesocycleOpen, setIsMesocycleOpen] = useState(false)
 
   const weeks = Array.from(Array(microcycles), (e, i) => `WK ${i + 1}`);
   const [selectedWeek, setSelectedWeek] = useState<
     [number, number, number, number] | null
   >(null);
-  const [selectedMesocycleIndex, setSelectedMesocycleIndex] = useState(0);
-  const [selectedMicrocycleIndex, setSelectedMicrocycleIndex] = useState(0);
 
   const onSelectWorkoutHandler = (
     tbs_index: number,
@@ -140,15 +137,19 @@ function TrainingBlockItem({ index, training_block }: TrainingBlockItemProps) {
 
                       return (
                         <div
-                          className={`${splitColor.bg} flex w-full flex-col space-x-1 rounded-md`}
+                          className={`flex w-full flex-col space-x-1 rounded-md border border-input`}
                         >
                           <div
-                            className={cn(`flex w-full rounded leading-tight`)}
+                            className={cn(
+                              `flex w-full rounded p-2 leading-tight`
+                            )}
                           >
-                            <div className="p-2 pl-4 font-semibold">
+                            <div
+                              className={`${splitColor.bg} rounded p-1 px-2 font-semibold`}
+                            >
                               {week.sessions[0].split}
                             </div>
-                            <div className=" p-2 text-xs text-primary-400">
+                            <div className=" p-1 px-2 text-xs text-primary-400">
                               {week.day}
                             </div>
                           </div>
