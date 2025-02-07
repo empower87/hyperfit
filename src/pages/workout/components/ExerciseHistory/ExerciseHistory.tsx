@@ -5,7 +5,7 @@ import { Set } from "~/types/Exercise";
 import { useActiveWorkoutContext } from "../../hooks/useActiveWorkout";
 
 export function ExerciseHistory() {
-  const { active_workout, selectedExerciseHistoryId, onExerciseClick } =
+  const { active_workout, selectedExerciseHistoryId, onExerciseNameClick } =
     useActiveWorkoutContext();
   if (!selectedExerciseHistoryId.length) return null;
 
@@ -21,7 +21,11 @@ export function ExerciseHistory() {
           {selectedExerciseHistory?.name}
         </CardTitle>
 
-        <Button variant="ghost" size="icon" onClick={() => onExerciseClick("")}>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => onExerciseNameClick("")}
+        >
           <Cross1Icon fill="white" />
         </Button>
       </CardHeader>
@@ -45,32 +49,6 @@ export function ExerciseHistory() {
     </Card>
   );
 }
-
-// export function ExerciseHistory() {
-//   const { selectedExerciseHistory } = useActiveWorkoutContext();
-//   return (
-//     <div className="h-full w-[360px] overflow-scroll pr-2">
-//       <div>
-//         <h2 className="text-secondary">{selectedExerciseHistory?.name}</h2>
-//       </div>
-//       <div className="">
-//         <div className="flex p-2">History</div>
-//         <div className="flex flex-col space-y-4">
-//           {selectedExerciseHistory && PREV_EXERCISE_DATA.map((session) => {
-//             return (
-//               <ExerciseHistoryCard
-//                 session_name={session.session_name}
-//                 session_date={session.session_date}
-//                 exercise_id={session.exercise_id}
-//                 sets={session.sets}
-//               />
-//             );
-//           })}
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
 
 type ExerciseHistoryCardProps = {
   session_name: string;
