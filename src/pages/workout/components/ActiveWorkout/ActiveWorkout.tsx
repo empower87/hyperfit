@@ -14,14 +14,19 @@ import { useTimer } from "~/hooks/useTimer";
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
 import { useActiveWorkoutContext } from "../../hooks/useActiveWorkout";
 import ExerciseList from "./Exercises";
-import RestTimer from "./RestTimer";
+import RestTimerButton from "./RestTimer";
 
 type ActiveWorkoutProps = {
-  children: ReactNode;
+  restTimerButton: JSX.Element;
+  exercises: JSX.Element;
 };
 
+ActiveWorkout.RestTimerButton = RestTimerButton;
 ActiveWorkout.Exercises = ExerciseList;
-export default function ActiveWorkout({ children }: ActiveWorkoutProps) {
+export default function ActiveWorkout({
+  restTimerButton,
+  exercises,
+}: ActiveWorkoutProps) {
   const { start, pause, duration, isRunning } = useTimer();
   return (
     <div className="flex h-full flex-col overflow-scroll">
@@ -29,13 +34,15 @@ export default function ActiveWorkout({ children }: ActiveWorkoutProps) {
         startTimer={start}
         stopTimer={pause}
         isRunning={isRunning}
-      />
+      >
+        {restTimerButton}
+      </ActiveWorkoutHeader>
 
       <div className="h-5/6 space-y-2 overflow-auto">
         <ActiveWorkoutTitle
           workout_duration={<p className="text-muted-foreground">{duration}</p>}
         />
-        {children}
+        {exercises}
         <ActiveWorkoutFooter stopTimer={pause} isRunning={isRunning} />
       </div>
     </div>
@@ -46,15 +53,17 @@ type ActiveWorkoutHeaderProps = {
   startTimer: () => void;
   stopTimer: () => void;
   isRunning: boolean;
+  children: ReactNode;
 };
 function ActiveWorkoutHeader({
   startTimer,
   stopTimer,
   isRunning,
+  children,
 }: ActiveWorkoutHeaderProps) {
   return (
     <div className="flex items-center justify-between shadow-md">
-      <RestTimer />
+      {children}
 
       <div className="flex p-2">
         {isRunning ? (

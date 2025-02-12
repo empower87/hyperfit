@@ -23,8 +23,8 @@ const createCustomRestOptions = (
   return options;
 };
 
-export default function useRestTimer() {
-  const [restPeriods, setRestPeriods] = useState(DEFAULT_REST_PERIODS);
+export default function useRestTimer(startRestTimerOnSetComplete?: boolean) {
+  const restPeriods = [...DEFAULT_REST_PERIODS];
   const [totalRestTimeInSeconds, setTotalRestTimeInSeconds] = useState(
     restPeriods[0]
   );
@@ -42,7 +42,10 @@ export default function useRestTimer() {
 
   useEffect(() => {
     let timer: NodeJS.Timeout | null = null;
-    if (activeRestTime !== null && activeRestTime > 0) {
+    if (
+      (activeRestTime !== null && activeRestTime > 0) ||
+      (startRestTimerOnSetComplete && startRestTimerOnSetComplete === true)
+    ) {
       timer = setInterval(() => {
         setActiveRestTime((prev) => (prev !== null ? prev - 1 : null));
       }, 1000);
@@ -55,12 +58,15 @@ export default function useRestTimer() {
         clearInterval(timer);
       }
     };
-  }, [activeRestTime]);
+  }, [activeRestTime, totalRestTimeInSeconds, startRestTimerOnSetComplete]);
 
-  const startRestTimerHandler = () => {
-    setActiveRestTime(totalRestTimeInSeconds);
+  const startRestTimerHandler = (restPeriod: number) => {
+    setTotalRestTimeInSeconds(restPeriod);
+    setActiveRestTime(restPeriod);
   };
-
+  const stopRestTimerHandler = () => {
+    setActiveRestTime(null);
+  };
   const setRestTimeDurationHandler = (restTimeDuration: number) => {
     setActiveRestTime(restTimeDuration);
   };
@@ -70,5 +76,6 @@ export default function useRestTimer() {
     totalRestTimeInSeconds,
     activeRestTime,
     startRestTimerHandler,
+    stopRestTimerHandler,
   };
 }

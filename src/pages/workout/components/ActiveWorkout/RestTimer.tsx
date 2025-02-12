@@ -1,4 +1,5 @@
 import { StopwatchIcon } from "@radix-ui/react-icons";
+import { useState } from "react";
 import { Button } from "~/components/ui/button";
 import {
   Carousel,
@@ -16,18 +17,36 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog";
-import { convertSecondsNumberToTimeString } from "~/utils/timeFormatters/convertSecondsNumberToTimeString";
-import {
-  default as useResetTimer,
-  default as useRestTimer,
-} from "../../hooks/useRestTimer";
+import { default as useRestTimer } from "../../hooks/useRestTimer";
 
-export default function RestTimerButton() {
-  const { activeRestTime, totalRestTimeInSeconds, startRestTimerHandler } =
-    useResetTimer();
+type RestTimerButtonProps = {
+  startRestTimerOnSetComplete: boolean;
+};
+export default function RestTimerButton({
+  startRestTimerOnSetComplete,
+}: RestTimerButtonProps) {
+  const {
+    activeRestTime,
+    restPeriods,
+    totalRestTimeInSeconds,
+    startRestTimerHandler,
+    stopRestTimerHandler,
+  } = useRestTimer(startRestTimerOnSetComplete);
+
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const handleRestPeriodClick = (restPeriod: number) => {
+    setIsDialogOpen(false);
+    startRestTimerHandler(restPeriod);
+  };
+
+  const handleSkipButtonClick = () => {
+    setIsDialogOpen(false);
+    stopRestTimerHandler();
+  };
   return (
     <div className="flex flex-col">
-      <Dialog>
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogTrigger asChild>
           {activeRestTime !== null ? (
             <Button
@@ -58,10 +77,19 @@ export default function RestTimerButton() {
             <DialogDescription>Choose a duration below.</DialogDescription>
           </DialogHeader>
 
-          <SelectRestTime />
+          <SelectRestTime>
+            {restPeriods.map((restPeriod, index) => {
+              return (
+                <Button onClick={() => handleRestPeriodClick(restPeriod)}>
+                  {restPeriod}
+                </Button>
+              );
+            })}
+          </SelectRestTime>
+
           <DialogFooter>
-            <Button type="submit" onClick={() => {}}>
-              Save changes
+            <Button type="submit" onClick={() => handleSkipButtonClick()}>
+              Skip
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -70,46 +98,23 @@ export default function RestTimerButton() {
   );
 }
 
-const DEFAULT_REST_PERIODS = ["0:30", "1:00", "2:00", "3:00"];
-const CUSTOM_REST_MIN_IN_SECONDS = 15;
-const CUSTOM_REST_MAX_IN_SECONDS = 600;
-const CUSTOM_REST_INCREMENT_IN_SECONDS = 15;
-const CUSTOM_REST_INIT_IN_SECONDS = 300;
-
-const createCustomRestOptions = (
-  min: number,
-  max: number,
-  increment: number
-) => {
-  const options = [];
-  let current = min;
-  while (current <= max) {
-    const formattedTime = convertSecondsNumberToTimeString(current);
-    options.push(formattedTime);
-    current = current + increment;
-  }
-  return options;
+type SelectRestTimeProps = {
+  children: React.ReactNode;
 };
+export function SelectRestTime({ children }: SelectRestTimeProps) {
+  const {
+    activeRestTime,
+    restPeriods,
+    totalRestTimeInSeconds,
+    startRestTimerHandler,
+    customRestPeriodOptions,
+  } = useRestTimer();
 
-export function SelectRestTime() {
-  const { activeRestTime, totalRestTimeInSeconds, startRestTimerHandler } =
-    useRestTimer();
-  const customRestOptions = createCustomRestOptions(
-    CUSTOM_REST_MIN_IN_SECONDS,
-    CUSTOM_REST_MAX_IN_SECONDS,
-    CUSTOM_REST_INCREMENT_IN_SECONDS
-  );
   return (
     <div>
       <div className="flex flex-col space-y-3">
         <h2>Preset Timers</h2>
-        {DEFAULT_REST_PERIODS.map((restPeriod) => {
-          return (
-            <Button onClick={() => startRestTimerHandler()}>
-              {restPeriod}
-            </Button>
-          );
-        })}
+        {children}
       </div>
 
       <div>
@@ -122,7 +127,7 @@ export function SelectRestTime() {
             className="w-full max-w-sm"
           >
             <CarouselContent className="ml-2">
-              {customRestOptions.map((time, index) => (
+              {customRestPeriodOptions.map((time, index) => (
                 <CarouselItem
                   key={index}
                   className="pl-2 md:basis-1/2 lg:basis-1/5"
