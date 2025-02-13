@@ -23,7 +23,7 @@ const ActiveWorkoutContext = createContext<ActiveWorkoutType>({
   active_workout: null,
   selectedExerciseHistoryId: "",
   onSelectWorkout: () => {},
-  onExerciseClick: () => {},
+  onExerciseNameClick: () => {},
 });
 
 export const ActiveWorkoutProvider = ({
