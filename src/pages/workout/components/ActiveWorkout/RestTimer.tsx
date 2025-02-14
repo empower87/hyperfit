@@ -17,27 +17,23 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog";
-import { default as useRestTimer } from "../../hooks/useRestTimer";
+import { useRestTimerContext } from "../../contexts/restTimerContext";
 
-type RestTimerButtonProps = {
-  startRestTimerOnSetComplete: boolean;
-};
-export default function RestTimerButton({
-  startRestTimerOnSetComplete,
-}: RestTimerButtonProps) {
+export default function RestTimerButton() {
   const {
     activeRestTime,
     restPeriods,
     totalRestTimeInSeconds,
     startRestTimerHandler,
     stopRestTimerHandler,
-  } = useRestTimer(startRestTimerOnSetComplete);
+    presetRestTimerHandler,
+  } = useRestTimerContext();
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const handleRestPeriodClick = (restPeriod: number) => {
     setIsDialogOpen(false);
-    startRestTimerHandler(restPeriod);
+    presetRestTimerHandler(restPeriod);
   };
 
   const handleSkipButtonClick = () => {
@@ -108,7 +104,7 @@ export function SelectRestTime({ children }: SelectRestTimeProps) {
     totalRestTimeInSeconds,
     startRestTimerHandler,
     customRestPeriodOptions,
-  } = useRestTimer();
+  } = useRestTimerContext();
 
   return (
     <div>

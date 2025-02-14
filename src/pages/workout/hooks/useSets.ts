@@ -16,7 +16,6 @@ export default function useSets(exercise: ExerciseType) {
     ...SET,
     set_num: i + 1,
   }));
-
   const [sets, setSets] = useState([...sets_array]);
 
   const onCompleteSet = useCallback(

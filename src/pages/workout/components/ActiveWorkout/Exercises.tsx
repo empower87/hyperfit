@@ -3,8 +3,8 @@ import { useCallback, useRef, useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { ExerciseType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
+import { useRestTimerContext } from "../../contexts/restTimerContext";
 import { useActiveWorkoutContext } from "../../hooks/useActiveWorkout";
-import useRestTimer from "../../hooks/useRestTimer";
 
 const WIDTHS = ["w-10", "w-24", "w-24", "w-24", "w-10"];
 const TITLES = ["SET", "PREVIOUS", "LBS", "REPS", ""];
@@ -22,9 +22,8 @@ type SetType = typeof SET;
 type ExerciseItemProps = {
   exercise: ExerciseType;
   order: number;
-  setList: JSX.Element;
 };
-export function ExerciseItem({ exercise, order, setList }: ExerciseItemProps) {
+export function ExerciseItem({ exercise, order }: ExerciseItemProps) {
   const { onExerciseNameClick } = useActiveWorkoutContext();
 
   const ExerciseHeaders = () => {
@@ -43,7 +42,11 @@ export function ExerciseItem({ exercise, order, setList }: ExerciseItemProps) {
       </div>
     );
   };
-
+  console.log(
+    exercise,
+    "EXERCISE RERENDER OH NO",
+    "WHAT ARE THESE VALUES AND WHEN ARE THEY CALLED?"
+  );
   return (
     <li className="flex flex-col rounded-lg border border-input text-muted-foreground">
       <div className="flex items-center justify-between p-3 pb-4">
@@ -63,7 +66,7 @@ export function ExerciseItem({ exercise, order, setList }: ExerciseItemProps) {
       <ExerciseHeaders />
 
       <div className="flex flex-col p-2 pt-0">
-        {setList}
+        <SetList sets={exercise.sets} />
         <Button variant="ghost" className="text-secondary-400">
           Add Set
         </Button>
@@ -74,10 +77,9 @@ export function ExerciseItem({ exercise, order, setList }: ExerciseItemProps) {
 
 type SetListProps = {
   sets: number;
-  startRestTimerOnSetComplete: () => void;
 };
-export function SetList({ sets, startRestTimerOnSetComplete }: SetListProps) {
-  const { startRestTimerHandler } = useRestTimer();
+export function SetList({ sets }: SetListProps) {
+  const { initRestTimer, totalRestTimeInSeconds } = useRestTimerContext();
   const sets_array: SetType[] = Array.from(Array(sets), (_, i) => ({
     ...SET,
     set_num: i + 1,
@@ -86,18 +88,22 @@ export function SetList({ sets, startRestTimerOnSetComplete }: SetListProps) {
   const [setItems, setSetItems] = useState([...sets_array]);
 
   const onCompleteSet = useCallback(
-    (completed_set: SetType) => {
-      const updatedSets = setItems.map((set) => {
-        if (set.set_num === completed_set.set_num) {
-          return { ...set, ...completed_set };
-        }
-        return set;
-      });
-      setSetItems(updatedSets);
-      startRestTimerHandler(30);
-      console.log("completed set", completed_set, setItems);
+    (completed_set: SetType | null) => {
+      if (completed_set === null) {
+        initRestTimer(null);
+      } else {
+        const updatedSets = setItems.map((set) => {
+          if (set.set_num === completed_set.set_num) {
+            return { ...set, ...completed_set };
+          }
+          return set;
+        });
+        setSetItems(updatedSets);
+        initRestTimer();
+        console.log("completed set", completed_set, setItems);
+      }
     },
-    [setItems, startRestTimerHandler]
+    [setItems, initRestTimer, totalRestTimeInSeconds]
   );
   return (
     <ul>
@@ -115,7 +121,7 @@ export function SetList({ sets, startRestTimerOnSetComplete }: SetListProps) {
 }
 type SetItemProps = {
   set: SetType;
-  onCompleteSet: (completed_set: SetType) => void;
+  onCompleteSet: (completed_set: SetType | null) => void;
 };
 
 export function SetItem({ set, onCompleteSet }: SetItemProps) {
@@ -130,8 +136,11 @@ export function SetItem({ set, onCompleteSet }: SetItemProps) {
         lbs: Number(lbsRef.current?.value),
         reps: Number(repsRef.current?.value),
       });
+      setIsSetCompleted(true);
+    } else {
+      onCompleteSet(null);
+      setIsSetCompleted(false);
     }
-    setIsSetCompleted(!isSetCompleted);
   };
 
   const inputBorder = isSetCompleted ? "border-white" : "border-input";

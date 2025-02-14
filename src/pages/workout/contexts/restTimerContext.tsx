@@ -10,6 +10,8 @@ const RestTimerContext = createContext<RestTimerType>({
   activeRestTime: 0,
   startRestTimerHandler: () => null,
   stopRestTimerHandler: () => null,
+  initRestTimer: () => null,
+  presetRestTimerHandler: () => null,
 });
 
 const RestTimerProvider = ({ children }: { children: ReactNode }) => {

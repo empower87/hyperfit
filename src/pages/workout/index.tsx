@@ -1,6 +1,5 @@
-import { useState } from "react";
 import ActiveWorkout from "./components/ActiveWorkout/ActiveWorkout";
-import { ExerciseItem, SetList } from "./components/ActiveWorkout/Exercises";
+import { ExerciseItem } from "./components/ActiveWorkout/Exercises";
 import { ExerciseHistory } from "./components/ExerciseHistory/ExerciseHistory";
 import SavedTrainingBlocks from "./components/SavedTrainingBlocks/SavedTrainingBlocks";
 import { RestTimerProvider } from "./contexts/restTimerContext";
@@ -8,7 +7,6 @@ import {
   ActiveWorkoutProvider,
   useActiveWorkoutContext,
 } from "./hooks/useActiveWorkout";
-import useRestTimer from "./hooks/useRestTimer";
 
 export default function Workout() {
   return (
@@ -35,20 +33,11 @@ export default function Workout() {
 
 function ActiveWorkoutPanel() {
   const { active_workout } = useActiveWorkoutContext();
-  const [startRestTimerOnSetComplete, setStartRestTimerOnSetComplete] =
-    useState(false);
-  const {} = useRestTimer();
-  const startRestTimerOnSetCompleteHandler = () => {
-    setStartRestTimerOnSetComplete((prev) => !prev);
-  };
+
   return (
     <div className="">
       <ActiveWorkout
-        restTimerButton={
-          <ActiveWorkout.RestTimerButton
-            startRestTimerOnSetComplete={startRestTimerOnSetComplete}
-          />
-        }
+        restTimerButton={<ActiveWorkout.RestTimerButton />}
         exercises={
           <ul className="space-y-4">
             {active_workout?.session?.exercises.map((exercise, index) => {
@@ -57,14 +46,6 @@ function ActiveWorkoutPanel() {
                   key={`activeWorkoutExerciseItem_${exercise.id}_${index}`}
                   exercise={exercise}
                   order={index + 1}
-                  setList={
-                    <SetList
-                      sets={exercise.sets}
-                      startRestTimerOnSetComplete={
-                        startRestTimerOnSetCompleteHandler
-                      }
-                    />
-                  }
                 />
               );
             })}

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { convertSecondsNumberToTimeString } from "~/utils/timeFormatters/convertSecondsNumberToTimeString";
 
 const REST_TIME_PRESETS = ["0:30", "1:00", "2:00", "3:00"];
@@ -30,7 +30,7 @@ export default function useRestTimer(startRestTimerOnSetComplete?: boolean) {
   );
   const [startRestTimer, setStartRestTimer] = useState<boolean>(false);
   // const [activeRestTime, setActiveRestTime] = useState<number | null>(null);
-  const [activeRestTime, setActiveRestTime] = useState<number>(0);
+  const [activeRestTime, setActiveRestTime] = useState<number | null>(null);
 
   const customRestPeriodOptions = createCustomRestOptions(
     CUSTOM_REST_MIN_IN_SECONDS,
@@ -42,52 +42,65 @@ export default function useRestTimer(startRestTimerOnSetComplete?: boolean) {
     setTotalRestTimeInSeconds(restPeriods[0]);
   }, [restPeriods]);
 
-  // const startRestTimer = useCallback(() => {
-  //   let timer: NodeJS.Timeout | null = null;
-  //   if (activeRestTime !== null && activeRestTime > 0) {
-  //     console.log(
-  //       startRestTimerOnSetComplete,
-  //       activeRestTime,
-  //       "WHAT IS THESE VALUE CALLED IN A CALLBACK?"
-  //     );
-  //     timer = setInterval(() => {
-  //       setActiveRestTime((prev) => (prev !== null ? prev - 1 : null));
-  //     }, 1000);
-  //   } else if (activeRestTime === 0) {
-  //     setActiveRestTime(null);
-  //   }
-
-  //   return () => {
-  //     if (timer) {
-  //       clearInterval(timer);
-  //     }
-  //   };
-  // }, [activeRestTime]);
-
   useEffect(() => {
     let timer: NodeJS.Timeout | null = null;
     // if (activeRestTime !== null && activeRestTime > 0) {
 
-    if (startRestTimer && activeRestTime > 0) {
+    // if (startRestTimer && activeRestTime !== null && activeRestTime > 0) {
+    if (activeRestTime !== null && activeRestTime > 0) {
       timer = setInterval(() => {
-        setActiveRestTime((prev) => prev - 1);
+        setActiveRestTime((prev) => (prev !== null ? prev - 1 : null));
       }, 1000);
-    } else if (activeRestTime === 0) {
-      setStartRestTimer(false);
+    } else {
+      // setStartRestTimer(false);
+      setActiveRestTime(null);
     }
-
+    console.log(
+      activeRestTime,
+      totalRestTimeInSeconds,
+      "WHAT ARE THESE VALUES AND WHEN ARE THEY CALLED?"
+    );
     return () => {
       if (timer) {
         clearInterval(timer);
       }
     };
-  }, [activeRestTime, startRestTimer, totalRestTimeInSeconds]);
+  }, [activeRestTime, totalRestTimeInSeconds]);
 
-  const startRestTimerHandler = (restPeriod: number) => {
-    setTotalRestTimeInSeconds(restPeriod);
-    setActiveRestTime(restPeriod);
-    setStartRestTimer(true);
+  const startRestTimerHandler = (
+    restPeriod: number,
+    action: "start" | "end"
+  ) => {
+    if (action === "end") {
+      setActiveRestTime(0);
+      setStartRestTimer(false);
+    } else {
+      setTotalRestTimeInSeconds(restPeriod);
+      setActiveRestTime(restPeriod);
+      setStartRestTimer(true);
+    }
   };
+
+  const initRestTimer = useCallback(
+    (value?: null | number) => {
+      if (value && value === null) {
+        setActiveRestTime(null);
+        // setStartRestTimer(false);
+      } else if (typeof value === "number") {
+        setActiveRestTime(value);
+      } else {
+        setActiveRestTime(totalRestTimeInSeconds);
+        // setStartRestTimer(true);
+      }
+    },
+    [totalRestTimeInSeconds]
+  );
+
+  const presetRestTimerHandler = (value: number) => {
+    setTotalRestTimeInSeconds(value);
+    initRestTimer(value);
+  };
+
   const stopRestTimerHandler = () => {
     setStartRestTimer(false);
   };
@@ -101,5 +114,7 @@ export default function useRestTimer(startRestTimerOnSetComplete?: boolean) {
     activeRestTime,
     startRestTimerHandler,
     stopRestTimerHandler,
+    initRestTimer,
+    presetRestTimerHandler,
   };
 }

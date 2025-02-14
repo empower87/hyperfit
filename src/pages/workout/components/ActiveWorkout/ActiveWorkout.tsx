@@ -13,7 +13,7 @@ import {
 import { useTimer } from "~/hooks/useTimer";
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
 import { useActiveWorkoutContext } from "../../hooks/useActiveWorkout";
-import ExerciseList from "./Exercises";
+
 import RestTimerButton from "./RestTimer";
 
 type ActiveWorkoutProps = {
@@ -22,7 +22,7 @@ type ActiveWorkoutProps = {
 };
 
 ActiveWorkout.RestTimerButton = RestTimerButton;
-ActiveWorkout.Exercises = ExerciseList;
+
 export default function ActiveWorkout({
   restTimerButton,
   exercises,
@@ -30,13 +30,24 @@ export default function ActiveWorkout({
   const { start, pause, duration, isRunning } = useTimer();
   return (
     <div className="flex h-full flex-col overflow-scroll">
-      <ActiveWorkoutHeader
-        startTimer={start}
-        stopTimer={pause}
-        isRunning={isRunning}
-      >
+      <div className="flex items-center justify-between shadow-md">
         {restTimerButton}
-      </ActiveWorkoutHeader>
+        <div className="flex p-2">
+          {isRunning ? (
+            <Button
+              className="text-secondary-400"
+              variant="ghost"
+              onClick={pause}
+            >
+              Finish
+            </Button>
+          ) : (
+            <Button className="" variant="outline" onClick={start}>
+              Start
+            </Button>
+          )}
+        </div>
+      </div>
 
       <div className="h-5/6 space-y-2 overflow-auto">
         <ActiveWorkoutTitle

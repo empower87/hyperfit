@@ -44,14 +44,20 @@ export type Set = {
   isCompleted: boolean;
 };
 
-type ActiveExercise = {
+type ExerciseNote = {
+  id: string;
+  exercise_log_id: string;
+  note: string;
+};
+
+type ExerciseLog = {
   id: string;
   name: string;
   program_exercise_id: string;
   microcycle_id: string;
   started_at: string;
   completed_at: string;
-  note: string;
+  notes: ExerciseNote[];
   sets: Set[];
 };
 
@@ -59,7 +65,7 @@ type Workout = {
   id: string;
   name?: string;
   session_id: string;
-  exercises: ActiveExercise[];
+  exercises: ExerciseLog[];
   program: {
     training_block_id: string;
     current_progress: {
