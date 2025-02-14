@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { convertSecondsNumberToTimeString } from "~/utils/timeFormatters/convertSecondsNumberToTimeString";
 
 const REST_TIME_PRESETS = ["0:30", "1:00", "2:00", "3:00"];
@@ -28,7 +28,9 @@ export default function useRestTimer(startRestTimerOnSetComplete?: boolean) {
   const [totalRestTimeInSeconds, setTotalRestTimeInSeconds] = useState(
     restPeriods[0]
   );
-  const [activeRestTime, setActiveRestTime] = useState<number | null>(null);
+  const [startRestTimer, setStartRestTimer] = useState<boolean>(false);
+  // const [activeRestTime, setActiveRestTime] = useState<number | null>(null);
+  const [activeRestTime, setActiveRestTime] = useState<number>(0);
 
   const customRestPeriodOptions = createCustomRestOptions(
     CUSTOM_REST_MIN_IN_SECONDS,
@@ -40,44 +42,17 @@ export default function useRestTimer(startRestTimerOnSetComplete?: boolean) {
     setTotalRestTimeInSeconds(restPeriods[0]);
   }, [restPeriods]);
 
-  const startRestTimer = useCallback(() => {
-    let timer: NodeJS.Timeout | null = null;
-    if (activeRestTime !== null && activeRestTime > 0) {
-      console.log(
-        startRestTimerOnSetComplete,
-        activeRestTime,
-        "WHAT IS THESE VALUE CALLED IN A CALLBACK?"
-      );
-      timer = setInterval(() => {
-        setActiveRestTime((prev) => (prev !== null ? prev - 1 : null));
-      }, 1000);
-    } else if (activeRestTime === 0) {
-      setActiveRestTime(null);
-    }
-
-    return () => {
-      if (timer) {
-        clearInterval(timer);
-      }
-    };
-  }, [activeRestTime]);
-
-  // useEffect(() => {
+  // const startRestTimer = useCallback(() => {
   //   let timer: NodeJS.Timeout | null = null;
   //   if (activeRestTime !== null && activeRestTime > 0) {
   //     console.log(
   //       startRestTimerOnSetComplete,
   //       activeRestTime,
-  //       "WHAT IS THESE VALUE?"
+  //       "WHAT IS THESE VALUE CALLED IN A CALLBACK?"
   //     );
   //     timer = setInterval(() => {
   //       setActiveRestTime((prev) => (prev !== null ? prev - 1 : null));
   //     }, 1000);
-  //   } else if (
-  //     startRestTimerOnSetComplete &&
-  //     startRestTimerOnSetComplete === true
-  //   ) {
-  //     console.log("HEY IG OT HERE THO?");
   //   } else if (activeRestTime === 0) {
   //     setActiveRestTime(null);
   //   }
@@ -87,14 +62,34 @@ export default function useRestTimer(startRestTimerOnSetComplete?: boolean) {
   //       clearInterval(timer);
   //     }
   //   };
-  // }, [activeRestTime, startRestTimerOnSetComplete]);
+  // }, [activeRestTime]);
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout | null = null;
+    // if (activeRestTime !== null && activeRestTime > 0) {
+
+    if (startRestTimer && activeRestTime > 0) {
+      timer = setInterval(() => {
+        setActiveRestTime((prev) => prev - 1);
+      }, 1000);
+    } else if (activeRestTime === 0) {
+      setStartRestTimer(false);
+    }
+
+    return () => {
+      if (timer) {
+        clearInterval(timer);
+      }
+    };
+  }, [activeRestTime, startRestTimer, totalRestTimeInSeconds]);
 
   const startRestTimerHandler = (restPeriod: number) => {
     setTotalRestTimeInSeconds(restPeriod);
     setActiveRestTime(restPeriod);
+    setStartRestTimer(true);
   };
   const stopRestTimerHandler = () => {
-    setActiveRestTime(null);
+    setStartRestTimer(false);
   };
   const setRestTimeDurationHandler = (restTimeDuration: number) => {
     setActiveRestTime(restTimeDuration);
@@ -106,6 +101,5 @@ export default function useRestTimer(startRestTimerOnSetComplete?: boolean) {
     activeRestTime,
     startRestTimerHandler,
     stopRestTimerHandler,
-    startRestTimer,
   };
 }

@@ -3,6 +3,7 @@ import ActiveWorkout from "./components/ActiveWorkout/ActiveWorkout";
 import { ExerciseItem, SetList } from "./components/ActiveWorkout/Exercises";
 import { ExerciseHistory } from "./components/ExerciseHistory/ExerciseHistory";
 import SavedTrainingBlocks from "./components/SavedTrainingBlocks/SavedTrainingBlocks";
+import { RestTimerProvider } from "./contexts/restTimerContext";
 import {
   ActiveWorkoutProvider,
   useActiveWorkoutContext,
@@ -19,7 +20,9 @@ export default function Workout() {
             <SavedTrainingBlocks />
           </div>
 
-          <ActiveWorkoutPanel />
+          <RestTimerProvider>
+            <ActiveWorkoutPanel />
+          </RestTimerProvider>
 
           <div className="">
             <ExerciseHistory />
@@ -34,12 +37,12 @@ function ActiveWorkoutPanel() {
   const { active_workout } = useActiveWorkoutContext();
   const [startRestTimerOnSetComplete, setStartRestTimerOnSetComplete] =
     useState(false);
-  const { startRestTimer } = useRestTimer();
+  const {} = useRestTimer();
   const startRestTimerOnSetCompleteHandler = () => {
     setStartRestTimerOnSetComplete((prev) => !prev);
   };
   return (
-    <div className=" ">
+    <div className="">
       <ActiveWorkout
         restTimerButton={
           <ActiveWorkout.RestTimerButton
@@ -57,7 +60,9 @@ function ActiveWorkoutPanel() {
                   setList={
                     <SetList
                       sets={exercise.sets}
-                      startRestTimerOnSetComplete={startRestTimer}
+                      startRestTimerOnSetComplete={
+                        startRestTimerOnSetCompleteHandler
+                      }
                     />
                   }
                 />

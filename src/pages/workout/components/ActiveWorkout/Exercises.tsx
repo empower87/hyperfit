@@ -4,6 +4,7 @@ import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { ExerciseType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { useActiveWorkoutContext } from "../../hooks/useActiveWorkout";
+import useRestTimer from "../../hooks/useRestTimer";
 
 const WIDTHS = ["w-10", "w-24", "w-24", "w-24", "w-10"];
 const TITLES = ["SET", "PREVIOUS", "LBS", "REPS", ""];
@@ -76,6 +77,7 @@ type SetListProps = {
   startRestTimerOnSetComplete: () => void;
 };
 export function SetList({ sets, startRestTimerOnSetComplete }: SetListProps) {
+  const { startRestTimerHandler } = useRestTimer();
   const sets_array: SetType[] = Array.from(Array(sets), (_, i) => ({
     ...SET,
     set_num: i + 1,
@@ -92,10 +94,10 @@ export function SetList({ sets, startRestTimerOnSetComplete }: SetListProps) {
         return set;
       });
       setSetItems(updatedSets);
-      startRestTimerOnSetComplete();
+      startRestTimerHandler(30);
       console.log("completed set", completed_set, setItems);
     },
-    [setItems]
+    [setItems, startRestTimerHandler]
   );
   return (
     <ul>
