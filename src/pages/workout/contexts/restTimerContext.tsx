@@ -3,19 +3,11 @@ import useRestTimer from "../hooks/useRestTimer";
 
 type RestTimerType = ReturnType<typeof useRestTimer>;
 
-const RestTimerContext = createContext<RestTimerType>({
-  customRestPeriodOptions: [],
-  restPeriods: [],
-  totalRestTimeInSeconds: 0,
-  activeRestTime: 0,
-  startRestTimerHandler: () => null,
-  stopRestTimerHandler: () => null,
-  initRestTimer: () => null,
-  presetRestTimerHandler: () => null,
-});
+const RestTimerContext = createContext<RestTimerType | null>(null);
 
 const RestTimerProvider = ({ children }: { children: ReactNode }) => {
   const values = useRestTimer();
+
   const contextValues = useMemo(() => {
     return values;
   }, [values]);
@@ -28,7 +20,13 @@ const RestTimerProvider = ({ children }: { children: ReactNode }) => {
 };
 
 const useRestTimerContext = () => {
-  return useContext(RestTimerContext);
+  const context = useContext(RestTimerContext);
+  if (!context) {
+    throw new Error(
+      "RestTimer.* component must be rendered as child of RestTimer component"
+    );
+  }
+  return context;
 };
 
 export { RestTimerProvider, useRestTimerContext };

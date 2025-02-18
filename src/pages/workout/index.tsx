@@ -18,9 +18,7 @@ export default function Workout() {
             <SavedTrainingBlocks />
           </div>
 
-          <RestTimerProvider>
-            <ActiveWorkoutPanel />
-          </RestTimerProvider>
+          <ActiveWorkoutPanel />
 
           <div className="">
             <ExerciseHistory />
@@ -35,7 +33,7 @@ function ActiveWorkoutPanel() {
   const { active_workout } = useActiveWorkoutContext();
 
   return (
-    <div className="">
+    <RestTimerProvider>
       <ActiveWorkout
         restTimerButton={<ActiveWorkout.RestTimerButton />}
         exercises={
@@ -52,6 +50,6 @@ function ActiveWorkoutPanel() {
           </ul>
         }
       />
-    </div>
+    </RestTimerProvider>
   );
 }

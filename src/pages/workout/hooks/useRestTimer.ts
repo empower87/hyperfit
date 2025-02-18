@@ -23,7 +23,7 @@ const createCustomRestOptions = (
   return options;
 };
 
-export default function useRestTimer(startRestTimerOnSetComplete?: boolean) {
+export default function useRestTimer() {
   const restPeriods = [...DEFAULT_REST_PERIODS];
   const [totalRestTimeInSeconds, setTotalRestTimeInSeconds] = useState(
     restPeriods[0]

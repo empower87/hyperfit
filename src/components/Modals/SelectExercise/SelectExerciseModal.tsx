@@ -7,9 +7,9 @@ import { MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingP
 import { JSONExercise } from "~/hooks/useTrainingProgram/utils/exercises/getExercises";
 import { cn } from "~/lib/clsx";
 import {
-  ChangeExerciseProvider,
   FilterTagsKey,
-  useChangeExerciseContext,
+  SelectExerciseProvider,
+  useSelectExerciseContext,
 } from "./SelectExerciseContext";
 
 function Header({ children }: { children: ReactNode }) {
@@ -130,7 +130,7 @@ function FilterMenu({ onSelectTag }: FilterMenuProps) {
 }
 
 function Filter() {
-  const { filterTags, onFilterTagChange } = useChangeExerciseContext();
+  const { filterTags, onFilterTagChange } = useSelectExerciseContext();
   const [showMenu, setShowMenu] = useState(false);
   const onClick = () => setShowMenu(true);
   const onClose = () => setShowMenu(false);
@@ -199,7 +199,7 @@ interface ItemProps extends React.HTMLAttributes<HTMLLIElement> {
   selected: boolean;
 }
 function Item({ exercise, selected, ...props }: ItemProps) {
-  const { selectedExerciseId, exerciseId } = useChangeExerciseContext();
+  const { selectedExerciseId, exerciseId } = useSelectExerciseContext();
 
   return (
     <li
@@ -252,7 +252,7 @@ function Item({ exercise, selected, ...props }: ItemProps) {
 }
 
 function List({ children }: { children: ReactNode }) {
-  const { onSortHandler } = useChangeExerciseContext();
+  const { onSortHandler } = useSelectExerciseContext();
   const [sortedByIndicator, setSortedByIndicator] = useState<string | null>(
     null
   );
@@ -364,7 +364,7 @@ function SelectExerciseContents({
     selectedExerciseId,
     onSelectExerciseHandler,
     onSaveExerciseHandler,
-  } = useChangeExerciseContext();
+  } = useSelectExerciseContext();
 
   const onSelectHandler = (id: JSONExercise["id"]) => {
     onSelectExerciseHandler(id);
@@ -426,8 +426,8 @@ export default function SelectExercise({
   onSelect,
 }: SelectExerciseProps) {
   return (
-    <ChangeExerciseProvider muscle={muscle} exerciseId={exerciseId}>
+    <SelectExerciseProvider muscle={muscle} exerciseId={exerciseId}>
       <SelectExerciseContents onSelect={onSelect} />
-    </ChangeExerciseProvider>
+    </SelectExerciseProvider>
   );
 }

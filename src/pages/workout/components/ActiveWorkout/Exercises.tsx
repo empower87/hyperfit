@@ -16,6 +16,7 @@ const SET = {
   rir: 3,
   prev_lbs: 105,
   prev_reps: 12,
+  isComplete: false,
 };
 type SetType = typeof SET;
 
@@ -66,7 +67,7 @@ export function ExerciseItem({ exercise, order }: ExerciseItemProps) {
       <ExerciseHeaders />
 
       <div className="flex flex-col p-2 pt-0">
-        <SetList sets={exercise.sets} />
+        <SetList sets={exercise.sets} name={exercise.name} />
         <Button variant="ghost" className="text-secondary-400">
           Add Set
         </Button>
@@ -77,9 +78,9 @@ export function ExerciseItem({ exercise, order }: ExerciseItemProps) {
 
 type SetListProps = {
   sets: number;
+  name: string;
 };
-export function SetList({ sets }: SetListProps) {
-  const { initRestTimer, totalRestTimeInSeconds } = useRestTimerContext();
+export function SetList({ sets, name }: SetListProps) {
   const sets_array: SetType[] = Array.from(Array(sets), (_, i) => ({
     ...SET,
     set_num: i + 1,
@@ -88,22 +89,25 @@ export function SetList({ sets }: SetListProps) {
   const [setItems, setSetItems] = useState([...sets_array]);
 
   const onCompleteSet = useCallback(
-    (completed_set: SetType | null) => {
-      if (completed_set === null) {
-        initRestTimer(null);
-      } else {
+    (completed_set: SetType) => {
+      if (completed_set) {
         const updatedSets = setItems.map((set) => {
           if (set.set_num === completed_set.set_num) {
-            return { ...set, ...completed_set };
+            return { ...completed_set };
           }
           return set;
         });
         setSetItems(updatedSets);
-        initRestTimer();
+
         console.log("completed set", completed_set, setItems);
       }
     },
-    [setItems, initRestTimer, totalRestTimeInSeconds]
+    [setItems]
+  );
+  console.log(
+    name,
+    "SET LIST RERENDER OH NO",
+    "WHAT ARE THESE VALUES AND WHEN ARE THEY CALLED?"
   );
   return (
     <ul>
@@ -112,44 +116,48 @@ export function SetList({ sets }: SetListProps) {
           <SetItem
             key={`exerciseSet_${set}_${index}`}
             set={set}
-            onCompleteSet={() => onCompleteSet(set)}
+            name={name}
+            onCompleteSet={onCompleteSet}
           />
         );
       })}
     </ul>
   );
 }
+
 type SetItemProps = {
   set: SetType;
-  onCompleteSet: (completed_set: SetType | null) => void;
+  name: string;
+  onCompleteSet: (completed_set: SetType) => void;
 };
 
-export function SetItem({ set, onCompleteSet }: SetItemProps) {
-  const [isSetCompleted, setIsSetCompleted] = useState(false);
+export function SetItem({ set, name, onCompleteSet }: SetItemProps) {
+  const isSetCompleted = set.isComplete;
   const lbsRef = useRef<HTMLInputElement>(null);
   const repsRef = useRef<HTMLInputElement>(null);
 
-  const onCompleteSetHandler = () => {
+  const onCompleteSetHandler = useCallback(() => {
     if (!isSetCompleted) {
       onCompleteSet({
         ...set,
         lbs: Number(lbsRef.current?.value),
         reps: Number(repsRef.current?.value),
+        isComplete: true,
       });
-      setIsSetCompleted(true);
     } else {
-      onCompleteSet(null);
-      setIsSetCompleted(false);
+      onCompleteSet({ ...set, isComplete: false });
     }
-  };
+  }, [isSetCompleted]);
 
   const inputBorder = isSetCompleted ? "border-white" : "border-input";
   const bgColor = isSetCompleted ? "bg-secondary-300 text-white" : "";
-  const buttonVariant = isSetCompleted ? "ghost" : "outline";
-  const buttonColor = isSetCompleted
-    ? "bg-secondary-400 hover:bg-secondary-300"
-    : "";
-  const iconColor = isSetCompleted ? "white" : "gray";
+
+  console.log(
+    set,
+    name,
+    "SET RERENDER OH NO",
+    "WHAT ARE THESE VALUES AND WHEN ARE THEY CALLED?"
+  );
   return (
     <li className={`flex items-center rounded-md py-1 text-sm ${bgColor}`}>
       <div className={`${WIDTHS[0]} flex justify-center`}>{set.set_num}</div>
@@ -174,15 +182,46 @@ export function SetItem({ set, onCompleteSet }: SetItemProps) {
       </div>
 
       <div className={`${WIDTHS[0]} flex justify-center`}>
-        <Button
-          variant={buttonVariant}
-          size="icon"
-          className={`${buttonColor}`}
-          onClick={onCompleteSetHandler}
-        >
-          <CheckIcon color={iconColor} />
-        </Button>
+        <CompleteSetButton
+          isSetCompleted
+          onSetComplete={onCompleteSetHandler}
+        />
       </div>
     </li>
+  );
+}
+
+type CompleteSetButtonProps = {
+  isSetCompleted: boolean;
+  onSetComplete: () => void;
+};
+
+function CompleteSetButton({
+  isSetCompleted,
+  onSetComplete,
+}: CompleteSetButtonProps) {
+  const { initRestTimer, totalRestTimeInSeconds } = useRestTimerContext();
+  const buttonVariant = isSetCompleted ? "ghost" : "outline";
+  const buttonColor = isSetCompleted
+    ? "bg-secondary-400 hover:bg-secondary-300"
+    : "";
+  const iconColor = isSetCompleted ? "white" : "gray";
+  const onClickHandler = () => {
+    if (isSetCompleted) {
+      initRestTimer();
+      onSetComplete();
+    } else {
+      initRestTimer(null);
+    }
+  };
+  return (
+    <Button
+      variant={buttonVariant}
+      size="icon"
+      className={`${buttonColor}`}
+      onClick={onClickHandler}
+    >
+      <CheckIcon color={iconColor} />
+    </Button>
   );
 }

@@ -89,42 +89,38 @@ const sortExercisesByCriteria = (
   return sorted;
 };
 
-type ChangeExerciseContextType = ReturnType<typeof useChangeExercise>;
+type SelectExerciseContextType = ReturnType<typeof useSelectExercise>;
 
-const ChangeExerciseContext = createContext<ChangeExerciseContextType>({
-  exercises: [],
-  alphabetizedExercises: {},
-  groupedExercises: {},
-  exerciseId: "",
-  allExercises: [],
-  selectedExerciseId: "",
-  filterTags: INITIAL_FILTER_TAGS,
-  onFilterTagChange: () => null,
-  onSortHandler: () => null,
-  onSaveExerciseHandler: () => undefined,
-  onSelectExerciseHandler: () => null,
-});
+const SelectExerciseContext = createContext<SelectExerciseContextType | null>(
+  null
+);
 
-type ChangeExerciseProviderProps = {
+type SelectExerciseProviderProps = {
   exerciseId: string;
   children: ReactNode;
   muscle?: MusclePriorityType;
 };
-const ChangeExerciseProvider = ({
+const SelectExerciseProvider = ({
   exerciseId,
   children,
   muscle,
-}: ChangeExerciseProviderProps) => {
-  const values = useChangeExercise(exerciseId, muscle);
+}: SelectExerciseProviderProps) => {
+  const values = useSelectExercise(exerciseId, muscle);
   return (
-    <ChangeExerciseContext.Provider value={values}>
+    <SelectExerciseContext.Provider value={values}>
       {children}
-    </ChangeExerciseContext.Provider>
+    </SelectExerciseContext.Provider>
   );
 };
 
-const useChangeExerciseContext = () => {
-  return useContext(ChangeExerciseContext);
+const useSelectExerciseContext = () => {
+  const context = useContext(SelectExerciseContext);
+  if (!context) {
+    throw new Error(
+      "SelectExercise.* component must be rendered as child of SelectExercise component"
+    );
+  }
+  return context;
 };
 
 const getAlphabetizedExercises = (
@@ -174,7 +170,7 @@ type GroupedExercisesByFilter = {
   [key: string]: JSONExercise[];
 };
 
-function useChangeExercise(exerciseId: string, muscle?: MusclePriorityType) {
+function useSelectExercise(exerciseId: string, muscle?: MusclePriorityType) {
   const all_api_exercises = useMemo(
     () => MUSCLES.map((muscle) => getGroupList(muscle)),
     []
@@ -209,7 +205,6 @@ function useChangeExercise(exerciseId: string, muscle?: MusclePriorityType) {
     } else {
       setGroupedExercises(alphabetizedExercises);
     }
-    console.log(alphabetizedExercises, "HOW MANY TIMES YO?");
   }, [filterTags, muscle, all_api_exercises, alphabetizedExercises]);
 
   const binarySearchExercises = useCallback(
@@ -328,4 +323,4 @@ function useChangeExercise(exerciseId: string, muscle?: MusclePriorityType) {
     onSelectExerciseHandler,
   };
 }
-export { ChangeExerciseProvider, useChangeExerciseContext };
+export { SelectExerciseProvider, useSelectExerciseContext };
