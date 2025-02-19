@@ -21,6 +21,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
           name="description"
           content="Hypertrophy focused workout generator"
         />
+        <script src="https://unpkg.com/react-scan/dist/auto.global.js"></script>
       </Head>
 
       <TrainingProgramProvider>

@@ -1,5 +1,5 @@
 import { CheckIcon, DotsVerticalIcon } from "@radix-ui/react-icons";
-import { useCallback, useRef, useState } from "react";
+import { memo, useCallback, useRef, useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { ExerciseType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
@@ -43,11 +43,7 @@ export function ExerciseItem({ exercise, order }: ExerciseItemProps) {
       </div>
     );
   };
-  console.log(
-    exercise,
-    "EXERCISE RERENDER OH NO",
-    "WHAT ARE THESE VALUES AND WHEN ARE THEY CALLED?"
-  );
+  console.log(exercise.name, "REST TIMER RERENDER CHECK - EXERCISE ITEM");
   return (
     <li className="flex flex-col rounded-lg border border-input text-muted-foreground">
       <div className="flex items-center justify-between p-3 pb-4">
@@ -104,11 +100,7 @@ export function SetList({ sets, name }: SetListProps) {
     },
     [setItems]
   );
-  console.log(
-    name,
-    "SET LIST RERENDER OH NO",
-    "WHAT ARE THESE VALUES AND WHEN ARE THEY CALLED?"
-  );
+  console.log(name, "REST TIMER RERENDER CHECK - SET LIST");
   return (
     <ul>
       {setItems.map((set, index) => {
@@ -131,8 +123,10 @@ type SetItemProps = {
   onCompleteSet: (completed_set: SetType) => void;
 };
 
-export function SetItem({ set, name, onCompleteSet }: SetItemProps) {
-  const isSetCompleted = set.isComplete;
+export const SetItem = memo(({ set, name, onCompleteSet }: SetItemProps) => {
+  // const isSetCompleted = set.isComplete;
+  const { initRestTimer } = useRestTimerContext();
+  const [isSetCompleted, setIsSetCompleted] = useState(false);
   const lbsRef = useRef<HTMLInputElement>(null);
   const repsRef = useRef<HTMLInputElement>(null);
 
@@ -144,20 +138,20 @@ export function SetItem({ set, name, onCompleteSet }: SetItemProps) {
         reps: Number(repsRef.current?.value),
         isComplete: true,
       });
+      setIsSetCompleted(true);
+      initRestTimer();
     } else {
       onCompleteSet({ ...set, isComplete: false });
+      setIsSetCompleted(false);
+      initRestTimer(null);
     }
+    console.log(isSetCompleted, "INIT REST TIMER BUTTON - PARENT");
   }, [isSetCompleted]);
 
   const inputBorder = isSetCompleted ? "border-white" : "border-input";
   const bgColor = isSetCompleted ? "bg-secondary-300 text-white" : "";
 
-  console.log(
-    set,
-    name,
-    "SET RERENDER OH NO",
-    "WHAT ARE THESE VALUES AND WHEN ARE THEY CALLED?"
-  );
+  console.log(name, "REST TIMER RERENDER CHECK - SET ITEM");
   return (
     <li className={`flex items-center rounded-md py-1 text-sm ${bgColor}`}>
       <div className={`${WIDTHS[0]} flex justify-center`}>{set.set_num}</div>
@@ -189,7 +183,7 @@ export function SetItem({ set, name, onCompleteSet }: SetItemProps) {
       </div>
     </li>
   );
-}
+});
 
 type CompleteSetButtonProps = {
   isSetCompleted: boolean;
@@ -200,26 +194,30 @@ function CompleteSetButton({
   isSetCompleted,
   onSetComplete,
 }: CompleteSetButtonProps) {
-  const { initRestTimer, totalRestTimeInSeconds } = useRestTimerContext();
+  // const { initRestTimer } = useRestTimerContext();
   const buttonVariant = isSetCompleted ? "ghost" : "outline";
   const buttonColor = isSetCompleted
     ? "bg-secondary-400 hover:bg-secondary-300"
     : "";
   const iconColor = isSetCompleted ? "white" : "gray";
-  const onClickHandler = () => {
-    if (isSetCompleted) {
-      initRestTimer();
-      onSetComplete();
-    } else {
-      initRestTimer(null);
-    }
-  };
+
+  // const onClickHandler = useCallback(() => {
+  //   console.log(isSetCompleted, "INIT REST TIMER BUTTON - CHILD");
+  //   onSetComplete();
+
+  //   if (isSetCompleted) {
+  //     initRestTimer();
+  //   } else {
+  //     initRestTimer(null);
+  //   }
+  // }, [isSetCompleted]);
+  console.log(isSetCompleted, "REST TIMER RERENDER CHECK - SET ITEM BUTTON");
   return (
     <Button
       variant={buttonVariant}
       size="icon"
       className={`${buttonColor}`}
-      onClick={onClickHandler}
+      onClick={onSetComplete}
     >
       <CheckIcon color={iconColor} />
     </Button>

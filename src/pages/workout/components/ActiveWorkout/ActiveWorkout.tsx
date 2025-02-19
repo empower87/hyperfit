@@ -11,7 +11,6 @@ import {
   DialogTrigger,
 } from "~/components/ui/dialog";
 import { useTimer } from "~/hooks/useTimer";
-import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
 import { useActiveWorkoutContext } from "../../hooks/useActiveWorkout";
 
 import RestTimerButton from "./RestTimer";
@@ -54,6 +53,7 @@ export default function ActiveWorkout({
           workout_duration={<p className="text-muted-foreground">{duration}</p>}
         />
         {exercises}
+
         <ActiveWorkoutFooter stopTimer={pause} isRunning={isRunning} />
       </div>
     </div>
@@ -104,8 +104,7 @@ function ActiveWorkoutFooter({
   isRunning,
 }: ActiveWorkoutFooterProps) {
   if (!isRunning) return null;
-  const { prioritized_muscle_list } = useTrainingProgramContext();
-  const { active_workout } = useActiveWorkoutContext();
+
   const onAddExercise = useCallback(() => {}, []);
 
   return (
