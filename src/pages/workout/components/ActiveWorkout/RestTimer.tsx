@@ -20,21 +20,7 @@ import {
 import { useRestTimerControlsContext } from "../../hooks../../contexts/restTimerControlsContext";
 import useRestTimer from "../../hooks/useRestTimer";
 
-// type RestTImerButtonProps = {
-//   status: "running" | "stopped" | "paused";
-//   updateRestTimerStatus: (new_status: "running" | "stopped" | "paused") => void;
-//   currentRestPeriod: number;
-//   restPeriods: number[];
-//   initializeRestDuration: (duration: number) => void;
-// };
-export default function RestTimerButton() {
-//   {
-//   status,
-//   updateRestTimerStatus,
-//   currentRestPeriod,
-//   restPeriods,
-//   initializeRestDuration,
-// }: RestTImerButtonProps
+export default function RestTimer() {
   const {
     currentRestPeriod,
     restTimerStatus,
@@ -42,7 +28,6 @@ export default function RestTimerButton() {
     updateRestTimerStatus,
     restPeriods,
   } = useRestTimerControlsContext();
-  const { activeRestTime } = useRestTimer(restTimerStatus, currentRestPeriod);
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -56,30 +41,14 @@ export default function RestTimerButton() {
     updateRestTimerStatus("stopped");
   };
 
-  const restTimerButtonBackgroundPercentage = activeRestTime
-    ? ((currentRestPeriod - activeRestTime) / currentRestPeriod) * 100
-    : 0;
   return (
     <div className="flex flex-col">
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogTrigger asChild>
-          {activeRestTime !== null ? (
-            <Button
-              variant="defaultCard"
-              style={{
-                background: `linear-gradient(to left, #1f2937 ${restTimerButtonBackgroundPercentage}%, #f87171 0%)`,
-              }}
-            >
-              <StopwatchIcon fill="white" />
-              <div className="flex items-center justify-center text-white">
-                {activeRestTime}s
-              </div>
-            </Button>
-          ) : (
-            <Button className="" size="iconLg" variant="defaultCard">
-              <StopwatchIcon fill="white" />
-            </Button>
-          )}
+          <RestTimerButton
+            restPeriodStatus={restTimerStatus}
+            restPeriodValue={currentRestPeriod}
+          />
         </DialogTrigger>
 
         <DialogContent className="sm:max-w-[960px]">
@@ -106,6 +75,44 @@ export default function RestTimerButton() {
         </DialogContent>
       </Dialog>
     </div>
+  );
+}
+
+type RestTimerButtonProps = {
+  restPeriodStatus: "running" | "stopped" | "paused";
+  restPeriodValue: number;
+};
+function RestTimerButton({
+  restPeriodStatus,
+  restPeriodValue,
+}: RestTimerButtonProps) {
+  const { activeRestTime } = useRestTimer({
+    status: restPeriodStatus,
+    initialValue: restPeriodValue,
+  });
+
+  const restTimerButtonBackgroundPercentage = activeRestTime
+    ? ((restPeriodValue - activeRestTime) / restPeriodValue) * 100
+    : 0;
+  if (!activeRestTime) {
+    return (
+      <Button className="" size="iconLg" variant="defaultCard">
+        <StopwatchIcon fill="white" />
+      </Button>
+    );
+  }
+  return (
+    <Button
+      variant="defaultCard"
+      style={{
+        background: `linear-gradient(to left, #1f2937 ${restTimerButtonBackgroundPercentage}%, #f87171 0%)`,
+      }}
+    >
+      <StopwatchIcon fill="white" />
+      <div className="flex items-center justify-center text-white">
+        {activeRestTime}s
+      </div>
+    </Button>
   );
 }
 

@@ -52,7 +52,7 @@ function ActiveWorkoutPanel() {
     <RestTimerControlsProvider>
       <ActiveWorkout
         restTimerButton={
-          <ActiveWorkout.RestTimerButton
+          <ActiveWorkout.RestTimer
           // status={restTimerStatus}
           // updateRestTimerStatus={updateRestTimerStatus}
           // currentRestPeriod={currentRestPeriod}

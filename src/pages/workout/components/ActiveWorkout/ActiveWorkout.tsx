@@ -13,7 +13,7 @@ import {
 import { useTimer } from "~/hooks/useTimer";
 import { useActiveWorkoutContext } from "../../hooks/useActiveWorkout";
 
-import RestTimerButton from "./RestTimer";
+import RestTimer from "./RestTimer";
 
 type ActiveWorkoutProps = {
   restTimerButton: JSX.Element;
@@ -21,7 +21,7 @@ type ActiveWorkoutProps = {
   selectExercise: JSX.Element;
 };
 
-ActiveWorkout.RestTimerButton = RestTimerButton;
+ActiveWorkout.RestTimer = RestTimer;
 ActiveWorkout.AddExercise = AddExerciseDialog;
 export default function ActiveWorkout({
   restTimerButton,
