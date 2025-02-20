@@ -1,4 +1,4 @@
-import { ReactNode, useCallback, useState } from "react";
+import { ReactNode, useState } from "react";
 import SelectExercise from "~/components/Modals/SelectExercise/SelectExerciseModal";
 import { Button } from "~/components/ui/button";
 import {
@@ -18,13 +18,15 @@ import RestTimerButton from "./RestTimer";
 type ActiveWorkoutProps = {
   restTimerButton: JSX.Element;
   exercises: JSX.Element;
+  selectExercise: JSX.Element;
 };
 
 ActiveWorkout.RestTimerButton = RestTimerButton;
-
+ActiveWorkout.AddExercise = AddExerciseDialog;
 export default function ActiveWorkout({
   restTimerButton,
   exercises,
+  selectExercise,
 }: ActiveWorkoutProps) {
   const { start, pause, duration, isRunning } = useTimer();
   return (
@@ -49,12 +51,19 @@ export default function ActiveWorkout({
       </div>
 
       <div className="h-5/6 space-y-2 overflow-auto">
-        <ActiveWorkoutTitle
-          workout_duration={<p className="text-muted-foreground">{duration}</p>}
-        />
-        {exercises}
+        <ActiveWorkoutTitle>
+          <p className="text-muted-foreground">{duration}</p>
+        </ActiveWorkoutTitle>
 
-        <ActiveWorkoutFooter stopTimer={pause} isRunning={isRunning} />
+        {exercises}
+        {isRunning ? (
+          <ActiveWorkoutFooter>
+            {selectExercise}
+            <Button className="" variant="destructive" onClick={pause}>
+              Cancel Workout
+            </Button>
+          </ActiveWorkoutFooter>
+        ) : null}
       </div>
     </div>
   );
@@ -96,61 +105,22 @@ function ActiveWorkoutHeader({
 }
 
 type ActiveWorkoutFooterProps = {
-  stopTimer: () => void;
-  isRunning: boolean;
+  children?: ReactNode;
 };
-function ActiveWorkoutFooter({
-  stopTimer,
-  isRunning,
-}: ActiveWorkoutFooterProps) {
-  if (!isRunning) return null;
-
-  const onAddExercise = useCallback(() => {}, []);
-
+function ActiveWorkoutFooter({ children }: ActiveWorkoutFooterProps) {
   return (
     <div className="flex items-center justify-between shadow-md">
       <div className="flex w-full flex-col justify-center space-y-4 p-2">
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button
-              className="text-secondary-400"
-              variant="ghost"
-              onClick={() => {}}
-            >
-              Add Exercise
-            </Button>
-          </DialogTrigger>
-
-          <DialogContent className="sm:max-w-[960px]">
-            <DialogHeader>
-              <DialogTitle>Select Exercise</DialogTitle>
-              <DialogDescription>
-                Make changes to your profile here. Click save when you're done.
-              </DialogDescription>
-            </DialogHeader>
-
-            <SelectExercise exerciseId="" onSelect={onAddExercise} />
-
-            <DialogFooter>
-              <Button type="submit" onClick={() => {}}>
-                Save changes
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-
-        <Button className="" variant="destructive" onClick={() => stopTimer()}>
-          Cancel Workout
-        </Button>
+        {children}
       </div>
     </div>
   );
 }
 
 type ActiveWorkoutTitleprops = {
-  workout_duration: JSX.Element;
+  children: ReactNode;
 };
-function ActiveWorkoutTitle({ workout_duration }: ActiveWorkoutTitleprops) {
+function ActiveWorkoutTitle({ children }: ActiveWorkoutTitleprops) {
   const { active_workout } = useActiveWorkoutContext();
   const session_name = active_workout?.session?.name;
   const session_split = active_workout?.session?.split;
@@ -177,7 +147,39 @@ function ActiveWorkoutTitle({ workout_duration }: ActiveWorkoutTitleprops) {
         </div>
       </div>
 
-      <div className="flex p-2">{workout_duration}</div>
+      <div className="flex p-2">{children}</div>
     </div>
+  );
+}
+
+type AddExerciseDialogProps = {
+  onAddExercise: () => void;
+};
+function AddExerciseDialog({ onAddExercise }: AddExerciseDialogProps) {
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button className="text-secondary-400" variant="ghost">
+          Add Exercise
+        </Button>
+      </DialogTrigger>
+
+      <DialogContent className="sm:max-w-[960px]">
+        <DialogHeader>
+          <DialogTitle>Select Exercise</DialogTitle>
+          <DialogDescription>
+            Choose an exercise to add to this workout.
+          </DialogDescription>
+        </DialogHeader>
+
+        <SelectExercise exerciseId="" onSelect={onAddExercise} />
+
+        <DialogFooter>
+          <Button type="submit" onClick={() => {}}>
+            Save changes
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

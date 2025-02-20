@@ -2,7 +2,7 @@ import ActiveWorkout from "./components/ActiveWorkout/ActiveWorkout";
 import { ExerciseItem } from "./components/ActiveWorkout/Exercises";
 import { ExerciseHistory } from "./components/ExerciseHistory/ExerciseHistory";
 import SavedTrainingBlocks from "./components/SavedTrainingBlocks/SavedTrainingBlocks";
-import { RestTimerProvider } from "./contexts/restTimerContext";
+import { RestTimerControlsProvider } from "./contexts/restTimerControlsContext";
 import {
   ActiveWorkoutProvider,
   useActiveWorkoutContext,
@@ -29,13 +29,37 @@ export default function Workout() {
   );
 }
 
+// function RestTimerWrapper() {
+//   return (
+//     <RestTimerProvider>
+
+//     </RestTimerProvider>
+//   )
+// }
+
 function ActiveWorkoutPanel() {
   const { active_workout } = useActiveWorkoutContext();
+  // const {
+  //   restTimerStatus,
+  //   updateRestTimerStatus,
+  //   restPeriods,
+  //   currentRestPeriod,
+  //   initializeRestDuration,
+  // } = useRestTimerControls();
 
+  const onAddExercise = () => {};
   return (
-    <RestTimerProvider>
+    <RestTimerControlsProvider>
       <ActiveWorkout
-        restTimerButton={<ActiveWorkout.RestTimerButton />}
+        restTimerButton={
+          <ActiveWorkout.RestTimerButton
+          // status={restTimerStatus}
+          // updateRestTimerStatus={updateRestTimerStatus}
+          // currentRestPeriod={currentRestPeriod}
+          // restPeriods={restPeriods}
+          // initializeRestDuration={initializeRestDuration}
+          />
+        }
         exercises={
           <ul className="space-y-4">
             {active_workout?.session?.exercises.map((exercise, index) => {
@@ -49,7 +73,10 @@ function ActiveWorkoutPanel() {
             })}
           </ul>
         }
+        selectExercise={
+          <ActiveWorkout.AddExercise onAddExercise={onAddExercise} />
+        }
       />
-    </RestTimerProvider>
+    </RestTimerControlsProvider>
   );
 }

@@ -3,7 +3,7 @@ import { memo, useCallback, useRef, useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { ExerciseType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
-import { useRestTimerContext } from "../../contexts/restTimerContext";
+import { useRestTimerControlsContext } from "../../contexts/restTimerControlsContext";
 import { useActiveWorkoutContext } from "../../hooks/useActiveWorkout";
 
 const WIDTHS = ["w-10", "w-24", "w-24", "w-24", "w-10"];
@@ -23,7 +23,10 @@ type SetType = typeof SET;
 type ExerciseItemProps = {
   exercise: ExerciseType;
   order: number;
+  // children: ReactNode;
 };
+
+ExerciseItem.Sets = SetList;
 export function ExerciseItem({ exercise, order }: ExerciseItemProps) {
   const { onExerciseNameClick } = useActiveWorkoutContext();
 
@@ -43,7 +46,7 @@ export function ExerciseItem({ exercise, order }: ExerciseItemProps) {
       </div>
     );
   };
-  console.log(exercise.name, "REST TIMER RERENDER CHECK - EXERCISE ITEM");
+
   return (
     <li className="flex flex-col rounded-lg border border-input text-muted-foreground">
       <div className="flex items-center justify-between p-3 pb-4">
@@ -63,7 +66,8 @@ export function ExerciseItem({ exercise, order }: ExerciseItemProps) {
       <ExerciseHeaders />
 
       <div className="flex flex-col p-2 pt-0">
-        <SetList sets={exercise.sets} name={exercise.name} />
+        {/* {children} */}
+        <SetList sets={exercise.sets} />
         <Button variant="ghost" className="text-secondary-400">
           Add Set
         </Button>
@@ -74,9 +78,8 @@ export function ExerciseItem({ exercise, order }: ExerciseItemProps) {
 
 type SetListProps = {
   sets: number;
-  name: string;
 };
-export function SetList({ sets, name }: SetListProps) {
+function SetList({ sets }: SetListProps) {
   const sets_array: SetType[] = Array.from(Array(sets), (_, i) => ({
     ...SET,
     set_num: i + 1,
@@ -100,7 +103,7 @@ export function SetList({ sets, name }: SetListProps) {
     },
     [setItems]
   );
-  console.log(name, "REST TIMER RERENDER CHECK - SET LIST");
+
   return (
     <ul>
       {setItems.map((set, index) => {
@@ -108,7 +111,6 @@ export function SetList({ sets, name }: SetListProps) {
           <SetItem
             key={`exerciseSet_${set}_${index}`}
             set={set}
-            name={name}
             onCompleteSet={onCompleteSet}
           />
         );
@@ -119,13 +121,12 @@ export function SetList({ sets, name }: SetListProps) {
 
 type SetItemProps = {
   set: SetType;
-  name: string;
   onCompleteSet: (completed_set: SetType) => void;
 };
 
-export const SetItem = memo(({ set, name, onCompleteSet }: SetItemProps) => {
+export const SetItem = memo(({ set, onCompleteSet }: SetItemProps) => {
   // const isSetCompleted = set.isComplete;
-  const { initRestTimer } = useRestTimerContext();
+  const { updateRestTimerStatus } = useRestTimerControlsContext();
   const [isSetCompleted, setIsSetCompleted] = useState(false);
   const lbsRef = useRef<HTMLInputElement>(null);
   const repsRef = useRef<HTMLInputElement>(null);
@@ -139,19 +140,17 @@ export const SetItem = memo(({ set, name, onCompleteSet }: SetItemProps) => {
         isComplete: true,
       });
       setIsSetCompleted(true);
-      initRestTimer();
+      updateRestTimerStatus("running");
     } else {
       onCompleteSet({ ...set, isComplete: false });
       setIsSetCompleted(false);
-      initRestTimer(null);
+      updateRestTimerStatus("stopped");
     }
-    console.log(isSetCompleted, "INIT REST TIMER BUTTON - PARENT");
   }, [isSetCompleted]);
 
   const inputBorder = isSetCompleted ? "border-white" : "border-input";
   const bgColor = isSetCompleted ? "bg-secondary-300 text-white" : "";
 
-  console.log(name, "REST TIMER RERENDER CHECK - SET ITEM");
   return (
     <li className={`flex items-center rounded-md py-1 text-sm ${bgColor}`}>
       <div className={`${WIDTHS[0]} flex justify-center`}>{set.set_num}</div>
@@ -194,24 +193,12 @@ function CompleteSetButton({
   isSetCompleted,
   onSetComplete,
 }: CompleteSetButtonProps) {
-  // const { initRestTimer } = useRestTimerContext();
   const buttonVariant = isSetCompleted ? "ghost" : "outline";
   const buttonColor = isSetCompleted
     ? "bg-secondary-400 hover:bg-secondary-300"
     : "";
   const iconColor = isSetCompleted ? "white" : "gray";
 
-  // const onClickHandler = useCallback(() => {
-  //   console.log(isSetCompleted, "INIT REST TIMER BUTTON - CHILD");
-  //   onSetComplete();
-
-  //   if (isSetCompleted) {
-  //     initRestTimer();
-  //   } else {
-  //     initRestTimer(null);
-  //   }
-  // }, [isSetCompleted]);
-  console.log(isSetCompleted, "REST TIMER RERENDER CHECK - SET ITEM BUTTON");
   return (
     <Button
       variant={buttonVariant}

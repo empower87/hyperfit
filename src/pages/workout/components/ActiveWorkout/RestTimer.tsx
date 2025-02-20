@@ -17,29 +17,48 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog";
-import { useRestTimerContext } from "../../contexts/restTimerContext";
+import { useRestTimerControlsContext } from "../../hooks../../contexts/restTimerControlsContext";
+import useRestTimer from "../../hooks/useRestTimer";
 
+// type RestTImerButtonProps = {
+//   status: "running" | "stopped" | "paused";
+//   updateRestTimerStatus: (new_status: "running" | "stopped" | "paused") => void;
+//   currentRestPeriod: number;
+//   restPeriods: number[];
+//   initializeRestDuration: (duration: number) => void;
+// };
 export default function RestTimerButton() {
+//   {
+//   status,
+//   updateRestTimerStatus,
+//   currentRestPeriod,
+//   restPeriods,
+//   initializeRestDuration,
+// }: RestTImerButtonProps
   const {
-    activeRestTime,
+    currentRestPeriod,
+    restTimerStatus,
+    initializeRestDuration,
+    updateRestTimerStatus,
     restPeriods,
-    totalRestTimeInSeconds,
-    startRestTimerHandler,
-    stopRestTimerHandler,
-    presetRestTimerHandler,
-  } = useRestTimerContext();
+  } = useRestTimerControlsContext();
+  const { activeRestTime } = useRestTimer(restTimerStatus, currentRestPeriod);
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const handleRestPeriodClick = (restPeriod: number) => {
     setIsDialogOpen(false);
-    presetRestTimerHandler(restPeriod);
+    initializeRestDuration(restPeriod);
   };
 
   const handleSkipButtonClick = () => {
     setIsDialogOpen(false);
-    stopRestTimerHandler();
+    updateRestTimerStatus("stopped");
   };
+
+  const restTimerButtonBackgroundPercentage = activeRestTime
+    ? ((currentRestPeriod - activeRestTime) / currentRestPeriod) * 100
+    : 0;
   return (
     <div className="flex flex-col">
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -48,11 +67,7 @@ export default function RestTimerButton() {
             <Button
               variant="defaultCard"
               style={{
-                background: `linear-gradient(to left, #1f2937 ${
-                  ((totalRestTimeInSeconds - activeRestTime) /
-                    totalRestTimeInSeconds) *
-                  100
-                }%, #f87171 0%)`,
+                background: `linear-gradient(to left, #1f2937 ${restTimerButtonBackgroundPercentage}%, #f87171 0%)`,
               }}
             >
               <StopwatchIcon fill="white" />
@@ -98,13 +113,7 @@ type SelectRestTimeProps = {
   children: React.ReactNode;
 };
 export function SelectRestTime({ children }: SelectRestTimeProps) {
-  const {
-    activeRestTime,
-    restPeriods,
-    totalRestTimeInSeconds,
-    startRestTimerHandler,
-    customRestPeriodOptions,
-  } = useRestTimerContext();
+  const { customRestPeriodOptions } = useRestTimerControlsContext();
 
   return (
     <div>
