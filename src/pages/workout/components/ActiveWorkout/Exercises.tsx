@@ -3,8 +3,8 @@ import { memo, useCallback, useRef, useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { ExerciseType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
-import { useRestTimerControlsContext } from "../../contexts/restTimerControlsContext";
-import { useActiveWorkoutContext } from "../../hooks/useActiveWorkout";
+import { useActiveWorkoutContext } from "../../hooks/useActiveWorkoutContext";
+import { useRestTimerControlsContext } from "../../hooks/useRestTimerControlsContext";
 
 const WIDTHS = ["w-10", "w-24", "w-24", "w-24", "w-10"];
 const TITLES = ["SET", "PREVIOUS", "LBS", "REPS", ""];

@@ -2,7 +2,7 @@ import { Cross1Icon } from "@radix-ui/react-icons";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Set } from "~/types/Exercise";
-import { useActiveWorkoutContext } from "../../hooks/useActiveWorkout";
+import { useActiveWorkoutContext } from "../../hooks/useActiveWorkoutContext";
 
 export function ExerciseHistory() {
   const { active_workout, selectedExerciseHistoryId, onExerciseNameClick } =

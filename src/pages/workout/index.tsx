@@ -2,11 +2,11 @@ import ActiveWorkout from "./components/ActiveWorkout/ActiveWorkout";
 import { ExerciseItem } from "./components/ActiveWorkout/Exercises";
 import { ExerciseHistory } from "./components/ExerciseHistory/ExerciseHistory";
 import SavedTrainingBlocks from "./components/SavedTrainingBlocks/SavedTrainingBlocks";
-import { RestTimerControlsProvider } from "./contexts/restTimerControlsContext";
 import {
   ActiveWorkoutProvider,
   useActiveWorkoutContext,
-} from "./hooks/useActiveWorkout";
+} from "./hooks/useActiveWorkoutContext";
+import { RestTimerControlsProvider } from "./hooks/useRestTimerControlsContext";
 
 export default function Workout() {
   return (
@@ -29,14 +29,6 @@ export default function Workout() {
   );
 }
 
-// function RestTimerWrapper() {
-//   return (
-//     <RestTimerProvider>
-
-//     </RestTimerProvider>
-//   )
-// }
-
 function ActiveWorkoutPanel() {
   const { active_workout } = useActiveWorkoutContext();
   // const {
@@ -51,15 +43,7 @@ function ActiveWorkoutPanel() {
   return (
     <RestTimerControlsProvider>
       <ActiveWorkout
-        restTimerButton={
-          <ActiveWorkout.RestTimer
-          // status={restTimerStatus}
-          // updateRestTimerStatus={updateRestTimerStatus}
-          // currentRestPeriod={currentRestPeriod}
-          // restPeriods={restPeriods}
-          // initializeRestDuration={initializeRestDuration}
-          />
-        }
+        restTimerButton={<ActiveWorkout.RestTimer />}
         exercises={
           <ul className="space-y-4">
             {active_workout?.session?.exercises.map((exercise, index) => {

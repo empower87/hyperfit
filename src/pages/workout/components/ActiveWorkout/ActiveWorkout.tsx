@@ -11,7 +11,7 @@ import {
   DialogTrigger,
 } from "~/components/ui/dialog";
 import { useTimer } from "~/hooks/useTimer";
-import { useActiveWorkoutContext } from "../../hooks/useActiveWorkout";
+import { useActiveWorkoutContext } from "../../hooks/useActiveWorkoutContext";
 
 import RestTimer from "./RestTimer";
 

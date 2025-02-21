@@ -17,8 +17,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog";
-import { useRestTimerControlsContext } from "../../hooks../../contexts/restTimerControlsContext";
 import useRestTimer from "../../hooks/useRestTimer";
+import { useRestTimerControlsContext } from "../../hooks/useRestTimerControlsContext";
 
 export default function RestTimer() {
   const {
@@ -86,21 +86,26 @@ function RestTimerButton({
   restPeriodStatus,
   restPeriodValue,
 }: RestTimerButtonProps) {
+  const { updateRestTimerStatus } = useRestTimerControlsContext();
   const { activeRestTime } = useRestTimer({
     status: restPeriodStatus,
     initialValue: restPeriodValue,
   });
 
-  const restTimerButtonBackgroundPercentage = activeRestTime
-    ? ((restPeriodValue - activeRestTime) / restPeriodValue) * 100
-    : 0;
-  if (!activeRestTime) {
+  if (restPeriodStatus === "stopped") {
     return (
       <Button className="" size="iconLg" variant="defaultCard">
         <StopwatchIcon fill="white" />
       </Button>
     );
   }
+
+  if (restPeriodStatus === "running" && activeRestTime <= 0) {
+    updateRestTimerStatus("stopped");
+  }
+  const restTimerButtonBackgroundPercentage = activeRestTime
+    ? ((restPeriodValue - activeRestTime) / restPeriodValue) * 100
+    : 0;
   return (
     <Button
       variant="defaultCard"
