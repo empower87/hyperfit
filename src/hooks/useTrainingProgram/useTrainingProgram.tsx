@@ -62,7 +62,6 @@ function isValidState(obj: any): obj is State {
     "frequency" in obj &&
     "training_program_params" in obj &&
     "muscle_priority_list" in obj &&
-    "training_week" in obj &&
     "training_block" in obj &&
     "split_sessions" in obj &&
     "mrv_breakpoint" in obj &&
@@ -99,8 +98,8 @@ function useTrainingProgram() {
     console.log(raw, "RAW");
     if (raw) {
       const localState = parseState(raw);
-      if (!localState) return;
       console.log(state, localState, "LOCAL_STORAGE_STUFF");
+      if (!localState) return;
       dispatch({
         type: "INIT_STORED",
         payload: { value: localState },

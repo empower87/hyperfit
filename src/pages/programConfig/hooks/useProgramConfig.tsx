@@ -50,7 +50,6 @@ const breakpointToggleHandler = (
   }
 };
 
-
 function useProgramConfig() {
   const tpc = useTrainingProgramContext();
 
@@ -59,7 +58,7 @@ function useProgramConfig() {
   });
 
   useEffect(() => {
-    const remove = window.localStorage.removeItem("TRAINING_PROGRAM_STATE");
+    // const remove = window.localStorage.removeItem("TRAINING_PROGRAM_STATE");
     setProgramConfig({
       muscle_priority_list: tpc.prioritized_muscle_list,
       mrv_breakpoint: tpc.mrv_breakpoint,
@@ -401,4 +400,3 @@ const useProgramConfigContext = () => {
 };
 
 export { ProgramConfigProvider, useProgramConfigContext };
-

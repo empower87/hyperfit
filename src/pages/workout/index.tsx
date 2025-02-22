@@ -13,6 +13,7 @@ export default function Workout() {
     <ActiveWorkoutProvider>
       <div className="flex h-full flex-col overflow-auto">
         <h1 className="mb-5 text-white">Workout</h1>
+
         <div className="flex space-x-6">
           <div className="">
             <SavedTrainingBlocks />
@@ -31,15 +32,9 @@ export default function Workout() {
 
 function ActiveWorkoutPanel() {
   const { active_workout } = useActiveWorkoutContext();
-  // const {
-  //   restTimerStatus,
-  //   updateRestTimerStatus,
-  //   restPeriods,
-  //   currentRestPeriod,
-  //   initializeRestDuration,
-  // } = useRestTimerControls();
 
   const onAddExercise = () => {};
+
   return (
     <RestTimerControlsProvider>
       <ActiveWorkout

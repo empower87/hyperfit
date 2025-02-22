@@ -4,10 +4,8 @@ import { type AppType } from "next/app";
 import Head from "next/head";
 import { ReactNode } from "react";
 import Navbar from "~/components/Navbar";
-import { TrainingProgramProvider } from "~/hooks/useTrainingProgram/useTrainingProgram";
 import "~/styles/globals.css";
 import { api } from "~/utils/api";
-import { ProgramConfigProvider } from "./programConfig/hooks/useProgramConfig";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -24,13 +22,9 @@ const MyApp: AppType<{ session: Session | null }> = ({
         <script src="https://unpkg.com/react-scan/dist/auto.global.js"></script>
       </Head>
 
-      <TrainingProgramProvider>
-        <ProgramConfigProvider>
-          <Layout>
-            <Component {...pageProps} />
-          </Layout>
-        </ProgramConfigProvider>
-      </TrainingProgramProvider>
+      <Layout>
+        <Component {...pageProps} />
+      </Layout>
     </SessionProvider>
   );
 };

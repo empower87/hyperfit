@@ -3,6 +3,7 @@ import {
   ReactNode,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
 } from "react";
@@ -13,6 +14,10 @@ import {
   SessionSplitType,
   TrainingDayType,
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
+import {
+  parseState,
+  STORAGE_KEY,
+} from "~/hooks/useTrainingProgram/useTrainingProgram";
 import { getExerciseSetsOverMicrocycles } from "~/hooks/useTrainingProgram/utils/exercises/getExercises";
 import { NewTrainingWeek } from "~/hooks/useTrainingProgram/utils/training_block/trainingBlockHelpers";
 import { useProgramConfigContext } from "~/pages/programConfig/hooks/useProgramConfig";
@@ -24,6 +29,7 @@ const ActiveWorkoutContext = createContext<ActiveWorkoutType>({
   selectedExerciseHistoryId: "",
   onSelectWorkout: () => {},
   onExerciseNameClick: () => {},
+  savedTrainingBlocks: [],
 });
 
 export const ActiveWorkoutProvider = ({
@@ -105,7 +111,10 @@ const useActiveWorkout = () => {
   const { trainingBlock, muscle_priority_list, training_program_params } =
     programConfig;
   const { microcycles } = training_program_params;
-  const savedTrainingBlocks = [trainingBlock, TBLOCK_TEST, TBLOCK_TEST];
+  // const savedTrainingBlocks = [trainingBlock, TBLOCK_TEST, TBLOCK_TEST];
+  const [savedTrainingBlocks, setSavedTrainingBlocks] = useState<
+    TrainingDayType[][][]
+  >([]);
   const [selectedWorkout, setSelectedWorkout] = useState<
     [number, number, number, number]
   >([0, 0, 0, 0]);
@@ -114,6 +123,17 @@ const useActiveWorkout = () => {
   );
   const [selectedExerciseHistoryId, setSelectedExerciseHistoryId] =
     useState<string>("");
+
+  useEffect(() => {
+    const raw = window.localStorage.getItem(STORAGE_KEY);
+    console.log(raw, localStorage, "RAW IN ACTIVE CONTEXT");
+    if (raw) {
+      const localState = parseState(raw);
+      console.log(localState, "LOCAL_STORAGE_STUFF");
+      if (!localState) return;
+      setSavedTrainingBlocks((prev) => [...prev, localState.training_block]);
+    }
+  }, []);
 
   const onSelectWorkout = useCallback(
     (
@@ -159,5 +179,6 @@ const useActiveWorkout = () => {
     selectedExerciseHistoryId,
     onSelectWorkout,
     onExerciseNameClick,
+    savedTrainingBlocks,
   };
 };

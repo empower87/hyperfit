@@ -1,6 +1,9 @@
-import { ReactNode } from "react";
+import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
+import { ReactNode, useState } from "react";
 import { DragDropContext, Draggable } from "react-beautiful-dnd";
 import { DragHandleIcon } from "~/assets/icons/_icons";
+import { Button } from "~/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -103,7 +106,7 @@ type MusclePrioritizationListProps = {
   isCollapsed: boolean;
   onMuscleClick?: (id: MusclePriorityType["id"]) => void;
 };
-export default function MusclePrioritizationList({
+function MusclePrioritizationList({
   isCollapsed,
   onMuscleClick,
 }: MusclePrioritizationListProps) {
@@ -153,5 +156,45 @@ export default function MusclePrioritizationList({
         )}
       </StrictModeDroppable>
     </DragDropContext>
+  );
+}
+
+export default function MusclePrioritizationCard() {
+  const [isPriorityListCollapsed, setIsPriorityListCollapsed] = useState(false);
+
+  const onCollapsePriorityList = () => setIsPriorityListCollapsed(true);
+  const onExpandPriorityList = () => setIsPriorityListCollapsed(false);
+
+  return (
+    <Card>
+      <CardHeader>
+        <div className="flex items-center justify-between space-x-2 border-b border-primary-500 pb-2 ">
+          <CardTitle>1. Priority</CardTitle>
+          {isPriorityListCollapsed ? (
+            <Button
+              className="bg-card"
+              variant="outline"
+              size="icon"
+              onClick={onExpandPriorityList}
+            >
+              <ChevronRightIcon />
+            </Button>
+          ) : (
+            <Button
+              className="bg-card"
+              variant="outline"
+              size="icon"
+              onClick={onCollapsePriorityList}
+            >
+              <ChevronLeftIcon />
+            </Button>
+          )}
+        </div>
+      </CardHeader>
+
+      <CardContent>
+        <MusclePrioritizationList isCollapsed={isPriorityListCollapsed} />
+      </CardContent>
+    </Card>
   );
 }

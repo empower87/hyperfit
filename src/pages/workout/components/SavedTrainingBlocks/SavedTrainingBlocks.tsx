@@ -11,7 +11,6 @@ import { TrainingDayType } from "~/hooks/useTrainingProgram/reducer/trainingProg
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
 import { NewTrainingWeek } from "~/hooks/useTrainingProgram/utils/training_block/trainingBlockHelpers";
 import { cn } from "~/lib/utils";
-import { useProgramConfigContext } from "~/pages/programConfig/hooks/useProgramConfig";
 import { getSplitColor } from "~/utils/getIndicatorColors";
 import { useActiveWorkoutContext } from "../../hooks/useActiveWorkoutContext";
 
@@ -42,12 +41,14 @@ const TBLOCK_TEST: NewTrainingWeek[][] | TrainingDayType[][] = [
 ];
 
 export default function SavedTrainingBlocks() {
-  const { training_block, training_program_params } =
-    useTrainingProgramContext();
-  const { trainingBlock } = useProgramConfigContext();
+  // const { training_block, training_program_params } =
+  //   useTrainingProgramContext();
+  // const { trainingBlocks } = useProgramConfigContext();
+  const { savedTrainingBlocks } = useActiveWorkoutContext();
   const [openedTrainingBlockId, setOpenedTrainingBlockId] = useState("");
-  const training_blocks = [trainingBlock, TBLOCK_TEST, TBLOCK_TEST];
+  // const training_blocks = [trainingBlock, TBLOCK_TEST, TBLOCK_TEST];
 
+  console.log(savedTrainingBlocks, "WTF?");
   return (
     <Card className="w-[360px]">
       <CardHeader>
@@ -55,7 +56,7 @@ export default function SavedTrainingBlocks() {
       </CardHeader>
       <CardContent>
         <ul>
-          {training_blocks.map((block, index) => {
+          {savedTrainingBlocks.map((block, index) => {
             return <TrainingBlockItem index={index} training_block={block} />;
           })}
         </ul>
