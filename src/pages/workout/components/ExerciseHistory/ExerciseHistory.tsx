@@ -39,7 +39,6 @@ export function ExerciseHistory() {
                 <ExerciseHistoryCard
                   session_name={session.session_name}
                   session_date={session.session_date}
-                  exercise_id={session.exercise_id}
                   sets={session.sets}
                 />
               );
@@ -53,13 +52,11 @@ export function ExerciseHistory() {
 type ExerciseHistoryCardProps = {
   session_name: string;
   session_date: string;
-  exercise_id: string;
   sets: Set[];
 };
 function ExerciseHistoryCard({
   session_name,
   session_date,
-  exercise_id,
   sets,
 }: ExerciseHistoryCardProps) {
   return (
@@ -68,11 +65,13 @@ function ExerciseHistoryCard({
         <h2 className="">{session_name}</h2>
         <p className="text-sm text-muted-foreground">{session_date}</p>
       </div>
+
       <div className="flex flex-col">
         <div className="flex justify-between">
           <h3 className="">Sets Performed</h3>
           <h3 className="">1RM</h3>
         </div>
+
         {sets.map((set) => {
           return (
             <div className="flex justify-between text-sm text-muted-foreground">

@@ -8,47 +8,14 @@ import {
   CollapsibleTrigger,
 } from "~/components/ui/collapsible";
 import { TrainingDayType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
-import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
 import { NewTrainingWeek } from "~/hooks/useTrainingProgram/utils/training_block/trainingBlockHelpers";
 import { cn } from "~/lib/utils";
 import { getSplitColor } from "~/utils/getIndicatorColors";
 import { useActiveWorkoutContext } from "../../hooks/useActiveWorkoutContext";
 
-const createTrainingBlockData = (
-  training_block: NewTrainingWeek[][] | TrainingDayType[][]
-) => {
-  const lol = training_block.map((meso, index) => {
-    return {
-      mesocycle: index + 1,
-      sessions: meso.map((session, i) => ({
-        name: session.day,
-        split: session.sessions.length ? session.sessions[0].split : "off",
-      })),
-    };
-  });
-};
-
-const TBLOCK_TEST: NewTrainingWeek[][] | TrainingDayType[][] = [
-  [
-    {
-      day: "Monday",
-      isTrainingDay: true,
-      sessions: [{ id: "0329", split: "upper", exercises: [] }],
-    },
-  ],
-  [],
-  [],
-];
-
 export default function SavedTrainingBlocks() {
-  // const { training_block, training_program_params } =
-  //   useTrainingProgramContext();
-  // const { trainingBlocks } = useProgramConfigContext();
   const { savedTrainingBlocks } = useActiveWorkoutContext();
-  const [openedTrainingBlockId, setOpenedTrainingBlockId] = useState("");
-  // const training_blocks = [trainingBlock, TBLOCK_TEST, TBLOCK_TEST];
 
-  console.log(savedTrainingBlocks, "WTF?");
   return (
     <Card className="w-[360px]">
       <CardHeader>
@@ -57,7 +24,13 @@ export default function SavedTrainingBlocks() {
       <CardContent>
         <ul>
           {savedTrainingBlocks.map((block, index) => {
-            return <TrainingBlockItem index={index} training_block={block} />;
+            return (
+              <TrainingBlockItem
+                key={`SavedTrainingBlocks_savedTrainingBlocks_${index}`}
+                index={index}
+                training_block={block}
+              />
+            );
           })}
         </ul>
       </CardContent>
@@ -71,12 +44,13 @@ type TrainingBlockItemProps = {
 };
 
 function TrainingBlockItem({ index, training_block }: TrainingBlockItemProps) {
-  const { training_program_params } = useTrainingProgramContext();
-  const { microcycles } = training_program_params;
-  const { onSelectWorkout } = useActiveWorkoutContext();
+  const { onSelectWorkout, localStorageTrainingProgram } =
+    useActiveWorkoutContext();
   const [isTrainingBlockOpen, setIsTrainingBlockOpen] = useState(false);
+  const params = localStorageTrainingProgram?.training_program_params;
 
-  const weeks = Array.from(Array(microcycles), (e, i) => `WK ${i + 1}`);
+  const MICROCYCLES = params ? params.microcycles : 4;
+  const weeks = Array.from(Array(MICROCYCLES), (e, i) => `WK ${i + 1}`);
   const [selectedWeek, setSelectedWeek] = useState<
     [number, number, number, number] | null
   >(null);
@@ -114,7 +88,10 @@ function TrainingBlockItem({ index, training_block }: TrainingBlockItemProps) {
         <CollapsibleContent>
           {training_block.map((meso, tbIndex) => {
             return (
-              <Collapsible className="flex w-full flex-col items-start pl-5">
+              <Collapsible
+                key={`TrainingBlockItem_training_block_map_${tbIndex}`}
+                className="flex w-full flex-col items-start pl-5"
+              >
                 <CollapsibleTrigger asChild>
                   <Button
                     variant="ghost"
@@ -138,6 +115,7 @@ function TrainingBlockItem({ index, training_block }: TrainingBlockItemProps) {
 
                       return (
                         <div
+                          key={`TrainingBlockItem_training_block_map_meso_map_${week.day}_${mesoIndex}`}
                           className={`flex w-full flex-col space-x-1 rounded-md border border-input`}
                         >
                           <div
@@ -180,6 +158,7 @@ function TrainingBlockItem({ index, training_block }: TrainingBlockItemProps) {
 
                               return (
                                 <Button
+                                  key={`TrainingBlockItem_training_block_map_meso_map_weeks_${micro}_${microIndex}`}
                                   variant="outline"
                                   size="sm"
                                   className={`py-1 ${selectedClasses}`}

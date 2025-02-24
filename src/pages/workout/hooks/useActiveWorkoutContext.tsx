@@ -12,25 +12,16 @@ import {
   ExerciseType,
   MusclePriorityType,
   SessionSplitType,
+  State,
   TrainingDayType,
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
-import {
-  parseState,
-  STORAGE_KEY,
-} from "~/hooks/useTrainingProgram/useTrainingProgram";
+
 import { getExerciseSetsOverMicrocycles } from "~/hooks/useTrainingProgram/utils/exercises/getExercises";
-import { NewTrainingWeek } from "~/hooks/useTrainingProgram/utils/training_block/trainingBlockHelpers";
-import { useProgramConfigContext } from "~/pages/programConfig/hooks/useProgramConfig";
+import { parseState, STORAGE_KEY } from "~/utils/localStorageHelpers";
 
 type ActiveWorkoutType = ReturnType<typeof useActiveWorkout>;
 
-const ActiveWorkoutContext = createContext<ActiveWorkoutType>({
-  active_workout: null,
-  selectedExerciseHistoryId: "",
-  onSelectWorkout: () => {},
-  onExerciseNameClick: () => {},
-  savedTrainingBlocks: [],
-});
+const ActiveWorkoutContext = createContext<ActiveWorkoutType | null>(null);
 
 export const ActiveWorkoutProvider = ({
   children,
@@ -50,19 +41,14 @@ export const ActiveWorkoutProvider = ({
 };
 
 export const useActiveWorkoutContext = () => {
-  return useContext(ActiveWorkoutContext);
+  const context = useContext(ActiveWorkoutContext);
+  if (!context) {
+    throw new Error(
+      "useActiveWorkoutContext must be used within a ActiveWorkoutProvider"
+    );
+  }
+  return context;
 };
-const TBLOCK_TEST: NewTrainingWeek[][] | TrainingDayType[][] = [
-  [
-    {
-      day: "Monday",
-      isTrainingDay: true,
-      sessions: [{ id: "0329", split: "upper", exercises: [] }],
-    },
-  ],
-  [],
-  [],
-];
 
 const getExercisesById = (
   list: MusclePriorityType[],
@@ -107,11 +93,8 @@ export type ActiveWorkout = {
   };
 };
 const useActiveWorkout = () => {
-  const programConfig = useProgramConfigContext();
-  const { trainingBlock, muscle_priority_list, training_program_params } =
-    programConfig;
-  const { microcycles } = training_program_params;
-  // const savedTrainingBlocks = [trainingBlock, TBLOCK_TEST, TBLOCK_TEST];
+  const [localStorageTrainingProgram, setLocalStorageTrainingProgram] =
+    useState<State | null>(null);
   const [savedTrainingBlocks, setSavedTrainingBlocks] = useState<
     TrainingDayType[][][]
   >([]);
@@ -129,9 +112,10 @@ const useActiveWorkout = () => {
     console.log(raw, localStorage, "RAW IN ACTIVE CONTEXT");
     if (raw) {
       const localState = parseState(raw);
-      console.log(localState, "LOCAL_STORAGE_STUFF");
+      console.log(localState, savedTrainingBlocks, "LOCAL_STORAGE_STUFF");
       if (!localState) return;
-      setSavedTrainingBlocks((prev) => [...prev, localState.training_block]);
+      setLocalStorageTrainingProgram(localState);
+      setSavedTrainingBlocks([localState.training_block]);
     }
   }, []);
 
@@ -142,6 +126,12 @@ const useActiveWorkout = () => {
       day_index: number,
       microcycle_index: number
     ) => {
+      const microcycles = localStorageTrainingProgram
+        ? localStorageTrainingProgram.training_program_params.microcycles
+        : 4;
+      const muscle_priority_list = localStorageTrainingProgram
+        ? localStorageTrainingProgram.muscle_priority_list
+        : [];
       setActiveWorkout(null);
       const get_workout =
         savedTrainingBlocks[training_block_index][mesocycle_index][day_index];
@@ -167,7 +157,7 @@ const useActiveWorkout = () => {
       setSelectedWorkout([0, mesocycle_index, day_index, microcycle_index]);
       setActiveWorkout(active_workout);
     },
-    [savedTrainingBlocks, muscle_priority_list, microcycles]
+    [savedTrainingBlocks, localStorageTrainingProgram]
   );
 
   const onExerciseNameClick = useCallback((exercise_id: string) => {
@@ -180,5 +170,6 @@ const useActiveWorkout = () => {
     onSelectWorkout,
     onExerciseNameClick,
     savedTrainingBlocks,
+    localStorageTrainingProgram,
   };
 };

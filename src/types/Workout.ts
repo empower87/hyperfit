@@ -103,8 +103,10 @@ type Workout = {
     };
     changes: {};
   };
-  started_at: string;
-  completed_at: string;
+  started_at: Date;
+  completed_at: Date;
+  updated_at: Date;
+  rest_periods: number[];
 };
 
 type TrainingDay = {
@@ -121,7 +123,6 @@ type TrainingWeek = TrainingDay[];
 
 type TrainingBlock = {
   id: string;
-
   name?: string;
   created_at: string;
   updated_at: string;

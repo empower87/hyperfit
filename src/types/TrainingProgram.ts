@@ -1,5 +1,6 @@
 import {
   DayType,
+  SplitSessionsNameType,
   SplitType,
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 
@@ -10,28 +11,29 @@ type TrainingProgram = {
   user_id: string;
   name?: string;
   training_blocks: string[];
-  created_at: Date;
-  updated_at: Date;
 };
 
 type TrainingBlock = {
   id: string;
   user_id: string;
+  training_program_id: string;
   name?: string;
   mesocycles: string[];
   prioritized_muscles: string[];
-  created_at: Date;
-  updated_at: Date;
+  training_split: {
+    name: SplitSessionsNameType;
+    sessions: SplitType[];
+  };
 };
 
 type Mesocycle = {
   id: string;
   name?: string;
   training_block_id: string;
-  sessions: Session[];
+  sessions: Session1[];
 };
 
-type Session = {
+type Session1 = {
   id: string;
   user_id: string;
   training_program_id: string;
@@ -42,8 +44,17 @@ type Session = {
   scheduled_day: DayType;
   scheduled_time: Date;
   exercises: ProgramExercise[];
-  created_at: Date;
-  updated_at: Date;
+};
+
+type Session2 = {
+  id: string;
+  user_id: string;
+  mesocycle_id: string;
+  name?: string;
+  split: SplitType;
+  scheduled_day: DayType;
+  scheduled_time: Date;
+  exercises: ProgramExercise[];
 };
 
 type ProgramExercise = {
@@ -73,7 +84,7 @@ const exercise: ProgramExercise = {
   training_modality: "straight",
 };
 
-const session: Session = {
+const session: Session1 = {
   id: "session_1",
   user_id: "user_1",
   training_program_id: "training_program_1",
@@ -84,8 +95,6 @@ const session: Session = {
   scheduled_day: "Monday",
   scheduled_time: new Date(),
   exercises: [exercise],
-  created_at: new Date(),
-  updated_at: new Date(),
 };
 
 const mesocycle: Mesocycle = {
@@ -99,10 +108,13 @@ const trainingBlock: TrainingBlock = {
   id: "training_block_1",
   user_id: "user_1",
   name: "Arms Focus Year Block 1",
+  training_program_id: "training_program_1",
   mesocycles: [mesocycle.id],
   prioritized_muscles: [],
-  created_at: new Date(),
-  updated_at: new Date(),
+  training_split: {
+    name: "PPL",
+    sessions: ["push", "pull", "legs", "push", "pull"],
+  },
 };
 
 const trainingProgram: TrainingProgram = {
@@ -110,6 +122,4 @@ const trainingProgram: TrainingProgram = {
   user_id: "user_1",
   name: "Arms Focus Year",
   training_blocks: [trainingBlock.id],
-  created_at: new Date(),
-  updated_at: new Date(),
 };

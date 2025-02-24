@@ -1,7 +1,7 @@
 import deepEqual from "fast-deep-equal/es6";
 import {
-  ReactNode,
   createContext,
+  ReactNode,
   useCallback,
   useContext,
   useEffect,
@@ -9,6 +9,11 @@ import {
   useReducer,
   useRef,
 } from "react";
+import {
+  parseState,
+  saveStateToLocalStorage,
+  STORAGE_KEY,
+} from "~/utils/localStorageHelpers";
 import trainingProgramReducer, {
   INITIAL_STATE,
   MusclePriorityType,
@@ -19,24 +24,7 @@ import trainingProgramReducer, {
 
 type TrainingProgramType = ReturnType<typeof useTrainingProgram>;
 
-const TrainingProgramContext = createContext<TrainingProgramType>({
-  training_block: INITIAL_STATE.training_block,
-  split_sessions: INITIAL_STATE.split_sessions,
-  frequency: INITIAL_STATE.frequency,
-  training_program_params: INITIAL_STATE.training_program_params,
-  prioritized_muscle_list: INITIAL_STATE.muscle_priority_list,
-  handleUpdateMuscleList: () => null,
-  handleUpdateMuscle: () => null,
-  handleUpdateBreakpoint: () => null,
-  handleUpdateBreakpoints: () => null,
-  handleUpdateSplitSessions: () => null,
-  handleFrequencyChange: () => null,
-  handleRearrangeTrainingWeek: () => null,
-  handleChangeFrequencyProgression: () => null,
-  handleOnProgramConfigChange: () => null,
-  mrv_breakpoint: INITIAL_STATE.mrv_breakpoint,
-  mev_breakpoint: INITIAL_STATE.mev_breakpoint,
-});
+const TrainingProgramContext = createContext<TrainingProgramType | null>(null);
 
 const TrainingProgramProvider = ({ children }: { children: ReactNode }) => {
   const values = useTrainingProgram();
@@ -52,42 +40,15 @@ const TrainingProgramProvider = ({ children }: { children: ReactNode }) => {
 };
 
 const useTrainingProgramContext = () => {
-  return useContext(TrainingProgramContext);
+  const context = useContext(TrainingProgramContext);
+
+  if (!context) {
+    throw new Error(
+      "useTrainingProgramContext must be used within a TrainingProgramProvider"
+    );
+  }
+  return context;
 };
-
-const STORAGE_KEY = "TRAINING_PROGRAM_STATE";
-
-function isValidState(obj: any): obj is State {
-  return (
-    "frequency" in obj &&
-    "training_program_params" in obj &&
-    "muscle_priority_list" in obj &&
-    "training_block" in obj &&
-    "split_sessions" in obj &&
-    "mrv_breakpoint" in obj &&
-    "mev_breakpoint" in obj
-  );
-}
-
-function parseState(stateString: string | null): State | null {
-  if (!stateString) {
-    return null;
-  }
-
-  try {
-    const parsedState: unknown = JSON.parse(stateString);
-
-    if (isValidState(parsedState)) {
-      return parsedState;
-    } else {
-      console.error("Invalid state data in localStorage");
-      return null;
-    }
-  } catch (error) {
-    console.error("Error parsing state from localStorage:", error);
-    return null;
-  }
-}
 
 function useTrainingProgram() {
   const [state, dispatch] = useReducer(trainingProgramReducer, INITIAL_STATE);
@@ -114,8 +75,7 @@ function useTrainingProgram() {
     const stateEqual = deepEqual(prevState.current, state);
 
     if (!stateEqual && !initialStateEqual) {
-      const stringifiedState = JSON.stringify(state);
-      window.localStorage.setItem(STORAGE_KEY, stringifiedState);
+      saveStateToLocalStorage(state);
     }
   }, [state]);
 
