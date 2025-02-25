@@ -60,7 +60,7 @@ function Item({ muscle, index, handle, isCollapsed }: ItemProps) {
             {title}
           </div>
 
-          <div className="flex items-center justify-center">
+          {/* <div className="flex items-center justify-center">
             {progression.map((prog, index) => {
               const isLastMeso = progression.length - 1 === index;
               return (
@@ -74,7 +74,7 @@ function Item({ muscle, index, handle, isCollapsed }: ItemProps) {
                 </div>
               );
             })}
-          </div>
+          </div> */}
 
           {/* <div className="flex items-center justify-center truncate p-1 px-2 font-bold text-primary-700">
             {`${muscle.frequency.range[0]} - ${muscle.frequency.range[1]}`}
@@ -106,7 +106,7 @@ type MusclePrioritizationListProps = {
   isCollapsed: boolean;
   onMuscleClick?: (id: MusclePriorityType["id"]) => void;
 };
-function MusclePrioritizationList({
+export function MusclePrioritizationList({
   isCollapsed,
   onMuscleClick,
 }: MusclePrioritizationListProps) {
