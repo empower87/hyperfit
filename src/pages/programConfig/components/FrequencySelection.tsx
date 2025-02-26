@@ -14,13 +14,10 @@ const OPTIONS = ["1", "2", "3", "4", "5", "6", "7"];
 export default function FrequencySelection() {
   const { frequency, onFrequencyChange } = useProgramConfigContext();
 
-  const handleSelectChange = useCallback(
-    (value: string) => {
-      const numberValue = parseInt(value);
-      onFrequencyChange([numberValue, frequency[1]]);
-    },
-    [frequency, onFrequencyChange]
-  );
+  const handleSelectChange = useCallback((value: string) => {
+    const numberValue = parseInt(value);
+    onFrequencyChange([numberValue, frequency[1]]);
+  }, []);
 
   const unselectedButtonClasses = "bg-card";
   const selectedButtonClasses = "scale-110 border-secondary-300";

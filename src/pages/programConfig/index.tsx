@@ -82,7 +82,7 @@ function ProgramConfiguration() {
   const onExpandPriorityList = () => setIsPriorityListCollapsed(false);
   return (
     <ProgramConfigProvider>
-      <div className="flex h-full flex-col bg-primary-600">
+      <div className="flex h-full flex-col justify-between bg-primary-600">
         <div className="flex items-center justify-between">
           <h2 className="p-2">Configuration</h2>
           <div className="p-2">
@@ -107,35 +107,37 @@ function ProgramConfiguration() {
             )}
           </div>
         </div>
-        <div>
+
+        <div className="flex h-full space-x-3">
           {isPriorityListCollapsed ? (
             <></>
           ) : (
             <>
-              <div className="flex flex-col space-y-3">
-                <div className="flex space-x-3">
-                  <ProgramConfigOptionCard title="1. Frequency">
-                    <FrequencySelection />
-                  </ProgramConfigOptionCard>
+              <ProgramConfigOptionCard title="1. Prioritize">
+                <MusclePrioritizationList
+                  isCollapsed={isPriorityListCollapsed}
+                />
+              </ProgramConfigOptionCard>
 
-                  <ProgramConfigOptionCard title="2. Split">
-                    <Split />
-                  </ProgramConfigOptionCard>
-                </div>
-                <ProgramConfigOptionCard title="3. Prioritize">
-                  <MusclePrioritizationList
-                    isCollapsed={isPriorityListCollapsed}
-                  />
+              <div className="flex flex-col space-y-3">
+                <ProgramConfigOptionCard title="2. Frequency">
+                  <FrequencySelection />
+                </ProgramConfigOptionCard>
+
+                <ProgramConfigOptionCard title="3. Split">
+                  <Split />
                 </ProgramConfigOptionCard>
               </div>
             </>
           )}
         </div>
+
         <Actions />
       </div>
     </ProgramConfigProvider>
   );
 }
+
 // function ProgramConfiguration() {
 //   const [isPriorityListCollapsed, setIsPriorityListCollapsed] = useState(false);
 
