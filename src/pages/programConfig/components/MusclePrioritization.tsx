@@ -44,7 +44,7 @@ function Item({ muscle, index, handle, isCollapsed }: ItemProps) {
   const handleSelectChange = () => {};
 
   const progression = muscle.frequency.progression;
-  console.log(muscle, progression, "WTF ");
+
   if (isCollapsed) return <CollapsedItem bgColor={colors.bg} text={title} />;
   return (
     <div className="flex">
@@ -119,7 +119,7 @@ export function MusclePrioritizationList({
         {(provided, snapshot) => (
           <div
             id="droppable"
-            className=" flex w-full flex-col space-y-1.5"
+            className=" flex w-full flex-col space-y-1"
             {...provided.droppableProps}
             ref={provided.innerRef}
           >

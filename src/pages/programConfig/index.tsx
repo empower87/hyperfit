@@ -1,15 +1,9 @@
 import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import { Button } from "~/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "~/components/ui/card";
 import { TrainingProgramProvider } from "~/hooks/useTrainingProgram/useTrainingProgram";
 import Actions from "./components/Actions";
+import FrequencySelection from "./components/FrequencySelection";
 import { MusclePrioritizationList } from "./components/MusclePrioritization";
 import { Split } from "./components/Split/SplitOverview";
 import CustomizationTabs from "./components/Tabs";
@@ -88,56 +82,139 @@ function ProgramConfiguration() {
   const onExpandPriorityList = () => setIsPriorityListCollapsed(false);
   return (
     <ProgramConfigProvider>
-      <div className="flex h-full space-x-5 py-4">
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between space-x-2 pb-2">
-              <CardTitle>Configuration</CardTitle>
-              {isPriorityListCollapsed ? (
-                <Button
-                  className="bg-card"
-                  variant="outline"
-                  size="icon"
-                  onClick={onExpandPriorityList}
-                >
-                  <ChevronRightIcon />
-                </Button>
-              ) : (
-                <Button
-                  className="bg-card"
-                  variant="outline"
-                  size="icon"
-                  onClick={onCollapsePriorityList}
-                >
-                  <ChevronLeftIcon />
-                </Button>
-              )}
-            </div>
-          </CardHeader>
-
-          <CardContent>
+      <div className="flex h-full flex-col bg-primary-600">
+        <div className="flex items-center justify-between">
+          <h2 className="p-2">Configuration</h2>
+          <div className="p-2">
             {isPriorityListCollapsed ? (
-              <></>
+              <Button
+                className="bg-card"
+                variant="outline"
+                size="icon"
+                onClick={onExpandPriorityList}
+              >
+                <ChevronRightIcon />
+              </Button>
             ) : (
-              <>
-                <div className="flex">
+              <Button
+                className="bg-card"
+                variant="outline"
+                size="icon"
+                onClick={onCollapsePriorityList}
+              >
+                <ChevronLeftIcon />
+              </Button>
+            )}
+          </div>
+        </div>
+        <div>
+          {isPriorityListCollapsed ? (
+            <></>
+          ) : (
+            <>
+              <div className="flex flex-col space-y-3">
+                <div className="flex space-x-3">
+                  <ProgramConfigOptionCard title="1. Frequency">
+                    <FrequencySelection />
+                  </ProgramConfigOptionCard>
+
+                  <ProgramConfigOptionCard title="2. Split">
+                    <Split />
+                  </ProgramConfigOptionCard>
+                </div>
+                <ProgramConfigOptionCard title="3. Prioritize">
                   <MusclePrioritizationList
                     isCollapsed={isPriorityListCollapsed}
                   />
-                  <div className="flex flex-col space-y-3">
-                    {/* <FrequencySelection /> */}
-                    <div>Frequency</div>
-                    <Split />
-                  </div>
-                </div>
-              </>
-            )}
-          </CardContent>
-          <CardFooter>
-            <Actions />
-          </CardFooter>
-        </Card>
+                </ProgramConfigOptionCard>
+              </div>
+            </>
+          )}
+        </div>
+        <Actions />
       </div>
     </ProgramConfigProvider>
+  );
+}
+// function ProgramConfiguration() {
+//   const [isPriorityListCollapsed, setIsPriorityListCollapsed] = useState(false);
+
+//   const onCollapsePriorityList = () => setIsPriorityListCollapsed(true);
+//   const onExpandPriorityList = () => setIsPriorityListCollapsed(false);
+//   return (
+//     <ProgramConfigProvider>
+//       <div className="flex h-full space-x-5 bg-primary-600 py-4">
+//         <Card className="border-none bg-primary-600">
+//           <CardHeader>
+//             <div className="flex items-center justify-between space-x-2 pb-2">
+//               <CardTitle>Configuration</CardTitle>
+//               {isPriorityListCollapsed ? (
+//                 <Button
+//                   className="bg-card"
+//                   variant="outline"
+//                   size="icon"
+//                   onClick={onExpandPriorityList}
+//                 >
+//                   <ChevronRightIcon />
+//                 </Button>
+//               ) : (
+//                 <Button
+//                   className="bg-card"
+//                   variant="outline"
+//                   size="icon"
+//                   onClick={onCollapsePriorityList}
+//                 >
+//                   <ChevronLeftIcon />
+//                 </Button>
+//               )}
+//             </div>
+//           </CardHeader>
+
+//           <CardContent>
+//             {isPriorityListCollapsed ? (
+//               <></>
+//             ) : (
+//               <>
+//                 <div className="flex flex-col space-y-3">
+//                   <div className="flex space-x-3">
+//                     <ProgramConfigOptionCard title="1. Frequency">
+//                       <FrequencySelection />
+//                     </ProgramConfigOptionCard>
+
+//                     <ProgramConfigOptionCard title="2. Split">
+//                       <Split />
+//                     </ProgramConfigOptionCard>
+//                   </div>
+//                   <MusclePrioritizationList
+//                     isCollapsed={isPriorityListCollapsed}
+//                   />
+//                 </div>
+//               </>
+//             )}
+//           </CardContent>
+//           <CardFooter>
+//             <Actions />
+//           </CardFooter>
+//         </Card>
+//       </div>
+//     </ProgramConfigProvider>
+//   );
+// }
+
+type ProgramConfigOptionCardProps = {
+  title: string;
+  children: ReactNode;
+};
+function ProgramConfigOptionCard({
+  title,
+  children,
+}: ProgramConfigOptionCardProps) {
+  return (
+    <div className="flex flex-col">
+      <h2 className="p-2 pb-1 text-xs font-semibold text-muted-foreground">
+        {title}
+      </h2>
+      {children}
+    </div>
   );
 }

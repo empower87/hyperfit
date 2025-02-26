@@ -5,7 +5,7 @@ export default function Actions() {
   const { onSaveConfig, onResetConfig } = useProgramConfigContext();
 
   return (
-    <div className={`flex justify-start space-x-1 pt-5`}>
+    <div className={`flex w-full justify-end space-x-2 p-3`}>
       <Button onClick={onResetConfig} variant="outline">
         Reset
       </Button>

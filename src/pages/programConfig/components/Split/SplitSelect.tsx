@@ -34,15 +34,6 @@ function SelectSplit({ selectedOption, onSelect }: SelectSplitProps) {
     onSelect(result);
   };
 
-  // const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-  //   const value = event.target.value;
-  //   const result: SplitSessionsNameType | undefined = (
-  //     Object.keys(SPLITS) as (keyof typeof SPLITS)[]
-  //   ).find((key) => SPLITS[key] === value);
-  //   if (!result) return;
-  //   onSelect(result);
-  // };
-
   const options = Object.values(SPLITS);
   const selected = SPLITS[selectedOption];
   return (
@@ -57,12 +48,6 @@ function SelectSplit({ selectedOption, onSelect }: SelectSplitProps) {
           })}
         </SelectContent>
       </Select>
-      {/* <Select
-        selectedOption={selected}
-        options={options}
-        onSelect={handleSelectChange}
-        className={`outline-none`}
-      /> */}
     </div>
   );
 }
