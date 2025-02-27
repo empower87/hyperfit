@@ -152,14 +152,20 @@ function useTrainingProgram() {
     });
   };
 
-  const handleOnProgramConfigChange = useCallback((value: State) => {
-    dispatch({
-      type: "UPDATE_PROGRAM_CONFIG",
-      payload: {
-        value: value,
-      },
-    });
-  }, []);
+  const handleOnProgramConfigChange = useCallback(
+    (settings: {
+      total_frequency: [number, number];
+      split: SplitSessionsNameType;
+      muscle_priority_list: MusclePriorityType[];
+      breakpoints: [number, number];
+    }) => {
+      dispatch({
+        type: "UPDATE_PROGRAM_CONFIG",
+        payload: { ...settings },
+      });
+    },
+    []
+  );
 
   useEffect(() => {
     console.log(

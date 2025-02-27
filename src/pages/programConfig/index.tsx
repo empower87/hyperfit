@@ -1,13 +1,17 @@
 import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
 import { ReactNode, useState } from "react";
 import { Button } from "~/components/ui/button";
-import { TrainingProgramProvider } from "~/hooks/useTrainingProgram/useTrainingProgram";
+import {
+  TrainingProgramProvider,
+  useTrainingProgramContext,
+} from "~/hooks/useTrainingProgram/useTrainingProgram";
 import Actions from "./components/Actions";
 import FrequencySelection from "./components/FrequencySelection";
 import { MusclePrioritizationList } from "./components/MusclePrioritization";
-import { Split } from "./components/Split/SplitOverview";
+import SplitSelect from "./components/Split/SplitSelect";
 import CustomizationTabs from "./components/Tabs";
 import { ProgramConfigProvider } from "./hooks/useProgramConfig";
+import { useProgramSettings } from "./hooks/useProgramSettings";
 
 export default function ProgramConfig() {
   return (
@@ -112,23 +116,7 @@ function ProgramConfiguration() {
           {isPriorityListCollapsed ? (
             <></>
           ) : (
-            <>
-              <ProgramConfigOptionCard title="1. Prioritize">
-                <MusclePrioritizationList
-                  isCollapsed={isPriorityListCollapsed}
-                />
-              </ProgramConfigOptionCard>
-
-              <div className="flex flex-col space-y-3">
-                <ProgramConfigOptionCard title="2. Frequency">
-                  <FrequencySelection />
-                </ProgramConfigOptionCard>
-
-                <ProgramConfigOptionCard title="3. Split">
-                  <Split />
-                </ProgramConfigOptionCard>
-              </div>
-            </>
+            <ProgramSettings isCollapsed={isPriorityListCollapsed} />
           )}
         </div>
 
@@ -218,5 +206,39 @@ function ProgramConfigOptionCard({
       </h2>
       {children}
     </div>
+  );
+}
+
+type ProgramSettingsProps = {
+  isCollapsed: boolean;
+};
+function ProgramSettings({ isCollapsed }: ProgramSettingsProps) {
+  const { handleOnProgramConfigChange } = useTrainingProgramContext();
+  const data = useProgramSettings({
+    onSaveSettings: handleOnProgramConfigChange,
+  });
+  return (
+    <>
+      <ProgramConfigOptionCard title="1. Prioritize">
+        <MusclePrioritizationList
+          isCollapsed={isCollapsed}
+          muscle_priority_list={data.musclePrioritization}
+          onPriorityListDragEnd={data.onPriorityListDragEnd}
+        />
+      </ProgramConfigOptionCard>
+
+      <div className="flex flex-col space-y-3">
+        <ProgramConfigOptionCard title="2. Frequency">
+          <FrequencySelection
+            frequency={data.frequency}
+            onFrequencyChange={data.onFrequencyChange}
+          />
+        </ProgramConfigOptionCard>
+
+        <ProgramConfigOptionCard title="3. Split">
+          <SplitSelect split={data.split} onSplitChange={data.onSplitChange} />
+        </ProgramConfigOptionCard>
+      </div>
+    </>
   );
 }

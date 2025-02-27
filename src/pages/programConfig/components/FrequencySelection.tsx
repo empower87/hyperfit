@@ -6,18 +6,28 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
-import { useProgramConfigContext } from "../hooks/useProgramConfig";
 
 const OPTIONS = ["1", "2", "3", "4", "5", "6", "7"];
 // const OPTIONS = [1, 2, 3, 4, 5, 6, 7];
 
-export default function FrequencySelection() {
-  const { frequency, onFrequencyChange } = useProgramConfigContext();
+type FrequencySelectionProps = {
+  frequency: [number, number];
+  onFrequencyChange: (frequency: [number, number]) => void;
+};
+export default function FrequencySelection({
+  frequency,
+  onFrequencyChange,
+}: FrequencySelectionProps) {
+  // const { frequency, onFrequencyChange } = useProgramConfigContext();
 
-  const handleSelectChange = useCallback((value: string) => {
-    const numberValue = parseInt(value);
-    onFrequencyChange([numberValue, frequency[1]]);
-  }, []);
+  const handleSelectChange = useCallback(
+    (value: string) => {
+      const numberValue = parseInt(value);
+      console.log(value, numberValue, "PROBLEM HERE IN FREQUENCY SELECTION");
+      onFrequencyChange([numberValue, frequency[1]]);
+    },
+    [frequency, onFrequencyChange]
+  );
 
   const unselectedButtonClasses = "bg-card";
   const selectedButtonClasses = "scale-110 border-secondary-300";
@@ -38,6 +48,7 @@ export default function FrequencySelection() {
     </div>
   );
 }
+
 // export default function FrequencySelection() {
 //   const { frequency, onFrequencyChange } = useProgramConfigContext();
 

@@ -1,6 +1,6 @@
 import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
 import { ReactNode, useState } from "react";
-import { DragDropContext, Draggable } from "react-beautiful-dnd";
+import { DragDropContext, Draggable, DropResult } from "react-beautiful-dnd";
 import { DragHandleIcon } from "~/assets/icons/_icons";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
@@ -16,7 +16,6 @@ import { cn } from "~/lib/clsx";
 import StrictModeDroppable from "~/lib/react-beautiful-dnd/StrictModeDroppable";
 import { getRankColor } from "~/utils/getIndicatorColors";
 import getMuscleTitleForUI from "~/utils/getMuscleTitleForUI";
-import { useProgramConfigContext } from "../hooks/useProgramConfig";
 
 type ItemProps = {
   muscle: MusclePriorityType;
@@ -104,14 +103,18 @@ function Item({ muscle, index, handle, isCollapsed }: ItemProps) {
 
 type MusclePrioritizationListProps = {
   isCollapsed: boolean;
+  muscle_priority_list: MusclePriorityType[];
+  onPriorityListDragEnd: (result: DropResult) => void;
   onMuscleClick?: (id: MusclePriorityType["id"]) => void;
 };
 export function MusclePrioritizationList({
   isCollapsed,
+  muscle_priority_list,
+  onPriorityListDragEnd,
   onMuscleClick,
 }: MusclePrioritizationListProps) {
-  const { muscle_priority_list, onPriorityListDragEnd } =
-    useProgramConfigContext();
+  // const { muscle_priority_list, onPriorityListDragEnd } =
+  //   useProgramConfigContext();
 
   return (
     <DragDropContext onDragEnd={onPriorityListDragEnd}>
@@ -193,7 +196,7 @@ export default function MusclePrioritizationCard() {
       </CardHeader>
 
       <CardContent>
-        <MusclePrioritizationList isCollapsed={isPriorityListCollapsed} />
+        {/* <MusclePrioritizationList isCollapsed={isPriorityListCollapsed} /> */}
       </CardContent>
     </Card>
   );

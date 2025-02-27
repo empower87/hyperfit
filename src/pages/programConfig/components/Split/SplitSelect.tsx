@@ -7,7 +7,6 @@ import {
   SelectValue,
 } from "~/components/ui/select";
 import { SplitSessionsNameType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
-import { useProgramConfigContext } from "../../hooks/useProgramConfig";
 
 type SelectSplitProps = {
   selectedOption: SplitSessionsNameType;
@@ -52,15 +51,19 @@ function SelectSplit({ selectedOption, onSelect }: SelectSplitProps) {
   );
 }
 
-export default function SplitSelect() {
-  const { split_sessions, onSplitChange } = useProgramConfigContext();
+type SplitSelectProps = {
+  split: SplitSessionsNameType;
+  onSplitChange: (split: SplitSessionsNameType) => void;
+};
+export default function SplitSelect({
+  split,
+  onSplitChange,
+}: SplitSelectProps) {
+  // const { split_sessions, onSplitChange } = useProgramConfigContext();
 
   return (
     <div className={``}>
-      <SelectSplit
-        selectedOption={split_sessions.split}
-        onSelect={onSplitChange}
-      />
+      <SelectSplit selectedOption={split} onSelect={onSplitChange} />
     </div>
   );
 }

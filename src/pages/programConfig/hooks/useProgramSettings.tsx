@@ -15,7 +15,9 @@ type UseProgramSettingsProps = {
   }) => void;
 };
 
-function useProgramSettings({ onSaveSettings }: UseProgramSettingsProps) {
+export function useProgramSettings({
+  onSaveSettings,
+}: UseProgramSettingsProps) {
   const [volumeLandmarkBreakpoints, setVolumeLandmarkBreakpoints] = useState<
     [number, number]
   >([4, 9]);
@@ -36,6 +38,8 @@ function useProgramSettings({ onSaveSettings }: UseProgramSettingsProps) {
       const items = structuredClone(musclePrioritization);
       const [removed] = items.splice(source, 1);
       items.splice(destination, 0, removed);
+      setMusclePrioritization(items);
+      setDragNdropResults(null);
     }
   }, [dragNdropResults]);
 
@@ -62,6 +66,7 @@ function useProgramSettings({ onSaveSettings }: UseProgramSettingsProps) {
       muscle_priority_list: musclePrioritization,
       breakpoints: volumeLandmarkBreakpoints,
     };
+    console.log(settings, "WTF IS WRONG HERE?");
     onSaveSettings(settings);
   }, [musclePrioritization, split, frequency, volumeLandmarkBreakpoints]);
 

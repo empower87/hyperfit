@@ -461,14 +461,23 @@ export default function trainingProgramReducer(state: State, action: Action) {
 
   switch (action.type) {
     case "UPDATE_PROGRAM_CONFIG":
-      const programSettings = action.payload;
-
+      const total_frequency = action.payload.total_frequency;
+      const split = action.payload.split;
+      const musclePriority = action.payload.muscle_priority_list;
+      const breaks = action.payload.breakpoints;
+      console.log(
+        total_frequency,
+        split,
+        musclePriority,
+        breaks,
+        "UPDATE_PROGRAM_CONFIG Action in trainingProgramReducer"
+      );
       const initiate_program = trainingProgramHandler(
-        programSettings.total_frequency,
-        programSettings.split,
-        programSettings.muscle_priority_list,
+        total_frequency,
+        split,
+        musclePriority,
         microcycles,
-        programSettings.breakpoints
+        breaks
       );
       // const frequencyPayload = action.payload.frequency;
       // const freqPayloadTotal = frequencyPayload[0] + frequencyPayload[1];
@@ -524,7 +533,7 @@ export default function trainingProgramReducer(state: State, action: Action) {
       //   training_week: distributedAcrossWeek,
       //   training_block: built_training_block,
       // };
-      return initiate_program;
+      return { ...state, ...initiate_program };
     case "UPDATE_FREQUENCY":
       const new_freq = action.payload.frequency;
       const new_freq_total = new_freq[0] + new_freq[1];

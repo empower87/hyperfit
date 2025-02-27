@@ -19,7 +19,6 @@ import StrictModeDroppable from "~/lib/react-beautiful-dnd/StrictModeDroppable";
 import { getSplitColor } from "~/utils/getIndicatorColors";
 import { capitalizeFirstCharInString } from "~/utils/uiHelpers";
 import { useProgramConfigContext } from "../../hooks/useProgramConfig";
-import SplitSelect from "./SplitSelect";
 
 const DAYS: DayType[] = [
   "Sunday",
@@ -245,7 +244,7 @@ function SessionItem({ session, onSplitChange, children }: SessionItemProps) {
 export function Split() {
   return (
     <div className="flex flex-col items-center space-x-2 text-sm text-white">
-      <SplitSelect />
+      {/* <SplitSelect /> */}
     </div>
   );
 }
