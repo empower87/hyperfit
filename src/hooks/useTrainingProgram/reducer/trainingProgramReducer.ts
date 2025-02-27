@@ -10,6 +10,7 @@ import {
 } from "../utils/split_sessions/distributeSessionsIntoSplits";
 import { distributeSplitAcrossWeek } from "../utils/training_block/distributeSplitAcrossTrainingWeek";
 import { initializeTrainingBlock } from "../utils/training_block/trainingBlockHelpers";
+import { trainingProgramHandler } from "../utils/trainingProgramHandler";
 
 export type DayType =
   | "Sunday"
@@ -18,7 +19,7 @@ export type DayType =
   | "Wednesday"
   | "Thursday"
   | "Friday"
-  | "Saturday"
+  | "Saturday";
 
 export type FBSessionsType = {
   upper?: never;
@@ -118,7 +119,7 @@ export type SplitSessionsType = SplitSessionsGenericType<SplitSessionsNameType>;
 
 export type ReturnValidSessionKeys<T extends SplitSessionsType["sessions"]> = {
   [key in keyof T]-?: T[key] extends number ? key : never;
-}[keyof T]
+}[keyof T];
 
 export type OPTSessionKeys = ReturnValidSessionKeys<OPTSessionsType>;
 export type BROSessionKeys = ReturnValidSessionKeys<BROSessionsType>;
@@ -298,7 +299,12 @@ export type State = {
 };
 type UpdateProgramConfigAction = {
   type: "UPDATE_PROGRAM_CONFIG";
-  payload: { value: State };
+  payload: {
+    total_frequency: [number, number];
+    split: SplitSessionsNameType;
+    muscle_priority_list: MusclePriorityType[];
+    breakpoints: [number, number];
+  };
 };
 type UpdateFrequencyAction = {
   type: "UPDATE_FREQUENCY";
@@ -455,6 +461,15 @@ export default function trainingProgramReducer(state: State, action: Action) {
 
   switch (action.type) {
     case "UPDATE_PROGRAM_CONFIG":
+      const programSettings = action.payload;
+
+      const initiate_program = trainingProgramHandler(
+        programSettings.total_frequency,
+        programSettings.split,
+        programSettings.muscle_priority_list,
+        microcycles,
+        programSettings.breakpoints
+      );
       // const frequencyPayload = action.payload.frequency;
       // const freqPayloadTotal = frequencyPayload[0] + frequencyPayload[1];
       // const split = action.payload.split;
@@ -509,7 +524,7 @@ export default function trainingProgramReducer(state: State, action: Action) {
       //   training_week: distributedAcrossWeek,
       //   training_block: built_training_block,
       // };
-      return action.payload.value;
+      return initiate_program;
     case "UPDATE_FREQUENCY":
       const new_freq = action.payload.frequency;
       const new_freq_total = new_freq[0] + new_freq[1];
