@@ -1,6 +1,6 @@
 import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
 import { ReactNode, useState } from "react";
-import { DragDropContext, Draggable, DropResult } from "react-beautiful-dnd";
+import { DragDropContext, Draggable } from "react-beautiful-dnd";
 import { DragHandleIcon } from "~/assets/icons/_icons";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
@@ -16,6 +16,7 @@ import { cn } from "~/lib/clsx";
 import StrictModeDroppable from "~/lib/react-beautiful-dnd/StrictModeDroppable";
 import { getRankColor } from "~/utils/getIndicatorColors";
 import getMuscleTitleForUI from "~/utils/getMuscleTitleForUI";
+import { useProgramSettingsContext } from "../hooks/useProgramSettings";
 
 type ItemProps = {
   muscle: MusclePriorityType;
@@ -101,21 +102,20 @@ function Item({ muscle, index, handle, isCollapsed }: ItemProps) {
   );
 }
 
-interface MuscleRefProps {
-  muscle_priority_list: MusclePriorityType[];
-}
 type MusclePrioritizationListProps = {
   isCollapsed: boolean;
-  muscle_priority_list: MusclePriorityType[];
-  onPriorityListDragEnd: (result: DropResult) => void;
+  // muscle_priority_list: MusclePriorityType[];
+  // onPriorityListDragEnd: (result: DropResult) => void;
   onMuscleClick?: (id: MusclePriorityType["id"]) => void;
 };
 export const MusclePrioritizationList = ({
   isCollapsed,
-  muscle_priority_list,
-  onPriorityListDragEnd,
+  // muscle_priority_list,
+  // onPriorityListDragEnd,
   onMuscleClick,
 }: MusclePrioritizationListProps) => {
+  const { musclePrioritization, onPriorityListDragEnd } =
+    useProgramSettingsContext();
   // const { muscle_priority_list, onPriorityListDragEnd } =
   //   useProgramConfigContext();
 
@@ -129,7 +129,7 @@ export const MusclePrioritizationList = ({
             {...provided.droppableProps}
             ref={provided.innerRef}
           >
-            {muscle_priority_list.map((muscle, index) => {
+            {musclePrioritization.map((muscle, index) => {
               const colors = getRankColor(muscle.volume.landmark);
               return (
                 <Draggable

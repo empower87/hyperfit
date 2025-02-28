@@ -6,19 +6,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
+import { useProgramSettingsContext } from "../hooks/useProgramSettings";
 
 const OPTIONS = ["1", "2", "3", "4", "5", "6", "7"];
 // const OPTIONS = [1, 2, 3, 4, 5, 6, 7];
 
 type FrequencySelectionProps = {
-  frequency: [number, number];
-  onFrequencyChange: (frequency: [number, number]) => void;
+  // frequency: [number, number];
+  // onFrequencyChange: (frequency: [number, number]) => void;
 };
-export default function FrequencySelection({
-  frequency,
-  onFrequencyChange,
-}: FrequencySelectionProps) {
-  // const { frequency, onFrequencyChange } = useProgramConfigContext();
+export default function FrequencySelection({}: // frequency,
+// onFrequencyChange,
+FrequencySelectionProps) {
+  const { frequency, onFrequencyChange } = useProgramSettingsContext();
 
   const handleSelectChange = useCallback(
     (value: string) => {

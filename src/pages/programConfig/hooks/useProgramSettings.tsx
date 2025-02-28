@@ -1,9 +1,18 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  createContext,
+  ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { DropResult } from "react-beautiful-dnd";
 import {
   MusclePriorityType,
   SplitSessionsNameType,
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
+import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
 import { MUSCLE_PRIORITY_LIST } from "~/hooks/useTrainingProgram/utils/prioritized_muscle_list/musclePriorityListHandlers";
 
 type UseProgramSettingsProps = {
@@ -15,9 +24,7 @@ type UseProgramSettingsProps = {
   }) => void;
 };
 
-export function useProgramSettings({
-  onSaveSettings,
-}: UseProgramSettingsProps) {
+function useProgramSettings({ onSaveSettings }: UseProgramSettingsProps) {
   const [volumeLandmarkBreakpoints, setVolumeLandmarkBreakpoints] = useState<
     [number, number]
   >([4, 9]);
@@ -68,25 +75,14 @@ export function useProgramSettings({
 
   const onSaveProgramSettings = useCallback(() => {
     const settings = {
-      total_frequency: frequencyRef.current,
-      split: splitRef.current,
-      muscle_priority_list: musclePrioritizationRef.current,
-      breakpoints: volumeLandmarkBreakpointsRef.current,
+      total_frequency: frequency,
+      split: split,
+      muscle_priority_list: musclePrioritization,
+      breakpoints: volumeLandmarkBreakpoints,
     };
     console.log(settings, "WTF IS WRONG HERE?");
     onSaveSettings(settings);
-  }, []);
-
-  // const onSaveProgramSettings = useCallback(() => {
-  //   const settings = {
-  //     total_frequency: frequency,
-  //     split: split,
-  //     muscle_priority_list: musclePrioritization,
-  //     breakpoints: volumeLandmarkBreakpoints,
-  //   };
-  //   console.log(settings, "WTF IS WRONG HERE?");
-  //   onSaveSettings(settings);
-  // }, [musclePrioritization, split, frequency, volumeLandmarkBreakpoints]);
+  }, [musclePrioritization, split, frequency, volumeLandmarkBreakpoints]);
 
   return {
     musclePrioritization,
@@ -96,9 +92,40 @@ export function useProgramSettings({
     onSplitChange,
     onFrequencyChange,
     onSaveProgramSettings,
-    musclePrioritizationRef,
-    frequencyRef,
-    splitRef,
-    volumeLandmarkBreakpointsRef,
   };
 }
+
+type ProgramSettingsType = ReturnType<typeof useProgramSettings>;
+
+const ProgramSettingsContext = createContext<ProgramSettingsType | null>(null);
+
+type ProgramSettingsProviderProps = {
+  children: ReactNode;
+};
+const ProgramSettingsProvider = ({
+  children,
+}: ProgramSettingsProviderProps) => {
+  const { handleOnProgramConfigChange } = useTrainingProgramContext();
+  const values = useProgramSettings({
+    onSaveSettings: handleOnProgramConfigChange,
+  });
+
+  return (
+    <ProgramSettingsContext.Provider value={values}>
+      {children}
+    </ProgramSettingsContext.Provider>
+  );
+};
+
+const useProgramSettingsContext = () => {
+  const context = useContext(ProgramSettingsContext);
+
+  if (!context) {
+    throw new Error(
+      "useProgramSettingsContext must be used within a ProgramSettingsProvider"
+    );
+  }
+  return context;
+};
+
+export { ProgramSettingsProvider, useProgramSettingsContext };
