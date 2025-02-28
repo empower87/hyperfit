@@ -101,18 +101,21 @@ function Item({ muscle, index, handle, isCollapsed }: ItemProps) {
   );
 }
 
+interface MuscleRefProps {
+  muscle_priority_list: MusclePriorityType[];
+}
 type MusclePrioritizationListProps = {
   isCollapsed: boolean;
   muscle_priority_list: MusclePriorityType[];
   onPriorityListDragEnd: (result: DropResult) => void;
   onMuscleClick?: (id: MusclePriorityType["id"]) => void;
 };
-export function MusclePrioritizationList({
+export const MusclePrioritizationList = ({
   isCollapsed,
   muscle_priority_list,
   onPriorityListDragEnd,
   onMuscleClick,
-}: MusclePrioritizationListProps) {
+}: MusclePrioritizationListProps) => {
   // const { muscle_priority_list, onPriorityListDragEnd } =
   //   useProgramConfigContext();
 
@@ -160,7 +163,7 @@ export function MusclePrioritizationList({
       </StrictModeDroppable>
     </DragDropContext>
   );
-}
+};
 
 export default function MusclePrioritizationCard() {
   const [isPriorityListCollapsed, setIsPriorityListCollapsed] = useState(false);

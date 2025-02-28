@@ -35,7 +35,7 @@ export default function FrequencySelection({
     <div className="flex flex-col items-center">
       <div className="flex w-full">
         <Select onValueChange={handleSelectChange}>
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-[140px]">
             <SelectValue placeholder={OPTIONS[2]} />
           </SelectTrigger>
           <SelectContent>

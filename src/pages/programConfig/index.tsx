@@ -10,7 +10,6 @@ import FrequencySelection from "./components/FrequencySelection";
 import { MusclePrioritizationList } from "./components/MusclePrioritization";
 import SplitSelect from "./components/Split/SplitSelect";
 import CustomizationTabs from "./components/Tabs";
-import { ProgramConfigProvider } from "./hooks/useProgramConfig";
 import { useProgramSettings } from "./hooks/useProgramSettings";
 
 export default function ProgramConfig() {
@@ -85,44 +84,42 @@ function ProgramConfiguration() {
   const onCollapsePriorityList = () => setIsPriorityListCollapsed(true);
   const onExpandPriorityList = () => setIsPriorityListCollapsed(false);
   return (
-    <ProgramConfigProvider>
-      <div className="flex h-full flex-col justify-between bg-primary-600">
-        <div className="flex items-center justify-between">
-          <h2 className="p-2">Program Settings</h2>
-          <div className="p-2">
-            {isPriorityListCollapsed ? (
-              <Button
-                className="bg-card"
-                variant="outline"
-                size="icon"
-                onClick={onExpandPriorityList}
-              >
-                <ChevronRightIcon />
-              </Button>
-            ) : (
-              <Button
-                className="bg-card"
-                variant="outline"
-                size="icon"
-                onClick={onCollapsePriorityList}
-              >
-                <ChevronLeftIcon />
-              </Button>
-            )}
-          </div>
-        </div>
-
-        <div className="flex h-full space-x-3">
+    // <ProgramConfigProvider>
+    <div className="flex h-full flex-col justify-between bg-primary-600">
+      <div className="flex items-center justify-between">
+        <h2 className="p-2">Program Settings</h2>
+        <div className="p-2">
           {isPriorityListCollapsed ? (
-            <></>
+            <Button
+              className="bg-card"
+              variant="outline"
+              size="icon"
+              onClick={onExpandPriorityList}
+            >
+              <ChevronRightIcon />
+            </Button>
           ) : (
-            <ProgramSettings isCollapsed={isPriorityListCollapsed} />
+            <Button
+              className="bg-card"
+              variant="outline"
+              size="icon"
+              onClick={onCollapsePriorityList}
+            >
+              <ChevronLeftIcon />
+            </Button>
           )}
         </div>
-
-        <Actions />
       </div>
-    </ProgramConfigProvider>
+
+      <div className="flex h-full space-x-3">
+        {isPriorityListCollapsed ? (
+          <></>
+        ) : (
+          <ProgramSettings isCollapsed={isPriorityListCollapsed} />
+        )}
+      </div>
+    </div>
+    // </ProgramConfigProvider>
   );
 }
 
@@ -217,28 +214,35 @@ function ProgramSettings({ isCollapsed }: ProgramSettingsProps) {
   const data = useProgramSettings({
     onSaveSettings: handleOnProgramConfigChange,
   });
-  return (
-    <>
-      <ProgramConfigOptionCard title="1. Prioritize">
-        <MusclePrioritizationList
-          isCollapsed={isCollapsed}
-          muscle_priority_list={data.musclePrioritization}
-          onPriorityListDragEnd={data.onPriorityListDragEnd}
-        />
-      </ProgramConfigOptionCard>
 
-      <div className="flex flex-col space-y-3">
-        <ProgramConfigOptionCard title="2. Frequency">
-          <FrequencySelection
-            frequency={data.frequency}
-            onFrequencyChange={data.onFrequencyChange}
+  return (
+    <div className="flex flex-col">
+      <div className="flex">
+        <ProgramConfigOptionCard title="1. Prioritize">
+          <MusclePrioritizationList
+            isCollapsed={isCollapsed}
+            muscle_priority_list={data.musclePrioritization}
+            onPriorityListDragEnd={data.onPriorityListDragEnd}
           />
         </ProgramConfigOptionCard>
 
-        <ProgramConfigOptionCard title="3. Split">
-          <SplitSelect split={data.split} onSplitChange={data.onSplitChange} />
-        </ProgramConfigOptionCard>
+        <div className="flex flex-col space-y-3">
+          <ProgramConfigOptionCard title="2. Frequency">
+            <FrequencySelection
+              frequency={data.frequency}
+              onFrequencyChange={data.onFrequencyChange}
+            />
+          </ProgramConfigOptionCard>
+
+          <ProgramConfigOptionCard title="3. Split">
+            <SplitSelect
+              split={data.split}
+              onSplitChange={data.onSplitChange}
+            />
+          </ProgramConfigOptionCard>
+        </div>
       </div>
-    </>
+      <Actions onSaveConfig={data.onSaveProgramSettings} />
+    </div>
   );
 }

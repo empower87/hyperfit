@@ -38,9 +38,10 @@ function SelectSplit({ selectedOption, onSelect }: SelectSplitProps) {
   return (
     <div className="flex w-full">
       <Select onValueChange={handleSelectChange}>
-        <SelectTrigger className="w-[180px]">
+        <SelectTrigger className="w-[140px]">
           <SelectValue placeholder={SPLITS.OPT} />
         </SelectTrigger>
+
         <SelectContent>
           {Object.entries(SPLITS).map((split, index) => {
             return <SelectItem value={split[0]}>{split[1]}</SelectItem>;

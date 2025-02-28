@@ -476,7 +476,7 @@ export default function trainingProgramReducer(state: State, action: Action) {
         total_frequency,
         split,
         musclePriority,
-        microcycles,
+        mesocycles,
         breaks
       );
       // const frequencyPayload = action.payload.frequency;

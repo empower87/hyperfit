@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { DropResult } from "react-beautiful-dnd";
 import {
   MusclePriorityType,
@@ -32,6 +32,13 @@ export function useProgramSettings({
     destination: number;
   } | null>(null);
 
+  const musclePrioritizationRef = useRef<MusclePriorityType[]>([
+    ...MUSCLE_PRIORITY_LIST,
+  ]);
+  const frequencyRef = useRef<[number, number]>([3, 0]);
+  const splitRef = useRef<SplitSessionsNameType>("OPT");
+  const volumeLandmarkBreakpointsRef = useRef<[number, number]>([4, 9]);
+
   useEffect(() => {
     if (dragNdropResults) {
       const { source, destination } = dragNdropResults;
@@ -61,14 +68,25 @@ export function useProgramSettings({
 
   const onSaveProgramSettings = useCallback(() => {
     const settings = {
-      total_frequency: frequency,
-      split: split,
-      muscle_priority_list: musclePrioritization,
-      breakpoints: volumeLandmarkBreakpoints,
+      total_frequency: frequencyRef.current,
+      split: splitRef.current,
+      muscle_priority_list: musclePrioritizationRef.current,
+      breakpoints: volumeLandmarkBreakpointsRef.current,
     };
     console.log(settings, "WTF IS WRONG HERE?");
     onSaveSettings(settings);
-  }, [musclePrioritization, split, frequency, volumeLandmarkBreakpoints]);
+  }, []);
+
+  // const onSaveProgramSettings = useCallback(() => {
+  //   const settings = {
+  //     total_frequency: frequency,
+  //     split: split,
+  //     muscle_priority_list: musclePrioritization,
+  //     breakpoints: volumeLandmarkBreakpoints,
+  //   };
+  //   console.log(settings, "WTF IS WRONG HERE?");
+  //   onSaveSettings(settings);
+  // }, [musclePrioritization, split, frequency, volumeLandmarkBreakpoints]);
 
   return {
     musclePrioritization,
@@ -78,5 +96,9 @@ export function useProgramSettings({
     onSplitChange,
     onFrequencyChange,
     onSaveProgramSettings,
+    musclePrioritizationRef,
+    frequencyRef,
+    splitRef,
+    volumeLandmarkBreakpointsRef,
   };
 }

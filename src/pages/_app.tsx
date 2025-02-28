@@ -58,7 +58,7 @@ function Layout({ children }: { children: ReactNode }) {
 
 function HomeWrapper({ children }: { children: ReactNode }) {
   return (
-    <div className="h-screen w-full overflow-hidden bg-primary-800 pl-24 pr-6 pt-12">
+    <div className="h-screen w-full overflow-hidden bg-primary-800 pl-16 pr-6 pt-12">
       {children}
     </div>
   );
