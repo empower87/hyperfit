@@ -195,7 +195,7 @@ function ProgramConfigOptionCard({
 }: ProgramConfigOptionCardProps) {
   return (
     <div className="flex flex-col">
-      <h2 className="p-2 pb-1 text-xs font-semibold text-muted-foreground">
+      <h2 className="p-2 text-xs font-semibold text-muted-foreground">
         {title}
       </h2>
       {children}
@@ -211,11 +211,13 @@ function ProgramSettings({ isCollapsed }: ProgramSettingsProps) {
     <ProgramSettingsProvider>
       <div className="flex flex-col">
         <div className="flex">
-          <ProgramConfigOptionCard title="1. Prioritize">
-            <MusclePrioritizationList isCollapsed={isCollapsed} />
-          </ProgramConfigOptionCard>
+          <div className="p-4 pr-0 pt-0">
+            <ProgramConfigOptionCard title="1. Prioritize">
+              <MusclePrioritizationList isCollapsed={isCollapsed} />
+            </ProgramConfigOptionCard>
+          </div>
 
-          <div className="flex flex-col space-y-3">
+          <div className="flex flex-col space-y-3 p-4 pt-0">
             <ProgramConfigOptionCard title="2. Frequency">
               <FrequencySelection />
             </ProgramConfigOptionCard>

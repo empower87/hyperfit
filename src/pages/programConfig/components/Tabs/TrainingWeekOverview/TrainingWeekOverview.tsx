@@ -1,5 +1,12 @@
 import { DotsVerticalIcon, DragHandleDots2Icon } from "@radix-ui/react-icons";
-import { memo, ReactNode, useCallback, useEffect, useState } from "react";
+import {
+  memo,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { DragDropContext, Draggable, DropResult } from "react-beautiful-dnd";
 import Modal from "~/components/Modals/Modal";
 import { Button } from "~/components/ui/button";
@@ -55,7 +62,7 @@ export function DropdownListModal({
   return (
     <div
       className="flex h-full w-full flex-col items-center justify-center"
-      onClick={() => onClose()}
+      onClick={onClose}
     >
       <ul className={cn(`w-44 space-y-2`)}>
         {items.map((each, index) => {
@@ -403,8 +410,6 @@ const DayLayout = memo(
   }
 );
 
-// changes occur in muscle_list and training_week
-
 export default function TrainingWeekOverview() {
   const { training_program_params } = useTrainingProgramContext();
   const { microcycles, mesocycles } = training_program_params;
@@ -476,12 +481,7 @@ type WeekSessionsProps = {
 };
 
 const WeekSessions = memo(
-  ({
-    selectedMesocycleIndex,
-    selectedMicrocycleIndex,
-  }: // training_week,
-  // setDraggableExercises,
-  WeekSessionsProps) => {
+  ({ selectedMesocycleIndex, selectedMicrocycleIndex }: WeekSessionsProps) => {
     // const { draggableExercises, setDraggableExercises, onSupersetUpdate } =
     //   useExerciseSelection(training_week, selectedMesocycleIndex);
     const { training_block, prioritized_muscle_list } =
@@ -565,9 +565,9 @@ const WeekSessions = memo(
     const onSupersetUpdate = () => {};
     return (
       <div className={"flex w-full flex-col"}>
-        <ul className="flex space-x-2 overflow-x-auto">
-          <DragDropContext onDragEnd={onDragEnd}>
-            {exercisesBySelectedMeso?.map((each, index) => {
+        <DragDropContext onDragEnd={onDragEnd}>
+          <ul className="flex space-x-2 overflow-x-auto">
+            {/* {exercisesBySelectedMeso?.map((each, index) => {
               // NOTE: to not display days w/o any sessions
               const hasSessions = each.sessions.find(
                 (ea) => ea.exercises.length
@@ -582,10 +582,47 @@ const WeekSessions = memo(
                   onSupersetUpdate={onSupersetUpdate}
                 />
               );
-            })}
-          </DragDropContext>
-        </ul>
+            })} */}
+            <DraggableDays
+              draggableExercises={draggableExercises}
+              selectedMesocycleIndex={selectedMesocycleIndex}
+            />
+          </ul>
+        </DragDropContext>
       </div>
+    );
+  }
+);
+
+type DraggableDaysProps = {
+  draggableExercises: DraggableExercises[][];
+  selectedMesocycleIndex: number;
+};
+const DraggableDays = memo(
+  ({ draggableExercises, selectedMesocycleIndex }: DraggableDaysProps) => {
+    const exercisesBySelectedMeso = useMemo(
+      () =>
+        draggableExercises[selectedMesocycleIndex].filter((each) => {
+          const hasSessions = each.sessions.find((ea) => ea.exercises.length);
+          if (hasSessions) return each;
+        }),
+      [draggableExercises, selectedMesocycleIndex]
+    );
+
+    return (
+      <>
+        {exercisesBySelectedMeso.map((each, index) => {
+          return (
+            <DayLayout
+              key={`${each.day}_${selectedMesocycleIndex}_draggableExercisesObject_${index}`}
+              session={each}
+              mesocycleIndex={selectedMesocycleIndex}
+              selectedMicrocycleIndex={0}
+              onSupersetUpdate={() => {}}
+            />
+          );
+        })}
+      </>
     );
   }
 );
