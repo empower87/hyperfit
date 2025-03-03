@@ -30,7 +30,7 @@ import {
 import { cn } from "~/lib/clsx";
 import StrictModeDroppable from "~/lib/react-beautiful-dnd/StrictModeDroppable";
 import { getRankColor, getSplitColor } from "~/utils/getIndicatorColors";
-import ExerciseItemLayout from "./components/Exercise/Exercise";
+import { ExerciseItem as ExerciseItemLayout } from "./components/Exercise/Exercise";
 import MesocycleToggle from "./components/MesocycleToggle";
 import SessionDurationVariables from "./components/Settings/SessionDuration/SessionDurationVariables";
 import {
@@ -554,6 +554,7 @@ const WeekSessions = memo(
 
         setDraggableExercises(lol);
         console.log(
+          result,
           draggableExercises,
           exercisesBySelectedMeso,
           "WHERE'd MY LIST GO YO?"
@@ -602,7 +603,7 @@ const DraggableDays = memo(
   ({ draggableExercises, selectedMesocycleIndex }: DraggableDaysProps) => {
     const exercisesBySelectedMeso = useMemo(
       () =>
-        draggableExercises[selectedMesocycleIndex].filter((each) => {
+        draggableExercises[selectedMesocycleIndex]?.filter((each) => {
           const hasSessions = each.sessions.find((ea) => ea.exercises.length);
           if (hasSessions) return each;
         }),
@@ -611,7 +612,7 @@ const DraggableDays = memo(
 
     return (
       <>
-        {exercisesBySelectedMeso.map((each, index) => {
+        {exercisesBySelectedMeso?.map((each, index) => {
           return (
             <DayLayout
               key={`${each.day}_${selectedMesocycleIndex}_draggableExercisesObject_${index}`}

@@ -1,5 +1,7 @@
-import { DotsVerticalIcon } from "@radix-ui/react-icons";
-import { memo, ReactNode } from "react";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { DotsVerticalIcon, DragHandleDots2Icon } from "@radix-ui/react-icons";
+import { ReactNode } from "react";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
@@ -24,94 +26,210 @@ import {
 } from "~/components/ui/tooltip";
 import { MuscleType } from "~/constants/workoutSplits";
 
-type ExerciseItemLayoutProps = {
+type ExerciseItemProps = {
   index: number;
   exerciseName: string;
   muscle: MuscleType;
   sets: number;
   reps: number;
   lbs: number;
-  supersetModal: ReactNode;
+  // supersetModal: ReactNode;
+};
+const ExerciseItem = ({
+  index,
+  exerciseName,
+  muscle,
+  sets,
+  reps,
+  lbs,
+}: // supersetModal,
+ExerciseItemProps) => {
+  const bgColorByRank = "bg-red-600";
+  return (
+    <li className={`flex`}>
+      <div className="pr-2 text-sm text-white">{index}</div>
+      <div className="flex overflow-hidden rounded-md border border-input bg-background/40">
+        <div
+          className={`flex items-center justify-start border-r border-input ${bgColorByRank}`}
+        >
+          <DragHandleDots2Icon fill="white" />
+        </div>
+        <div className="flex justify-between">
+          <div className="flex p-2 pr-0">
+            <div className="text-semibold flex truncate text-xs leading-tight text-secondary-300">
+              {sets} x {reps}
+            </div>
+          </div>
+
+          <div className="flex w-40 cursor-default flex-col overflow-hidden p-2 text-xs leading-tight">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger className="cursor-default" asChild>
+                  <div className="truncate text-secondary-300">
+                    {exerciseName}
+                  </div>
+                </TooltipTrigger>
+
+                <TooltipContent className="bg-primary-600">
+                  <p>{exerciseName}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+
+            <div>{muscle}</div>
+          </div>
+
+          <Dialog>
+            <DropdownMenu>
+              <DropdownMenuTrigger className="mt-1" asChild>
+                <Button size="icon" variant="ghost">
+                  <DotsVerticalIcon fill="white" />
+                </Button>
+              </DropdownMenuTrigger>
+
+              <DropdownMenuContent className="w-44">
+                <DialogTrigger asChild>
+                  <DropdownMenuItem>Create Superset</DropdownMenuItem>
+                </DialogTrigger>
+
+                <DropdownMenuItem>Rest Period Per Set</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Create Superset</DialogTitle>
+                <DialogDescription>
+                  Make changes to your profile here. Click save when you're
+                  done.
+                </DialogDescription>
+              </DialogHeader>
+
+              {/* {supersetModal} */}
+
+              <DialogFooter>
+                <Button type="submit">Save changes</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </div>
+      </div>
+    </li>
+  );
+};
+
+type SortableExerciseItemProps = {
+  id: string;
   children: ReactNode;
 };
-const ExerciseItemLayout = memo(
-  ({
-    index,
-    exerciseName,
-    muscle,
-    sets,
-    reps,
-    lbs,
-    supersetModal,
-    children,
-  }: ExerciseItemLayoutProps) => {
-    return (
-      <li className={`flex`}>
-        <div className="pr-2 text-sm text-white">{index}</div>
-        <div className="flex overflow-hidden rounded-md border border-input bg-background/40">
-          {children}
-          <div className="flex justify-between">
-            <div className="flex p-2 pr-0">
-              <div className="text-semibold flex truncate text-xs leading-tight text-secondary-300">
-                {sets} x {reps}
-              </div>
-            </div>
+const SortableExerciseItem = ({ id, children }: SortableExerciseItemProps) => {
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id });
 
-            <div className="flex w-40 cursor-default flex-col overflow-hidden p-2 text-xs leading-tight">
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger className="cursor-default" asChild>
-                    <div className="truncate text-secondary-300">
-                      {exerciseName}
-                    </div>
-                  </TooltipTrigger>
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    border: "1px solid black",
+    padding: "8px",
+    margin: "4px",
+    backgroundColor: "white",
+  };
 
-                  <TooltipContent className="bg-primary-600">
-                    <p>{exerciseName}</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+  return (
+    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+      {children}
+    </div>
+  );
+};
 
-              <div>{muscle}</div>
-            </div>
+// type ExerciseItemLayoutProps = {
+//   index: number;
+//   exerciseName: string;
+//   muscle: MuscleType;
+//   sets: number;
+//   reps: number;
+//   lbs: number;
+//   supersetModal: ReactNode;
+//   children: ReactNode;
+// };
+// const ExerciseItemLayout = memo(
+//   ({
+//     index,
+//     exerciseName,
+//     muscle,
+//     sets,
+//     reps,
+//     lbs,
+//     supersetModal,
+//     children,
+//   }: ExerciseItemLayoutProps) => {
+//     return (
+//       <li className={`flex`}>
+//         <div className="pr-2 text-sm text-white">{index}</div>
+//         <div className="flex overflow-hidden rounded-md border border-input bg-background/40">
+//           {children}
+//           <div className="flex justify-between">
+//             <div className="flex p-2 pr-0">
+//               <div className="text-semibold flex truncate text-xs leading-tight text-secondary-300">
+//                 {sets} x {reps}
+//               </div>
+//             </div>
 
-            <Dialog>
-              <DropdownMenu>
-                <DropdownMenuTrigger className="mt-1" asChild>
-                  <Button size="icon" variant="ghost">
-                    <DotsVerticalIcon fill="white" />
-                  </Button>
-                </DropdownMenuTrigger>
+//             <div className="flex w-40 cursor-default flex-col overflow-hidden p-2 text-xs leading-tight">
+//               <TooltipProvider>
+//                 <Tooltip>
+//                   <TooltipTrigger className="cursor-default" asChild>
+//                     <div className="truncate text-secondary-300">
+//                       {exerciseName}
+//                     </div>
+//                   </TooltipTrigger>
 
-                <DropdownMenuContent className="w-44">
-                  <DialogTrigger asChild>
-                    <DropdownMenuItem>Create Superset</DropdownMenuItem>
-                  </DialogTrigger>
+//                   <TooltipContent className="bg-primary-600">
+//                     <p>{exerciseName}</p>
+//                   </TooltipContent>
+//                 </Tooltip>
+//               </TooltipProvider>
 
-                  <DropdownMenuItem>Rest Period Per Set</DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+//               <div>{muscle}</div>
+//             </div>
 
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Create Superset</DialogTitle>
-                  <DialogDescription>
-                    Make changes to your profile here. Click save when you're
-                    done.
-                  </DialogDescription>
-                </DialogHeader>
+//             <Dialog>
+//               <DropdownMenu>
+//                 <DropdownMenuTrigger className="mt-1" asChild>
+//                   <Button size="icon" variant="ghost">
+//                     <DotsVerticalIcon fill="white" />
+//                   </Button>
+//                 </DropdownMenuTrigger>
 
-                {supersetModal}
+//                 <DropdownMenuContent className="w-44">
+//                   <DialogTrigger asChild>
+//                     <DropdownMenuItem>Create Superset</DropdownMenuItem>
+//                   </DialogTrigger>
 
-                <DialogFooter>
-                  <Button type="submit">Save changes</Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-          </div>
-        </div>
-      </li>
-    );
-  }
-);
-export default ExerciseItemLayout;
+//                   <DropdownMenuItem>Rest Period Per Set</DropdownMenuItem>
+//                 </DropdownMenuContent>
+//               </DropdownMenu>
+
+//               <DialogContent>
+//                 <DialogHeader>
+//                   <DialogTitle>Create Superset</DialogTitle>
+//                   <DialogDescription>
+//                     Make changes to your profile here. Click save when you're
+//                     done.
+//                   </DialogDescription>
+//                 </DialogHeader>
+
+//                 {supersetModal}
+
+//                 <DialogFooter>
+//                   <Button type="submit">Save changes</Button>
+//                 </DialogFooter>
+//               </DialogContent>
+//             </Dialog>
+//           </div>
+//         </div>
+//       </li>
+//     );
+//   }
+// );
+export { ExerciseItem, SortableExerciseItem };
