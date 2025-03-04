@@ -195,15 +195,15 @@ const ExerciseItem = memo(
         sets={sets}
         reps={reps}
         lbs={lbs}
-        supersetModal={
-          <DropdownListModal
-            items={exercises}
-            supersets={supersets}
-            selectedId={exercise.id}
-            onClose={onCloseHandler}
-            onItemClick={onItemClickHandler}
-          />
-        }
+        // supersetModal={
+        //   <DropdownListModal
+        //     items={exercises}
+        //     supersets={supersets}
+        //     selectedId={exercise.id}
+        //     onClose={onCloseHandler}
+        //     onItemClick={onItemClickHandler}
+        //   />
+        // }
       >
         {children}
       </ExerciseItemLayout>
@@ -560,7 +560,7 @@ const WeekSessions = memo(
           "WHERE'd MY LIST GO YO?"
         );
       },
-      [exercisesBySelectedMeso, draggableExercises, selectedMicrocycleIndex]
+      [exercisesBySelectedMeso, draggableExercises, selectedMesocycleIndex]
     );
 
     const onSupersetUpdate = () => {};

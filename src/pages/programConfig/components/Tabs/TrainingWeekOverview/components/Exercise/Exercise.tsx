@@ -34,6 +34,7 @@ type ExerciseItemProps = {
   reps: number;
   lbs: number;
   // supersetModal: ReactNode;
+  children?: ReactNode;
 };
 const ExerciseItem = ({
   index,
@@ -42,6 +43,7 @@ const ExerciseItem = ({
   sets,
   reps,
   lbs,
+  children,
 }: // supersetModal,
 ExerciseItemProps) => {
   const bgColorByRank = "bg-red-600";
@@ -49,11 +51,15 @@ ExerciseItemProps) => {
     <li className={`flex`}>
       <div className="pr-2 text-sm text-white">{index}</div>
       <div className="flex overflow-hidden rounded-md border border-input bg-background/40">
+      {children ? children : (
+        
         <div
           className={`flex items-center justify-start border-r border-input ${bgColorByRank}`}
         >
           <DragHandleDots2Icon fill="white" />
         </div>
+      ) }
+
         <div className="flex justify-between">
           <div className="flex p-2 pr-0">
             <div className="text-semibold flex truncate text-xs leading-tight text-secondary-300">
@@ -129,10 +135,7 @@ const SortableExerciseItem = ({ id, children }: SortableExerciseItemProps) => {
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    border: "1px solid black",
-    padding: "8px",
-    margin: "4px",
-    backgroundColor: "white",
+
   };
 
   return (

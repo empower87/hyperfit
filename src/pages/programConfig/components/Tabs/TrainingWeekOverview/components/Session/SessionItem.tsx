@@ -83,18 +83,26 @@ const SessionItem = ({
   );
 };
 
+type DraggableExercisesExample = {
+  day: string;
+  isTrainingDay: boolean;
+  sessions: DraggableSessionType[];
+}
+
 type SortableSessionItemContainerProps = {
+  containerId: string
   container: DraggableSessionType;
   selectedMicrocycleIndex: number;
 };
 
 export const SortableSessionItemContainer = ({
+  containerId,
   container,
   selectedMicrocycleIndex,
 }: SortableSessionItemContainerProps) => {
   return (
     <SortableContext
-      id={container.id}
+      id={containerId}
       items={container.exercises.map((item) => item.id)}
       strategy={verticalListSortingStrategy}
     >
