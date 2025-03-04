@@ -1,22 +1,13 @@
 import {
+  closestCenter,
   DndContext,
   DragEndEvent,
   DragOverEvent,
   DragStartEvent,
-  useDraggable,
-  useDroppable,
 } from "@dnd-kit/core";
-import { DotsVerticalIcon, DragHandleDots2Icon } from "@radix-ui/react-icons";
-import {
-  memo,
-  ReactNode,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
-import { Draggable, DropResult } from "react-beautiful-dnd";
-import Modal from "~/components/Modals/Modal";
+import { arrayMove } from "@dnd-kit/sortable";
+import { DotsVerticalIcon } from "@radix-ui/react-icons";
+import { ReactNode, useEffect, useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import {
@@ -25,32 +16,15 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
-import {
-  ExerciseType,
-  SessionSplitType,
-  SplitType,
-} from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
+import { ExerciseType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
-import {
-  getExerciseSetsOverMicrocycles,
-  getGroupList,
-} from "~/hooks/useTrainingProgram/utils/exercises/getExercises";
 import { cn } from "~/lib/clsx";
-import { getRankColor, getSplitColor } from "~/utils/getIndicatorColors";
-import {ExerciseItem as ExerciseItemLayout} from "./components/Exercise/Exercise";
+import { getRankColor } from "~/utils/getIndicatorColors";
 import MesocycleToggle from "./components/MesocycleToggle";
+import { SortableSessionItemContainer } from "./components/Session/SessionItem";
 import SessionDurationVariables from "./components/Settings/SessionDuration/SessionDurationVariables";
-import { useSessionDurationVariablesContext } from "./components/Settings/SessionDuration/sessionDurationVariablesContext";
 import { DraggableExercises } from "./hooks/useExerciseSelection";
 import { hydrateTrainingWeek } from "./hooks/useTrainingWeek";
-import {
-  canAddExerciseToSplit,
-  getSupersetMap,
-} from "./utils/exerciseSelectUtils";
-import { SortableSessionItemContainer } from "./components/Session/SessionItem";
-import { arrayMove } from "@dnd-kit/sortable";
-
-
 
 type DropdownListProps = {
   items: ExerciseType[];
@@ -98,7 +72,6 @@ export function DropdownListModal({
   );
 }
 
-
 type DayLayoutProps = {
   session: DraggableExercises;
   children: ReactNode;
@@ -133,7 +106,8 @@ const DayLayout = ({ session, children }: DayLayoutProps) => {
 };
 
 export default function TrainingWeekOverview() {
-  const { training_program_params, training_block, prioritized_muscle_list } = useTrainingProgramContext();
+  const { training_program_params, training_block, prioritized_muscle_list } =
+    useTrainingProgramContext();
   const { microcycles, mesocycles } = training_program_params;
 
   const [selectedMesocycleIndex, setSelectedMesocycleIndex] = useState<number>(
@@ -141,16 +115,6 @@ export default function TrainingWeekOverview() {
   );
   const [selectedMicrocycleIndex, setSelectedMicrocycleIndex] =
     useState<number>(microcycles - 1);
-  // const [draggableExercises, setDraggableExercises] = useState<
-  //   DraggableExercises[][]
-  // >([]);
-
-  // useEffect(() => {
-  //   const hydratedTrainingBlock = training_block.map((each) =>
-  //     hydrateTrainingWeek(each, prioritized_muscle_list)
-  //   );
-  //   setDraggableExercises(hydratedTrainingBlock);
-  // }, [training_block, prioritized_muscle_list]);
 
   const mesocycleTitles = Array.from(
     Array(mesocycles),
@@ -208,189 +172,221 @@ export default function TrainingWeekOverview() {
 type WeekSessionsProps = {
   selectedMesocycleIndex: number;
   selectedMicrocycleIndex: number;
-  training_week: DraggableExercises[]
+  training_week: DraggableExercises[];
   // setDraggableExercises: React.Dispatch<SetStateAction<DraggableExercises[][]>>;
 };
 
-const WeekSessions = memo(
-  ({ selectedMesocycleIndex, selectedMicrocycleIndex, training_week }: WeekSessionsProps) => {
-    // const { draggableExercises, setDraggableExercises, onSupersetUpdate } =
-    //   useExerciseSelection(training_week, selectedMesocycleIndex);
-    // const { training_block, prioritized_muscle_list } =
-    //   useTrainingProgramContext();
-    // const [draggableExercises, setDraggableExercises] = useState<
-    //   DraggableExercises[][]
-    // >([]);
-    
-    const [exercisesBySelectedMeso, setExercisesBySelectedMeso] = useState<
-      DraggableExercises[]
-    >(training_week);
+const WeekSessions = ({
+  selectedMesocycleIndex,
+  selectedMicrocycleIndex,
+  training_week,
+}: WeekSessionsProps) => {
+  const [exercisesBySelectedMeso, setExercisesBySelectedMeso] =
+    useState<DraggableExercises[]>(training_week);
 
+  useEffect(() => {
+    setExercisesBySelectedMeso(training_week);
+  }, [training_week]);
 
+  const [activeContainer, setActiveContainer] = useState<string | null>(null);
 
-    // useEffect(() => {
-    //   const hydratedTrainingBlock = training_block.map((each) =>
-    //     hydrateTrainingWeek(each, prioritized_muscle_list)
-    //   );
-    //   setDraggableExercises(hydratedTrainingBlock);
-    // }, [training_block, prioritized_muscle_list]);
+  // const handleDragStart = (event: DragStartEvent) => {
+  //   setActiveContainer(event.active.data.current?.sortable.containerId);
+  // };
 
-    useEffect(() => {
-      setExercisesBySelectedMeso(training_week);
-    }, [training_week ]);
-    // const exercises_selected_meso = draggableExercises[selectedMesocycleIndex];
+  const handleDragStart = (event: DragStartEvent) => {
+    const activeContainer: string =
+      event.active.data.current?.sortable.containerId;
+    setActiveContainer(activeContainer);
+  };
+  // const handleDragOver = (event: DragOverEvent) => {
+  //   const { over, active } = event;
 
-    // const onDragEnd = useCallback(
-    //   (result: DropResult) => {
-    //     if (!result.destination) return;
-    //     const destination_id = result.destination.droppableId;
-    //     const source_id = result.source.droppableId;
-    //     const destination_day_index = parseInt(destination_id.split("_")[0]);
-    //     const source_day_index = parseInt(source_id.split("_")[0]);
-    //     // NOTE: only deals with days with 1 session as seen by the hardcoded zero.
-    //     const destination_session_index = 0;
-    //     const source_session_index = 0;
-    //     const destination_exercise_index = result.destination.index;
-    //     const source_exercise_index = result.source.index;
+  //   if (!over || !active || active.id === over.id) {
+  //     return;
+  //   }
 
-    //     const items = structuredClone(exercisesBySelectedMeso);
+  //   const activeContainerId = active.data.current?.sortable.containerId;
+  //   const overContainerId = over.data.current?.sortable.containerId;
 
-    //     const sourceExercise =
-    //       items[source_day_index].sessions[source_session_index].exercises[
-    //         source_exercise_index
-    //       ];
-    //     const targetSplit =
-    //       items[destination_day_index].sessions[destination_session_index];
+  //   if (activeContainerId === overContainerId) {
+  //     return; // within the same container, do nothing on drag over, only on drag end
+  //   }
 
-    //     const can_add_exercise_to_session = canAddExerciseToSplit(
-    //       sourceExercise.muscle,
-    //       targetSplit.split as SplitType
-    //     );
+  //   let activeExercise: ExerciseType | null = null;
 
-    //     if (!can_add_exercise_to_session) {
-    //       console.log(
-    //         can_add_exercise_to_session,
-    //         `ERROR: Cannot place an exercise of the ${sourceExercise.muscle} muscle type in a ${targetSplit.split} session.`
-    //       );
-    //     }
+  //   exercisesBySelectedMeso.find((c) => {
+  //     if (c.day === activeContainerId) {
+  //       const exercise = c.sessions[0]?.exercises.find(
+  //         (item) => item.id === active.id
+  //       );
+  //       if (exercise) {
+  //         activeExercise = exercise;
+  //       }
+  //     }
+  //   });
 
-    //     const [removed] = items[source_day_index].sessions[
-    //       source_session_index
-    //     ].exercises.splice(source_exercise_index, 1);
+  //   const newContainers = exercisesBySelectedMeso.map((container) => {
+  //     if (container.day === activeContainerId) {
+  //       const activeIndex = container.sessions[0].exercises.findIndex(
+  //         (item) => item.id === active.id
+  //       );
+  //       container.sessions[0].exercises.splice(activeIndex, 1);
+  //     }
+  //     if (container.day === overContainerId) {
+  //       const overIndex = container.sessions[0].exercises.findIndex(
+  //         (item) => item.id === over.id
+  //       );
+  //       console.log(activeExercise, "OK IS THIS THE PROB?");
+  //       container.sessions[0].exercises.splice(overIndex, 0, activeExercise!);
+  //     }
+  //     return container;
+  //   });
+  //   setExercisesBySelectedMeso(newContainers);
+  // };
 
-    //     items[destination_day_index].sessions[
-    //       destination_session_index
-    //     ].exercises.splice(destination_exercise_index, 0, removed);
+  const handleDragOver = (event: DragOverEvent) => {
+    const { active, over } = event;
 
-    //     const lol = draggableExercises.map((meso, mesoIndex) => {
-    //       if (mesoIndex === selectedMesocycleIndex) return items;
-    //       else return meso;
-    //     });
+    if (!over || !activeContainer) return;
 
-    //     setDraggableExercises(lol);
-    //     console.log(
-    //       result,
-    //       draggableExercises,
-    //       exercisesBySelectedMeso,
-    //       "WHERE'd MY LIST GO YO?"
-    //     );
-    //   },
-    //   [exercisesBySelectedMeso, draggableExercises, selectedMicrocycleIndex]
-    // );
-
-    const [activeContainer, setActiveContainer] = useState<string | number | null>(null)
-
-    const handleDragStart = (event: DragStartEvent) => {
-      setActiveContainer(event.active.data.current?.sortable.containerId);
-    };
-  
-    const handleDragOver = (event: DragOverEvent) => {
-      const { over, active } = event;
-  
-      if (!over || !active || active.id === over.id) {
-        return;
-      }
-  
-      const activeContainerId = active.data.current?.sortable.containerId;
-      const overContainerId = over.data.current?.sortable.containerId;
-  
-      if (activeContainerId === overContainerId) {
-        return; // within the same container, do nothing on drag over, only on drag end
-      }
-  
-      let activeExercise: ExerciseType | null = null
-
-      exercisesBySelectedMeso.find(c => {
-        if (c.day === activeContainerId) {
-          const exercise = c.sessions[0]?.exercises.find(item => item.id === active.id);
-          if (exercise) {
-            activeExercise = exercise;
-          }
-        } 
-      })
-
-      const newContainers = exercisesBySelectedMeso.map((container) => {
-
-        if (container.day === activeContainerId) {
-          const activeIndex = container.sessions[0].exercises.findIndex((item) => item.id === active.id);
-          container.sessions[0].exercises.splice(activeIndex, 1);
-        }
-        if (container.day === overContainerId) {
-          const overIndex = container.sessions[0].exercises.findIndex((item) => item.id === over.id);
-            console.log(activeExercise, "OK IS THIS THE PROB?")
-            container.sessions[0].exercises.splice(overIndex, 0, activeExercise!);
-          
-        }
-        return container;
-      });
-      setExercisesBySelectedMeso(newContainers);
-    };
-
-    const handleDragEnd = (event: DragEndEvent) => {
-      const { active, over } = event;
-      setActiveContainer(null);
-      
-      console.log(event, "WTF IS GOING ON WITH THIS NEED TO DO A DEEP DIVE")
-      if (!over || active.id === over.id) {
-        return;
-      }
-  
-      const activeContainerId = active.data.current?.sortable.containerId;
-      const overContainerId = over.data.current?.sortable.containerId;
-  
-      if (activeContainerId === overContainerId) {
-        const activeIndex = exercisesBySelectedMeso.find(c => c.day === activeContainerId)!.sessions[0]?.exercises.findIndex(item => item.id === active.id);
-        const overIndex = exercisesBySelectedMeso.find(c => c.day === overContainerId)!.sessions[0]?.exercises.findIndex(item => item.id === over.id);
-  
-        const newContainers = exercisesBySelectedMeso.map((container) => {
-          if (container.day === activeContainerId) {
-            container.sessions[0].exercises = arrayMove(container.sessions[0].exercises, activeIndex, overIndex);
-          }
-          return container;
-        });
-        setExercisesBySelectedMeso(newContainers);
-      }
-    };
-
-    const onSupersetUpdate = () => {};
-    return (
-      <div className={"flex w-full flex-col"}>
-        <DndContext onDragStart={handleDragStart} onDragOver={handleDragOver} onDragEnd={handleDragEnd}>
-          <ul className="flex space-x-2 overflow-x-auto">
-            {exercisesBySelectedMeso?.map((each, index) => {
-              return (
-                <DayLayout
-                  key={`${each.day}_${selectedMesocycleIndex}_draggableExercisesObject_${index}`}
-                  session={each}
-                  >
-                  <SortableSessionItemContainer containerId={each.day} container={each.sessions[0]} selectedMicrocycleIndex={selectedMicrocycleIndex} />
-                </DayLayout>
-              )
-            })}
-          </ul>
-        </DndContext>
-      </div>
+    const activeContainerDayIndex = exercisesBySelectedMeso.findIndex(
+      (c) => c.day === activeContainer.split("#")[0]
     );
-  }
-);
 
+    const activeContainerIndex = exercisesBySelectedMeso[
+      activeContainerDayIndex
+    ].sessions.findIndex((c) => c.id === activeContainer.split("#")[1]);
+
+    const overContainerDayIndex = exercisesBySelectedMeso.findIndex(
+      (c) =>
+        c.day ===
+        (over.data.current?.sortable.containerId as string).split("#")[0]
+    );
+
+    const overContainerIndex = exercisesBySelectedMeso[
+      overContainerDayIndex
+    ].sessions.findIndex(
+      (c) =>
+        c.id ===
+        (over.data.current?.sortable.containerId as string).split("#")[1]
+    );
+
+    const activeItemIndex = exercisesBySelectedMeso[
+      activeContainerDayIndex
+    ].sessions[activeContainerIndex]?.exercises.findIndex(
+      (item) => item.id === active.id
+    );
+
+    console.log(
+      active,
+      activeContainer,
+      activeContainerDayIndex,
+      activeContainerIndex,
+      "ACTIVE STUFF",
+      over,
+      overContainerDayIndex,
+      overContainerIndex,
+      "OVER STUFF"
+    );
+    if (activeContainerIndex !== -1 && overContainerIndex !== -1) {
+      const newContainers = structuredClone(exercisesBySelectedMeso);
+
+      if (
+        active.data.current?.sortable.containerId ===
+        over.data.current?.sortable.containerId
+      ) {
+        const overIndex = newContainers[activeContainerDayIndex].sessions[
+          activeContainerIndex
+        ]?.exercises.findIndex((item) => item.id === over.id);
+        newContainers[activeContainerDayIndex].sessions[
+          activeContainerIndex
+        ].exercises = arrayMove(
+          newContainers[activeContainerDayIndex].sessions[activeContainerIndex]
+            ?.exercises,
+          activeItemIndex,
+          overIndex
+        );
+      } else {
+        const [movedItem] = newContainers[
+          activeContainerDayIndex
+        ].sessions[0]?.exercises.splice(activeItemIndex, 1);
+        newContainers[overContainerDayIndex].sessions[
+          overContainerIndex
+        ]?.exercises.push(movedItem);
+      }
+      setExercisesBySelectedMeso(newContainers);
+    }
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    setActiveContainer(null);
+  };
+  // const handleDragEnd = (event: DragEndEvent) => {
+  //   const { active, over } = event;
+  //   setActiveContainer(null);
+
+  //   console.log(event, "WTF IS GOING ON WITH THIS NEED TO DO A DEEP DIVE");
+  //   if (!over || active.id === over.id) {
+  //     return;
+  //   }
+
+  //   const activeContainerId = active.data.current?.sortable.containerId;
+  //   const overContainerId = over.data.current?.sortable.containerId;
+
+  //   if (activeContainerId === overContainerId) {
+  //     const activeIndex = exercisesBySelectedMeso
+  //       .find((c) => c.day === activeContainerId)!
+  //       .sessions[0]?.exercises.findIndex((item) => item.id === active.id);
+  //     const overIndex = exercisesBySelectedMeso
+  //       .find((c) => c.day === overContainerId)!
+  //       .sessions[0]?.exercises.findIndex((item) => item.id === over.id);
+
+  //     const newContainers = exercisesBySelectedMeso.map((container) => {
+  //       if (container.day === activeContainerId) {
+  //         container.sessions[0].exercises = arrayMove(
+  //           container.sessions[0].exercises,
+  //           activeIndex,
+  //           overIndex
+  //         );
+  //       }
+  //       return container;
+  //     });
+  //     setExercisesBySelectedMeso(newContainers);
+  //   }
+  // };
+
+  const onSupersetUpdate = () => {};
+  return (
+    <div className={"flex w-full flex-col"}>
+      <DndContext
+        collisionDetection={closestCenter}
+        onDragStart={handleDragStart}
+        onDragOver={handleDragOver}
+        onDragEnd={handleDragEnd}
+      >
+        <ul className="flex space-x-2 overflow-x-auto">
+          {exercisesBySelectedMeso?.map((each, index) => {
+            return (
+              <DayLayout
+                key={`${each.day}_${selectedMesocycleIndex}_draggableExercisesObject_${index}`}
+                session={each}
+              >
+                {each.sessions.map((session) => {
+                  return (
+                    <SortableSessionItemContainer
+                      key={`${each.day}_${session.id}`}
+                      containerId={`${each.day}#${session.id}`}
+                      container={session}
+                      selectedMicrocycleIndex={selectedMicrocycleIndex}
+                    />
+                  );
+                })}
+              </DayLayout>
+            );
+          })}
+        </ul>
+      </DndContext>
+    </div>
+  );
+};

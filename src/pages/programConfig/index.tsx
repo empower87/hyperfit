@@ -81,10 +81,10 @@ function ProgramConfiguration() {
   const onCollapsePriorityList = () => setIsPriorityListCollapsed(true);
   const onExpandPriorityList = () => setIsPriorityListCollapsed(false);
   return (
-    // <ProgramConfigProvider>
     <div className="flex h-full flex-col justify-between bg-primary-600">
       <div className="flex items-center justify-between">
         <h2 className="p-2">Program Settings</h2>
+
         <div className="p-2">
           {isPriorityListCollapsed ? (
             <Button
@@ -116,7 +116,6 @@ function ProgramConfiguration() {
         )}
       </div>
     </div>
-    // </ProgramConfigProvider>
   );
 }
 

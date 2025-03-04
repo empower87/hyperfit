@@ -1,7 +1,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import EditMuscleProgressionWithProvider from "./EditMuscleProgression/EditMuscleProgression";
 import TrainingBlock from "./TrainingBlockOverview";
-import TrainingWeekOverview from "./TrainingWeekOverview/TrainingWeekOverview";
+import TrainingWeekOverview from "./TrainingWeekOverview/TrainingWeekOverviewDnD";
 
 const TABS = [
   "training-week-overview",
