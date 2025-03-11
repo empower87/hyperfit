@@ -87,10 +87,10 @@ type DraggableExercisesExample = {
   day: string;
   isTrainingDay: boolean;
   sessions: DraggableSessionType[];
-}
+};
 
 type SortableSessionItemContainerProps = {
-  containerId: string
+  containerId: string;
   container: DraggableSessionType;
   selectedMicrocycleIndex: number;
 };
@@ -111,18 +111,21 @@ export const SortableSessionItemContainer = ({
         exercises={container.exercises}
         selectedMicrocycleIndex={selectedMicrocycleIndex}
       >
-        {container.exercises.map((item, index) => (
-          <SortableExerciseItem key={item.id} id={item.id}>
-            <ExerciseItem
-              index={index}
-              exerciseName={item.name}
-              muscle={item.muscle}
-              sets={item.sets}
-              reps={item.reps}
-              lbs={item.weight}
-            />
-          </SortableExerciseItem>
-        ))}
+        <ul className="space-y-2">
+          {container.exercises.map((item, index) => (
+            <SortableExerciseItem key={item.id} id={item.id}>
+              <ExerciseItem
+                index={index + 1}
+                exerciseName={item.name}
+                muscle={item.muscle}
+                volumeLandmark={item.rank}
+                sets={item.sets}
+                reps={item.reps}
+                lbs={item.weight}
+              />
+            </SortableExerciseItem>
+          ))}
+        </ul>
       </SessionItem>
     </SortableContext>
   );

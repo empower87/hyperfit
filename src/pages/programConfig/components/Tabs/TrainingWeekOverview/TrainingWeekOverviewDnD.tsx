@@ -4,6 +4,7 @@ import {
   DragEndEvent,
   DragOverEvent,
   DragStartEvent,
+  UniqueIdentifier,
 } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 import { DotsVerticalIcon } from "@radix-ui/react-icons";
@@ -152,6 +153,11 @@ function TrainingWeekOverview() {
     setDraggableExercises(hydratedTrainingBlock);
   }, [training_block, prioritized_muscle_list]);
 
+  const memoizedTrainingWeek = useMemo(
+    () => draggableExercises[selectedMesocycleIndex],
+    [draggableExercises, selectedMesocycleIndex]
+  );
+
   return (
     <div id="exercise_editor" className={`flex flex-col space-y-5 rounded`}>
       <div className="flex flex-col rounded-md border border-primary-700">
@@ -169,7 +175,7 @@ function TrainingWeekOverview() {
       <WeekSessions
         selectedMesocycleIndex={selectedMesocycleIndex}
         selectedMicrocycleIndex={selectedMicrocycleIndex}
-        training_week={draggableExercises[selectedMesocycleIndex]}
+        training_week={memoizedTrainingWeek}
         // setDraggableExercises={setDraggableExercises}
       />
     </div>
@@ -180,7 +186,6 @@ type WeekSessionsProps = {
   selectedMesocycleIndex: number;
   selectedMicrocycleIndex: number;
   training_week: DraggableExercises[];
-  // setDraggableExercises: React.Dispatch<SetStateAction<DraggableExercises[][]>>;
 };
 
 const WeekSessions = ({
@@ -190,26 +195,17 @@ const WeekSessions = ({
 }: WeekSessionsProps) => {
   const [exercisesBySelectedMeso, setExercisesBySelectedMeso] =
     useState<DraggableExercises[]>(training_week);
+  const [activeContainer, setActiveContainer] =
+    useState<UniqueIdentifier | null>(null);
 
   useEffect(() => {
     setExercisesBySelectedMeso(training_week);
   }, [training_week]);
 
-  const [activeContainer, setActiveContainer] = useState<string | null>(null);
-
-  // const handleDragStart = useCallback((event: DragStartEvent) => {
-  //   const activeContainer: string =
-  //     event.active.data.current?.sortable.containerId;
-  //   setActiveContainer(activeContainer);
-  // }, []);
-
-  // const handleDragOver = (event: DragOverEvent) => {
-  //   const { active, over } = event;
-  //   console.log(over, "BEFORE: there's an over!");
-  //   if (!over) {
-  //     return;
-  //   }
-  // };
+  const handleDragStart = useCallback((event: DragStartEvent) => {
+    const { active } = event;
+    setActiveContainer(active.data.current?.sortable.containerId);
+  }, []);
 
   const handleDragOver = useCallback(
     (event: DragOverEvent) => {
@@ -220,13 +216,13 @@ const WeekSessions = ({
       const overSplitId = overContainerId.split("#");
       const overDay = overSplitId[0];
       const overSession = overSplitId[1];
-      const overId = over.id as string;
+      const overId = over.id;
 
       const activeContainerId = active.data.current?.sortable.containerId;
       const activeSplitId = activeContainerId.split("#");
       const activeDay = activeSplitId[0];
       const activeSession = activeSplitId[1];
-      const activeId = active.id as string;
+      const activeId = active.id;
 
       if (
         !activeContainerId ||
@@ -281,140 +277,9 @@ const WeekSessions = ({
         return container;
       });
       setExercisesBySelectedMeso(newContainers);
-      // setActiveContainer(overId);
     },
     [exercisesBySelectedMeso, activeContainer]
   );
-
-  // const handleDragOver = useCallback(
-  //   (event: DragOverEvent) => {
-  //     const { active, over } = event;
-
-  //     if (!over || !activeContainer) return;
-
-  //     const activeContainerDayIndex = exercisesBySelectedMeso.findIndex(
-  //       (c) => c.day === activeContainer.split("#")[0]
-  //     );
-
-  //     const activeContainerIndex = exercisesBySelectedMeso[
-  //       activeContainerDayIndex
-  //     ].sessions.findIndex((c) => c.id === activeContainer.split("#")[1]);
-
-  //     const overContainerDayIndex = exercisesBySelectedMeso.findIndex(
-  //       (c) =>
-  //         c.day ===
-  //         (over.data.current?.sortable.containerId as string).split("#")[0]
-  //     );
-
-  //     const overContainerIndex = exercisesBySelectedMeso[
-  //       overContainerDayIndex
-  //     ].sessions.findIndex(
-  //       (c) =>
-  //         c.id ===
-  //         (over.data.current?.sortable.containerId as string).split("#")[1]
-  //     );
-
-  //     const activeItemIndex = exercisesBySelectedMeso[
-  //       activeContainerDayIndex
-  //     ].sessions[activeContainerIndex]?.exercises.findIndex(
-  //       (item) => item.id === active.id
-  //     );
-
-  //     console.log(
-  //       active,
-  //       activeContainer,
-  //       activeContainerDayIndex,
-  //       activeContainerIndex,
-  //       "ACTIVE STUFF",
-  //       over,
-  //       overContainerDayIndex,
-  //       overContainerIndex,
-  //       "OVER STUFF"
-  //     );
-  //     if (activeContainerIndex !== -1 && overContainerIndex !== -1) {
-  //       const newContainers = structuredClone(exercisesBySelectedMeso);
-
-  //       if (
-  //         active.data.current?.sortable.containerId ===
-  //         over.data.current?.sortable.containerId
-  //       ) {
-  //         const overIndex = newContainers[activeContainerDayIndex].sessions[
-  //           activeContainerIndex
-  //         ]?.exercises.findIndex((item) => item.id === over.id);
-  //         newContainers[activeContainerDayIndex].sessions[
-  //           activeContainerIndex
-  //         ].exercises = arrayMove(
-  //           newContainers[activeContainerDayIndex].sessions[
-  //             activeContainerIndex
-  //           ]?.exercises,
-  //           activeItemIndex,
-  //           overIndex
-  //         );
-  //       } else {
-  //         const [movedItem] = newContainers[
-  //           activeContainerDayIndex
-  //         ].sessions[0]?.exercises.splice(activeItemIndex, 1);
-  //         newContainers[overContainerDayIndex].sessions[
-  //           overContainerIndex
-  //         ]?.exercises.push(movedItem);
-  //       }
-  //       setExercisesBySelectedMeso(newContainers);
-  //     }
-  //   },
-  //   [exercisesBySelectedMeso, activeContainer]
-  // );
-
-  const getContainersIndices = (id: string, split_marker: string) => {
-    const splitId = id.split(split_marker);
-    const dayId = splitId[0];
-    const sessionId = splitId[1];
-    let day_index = -1;
-    let session_index = -1;
-
-    for (let i = 0; i < exercisesBySelectedMeso.length; i++) {
-      const day = exercisesBySelectedMeso[i].day;
-      const sessions = exercisesBySelectedMeso[i].sessions;
-      if (day === dayId) {
-        day_index === i;
-
-        for (let j = 0; j < sessions.length; j++) {
-          if (sessions[j].id === sessionId) {
-            session_index = j;
-          }
-        }
-      }
-    }
-    return [day_index, session_index];
-  };
-
-  const findContainer = useCallback(
-    (id: string, split_marker: string) => {
-      const splitId = id.split(split_marker);
-      const dayId = splitId[0];
-      const sessionId = splitId[1];
-
-      for (let i = 0; i < exercisesBySelectedMeso.length; i++) {
-        const day = exercisesBySelectedMeso[i].day;
-        const sessions = exercisesBySelectedMeso[i].sessions;
-        if (day === dayId) {
-          for (let j = 0; j < sessions.length; j++) {
-            if (sessions[j].id === sessionId) {
-              return sessions[j];
-            }
-          }
-        }
-      }
-      return null;
-    },
-    [exercisesBySelectedMeso]
-  );
-
-  const findExerciseIndex = (day: string, session: string, item: string) => {
-    return exercisesBySelectedMeso
-      .find((c) => c.day === day)!
-      .sessions.find((s) => s.id === session)!
-      .exercises.findIndex((i) => i.id === item);
-  };
 
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {
@@ -427,13 +292,13 @@ const WeekSessions = ({
       const activeSplitId = activeContainerId.split("#");
       const activeDay = activeSplitId[0];
       const activeSession = activeSplitId[1];
-      const activeId = active.id as string;
+      const activeId = active.id;
 
       const overContainerId = over.data.current?.sortable.containerId;
       const overSplitId = overContainerId.split("#");
       const overDay = overSplitId[0];
       const overSession = overSplitId[1];
-      const overId = over.id as string;
+      const overId = over.id;
 
       if (!activeContainerId || !overContainerId) return;
 
@@ -468,152 +333,16 @@ const WeekSessions = ({
     [exercisesBySelectedMeso]
   );
 
-  // const handleDragEnd = useCallback(
-  //   (event: DragEndEvent) => {
-  //     const { active, over } = event;
-
-  //     if (!over) {
-  //       return;
-  //     }
-
-  //     const activeContainerId = active.data.current?.sortable.containerId;
-  //     const splitActiveContainerId = activeContainerId.split("#");
-  //     const activeDayId = splitActiveContainerId[0];
-  //     const activeSplitId = splitActiveContainerId[1];
-
-  //     const overContainerId = over.data.current?.sortable.containerId;
-  //     const splitOverContainerId = overContainerId.split("#");
-  //     const overDayId = splitOverContainerId[0];
-  //     const overSplitId = splitOverContainerId[1];
-
-  //     // const activeContainerId = active.data.current?.sortable.containerId;
-  //     // const splitActiveContainerId = activeContainerId.split("#");
-  //     // const activeDayId = splitActiveContainerId[0];
-  //     // const activeSplitId = splitActiveContainerId[1];
-
-  //     // const activeDay = exercisesBySelectedMeso.find(
-  //     //   (item) => item.day === activeDayId
-  //     // );
-  //     // const activeContainer = activeDay?.sessions.find(
-  //     //   (item) => item.id === activeSplitId
-  //     // );
-
-  //     // const overContainerId = over.data.current?.sortable.containerId;
-  //     // const splitOverContainerId = overContainerId.split("#");
-  //     // const overDayId = splitOverContainerId[0];
-  //     // const overSplitId = splitOverContainerId[1];
-  //     // const overDay = exercisesBySelectedMeso.find(
-  //     //   (item) => item.day === overDayId
-  //     // );
-  //     // const overContainer = overDay?.sessions.find(
-  //     //   (item) => item.id === overSplitId
-  //     // );
-  //     const activeContainer = findContainer(activeContainerId, "#");
-  //     const overContainer = findContainer(overContainerId, "#");
-  //     console.log(activeContainer, overContainer, "ARE THESE THE ISSUES?");
-  //     if (!activeContainer || !overContainer) {
-  //       return;
-  //     }
-
-  //     const activeIndex = activeContainer.exercises.findIndex(
-  //       (item) => item.id === active.id
-  //     );
-  //     if (activeContainer.id === overContainer.id) {
-  //       const overIndex = overContainer.exercises.findIndex(
-  //         (item) => item.id === over.id
-  //       );
-  //       if (activeIndex !== overIndex) {
-  //         const newItems = arrayMove(
-  //           activeContainer.exercises,
-  //           activeIndex,
-  //           overIndex
-  //         );
-  //         const newContainers = exercisesBySelectedMeso.map((container) => {
-  //           if (container.day === activeDayId) {
-  //             return {
-  //               ...container,
-  //               sessions: container.sessions.map((session) => {
-  //                 if (session.id === activeSplitId) {
-  //                   return { ...session, exercises: newItems };
-  //                 } else return session;
-  //               }),
-  //             };
-  //           } else return container;
-  //         });
-  //         setExercisesBySelectedMeso(newContainers);
-  //       }
-  //     } else {
-  //       const newActiveItems = [...activeContainer.exercises];
-  //       newActiveItems.splice(activeIndex, 1);
-
-  //       const newOverItems = [...overContainer.exercises];
-  //       const overIndex =
-  //         overContainer.id === over.id
-  //           ? overContainer.exercises.length
-  //           : overContainer.exercises.findIndex((item) => item.id === over.id);
-  //       newOverItems.splice(
-  //         overIndex,
-  //         0,
-  //         activeContainer.exercises[activeIndex]
-  //       );
-
-  //       const newContainers = exercisesBySelectedMeso.map((container) => {
-  //         if (container.day === activeDayId) {
-  //           return {
-  //             ...container,
-  //             sessions: container.sessions.map((session) => {
-  //               if (session.id === activeSplitId) {
-  //                 return { ...session, exercises: newActiveItems };
-  //               } else return session;
-  //             }),
-  //           };
-  //         } else if (container.day === overDayId) {
-  //           return {
-  //             ...container,
-  //             sessions: container.sessions.map((session) => {
-  //               if (session.id === overSplitId) {
-  //                 return { ...session, exercises: newOverItems };
-  //               } else return session;
-  //             }),
-  //           };
-  //         } else return container;
-  //       });
-  //       console.log(
-  //         newContainers,
-  //         newActiveItems,
-  //         newOverItems,
-  //         active,
-  //         over,
-  //         "I'M SURE THE PROBLEM OF DRAGGING OVER ANOTHER CONTAINER IS HERE"
-  //       );
-  //       setExercisesBySelectedMeso(newContainers);
-  //     }
-  //   },
-  //   [exercisesBySelectedMeso]
-  // );
-
-  const findExerciseItems = (id: string, split_marker: string) => {
-    const splitId = id.split(split_marker);
-    const dayId = splitId[0];
-    const sessionId = splitId[1];
-    const dayIndex = exercisesBySelectedMeso.findIndex(
-      (day) => day.day === dayId
-    );
-    const session = exercisesBySelectedMeso[dayIndex].sessions.find(
-      (session) => session.id === sessionId
-    );
-    return session?.exercises;
+  const findExerciseIndex = (
+    day: string,
+    session: string,
+    item: UniqueIdentifier
+  ) => {
+    return exercisesBySelectedMeso
+      .find((c) => c.day === day)!
+      .sessions.find((s) => s.id === session)!
+      .exercises.findIndex((i) => i.id === item);
   };
-
-  // const handleDragEnd = useCallback((event: DragEndEvent) => {
-  //   setActiveContainer(null);
-  // }, []);
-
-  const handleDragStart = useCallback((event: DragStartEvent) => {
-    const { active } = event;
-
-    setActiveContainer(active.data.current?.sortable.containerId);
-  }, []);
 
   const onSupersetUpdate = () => {};
 

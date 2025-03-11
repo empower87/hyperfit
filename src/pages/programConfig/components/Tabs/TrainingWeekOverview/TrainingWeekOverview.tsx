@@ -1,4 +1,4 @@
-import { DotsVerticalIcon, DragHandleDots2Icon } from "@radix-ui/react-icons";
+import { DotsVerticalIcon } from "@radix-ui/react-icons";
 import {
   memo,
   ReactNode,
@@ -30,7 +30,8 @@ import {
 import { cn } from "~/lib/clsx";
 import StrictModeDroppable from "~/lib/react-beautiful-dnd/StrictModeDroppable";
 import { getRankColor, getSplitColor } from "~/utils/getIndicatorColors";
-import { ExerciseItem as ExerciseItemLayout } from "./components/Exercise/Exercise";
+import { DraggableExerciseHandle } from "./components/Exercise/Exercise";
+import { ExerciseItemLayout } from "./components/Exercise/ExerciseItemBeautifulDnD";
 import MesocycleToggle from "./components/MesocycleToggle";
 import SessionDurationVariables from "./components/Settings/SessionDuration/SessionDurationVariables";
 import {
@@ -195,15 +196,15 @@ const ExerciseItem = memo(
         sets={sets}
         reps={reps}
         lbs={lbs}
-        // supersetModal={
-        //   <DropdownListModal
-        //     items={exercises}
-        //     supersets={supersets}
-        //     selectedId={exercise.id}
-        //     onClose={onCloseHandler}
-        //     onItemClick={onItemClickHandler}
-        //   />
-        // }
+        supersetModal={
+          <DropdownListModal
+            items={exercises}
+            supersets={supersets}
+            selectedId={exercise.id}
+            onClose={onCloseHandler}
+            onItemClick={onItemClickHandler}
+          />
+        }
       >
         {children}
       </ExerciseItemLayout>
@@ -290,10 +291,10 @@ const DroppableSession = memo(
                           onSupersetUpdate={onSupersetUpdate}
                         >
                           <div
-                            className={`flex items-center justify-start border-r border-input ${bgColorByRank}`}
+                            className="flex h-full"
                             {...provided.dragHandleProps}
                           >
-                            <DragHandleDots2Icon fill="white" />
+                            <DraggableExerciseHandle bgColor={bgColorByRank} />
                           </div>
                         </ExerciseItem>
                       </div>
@@ -564,6 +565,15 @@ const WeekSessions = memo(
     );
 
     const onSupersetUpdate = () => {};
+
+    const memoizedExercisesBySelectedMeso = useMemo(
+      () =>
+        exercisesBySelectedMeso?.filter((each) => {
+          const hasSessions = each.sessions.find((ea) => ea.exercises.length);
+          if (hasSessions) return each;
+        }),
+      [exercisesBySelectedMeso]
+    );
     return (
       <div className={"flex w-full flex-col"}>
         <DragDropContext onDragEnd={onDragEnd}>
@@ -585,7 +595,7 @@ const WeekSessions = memo(
               );
             })} */}
             <DraggableDays
-              draggableExercises={draggableExercises}
+              draggableExercises={memoizedExercisesBySelectedMeso}
               selectedMesocycleIndex={selectedMesocycleIndex}
             />
           </ul>
@@ -596,34 +606,26 @@ const WeekSessions = memo(
 );
 
 type DraggableDaysProps = {
-  draggableExercises: DraggableExercises[][];
+  draggableExercises: DraggableExercises[];
   selectedMesocycleIndex: number;
 };
-const DraggableDays = memo(
-  ({ draggableExercises, selectedMesocycleIndex }: DraggableDaysProps) => {
-    const exercisesBySelectedMeso = useMemo(
-      () =>
-        draggableExercises[selectedMesocycleIndex]?.filter((each) => {
-          const hasSessions = each.sessions.find((ea) => ea.exercises.length);
-          if (hasSessions) return each;
-        }),
-      [draggableExercises, selectedMesocycleIndex]
-    );
-
-    return (
-      <>
-        {exercisesBySelectedMeso?.map((each, index) => {
-          return (
-            <DayLayout
-              key={`${each.day}_${selectedMesocycleIndex}_draggableExercisesObject_${index}`}
-              session={each}
-              mesocycleIndex={selectedMesocycleIndex}
-              selectedMicrocycleIndex={0}
-              onSupersetUpdate={() => {}}
-            />
-          );
-        })}
-      </>
-    );
-  }
-);
+const DraggableDays = ({
+  draggableExercises,
+  selectedMesocycleIndex,
+}: DraggableDaysProps) => {
+  return (
+    <>
+      {draggableExercises?.map((each, index) => {
+        return (
+          <DayLayout
+            key={`${each.day}_${selectedMesocycleIndex}_draggableExercisesObject_${index}`}
+            session={each}
+            mesocycleIndex={selectedMesocycleIndex}
+            selectedMicrocycleIndex={0}
+            onSupersetUpdate={() => {}}
+          />
+        );
+      })}
+    </>
+  );
+};
