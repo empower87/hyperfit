@@ -695,7 +695,6 @@ export const getExerciseSetsOverMicrocycles = (
       }
     }
   }
-
   const setsByMatrix =
     setProgressionMatrix[setProgressionIndex][dayIndex][exerciseIndex];
 

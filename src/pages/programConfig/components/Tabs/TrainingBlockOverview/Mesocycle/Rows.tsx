@@ -6,7 +6,6 @@ import {
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
 import { getExerciseSetsOverMicrocycles } from "~/hooks/useTrainingProgram/utils/exercises/getExercises";
 import { cn } from "~/lib/clsx";
-import { useProgramConfigContext } from "~/pages/programConfig/hooks/useProgramConfig";
 import { DraggableExercises } from "../../TrainingWeekOverview/hooks/useExerciseSelection";
 import {
   Cell,
@@ -133,8 +132,8 @@ function SessionSplitRow({
   currentMesocycleIndex,
   split,
 }: SessionSplitRowType) {
-  const { training_program_params } = useTrainingProgramContext();
-  const { muscle_priority_list } = useProgramConfigContext();
+  const { training_program_params, prioritized_muscle_list } =
+    useTrainingProgramContext();
   const { microcycles } = training_program_params;
 
   return (
@@ -147,7 +146,7 @@ function SessionSplitRow({
 
       <ul className="flex flex-col space-y-0.5 overflow-hidden rounded pr-1">
         {exercises.map((exercise, index) => {
-          const muscleGroup = muscle_priority_list.filter(
+          const muscleGroup = prioritized_muscle_list.filter(
             (muscle) => muscle.muscle === exercise.muscle
           )[0];
           const setsOverWeek = getExerciseSetsOverMicrocycles(

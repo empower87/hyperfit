@@ -1,12 +1,12 @@
 import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
-import { ReactNode, useState } from "react";
+import { memo, ReactNode, useState } from "react";
 import { Button } from "~/components/ui/button";
 import { TrainingProgramProvider } from "~/hooks/useTrainingProgram/useTrainingProgram";
 import Actions from "./components/Actions";
 import FrequencySelection from "./components/FrequencySelection";
 import { MusclePrioritizationList } from "./components/MusclePrioritization";
 import SplitSelect from "./components/Split/SplitSelect";
-import CustomizationTabs from "./components/Tabs";
+import { CustomizationTabs } from "./components/Tabs";
 import { ProgramSettingsProvider } from "./hooks/useProgramSettings";
 
 export default function ProgramConfig() {
@@ -75,7 +75,7 @@ export default function ProgramConfig() {
 //   );
 // }
 
-function ProgramConfiguration() {
+const ProgramConfiguration = memo(() => {
   const [isPriorityListCollapsed, setIsPriorityListCollapsed] = useState(false);
 
   const onCollapsePriorityList = () => setIsPriorityListCollapsed(true);
@@ -117,7 +117,7 @@ function ProgramConfiguration() {
       </div>
     </div>
   );
-}
+});
 
 // function ProgramConfiguration() {
 //   const [isPriorityListCollapsed, setIsPriorityListCollapsed] = useState(false);

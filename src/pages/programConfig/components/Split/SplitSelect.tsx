@@ -1,4 +1,5 @@
 // import { Select } from "~/components/Layout/Select";
+import { memo } from "react";
 import {
   Select,
   SelectContent,
@@ -29,7 +30,6 @@ function SelectSplit({ selectedOption, onSelect }: SelectSplitProps) {
     const result: SplitSessionsNameType | undefined = (
       Object.keys(SPLITS) as (keyof typeof SPLITS)[]
     ).find((key) => key === value);
-    console.log(value, result, "WHAT?");
     if (!result) return;
     onSelect(result);
   };
@@ -53,13 +53,7 @@ function SelectSplit({ selectedOption, onSelect }: SelectSplitProps) {
   );
 }
 
-type SplitSelectProps = {
-  // split: SplitSessionsNameType;
-  // onSplitChange: (split: SplitSessionsNameType) => void;
-};
-export default function SplitSelect({}: // split,
-// onSplitChange,
-SplitSelectProps) {
+function SplitSelect() {
   const { split, onSplitChange } = useProgramSettingsContext();
 
   return (
@@ -68,3 +62,4 @@ SplitSelectProps) {
     </div>
   );
 }
+export default memo(SplitSelect);

@@ -60,45 +60,44 @@ type ExerciseItemProps = {
   reps: number;
   lbs: number;
   // supersetModal: ReactNode;
-  children?: ReactNode;
 };
-export const ExerciseItem = ({
-  index,
-  exerciseName,
-  muscle,
-  volumeLandmark,
-  sets,
-  reps,
-  lbs,
-  children,
-}: // supersetModal,
-ExerciseItemProps) => {
-  const bgColorByRank = getRankColor(volumeLandmark).bg;
+export const ExerciseItem = memo(
+  ({
+    index,
+    exerciseName,
+    muscle,
+    volumeLandmark,
+    sets,
+    reps,
+    lbs,
+  }: ExerciseItemProps) => {
+    const bgColorByRank = getRankColor(volumeLandmark).bg;
 
-  return (
-    <li className={`flex`}>
-      <div className="pr-2 text-sm text-white">{index}</div>
-      <div className="flex overflow-hidden rounded-md border border-input bg-background/40">
-        <DraggableExerciseHandle bgColor={bgColorByRank} />
+    return (
+      <li className={`flex`}>
+        <div className="pr-2 text-sm text-white">{index}</div>
+        <div className="flex overflow-hidden rounded-md border border-input bg-background/40">
+          <DraggableExerciseHandle bgColor={bgColorByRank} />
 
-        <div className="flex justify-between">
-          <div className="flex p-2 pr-0">
-            <div className="text-semibold flex truncate text-xs leading-tight text-secondary-300">
-              {sets} x {reps}
+          <div className="flex justify-between">
+            <div className="flex p-2 pr-0">
+              <div className="text-semibold flex truncate text-xs leading-tight text-secondary-300">
+                {sets} x {reps}
+              </div>
             </div>
-          </div>
 
-          <div className="flex w-40 cursor-default flex-col overflow-hidden p-2 text-xs leading-tight">
-            <ExerciseTitle name={exerciseName} />
-            <div>{muscle}</div>
-          </div>
+            <div className="flex w-40 cursor-default flex-col overflow-hidden p-2 text-xs leading-tight">
+              <ExerciseTitle name={exerciseName} />
+              <div>{muscle}</div>
+            </div>
 
-          <DotsMenu />
+            <DotsMenu />
+          </div>
         </div>
-      </div>
-    </li>
-  );
-};
+      </li>
+    );
+  }
+);
 
 interface DraggableExerciseHandleProps extends HTMLAttributes<HTMLDivElement> {
   bgColor: string;

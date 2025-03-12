@@ -1,17 +1,18 @@
 import { useMemo } from "react";
-import { useProgramConfigContext } from "~/pages/programConfig/hooks/useProgramConfig";
+import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
 import { hydrateTrainingWeek } from "../TrainingWeekOverview/hooks/useTrainingWeek";
 import MesocycleTrainingWeek from "./Mesocycle";
 
 export default function TrainingBlock() {
-  const { trainingBlock, muscle_priority_list } = useProgramConfigContext();
+  const { prioritized_muscle_list, training_block } =
+    useTrainingProgramContext();
 
   const hydratedTrainingBlock = useMemo(
     () =>
-      trainingBlock.map((each) =>
-        hydrateTrainingWeek(each, muscle_priority_list)
+      training_block.map((each) =>
+        hydrateTrainingWeek(each, prioritized_muscle_list)
       ),
-    [trainingBlock, muscle_priority_list]
+    [training_block, prioritized_muscle_list]
   );
 
   return (

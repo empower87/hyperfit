@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import EditMuscleProgressionWithProvider from "./EditMuscleProgression/EditMuscleProgression";
 import TrainingBlock from "./TrainingBlockOverview";
@@ -10,29 +11,12 @@ const TABS = [
 ] as const;
 type TabKey = (typeof TABS)[number];
 
-export default function CustomizationTabs() {
-  const getSelectedTabContent = (selectedTab: TabKey) => {
-    switch (selectedTab) {
-      case "training-week-overview":
-        return <TrainingWeekOverview />;
-      case "edit-muscle":
-        return <EditMuscleProgressionWithProvider />;
-      case "training-block-overview":
-        // NOTE: takes a few seconds to load and causes tab to pause.
-        return <TrainingBlock />;
-      default:
-        return;
-    }
-  };
-
+export const CustomizationTabs = memo(() => {
   return (
     <Tabs defaultValue={TABS[0]} className="w-full">
       <TabsList className="flex items-end justify-start rounded-none border-b border-primary-600 bg-background pb-0">
         {TABS.map((tab, index) => {
-          const presentationalTab = tab
-            .split("-")
-            .map((tab) => tab.charAt(0).toUpperCase() + tab.slice(1))
-            .join(" ");
+          const presentationalTab = getPresentationalTab(tab);
           return (
             <TabsTrigger
               className="rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-white"
@@ -50,4 +34,25 @@ export default function CustomizationTabs() {
       })}
     </Tabs>
   );
-}
+});
+
+const getPresentationalTab = (tab: string) => {
+  const presentationalTab = tab
+    .split("-")
+    .map((tab) => tab.charAt(0).toUpperCase() + tab.slice(1))
+    .join(" ");
+  return presentationalTab;
+};
+
+const getSelectedTabContent = (selectedTab: TabKey) => {
+  switch (selectedTab) {
+    case "training-week-overview":
+      return <TrainingWeekOverview />;
+    case "edit-muscle":
+      return <EditMuscleProgressionWithProvider />;
+    case "training-block-overview":
+      return <TrainingBlock />;
+    default:
+      return;
+  }
+};

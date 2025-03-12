@@ -80,11 +80,26 @@ export function DropdownListModal({
   );
 }
 
+const DayDropdownMenu = memo(() => {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button size="icon" variant="ghost">
+          <DotsVerticalIcon fill="white" />
+        </Button>
+      </DropdownMenuTrigger>
+
+      <DropdownMenuContent className="w-44">
+        <DropdownMenuItem>??</DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+});
+
 type DayLayoutProps = {
   session: DraggableExercises;
   children: ReactNode;
 };
-
 const DayLayout = ({ session, children }: DayLayoutProps) => {
   const { day, sessions } = session;
 
@@ -93,18 +108,7 @@ const DayLayout = ({ session, children }: DayLayoutProps) => {
       <Card>
         <CardHeader className="flex-row items-center justify-between space-y-0 p-3">
           <CardTitle>{day}</CardTitle>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button size="icon" variant="ghost">
-                <DotsVerticalIcon fill="white" />
-              </Button>
-            </DropdownMenuTrigger>
-
-            <DropdownMenuContent className="w-44">
-              <DropdownMenuItem>??</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <DayDropdownMenu />
         </CardHeader>
 
         <CardContent className="p-3 pt-0">{children}</CardContent>
@@ -124,11 +128,11 @@ function TrainingWeekOverview() {
   const [selectedMicrocycleIndex, setSelectedMicrocycleIndex] =
     useState<number>(microcycles - 1);
 
-  const mesocycleTitles = Array.from(
+  const mesocycle_titles = Array.from(
     Array(mesocycles),
     (e, i) => `Mesocycle ${i + 1}`
   );
-  const microcycleTitles = Array.from(
+  const microcycle_titles = Array.from(
     Array(microcycles),
     (e, i) => `Week ${i + 1}`
   );
@@ -162,8 +166,8 @@ function TrainingWeekOverview() {
     <div id="exercise_editor" className={`flex flex-col space-y-5 rounded`}>
       <div className="flex flex-col rounded-md border border-primary-700">
         <MesocycleToggle
-          mesocycles={mesocycleTitles}
-          microcycles={microcycleTitles}
+          mesocycles={mesocycle_titles}
+          microcycles={microcycle_titles}
           selectedMesocycleIndex={selectedMesocycleIndex}
           selectedMicrocycleIndex={selectedMicrocycleIndex}
           onClickHandler={onClickHandler}
