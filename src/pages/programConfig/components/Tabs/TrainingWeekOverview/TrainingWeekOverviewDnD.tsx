@@ -350,8 +350,11 @@ const WeekSessions = ({
 
   const onSupersetUpdate = () => {};
 
-  const memoizedExercisesBySelectedMeso = useMemo(
-    () => exercisesBySelectedMeso,
+  const memoizedTrainingWeek = useMemo(
+    () =>
+      exercisesBySelectedMeso?.filter((tday) =>
+        tday.sessions.some((session) => session.split !== "off")
+      ),
     [exercisesBySelectedMeso]
   );
 
@@ -364,7 +367,7 @@ const WeekSessions = ({
         onDragEnd={handleDragEnd}
       >
         <ul className="flex space-x-2 overflow-x-auto">
-          {memoizedExercisesBySelectedMeso?.map((each, index) => {
+          {memoizedTrainingWeek?.map((each, index) => {
             return (
               <DayLayout key={`${each.day}_${index}`} session={each}>
                 {each.sessions.map((session) => {

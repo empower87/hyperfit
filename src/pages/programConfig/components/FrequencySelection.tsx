@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { memo, useCallback } from "react";
 import {
   Select,
   SelectContent,
@@ -9,28 +9,18 @@ import {
 import { useProgramSettingsContext } from "../hooks/useProgramSettings";
 
 const OPTIONS = ["1", "2", "3", "4", "5", "6", "7"];
-// const OPTIONS = [1, 2, 3, 4, 5, 6, 7];
 
-type FrequencySelectionProps = {
-  // frequency: [number, number];
-  // onFrequencyChange: (frequency: [number, number]) => void;
-};
-export default function FrequencySelection({}: // frequency,
-// onFrequencyChange,
-FrequencySelectionProps) {
+const FrequencySelection = () => {
   const { frequency, onFrequencyChange } = useProgramSettingsContext();
 
   const handleSelectChange = useCallback(
     (value: string) => {
       const numberValue = parseInt(value);
-      console.log(value, numberValue, "PROBLEM HERE IN FREQUENCY SELECTION");
       onFrequencyChange([numberValue, frequency[1]]);
     },
-    [frequency, onFrequencyChange]
+    [frequency]
   );
 
-  const unselectedButtonClasses = "bg-card";
-  const selectedButtonClasses = "scale-110 border-secondary-300";
   return (
     <div className="flex flex-col items-center">
       <div className="flex w-full">
@@ -47,47 +37,6 @@ FrequencySelectionProps) {
       </div>
     </div>
   );
-}
+};
 
-// export default function FrequencySelection() {
-//   const { frequency, onFrequencyChange } = useProgramConfigContext();
-
-//   const handleSelectChange = useCallback(
-//     (value: number) => {
-//       onFrequencyChange([value, frequency[1]]);
-//     },
-//     [frequency, onFrequencyChange]
-//   );
-
-//   const unselectedButtonClasses = "bg-card";
-//   const selectedButtonClasses = "scale-110 border-secondary-300";
-//   return (
-//     <div className="flex flex-col items-center">
-//       <ul className="flex space-x-2">
-//         {OPTIONS.map((option) => {
-//           return (
-//             <li className="" key={`frequency_day_${option}`}>
-//               <Button
-//                 variant="outline"
-//                 className={
-//                   option === frequency[0]
-//                     ? selectedButtonClasses
-//                     : unselectedButtonClasses
-//                 }
-//                 onClick={() => handleSelectChange(option)}
-//               >
-//                 <div
-//                   className={`${
-//                     option === frequency[0] ? "text-white" : "text-primary-300"
-//                   }`}
-//                 >
-//                   {option}
-//                 </div>
-//               </Button>
-//             </li>
-//           );
-//         })}
-//       </ul>
-//     </div>
-//   );
-// }
+export default memo(FrequencySelection);
