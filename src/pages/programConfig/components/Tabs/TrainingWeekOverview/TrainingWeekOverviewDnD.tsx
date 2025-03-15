@@ -28,7 +28,7 @@ import { ExerciseType } from "~/hooks/useTrainingProgram/reducer/trainingProgram
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
 import { cn } from "~/lib/clsx";
 import { getRankColor } from "~/utils/getIndicatorColors";
-import MesocycleToggle from "./components/MesocycleToggle";
+import { useToggleCyclesContext } from "../../MesocycleToggle/hooks/useMesocycleToggle";
 import { SortableSessionItemContainer } from "./components/Session/SessionItem";
 import SessionDurationVariables from "./components/Settings/SessionDuration/SessionDurationVariables";
 import { DraggableExercises } from "./hooks/useExerciseSelection";
@@ -120,32 +120,33 @@ const DayLayout = ({ session, children }: DayLayoutProps) => {
 function TrainingWeekOverview() {
   const { training_program_params, training_block, prioritized_muscle_list } =
     useTrainingProgramContext();
-  const { microcycles, mesocycles } = training_program_params;
+  const { selectedMesocycle, selectedMicrocycle } = useToggleCyclesContext();
+  // const { microcycles, mesocycles } = training_program_params;
 
-  const [selectedMesocycleIndex, setSelectedMesocycleIndex] = useState<number>(
-    mesocycles - 1
-  );
-  const [selectedMicrocycleIndex, setSelectedMicrocycleIndex] =
-    useState<number>(microcycles - 1);
+  // const [selectedMesocycleIndex, setSelectedMesocycleIndex] = useState<number>(
+  //   mesocycles - 1
+  // );
+  // const [selectedMicrocycleIndex, setSelectedMicrocycleIndex] =
+  //   useState<number>(microcycles - 1);
 
-  const mesocycle_titles = Array.from(
-    Array(mesocycles),
-    (e, i) => `Mesocycle ${i + 1}`
-  );
-  const microcycle_titles = Array.from(
-    Array(microcycles),
-    (e, i) => `Week ${i + 1}`
-  );
+  // const mesocycle_titles = Array.from(
+  //   Array(mesocycles),
+  //   (e, i) => `Mesocycle ${i + 1}`
+  // );
+  // const microcycle_titles = Array.from(
+  //   Array(microcycles),
+  //   (e, i) => `Week ${i + 1}`
+  // );
 
-  const onClickHandler = (value: string) => {
-    const type = value.split(" ");
-    const valueAsNumber = parseInt(type[1]) - 1;
-    if (type[0] === "Mesocycle") {
-      setSelectedMesocycleIndex(valueAsNumber);
-    } else {
-      setSelectedMicrocycleIndex(valueAsNumber);
-    }
-  };
+  // const onClickHandler = (value: string) => {
+  //   const type = value.split(" ");
+  //   const valueAsNumber = parseInt(type[1]) - 1;
+  //   if (type[0] === "Mesocycle") {
+  //     setSelectedMesocycleIndex(valueAsNumber);
+  //   } else {
+  //     setSelectedMicrocycleIndex(valueAsNumber);
+  //   }
+  // };
   const [draggableExercises, setDraggableExercises] = useState<
     DraggableExercises[][]
   >([]);
@@ -158,27 +159,27 @@ function TrainingWeekOverview() {
   }, [training_block, prioritized_muscle_list]);
 
   const memoizedTrainingWeek = useMemo(
-    () => draggableExercises[selectedMesocycleIndex],
-    [draggableExercises, selectedMesocycleIndex]
+    () => draggableExercises[selectedMesocycle],
+    [draggableExercises, selectedMesocycle]
   );
 
   return (
     <div id="exercise_editor" className={`flex flex-col space-y-5 rounded`}>
       <div className="flex flex-col rounded-md border border-primary-700">
-        <MesocycleToggle
+        {/* <MesocycleToggle
           mesocycles={mesocycle_titles}
           microcycles={microcycle_titles}
           selectedMesocycleIndex={selectedMesocycleIndex}
           selectedMicrocycleIndex={selectedMicrocycleIndex}
           onClickHandler={onClickHandler}
-        />
+        /> */}
 
         <SessionDurationVariables />
       </div>
 
       <WeekSessions
-        selectedMesocycleIndex={selectedMesocycleIndex}
-        selectedMicrocycleIndex={selectedMicrocycleIndex}
+        selectedMesocycleIndex={selectedMesocycle}
+        selectedMicrocycleIndex={selectedMicrocycle}
         training_week={memoizedTrainingWeek}
         // setDraggableExercises={setDraggableExercises}
       />

@@ -1,5 +1,6 @@
 import { HTMLAttributes, ReactNode } from "react";
 import { cn } from "~/lib/clsx";
+import { useToggleCyclesContext } from "../../../MesocycleToggle/hooks/useMesocycleToggle";
 
 interface ToggleProps extends HTMLAttributes<HTMLButtonElement> {
   selected: boolean;
@@ -92,3 +93,48 @@ export default function MesocycleToggle({
     </div>
   );
 }
+
+export const ToggleCycles = () => {
+  const {
+    mesocycle_array,
+    microcycle_array,
+    selectedMesocycle,
+    selectedMicrocycle,
+    onSelectMesocycle,
+    onSelectMicrocycle,
+  } = useToggleCyclesContext();
+
+  return (
+    <div className={`flex w-full items-center space-x-2 rounded p-2`}>
+      <ToggleLayout label="Mesocycle">
+        {mesocycle_array.map((each, index) => {
+          const isSelected = selectedMesocycle === index;
+          return (
+            <Toggle
+              key={`${each}_${index}_MesocyclesTitles`}
+              selected={isSelected}
+              onClick={() => onSelectMesocycle(index)}
+            >
+              {each}
+            </Toggle>
+          );
+        })}
+      </ToggleLayout>
+
+      <ToggleLayout label="Microcycle">
+        {microcycle_array.map((each, index) => {
+          const isSelected = selectedMicrocycle === index;
+          return (
+            <Toggle
+              key={`${each}_${index}_MicrocyclesTitles`}
+              selected={isSelected}
+              onClick={() => onSelectMicrocycle(index)}
+            >
+              {each}
+            </Toggle>
+          );
+        })}
+      </ToggleLayout>
+    </div>
+  );
+};
