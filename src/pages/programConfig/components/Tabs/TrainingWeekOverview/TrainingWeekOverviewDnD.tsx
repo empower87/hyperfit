@@ -118,7 +118,7 @@ const DayLayout = ({ session, children }: DayLayoutProps) => {
 };
 
 function TrainingWeekOverview() {
-  const { training_program_params, training_block, prioritized_muscle_list } =
+  const { training_block, prioritized_muscle_list } =
     useTrainingProgramContext();
   const { selectedMesocycle, selectedMicrocycle } = useToggleCyclesContext();
   // const { microcycles, mesocycles } = training_program_params;
@@ -133,6 +133,7 @@ function TrainingWeekOverview() {
   //   Array(mesocycles),
   //   (e, i) => `Mesocycle ${i + 1}`
   // );
+
   // const microcycle_titles = Array.from(
   //   Array(microcycles),
   //   (e, i) => `Week ${i + 1}`
@@ -147,6 +148,7 @@ function TrainingWeekOverview() {
   //     setSelectedMicrocycleIndex(valueAsNumber);
   //   }
   // };
+
   const [draggableExercises, setDraggableExercises] = useState<
     DraggableExercises[][]
   >([]);
@@ -177,27 +179,16 @@ function TrainingWeekOverview() {
         <SessionDurationVariables />
       </div>
 
-      <WeekSessions
-        selectedMesocycleIndex={selectedMesocycle}
-        selectedMicrocycleIndex={selectedMicrocycle}
-        training_week={memoizedTrainingWeek}
-        // setDraggableExercises={setDraggableExercises}
-      />
+      <WeekSessions training_week={memoizedTrainingWeek} />
     </div>
   );
 }
 
 type WeekSessionsProps = {
-  selectedMesocycleIndex: number;
-  selectedMicrocycleIndex: number;
   training_week: DraggableExercises[];
 };
 
-const WeekSessions = ({
-  selectedMesocycleIndex,
-  selectedMicrocycleIndex,
-  training_week,
-}: WeekSessionsProps) => {
+const WeekSessions = ({ training_week }: WeekSessionsProps) => {
   const [exercisesBySelectedMeso, setExercisesBySelectedMeso] =
     useState<DraggableExercises[]>(training_week);
   const [activeContainer, setActiveContainer] =
@@ -377,7 +368,6 @@ const WeekSessions = ({
                       key={`${each.day}_${session.id}`}
                       containerId={`${each.day}#${session.id}`}
                       container={session}
-                      selectedMicrocycleIndex={selectedMicrocycleIndex}
                     />
                   );
                 })}

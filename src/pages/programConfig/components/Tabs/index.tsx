@@ -2,10 +2,10 @@ import { memo } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
 import { ToggleCyclesProvider } from "../MesocycleToggle/hooks/useMesocycleToggle";
+import { ToggleCycles } from "../MesocycleToggle/MesocycleToggle";
 import EditMuscleProgressionWithProvider from "./EditMuscleProgression/EditMuscleProgression";
 import TrainingBlock from "./TrainingBlockOverview";
 import TrainingWeekOverview from "./TrainingWeekOverview/TrainingWeekOverviewDnD";
-import { ToggleCycles } from "./TrainingWeekOverview/components/MesocycleToggle";
 
 const TABS = [
   "training-week-overview",
@@ -18,6 +18,14 @@ export const CustomizationTabs = memo(() => {
   const { training_program_params } = useTrainingProgramContext();
   const { mesocycles, microcycles } = training_program_params;
 
+  const getPresentationalTab = (tab: string) => {
+    const presentationalTab = tab
+      .split("-")
+      .map((tab) => tab.charAt(0).toUpperCase() + tab.slice(1))
+      .join(" ");
+    return presentationalTab;
+  };
+
   return (
     <ToggleCyclesProvider mesocycles={mesocycles} microcycles={microcycles}>
       <Tabs defaultValue={TABS[0]} className="w-full">
@@ -26,6 +34,7 @@ export const CustomizationTabs = memo(() => {
             const presentationalTab = getPresentationalTab(tab);
             return (
               <TabsTrigger
+                key={`TabsTrigger_${tab}_${index}`}
                 className="rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-white"
                 value={tab}
               >
@@ -38,23 +47,21 @@ export const CustomizationTabs = memo(() => {
         <ToggleCycles />
 
         {TABS.map((tab, index) => {
-          const tabContent = getSelectedTabContent(tab);
-          return <TabsContent value={tab}>{tabContent}</TabsContent>;
+          return (
+            <TabsContent key={`TabsContent_${tab}_${index}`} value={tab}>
+              <SelectedTabContent selectedTab={tab} />
+            </TabsContent>
+          );
         })}
       </Tabs>
     </ToggleCyclesProvider>
   );
 });
 
-const getPresentationalTab = (tab: string) => {
-  const presentationalTab = tab
-    .split("-")
-    .map((tab) => tab.charAt(0).toUpperCase() + tab.slice(1))
-    .join(" ");
-  return presentationalTab;
+type SelectedTabContentProps = {
+  selectedTab: TabKey;
 };
-
-const getSelectedTabContent = (selectedTab: TabKey) => {
+const SelectedTabContent = ({ selectedTab }: SelectedTabContentProps) => {
   switch (selectedTab) {
     case "training-week-overview":
       return <TrainingWeekOverview />;
@@ -63,6 +70,6 @@ const getSelectedTabContent = (selectedTab: TabKey) => {
     case "training-block-overview":
       return <TrainingBlock />;
     default:
-      return;
+      return <></>;
   }
 };

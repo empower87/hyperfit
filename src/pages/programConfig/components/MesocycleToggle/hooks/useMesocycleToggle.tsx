@@ -88,13 +88,13 @@ export const ToggleCyclesProvider = ({
   microcycles,
   children,
 }: ToggleCyclesProviderProps) => {
-  const values = useToggleCycles({ mesocycles, microcycles });
-  const contextValues = useMemo(() => {
-    return values;
-  }, [values]);
+  const values = useToggleCycles({
+    _mesocycles: mesocycles,
+    _microcycles: microcycles,
+  });
 
   return (
-    <ToggleCyclesContext.Provider value={contextValues}>
+    <ToggleCyclesContext.Provider value={values}>
       {children}
     </ToggleCyclesContext.Provider>
   );
@@ -112,20 +112,25 @@ export const useToggleCyclesContext = () => {
 };
 
 type UseToggleCyclesProps = {
-  mesocycles: number;
-  microcycles: number;
+  _mesocycles: number;
+  _microcycles: number;
 };
-const useToggleCycles = ({ mesocycles, microcycles }: UseToggleCyclesProps) => {
-  const [selectedMesocycle, setSelectedMesocycle] = useState(mesocycles);
-  const [selectedMicrocycle, setSelectedMicrocycle] = useState(microcycles);
+const useToggleCycles = ({
+  _mesocycles,
+  _microcycles,
+}: UseToggleCyclesProps) => {
+  const [selectedMesocycle, setSelectedMesocycle] = useState(_mesocycles - 1);
+  const [selectedMicrocycle, setSelectedMicrocycle] = useState(
+    _microcycles - 1
+  );
 
-  const mesocycle_array = Array.from(
-    Array(mesocycles),
+  const mesocycles = Array.from(
+    Array(_mesocycles),
     (e, i) => `Mesocycle ${i + 1}`
   );
 
-  const microcycle_array = Array.from(
-    Array(microcycles),
+  const microcycles = Array.from(
+    Array(_microcycles),
     (e, i) => `Microcycle ${i + 1}`
   );
 
@@ -136,9 +141,10 @@ const useToggleCycles = ({ mesocycles, microcycles }: UseToggleCyclesProps) => {
   const onSelectMicrocycle = useCallback((selected: number) => {
     setSelectedMicrocycle(selected);
   }, []);
+
   return {
-    mesocycle_array,
-    microcycle_array,
+    mesocycles,
+    microcycles,
     selectedMesocycle,
     selectedMicrocycle,
     onSelectMesocycle,

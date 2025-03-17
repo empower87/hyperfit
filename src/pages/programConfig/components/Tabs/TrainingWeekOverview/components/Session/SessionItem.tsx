@@ -10,6 +10,7 @@ import {
   SessionSplitType,
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { cn } from "~/lib/clsx";
+import { useToggleCyclesContext } from "~/pages/programConfig/components/MesocycleToggle/hooks/useMesocycleToggle";
 import { getSplitColor } from "~/utils/getIndicatorColors";
 import { DraggableSessionType } from "../../hooks/useExerciseSelection";
 import { ExerciseItem, SortableExerciseItem } from "../Exercise/Exercise";
@@ -19,24 +20,22 @@ import { useSessionDurationVariablesContext } from "../Settings/SessionDuration/
 type DroppableSessionItemProps = {
   split: SessionSplitType;
   exercises: ExerciseType[];
-  selectedMicrocycleIndex: number;
   children: ReactNode;
 };
 
 const SessionItem = ({
   split,
   exercises,
-  selectedMicrocycleIndex,
   children,
 }: DroppableSessionItemProps) => {
   const { sessionDurationCalculator, durationTimeConstants } =
     useSessionDurationVariablesContext();
-
+  const { selectedMicrocycle } = useToggleCyclesContext();
   const [isDurationModalOpen, setIsDurationModalOpen] = useState(false);
 
   const totalDuration = sessionDurationCalculator(
     exercises,
-    selectedMicrocycleIndex
+    selectedMicrocycle
   );
 
   const onCloseDurationModal = () => setIsDurationModalOpen(false);
@@ -92,13 +91,11 @@ type DraggableExercisesExample = {
 type SortableSessionItemContainerProps = {
   containerId: string;
   container: DraggableSessionType;
-  selectedMicrocycleIndex: number;
 };
 
 export const SortableSessionItemContainer = ({
   containerId,
   container,
-  selectedMicrocycleIndex,
 }: SortableSessionItemContainerProps) => {
   return (
     <SortableContext
@@ -106,11 +103,7 @@ export const SortableSessionItemContainer = ({
       items={container.exercises.map((item) => item.id)}
       strategy={verticalListSortingStrategy}
     >
-      <SessionItem
-        split={container.split}
-        exercises={container.exercises}
-        selectedMicrocycleIndex={selectedMicrocycleIndex}
-      >
+      <SessionItem split={container.split} exercises={container.exercises}>
         <ul className="space-y-2">
           {container.exercises.map((item, index) => (
             <SortableExerciseItem key={item.id} id={item.id}>
