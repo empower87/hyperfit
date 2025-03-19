@@ -30,9 +30,9 @@ import {
 import { cn } from "~/lib/clsx";
 import StrictModeDroppable from "~/lib/react-beautiful-dnd/StrictModeDroppable";
 import { getRankColor, getSplitColor } from "~/utils/getIndicatorColors";
+import { MesocycleToggle } from "../../MesocycleToggle/MesocycleToggle";
 import { DraggableExerciseHandle } from "./components/Exercise/Exercise";
 import { ExerciseItemLayout } from "./components/Exercise/ExerciseItemBeautifulDnD";
-import MesocycleToggle from "./components/MesocycleToggle";
 import SessionDurationVariables from "./components/Settings/SessionDuration/SessionDurationVariables";
 import {
   SessionDurationVariablesProvider,

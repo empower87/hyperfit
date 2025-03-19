@@ -8,7 +8,6 @@ type ToggleMesocycleProps = {};
 export default function ToggleMesocycle({}: ToggleMesocycleProps) {
   const {
     selectedMesocycleIndex,
-    onSelectMesocycle,
     mesocyclesArray,
     frequencyProgression,
     onSelectedFrequencyProgressionIncrement,
@@ -26,7 +25,6 @@ export default function ToggleMesocycle({}: ToggleMesocycleProps) {
           <MesocycleTab
             mesocycleIndex={index + 1}
             isSelectedIndex={isSelectedIndex}
-            onClick={() => onSelectMesocycle(index)}
           />
         );
       })}

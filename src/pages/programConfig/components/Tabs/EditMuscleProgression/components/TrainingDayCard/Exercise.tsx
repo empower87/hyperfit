@@ -60,10 +60,7 @@ export default function Exercise({ index, exercise }: ExerciseProps) {
   const setsPerWeek = getSetsByExerciseId(exercise.id);
 
   return (
-    <li className="flex">
-      {/* <div className="flex pr-2 text-xs text-primary-300">{index + 1}</div> */}
-
-      <div className="flex flex-col rounded-md border border-input bg-background/30">
+      <li className="flex flex-col rounded-md border border-input bg-background/30">
         <div className="flex justify-between">
           <h3 className="flex items-center p-2 text-sm font-semibold leading-none tracking-tight text-secondary-400">
             <span className="pr-2 text-xs text-white">{index + 1}</span>
@@ -233,8 +230,7 @@ export default function Exercise({ index, exercise }: ExerciseProps) {
             </div>
           </div>
         </div>
-      </div>
-    </li>
+      </li>
   );
 }
 

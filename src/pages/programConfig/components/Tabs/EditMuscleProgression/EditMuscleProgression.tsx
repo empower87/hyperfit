@@ -4,6 +4,7 @@ import { MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingP
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
 import { cn } from "~/lib/clsx";
 import { getRankColor } from "~/utils/getIndicatorColors";
+import { useToggleCyclesContext } from "../../MesocycleToggle/hooks/useMesocycleToggle";
 import ToggleMesocycle from "./components/ActionsCard/ToggleMesocycle";
 import { TrainingDays } from "./components/TrainingDayCard/TrainingDays";
 import {
@@ -20,7 +21,7 @@ export function EditMuscleProgression({
   const {
     selectedMesocycleIndex,
     muscleGroup,
-    onSelectMesocycle,
+    // onSelectMesocycle,
     volumes,
     mesocyclesArray,
     onResetMuscleGroup,
@@ -61,6 +62,7 @@ export function EditMuscleProgression({
 
 export default function EditMuscleProgressionWithProvider() {
   const { prioritized_muscle_list } = useTrainingProgramContext();
+  const { selectedMesocycle } = useToggleCyclesContext();
   const [selectedMuscleId, setSelectedMuscleId] = useState<
     MusclePriorityType["id"]
   >(prioritized_muscle_list[0].id);
@@ -74,7 +76,10 @@ export default function EditMuscleProgressionWithProvider() {
   )[0];
 
   return (
-    <MuscleEditorProvider muscle={selectedMuscle}>
+    <MuscleEditorProvider
+      muscle={selectedMuscle}
+      selectedMesocycleIndex={selectedMesocycle}
+    >
       <EditMuscleProgression
         toggleMuscle={
           <div className="w-full overflow-x-auto py-2 pl-14">

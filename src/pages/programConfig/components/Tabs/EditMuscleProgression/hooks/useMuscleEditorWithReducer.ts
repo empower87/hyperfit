@@ -11,7 +11,14 @@ import {
 import { calculateTotalSetsOverMesocycles } from "../utils/calculateTotalSetsPerMesocycle";
 import { muscleEditorReducer } from "../utils/muscleEditorReducer";
 
-export default function useMuscleEditor(muscle: MusclePriorityType) {
+type useMuscleEditorProps = {
+  muscle: MusclePriorityType;
+  selectedMesocycleIndex: number;
+};
+export default function useMuscleEditor({
+  muscle,
+  selectedMesocycleIndex,
+}: useMuscleEditorProps) {
   const {
     training_program_params,
     handleUpdateMuscle,
@@ -24,9 +31,6 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
   const [muscleGroup, dispatch] = useReducer(
     muscleEditorReducer,
     muscle_checked
-  );
-  const [selectedMesocycleIndex, setSelectedMesocycleIndex] = useState(
-    mesocycles - 1
   );
 
   const [volumes, setVolumes] = useState<number[]>([]);
@@ -63,13 +67,6 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
     console.log(forLoggingExercises, totalVolumes, "OH MY LETS LOOK AT THIS");
     setVolumes(totalVolumes);
   }, [microcycles, mesocycles, muscleGroup]);
-
-  const onSelectMesocycle = useCallback(
-    (index: number) => {
-      setSelectedMesocycleIndex(index);
-    },
-    [selectedMesocycleIndex]
-  );
 
   const toggleSetProgression = () => {
     console.log("toggled");
@@ -214,6 +211,15 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
 
   const onSelectedFrequencyProgressionIncrement = useCallback(
     (target_index: number) => {
+      // const incrementable_frequency = getMusclesMaxFrequency(
+      //   split_sessions,
+      //   muscle_checked.muscle
+      // );
+      // const canAddToSelectFrequency = canTargetFrequencyBeIncreased(
+      //   incrementable_frequency
+      // );
+      // const canAdd = canAddToSelectFrequency(target_index)
+      // if (!canAddToSelectFrequency) return
       dispatch({
         type: "INCREMENT_SELECTED_FREQUENCY_PROGRESSION",
         payload: {
@@ -222,11 +228,15 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
         },
       });
     },
-    [split_sessions]
+    [split_sessions, muscle_checked]
   );
 
   const onSelectedFrequencyProgressionDecrement = useCallback(
     (target_index: number) => {
+      const frequency_progression = muscle_checked.frequency.progression;
+      const prev_freq = frequency_progression[target_index - 1];
+      const new_target = frequency_progression[target_index] - 1;
+      if (prev_freq > new_target) return;
       dispatch({
         type: "DECREMENT_SELECTED_FREQUENCY_PROGRESSION",
         payload: {
@@ -234,7 +244,7 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
         },
       });
     },
-    []
+    [muscle_checked]
   );
 
   const onResetMuscleGroup = useCallback(() => {
@@ -262,7 +272,6 @@ export default function useMuscleEditor(muscle: MusclePriorityType) {
     exercisesInView: muscleGroup.exercises.slice(0, totalExercisesByMeso),
     volumes,
     selectedMesocycleIndex,
-    onSelectMesocycle,
     mesocyclesArray,
     microcyclesArray,
     onAddTrainingDay,

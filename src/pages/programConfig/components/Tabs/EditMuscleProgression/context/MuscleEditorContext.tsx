@@ -1,46 +1,22 @@
 import { ReactNode, createContext, useContext } from "react";
-import {
-  INITIAL_STATE,
-  MusclePriorityType,
-} from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
+import { MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import useMuscleEditor from "../hooks/useMuscleEditorWithReducer";
 
 type MuscleEditorType = ReturnType<typeof useMuscleEditor>;
 
-const MuscleEditorContext = createContext<MuscleEditorType>({
-  muscleGroup: INITIAL_STATE.muscle_priority_list[0],
-  frequencyProgression: [],
-  setProgressionMatrix: [],
-  exercises: [],
-  exercisesInView: [],
-  volumes: [],
-  selectedMesocycleIndex: 0,
-  onSelectMesocycle: () => null,
-  mesocyclesArray: [],
-  microcyclesArray: [],
-  onAddTrainingDay: () => null,
-  onRemoveTrainingDay: () => null,
-  onAddExercise: () => null,
-  onRemoveExercise: () => null,
-  onChangeExercise: () => null,
-  getSetsByExerciseId: () => [],
-  onSelectedExerciseSetDecrement: () => null,
-  onSelectedExerciseSetIncrement: () => null,
-  onSelectedFrequencyProgressionIncrement: () => null,
-  onSelectedFrequencyProgressionDecrement: () => null,
-  onResetMuscleGroup: () => null,
-  onSaveMuscleGroupChanges: () => null,
-  toggleSetProgression: () => null,
-});
+const MuscleEditorContext = createContext<MuscleEditorType | null>(null);
 
-const MuscleEditorProvider = ({
-  muscle,
-  children,
-}: {
+type MuscleEditorProviderProps = {
   muscle: MusclePriorityType;
+  selectedMesocycleIndex: number;
   children: ReactNode;
-}) => {
-  const values = useMuscleEditor(muscle);
+};
+export const MuscleEditorProvider = ({
+  muscle,
+  selectedMesocycleIndex,
+  children,
+}: MuscleEditorProviderProps) => {
+  const values = useMuscleEditor({ muscle, selectedMesocycleIndex });
   return (
     <MuscleEditorContext.Provider value={values}>
       {children}
@@ -48,8 +24,13 @@ const MuscleEditorProvider = ({
   );
 };
 
-const useMuscleEditorContext = () => {
-  return useContext(MuscleEditorContext);
-};
+export const useMuscleEditorContext = () => {
+  const context = useContext(MuscleEditorContext);
 
-export { MuscleEditorProvider, useMuscleEditorContext };
+  if (!context) {
+    throw new Error(
+      "useMuscleEditorContext must be used within a MuscleEditorProvider"
+    );
+  }
+  return context;
+};
