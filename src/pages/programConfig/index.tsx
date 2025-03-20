@@ -4,10 +4,9 @@ import { Button } from "~/components/ui/button";
 import { TrainingProgramProvider } from "~/hooks/useTrainingProgram/useTrainingProgram";
 import Actions from "./components/Actions";
 import FrequencySelection from "./components/FrequencySelection";
-import { ToggleCycles } from "./components/MesocycleToggle/MesocycleToggle";
 import { MusclePrioritizationList } from "./components/MusclePrioritization";
 import SplitSelect from "./components/Split/SplitSelect";
-import { CustomizationTabs } from "./components/Tabs";
+import { CustomizationPage } from "./components/Tabs";
 import { ProgramSettingsProvider } from "./hooks/useProgramSettings";
 
 export default function ProgramConfig() {
@@ -15,18 +14,7 @@ export default function ProgramConfig() {
     <TrainingProgramProvider>
       <div className="flex h-full space-x-5">
         <ProgramConfiguration />
-
-        <div className="flex h-full flex-col space-y-3 overflow-y-scroll pb-14 pr-1 pt-8">
-          <h1 className="mb-5 text-white">Program Configuration</h1>
-          <div className="flex flex-col rounded-lg">
-            <CustomizationTabs>
-              <ToggleCycles>
-                <ToggleCycles.Mesocycles />
-                <ToggleCycles.Microcycles />
-              </ToggleCycles>
-            </CustomizationTabs>
-          </div>
-        </div>
+        <CustomizationPage />
       </div>
     </TrainingProgramProvider>
   );

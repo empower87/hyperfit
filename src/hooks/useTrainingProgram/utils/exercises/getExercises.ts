@@ -711,6 +711,5 @@ export const getExerciseSetsOverMicrocycles = (
     exerciseIndex,
     initialSets
   );
-  console.log(foundExercise, sets, initialSets, "GOT SETS");
   return sets;
 };

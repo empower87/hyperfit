@@ -211,15 +211,10 @@ export default function useMuscleEditor({
 
   const onSelectedFrequencyProgressionIncrement = useCallback(
     (target_index: number) => {
-      // const incrementable_frequency = getMusclesMaxFrequency(
-      //   split_sessions,
-      //   muscle_checked.muscle
-      // );
-      // const canAddToSelectFrequency = canTargetFrequencyBeIncreased(
-      //   incrementable_frequency
-      // );
-      // const canAdd = canAddToSelectFrequency(target_index)
-      // if (!canAddToSelectFrequency) return
+      const frequency_progression = muscleGroup.frequency.progression;
+      const target_freq = frequency_progression[target_index];
+      const next_freq = frequency_progression[target_index + 1];
+      if (!next_freq || next_freq === target_freq) return;
       dispatch({
         type: "INCREMENT_SELECTED_FREQUENCY_PROGRESSION",
         payload: {
@@ -228,15 +223,15 @@ export default function useMuscleEditor({
         },
       });
     },
-    [split_sessions, muscle_checked]
+    [split_sessions, muscleGroup]
   );
 
   const onSelectedFrequencyProgressionDecrement = useCallback(
     (target_index: number) => {
-      const frequency_progression = muscle_checked.frequency.progression;
+      const frequency_progression = muscleGroup.frequency.progression;
       const prev_freq = frequency_progression[target_index - 1];
-      const new_target = frequency_progression[target_index] - 1;
-      if (prev_freq > new_target) return;
+      const target_freq = frequency_progression[target_index];
+      if (prev_freq === target_freq) return;
       dispatch({
         type: "DECREMENT_SELECTED_FREQUENCY_PROGRESSION",
         payload: {
@@ -244,7 +239,7 @@ export default function useMuscleEditor({
         },
       });
     },
-    [muscle_checked]
+    [muscleGroup]
   );
 
   const onResetMuscleGroup = useCallback(() => {
