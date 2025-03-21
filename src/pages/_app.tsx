@@ -6,6 +6,8 @@ import { ReactNode } from "react";
 import Navbar from "~/components/Navbar";
 import "~/styles/globals.css";
 import { api } from "~/utils/api";
+import { Provider } from "react-redux"
+import { store } from "~/store/store"
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -21,10 +23,12 @@ const MyApp: AppType<{ session: Session | null }> = ({
         />
         <script src="https://unpkg.com/react-scan/dist/auto.global.js"></script>
       </Head>
-
-      <Layout>
-        <Component {...pageProps} />
-      </Layout>
+      
+      <Provider store={store}>
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
+      </Provider>
     </SessionProvider>
   );
 };
