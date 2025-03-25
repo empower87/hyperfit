@@ -1,15 +1,23 @@
 import { getMusclesMaxFrequency } from "~/constants/workoutSplits";
-import { MusclePriorityType, SplitSessionsType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
-import { getTotalExercisesFromSetMatrix, initializeSetProgression } from "~/hooks/useTrainingProgram/utils/exercises/getExercises";
+import {
+  MusclePriorityType,
+  SplitSessionsType,
+} from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
+import {
+  getTotalExercisesFromSetMatrix,
+  initializeSetProgression,
+} from "~/hooks/useTrainingProgram/utils/exercises/getExercises";
 import { initFrequencyProgressionAcrossMesocycles } from "~/hooks/useTrainingProgram/utils/prioritized_muscle_list/maximumFrequencyHandlers";
 import { getMuscleData } from "~/utils/getMuscleData";
+
+// ORDER OF OPERATIONS ON REORDERING OF MUSCLE LIST:
+// 1.
 
 export const attachTargetFrequency = (
   muscle_priority_list: MusclePriorityType[],
   mesocycles: number,
   split_sessions: SplitSessionsType
 ) => {
-
   for (let i = 0; i < muscle_priority_list.length; i++) {
     const muscle = muscle_priority_list[i].muscle;
     const muscleData = getMuscleData(muscle);
@@ -42,7 +50,8 @@ export const attachTargetFrequency = (
     );
 
     muscle_priority_list[i].frequency.progression = frequencyProgression;
-    muscle_priority_list[i].frequency.setProgressionMatrix = setProgressionMatrix;
+    muscle_priority_list[i].frequency.setProgressionMatrix =
+      setProgressionMatrix;
     muscle_priority_list[i].exercises = exercises;
   }
   return muscle_priority_list;

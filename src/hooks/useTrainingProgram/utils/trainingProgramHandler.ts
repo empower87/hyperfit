@@ -23,7 +23,7 @@ export function trainingProgramHandler(
   breakpoints: [number, number]
 ) {
   const total = total_sessions[0] + total_sessions[1];
-  const volume_breakpoints: [number, number] = [...breakpoints];
+  // const volume_breakpoints: [number, number] = [...breakpoints];
   const update_items = onMusclePrioritization(
     muscle_priority_list,
     breakpoints,
@@ -79,7 +79,7 @@ export function trainingProgramHandler(
     new_training_week,
     new_training_block[new_training_block.length - 1],
     breakpoints,
-    volume_breakpoints,
+    // volume_breakpoints,
     "WTF IS GOING OON HERE??"
   );
 
@@ -88,7 +88,7 @@ export function trainingProgramHandler(
     split_sessions: new_split_sessions,
     training_block: new_training_block,
     muscle_priority_list: reordered_items,
-    mrv_breakpoint: volume_breakpoints[0],
-    mev_breakpoint: volume_breakpoints[1],
+    mrv_breakpoint: breakpoints[0],
+    mev_breakpoint: breakpoints[1],
   };
 }

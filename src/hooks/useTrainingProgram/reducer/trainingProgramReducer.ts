@@ -419,7 +419,7 @@ const MESOCYCLE = "3-12 weeks";
 const BLOCK = "1-4 mesocycles";
 const MACROCYCLE = "1-4 blocks";
 
-const INITIAL_TRAINING_PROGRAM_PARAMS: TrainingProgramParamsType = {
+export const INITIAL_TRAINING_PROGRAM_PARAMS: TrainingProgramParamsType = {
   sessions: 1,
   days: 3,
   microcycles: 4,
