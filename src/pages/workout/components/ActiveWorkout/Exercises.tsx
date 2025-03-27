@@ -125,7 +125,6 @@ type SetItemProps = {
 };
 
 export const SetItem = memo(({ set, onCompleteSet }: SetItemProps) => {
-  // const isSetCompleted = set.isComplete;
   const { updateRestTimerStatus } = useRestTimerControlsContext();
   const [isSetCompleted, setIsSetCompleted] = useState(false);
   const lbsRef = useRef<HTMLInputElement>(null);

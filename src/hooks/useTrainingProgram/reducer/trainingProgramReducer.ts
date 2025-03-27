@@ -465,6 +465,7 @@ export default function trainingProgramReducer(state: State, action: Action) {
       const split = action.payload.split;
       const musclePriority = action.payload.muscle_priority_list;
       const breaks = action.payload.breakpoints;
+
       console.log(
         total_frequency,
         split,
@@ -472,6 +473,7 @@ export default function trainingProgramReducer(state: State, action: Action) {
         breaks,
         "UPDATE_PROGRAM_CONFIG Action in trainingProgramReducer"
       );
+
       const initiate_program = trainingProgramHandler(
         total_frequency,
         split,

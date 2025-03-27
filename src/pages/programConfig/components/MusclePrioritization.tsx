@@ -104,20 +104,14 @@ function Item({ muscle, index, handle, isCollapsed }: ItemProps) {
 
 type MusclePrioritizationListProps = {
   isCollapsed: boolean;
-  // muscle_priority_list: MusclePriorityType[];
-  // onPriorityListDragEnd: (result: DropResult) => void;
   onMuscleClick?: (id: MusclePriorityType["id"]) => void;
 };
 export const MusclePrioritizationList = ({
   isCollapsed,
-  // muscle_priority_list,
-  // onPriorityListDragEnd,
   onMuscleClick,
 }: MusclePrioritizationListProps) => {
   const { musclePrioritization, onPriorityListDragEnd } =
     useProgramSettingsContext();
-  // const { muscle_priority_list, onPriorityListDragEnd } =
-  //   useProgramConfigContext();
 
   return (
     <DragDropContext onDragEnd={onPriorityListDragEnd}>

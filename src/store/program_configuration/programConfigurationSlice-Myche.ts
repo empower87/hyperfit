@@ -65,6 +65,20 @@ const CONFIGURATION_SETTINGS: ConfigurationSettingsType = {
   },
 };
 
+// ugh
+const CONFIG_LAYER_TWO = {
+  sessions: ["lower", "upper", "full"],
+  muscles_list: [
+    {
+      name: "abs",
+      frequency: {
+        range: [0, 1],
+        target: 1,
+      },
+    },
+  ],
+};
+
 type NestedKey<O extends Record<string, unknown>> = {
   [K in Extract<keyof O, string>]: O[K] extends Array<any>
     ? K

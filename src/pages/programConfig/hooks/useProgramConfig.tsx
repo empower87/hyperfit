@@ -335,7 +335,7 @@ function useProgramConfig() {
   }, [tpc]);
 
   const onSaveConfig = useCallback(() => {
-    tpc.handleOnProgramConfigChange({ ...programConfig });
+    // tpc.handleOnProgramConfigChange({ ...programConfig });
   }, [programConfig]);
 
   return {

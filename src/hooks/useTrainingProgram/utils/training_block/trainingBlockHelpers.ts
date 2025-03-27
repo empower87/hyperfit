@@ -33,10 +33,11 @@ export const initializeTrainingBlock = (
   ).reverse();
 
   const splits = splitLimits(muscle_priority_list);
-  const splitSessions = structuredClone(split_sessions);
+  const splitSessions = { ...split_sessions };
 
   const training_block: NewTrainingWeek[][] = [];
   const lastIndex = mesocycles - 1;
+
   for (let n = lastIndex; n >= 0; n--) {
     const toRemove = removeSplitsByMesocycle(
       splitSessions.sessions as OPTSessionsType,
@@ -65,7 +66,15 @@ export const initializeTrainingBlock = (
         : []
     ),
   ]);
-  console.log(restructuredBlock, totalWeekFrequency, "OMFG COME ON??");
+  console.log(
+    restructuredBlock,
+    totalWeekFrequency,
+    splitSessions,
+    split_sessions,
+    training_block,
+    // mesocycle_indices,
+    "OMFG COME ON??"
+  );
 
   return training_block;
 };
