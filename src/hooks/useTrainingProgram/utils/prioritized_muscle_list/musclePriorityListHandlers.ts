@@ -274,6 +274,7 @@ export const onMusclePrioritization = (
   return updated_list;
 };
 
+
 export const attachTargetFrequency = (
   muscle_priority_list: MusclePriorityType[],
   mesocycles: number,
