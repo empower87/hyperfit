@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { DayType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { MUSCLE_PRIORITY_LIST } from "~/hooks/useTrainingProgram/utils/prioritized_muscle_list/musclePriorityListHandlers";
 
 const prioritizeMusclesSlice = createSlice({
@@ -28,6 +29,21 @@ export default prioritizeMusclesSlice.reducer;
 // MESOCYCLE 3 :       MON       |  TUE  |  WED  |  FRI  |  SAT
 // BACK:  ex. 1:  [2, 3, 3, 4],  | []
 //        ex. 2:  [3, 4, 4, 5],  | []
+
+// set: set_num: number; reps: number; lbs: number; rir: number
+
+const SET_EX = [1, 15, 115, 0];
+const SET_EX_3 = {
+  microcycle_index: 0,
+  sets: 3,
+  reps: 15,
+  lbs: 115,
+  rir: 0,
+};
+type ExerciseSetsMatrixType = {
+  mesocycle_index: number;
+  sets: Set[];
+};
 
 type ProgramExerciseType = {
   id: string;
@@ -60,7 +76,6 @@ const SET = {
   exerciseId: "exercise-1",
   exerciseName: "squat",
   trainingModality: "straight",
-
   mesocycle: 0,
   microcycle: 0,
   training_program_id: "tpi-1",
@@ -91,11 +106,33 @@ const Exercise = {
   supersetWith: null,
 };
 
-const SESSION = {
+type SessionType = {
+  id: string;
+  name: string;
+  day: DayType;
+  // mesocycle: number;
+  exercises: ExerciseType[];
+  duration_variables?: {
+    warmup: number;
+    rest_between_sets: number;
+    superset_rest: number;
+    rep: number;
+  };
+};
+const SESSION: SessionType = {
   id: "session-1",
   name: "lower",
+  day: "Monday",
+  // mesocycle: 1,
   exercises: [],
+  duration_variables: {
+    warmup: 500,
+    rest_between_sets: 120,
+    superset_rest: 90,
+    rep: 2,
+  },
 };
+
 const MESOCYCLE = {
   id: "mesocycle-1",
   name: "mesocycle-1",
