@@ -82,12 +82,6 @@ const SessionItem = ({
   );
 };
 
-type DraggableExercisesExample = {
-  day: string;
-  isTrainingDay: boolean;
-  sessions: DraggableSessionType[];
-};
-
 type SortableSessionItemContainerProps = {
   containerId: string;
   container: DraggableSessionType;
@@ -105,18 +99,24 @@ export const SortableSessionItemContainer = ({
     >
       <SessionItem split={container.split} exercises={container.exercises}>
         <ul className="space-y-2">
+          {/* <li className="flex text-xs text-primary-800">warmup: 5:00</li> */}
           {container.exercises.map((item, index) => (
-            <SortableExerciseItem key={item.id} id={item.id}>
-              <ExerciseItem
-                index={index + 1}
-                exerciseName={item.name}
-                muscle={item.muscle}
-                volumeLandmark={item.rank}
-                sets={item.sets}
-                reps={item.reps}
-                lbs={item.weight}
-              />
-            </SortableExerciseItem>
+            <>
+              <SortableExerciseItem key={item.id} id={item.id}>
+                <ExerciseItem
+                  index={index + 1}
+                  exerciseName={item.name}
+                  muscle={item.muscle}
+                  volumeLandmark={item.rank}
+                  sets={item.sets}
+                  reps={item.reps}
+                  lbs={item.weight}
+                />
+              </SortableExerciseItem>
+              {/* <div className="flex text-xs text-primary-800">
+                rest between exercises: 2:00
+              </div> */}
+            </>
           ))}
         </ul>
       </SessionItem>

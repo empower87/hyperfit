@@ -106,6 +106,10 @@ const Exercise = {
   supersetWith: null,
 };
 
+type SessionClientType = SessionType & {
+  getTotalSessionDuration: () => number;
+};
+
 type SessionType = {
   id: string;
   name: string;
@@ -119,6 +123,7 @@ type SessionType = {
     rep: number;
   };
 };
+
 const SESSION: SessionType = {
   id: "session-1",
   name: "lower",
