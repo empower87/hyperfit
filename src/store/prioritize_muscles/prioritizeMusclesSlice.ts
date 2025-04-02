@@ -32,6 +32,13 @@ export default prioritizeMusclesSlice.reducer;
 
 // set: set_num: number; reps: number; lbs: number; rir: number
 
+// TOTAL = 5
+// SPLIT = "OPT"
+
+// WEEK  | SUN |  MON  |  TUE  |  WED  |  THU  |  FRI  |  SAT
+//-----------------------------------------------------------
+//       | off | lower | upper |  full |  off  | lower | upper
+
 const SET_EX = [1, 15, 115, 0];
 const SET_EX_3 = {
   microcycle_index: 0,
@@ -110,12 +117,22 @@ type SessionClientType = SessionType & {
   getTotalSessionDuration: () => number;
 };
 
+type SessionExerciseType = {
+  id: ExerciseType["id"];
+  sets: {
+    number: number;
+    reps: number;
+    lbs: number;
+    rir: number;
+  }[];
+};
+
 type SessionType = {
   id: string;
   name: string;
   day: DayType;
   // mesocycle: number;
-  exercises: ExerciseType[];
+  exercises: SessionExerciseType[][];
   duration_variables?: {
     warmup: number;
     rest_between_sets: number;
@@ -128,6 +145,7 @@ const SESSION: SessionType = {
   id: "session-1",
   name: "lower",
   day: "Monday",
+
   // mesocycle: 1,
   exercises: [],
   duration_variables: {
