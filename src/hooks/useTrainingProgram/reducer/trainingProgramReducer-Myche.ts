@@ -246,7 +246,6 @@ export type ExerciseType = {
   setProgressionSchema: SetProgressionType[];
   data: ExerciseDataType;
   initialSets?: InitialSets;
-  setProgression?: number[][]
 };
 
 export type TrainingProgramParamsType = {

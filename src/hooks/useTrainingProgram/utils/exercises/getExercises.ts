@@ -417,6 +417,7 @@ export const INITIAL_EXERCISE: ExerciseType = {
       secondary: [],
     },
   },
+  setProgression: [],
 };
 
 const matrixIndexValidator = (index: number, matrix: number[][][]) => {
@@ -446,6 +447,83 @@ const getValidatedMatrix = (
   return matrix[exercise_index];
 };
 
+export const setProgressionForExercises = (
+  muscleGroup: MusclePriorityType,
+  microcycles: number
+) => {
+  const exercises = structuredClone(muscleGroup.exercises);
+  const frequencyProgression = muscleGroup.frequency.progression;
+
+  for (let i = 0; i < exercises.length; i++) {
+    for (let j = 0; j < exercises[i].length; j++) {
+      const setsProgression: number[][] = [];
+      for (let k = 0; k < frequencyProgression.length; k++) {
+        const setsOverWeek = getExerciseSetsOverMicrocycles(
+          exercises[i][j].id,
+          muscleGroup,
+          k,
+          microcycles
+        );
+        setsProgression.push(setsOverWeek);
+      }
+      exercises[i][j].setProgression = setsProgression;
+    }
+  }
+  console.log(exercises, "YO WTFS GOING ON HERE?");
+  return exercises;
+};
+
+type RepsStrength = [3, 5];
+type RepsHeavy = [5, 8];
+type RepsHypertrophy = [8, 12];
+type RepsModerate = [12, 16];
+type RepsLight = [15, 20];
+type RepsLighter = [20, 50];
+
+const REP_RANGES = [
+  [3, 5],
+  [5, 8],
+  [8, 12],
+  [12, 15],
+  [15, 20],
+  [20, 50],
+];
+
+// 3 -  3 -  4 -  4 -  5
+// 8 - 10 - 15 - 10 - 12
+// 24 - 25 - 26 - 27 - 28
+
+// 8 - 8 - 8
+// 9 - 8 - 8
+// 9 - 9 - 8
+// 9 - 9 - 9
+
+const REPS_MATRIX_ONE = [
+  [[5]],
+  [[5], [12]],
+  [[5], [12], [10]],
+  [[5], [12], [10], [12]],
+  [[5], [12], [10], [12], [8]],
+  [[5], [12], [10], [12], [8], [15]],
+];
+
+const REPS_MATRIX_TWO = [
+  [[5, 12]],
+  [
+    [5, 12],
+    [10, 12],
+  ],
+  [
+    [5, 12],
+    [10, 12],
+    [8, 10],
+  ],
+  [[5, 12], [10, 12], [8, 10], [15]],
+  [[5, 12], [10, 12], [8, 10], [15], [8]],
+  [[5, 12], [10, 12], [8, 10], [15], [8], [12]],
+];
+const REPS_ARR = [5, 12, 10, 12, 8, 10, 15, 8, 12];
+
 export const getTotalExercisesFromSetMatrix = (
   muscleGroup: MuscleType,
   volume_landmark: VolumeLandmarkType,
@@ -458,6 +536,7 @@ export const getTotalExercisesFromSetMatrix = (
   const exercise_list: ExerciseType[][] = [];
 
   let exercises_index = 0;
+  let reps_index = 0;
   for (let i = 0; i < finalProgression.length; i++) {
     const session = finalProgression[i];
     const session_exercises: ExerciseType[] = [];
@@ -479,9 +558,12 @@ export const getTotalExercisesFromSetMatrix = (
         allExercises[exercises_index],
         volume_landmark
       );
+
+      exercise.reps = REPS_ARR[reps_index];
       exercise.sets = finalProgression[i][j];
       session_exercises.push(exercise);
       exercises_index++;
+      reps_index++;
     }
     exercise_list.push(session_exercises);
   }
@@ -511,6 +593,7 @@ const getSetsFromProgressionMatrix = (
   return sets;
 };
 
+// 4/8/2025. This is exported and unused, but was intended maybe.
 export const getTotalExercisesForMuscleGroup = (
   group: MuscleType,
   rank: VolumeLandmarkType,
@@ -695,8 +778,10 @@ export const getExerciseSetsOverMicrocycles = (
       }
     }
   }
-  const setsByMatrix =
-    setProgressionMatrix[setProgressionIndex][dayIndex][exerciseIndex];
+  const sessionSetsByMatrix =
+    setProgressionMatrix[setProgressionIndex][dayIndex];
+  if (!sessionSetsByMatrix) return [];
+  const setsByMatrix = sessionSetsByMatrix[exerciseIndex];
 
   const initialSets =
     foundExercise &&
@@ -711,5 +796,6 @@ export const getExerciseSetsOverMicrocycles = (
     exerciseIndex,
     initialSets
   );
+
   return sets;
 };

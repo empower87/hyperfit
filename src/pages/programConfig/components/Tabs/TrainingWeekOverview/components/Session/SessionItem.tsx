@@ -17,25 +17,64 @@ import { ExerciseItem, SortableExerciseItem } from "../Exercise/Exercise";
 import SessionDurationVariables from "../Settings/SessionDuration/SessionDurationVariables";
 import { useSessionDurationVariablesContext } from "../Settings/SessionDuration/sessionDurationVariablesContext";
 
+type SortableSessionItemContainerProps = {
+  containerId: string;
+  container: DraggableSessionType;
+};
+
+// NOTE: 4/5/25.
+// Potential button to sort exercises by equipment requirements.
+
+export const SortableSessionItemContainer = ({
+  containerId,
+  container,
+}: SortableSessionItemContainerProps) => {
+  return (
+    <SortableContext
+      id={containerId}
+      items={container.exercises.map((item) => item.id)}
+      strategy={verticalListSortingStrategy}
+    >
+      <SessionItem
+        split={container.split}
+        exercises={container.exercises}
+        totals={<TotalsCard sessionExercises={container.exercises} />}
+      >
+        <ul className="space-y-2">
+          {/* <li className="flex text-xs text-primary-800">warmup: 5:00</li> */}
+          {container.exercises.map((item, index) => (
+            <SortableExerciseItem key={item.id} id={item.id}>
+              <ExerciseItem index={index + 1} exercise={item} />
+            </SortableExerciseItem>
+          ))}
+        </ul>
+      </SessionItem>
+    </SortableContext>
+  );
+};
+
 type DroppableSessionItemProps = {
   split: SessionSplitType;
   exercises: ExerciseType[];
   children: ReactNode;
+  totals: ReactNode;
 };
 
 const SessionItem = ({
   split,
   exercises,
   children,
+  totals,
 }: DroppableSessionItemProps) => {
   const { sessionDurationCalculator, durationTimeConstants } =
     useSessionDurationVariablesContext();
-  const { selectedMicrocycle } = useToggleCyclesContext();
+  const { selectedMicrocycle, selectedMesocycle } = useToggleCyclesContext();
   const [isDurationModalOpen, setIsDurationModalOpen] = useState(false);
 
   const totalDuration = sessionDurationCalculator(
     exercises,
-    selectedMicrocycle
+    selectedMicrocycle,
+    selectedMesocycle
   );
 
   const onCloseDurationModal = () => setIsDurationModalOpen(false);
@@ -63,9 +102,7 @@ const SessionItem = ({
           <div className=" text-muted-foreground">Reps</div>
           <div className=" text-muted-foreground">Duration</div>
 
-          <div className="col-start-2  text-white">10</div>
-          <div className=" text-white">100</div>
-          <div className=" text-white">{totalDuration}min</div>
+          {totals}
         </div>
 
         {isDurationModalOpen ? (
@@ -82,44 +119,36 @@ const SessionItem = ({
   );
 };
 
-type SortableSessionItemContainerProps = {
-  containerId: string;
-  container: DraggableSessionType;
+type TotalsCardProps = {
+  sessionExercises: ExerciseType[];
 };
+const TotalsCard = ({ sessionExercises }: TotalsCardProps) => {
+  const { selectedMesocycle, selectedMicrocycle } = useToggleCyclesContext();
+  const { sessionDurationCalculator } = useSessionDurationVariablesContext();
 
-export const SortableSessionItemContainer = ({
-  containerId,
-  container,
-}: SortableSessionItemContainerProps) => {
+  const sets = sessionExercises.reduce(
+    (acc, exercise) =>
+      acc +
+      (exercise.setProgression
+        ? exercise.setProgression[selectedMesocycle][selectedMicrocycle]
+        : 0),
+    0
+  );
+
+  const reps = sessionExercises.reduce(
+    (acc, exercise) => acc + exercise.reps,
+    0
+  );
+  const totalDuration = sessionDurationCalculator(
+    sessionExercises,
+    selectedMicrocycle,
+    selectedMesocycle
+  );
   return (
-    <SortableContext
-      id={containerId}
-      items={container.exercises.map((item) => item.id)}
-      strategy={verticalListSortingStrategy}
-    >
-      <SessionItem split={container.split} exercises={container.exercises}>
-        <ul className="space-y-2">
-          {/* <li className="flex text-xs text-primary-800">warmup: 5:00</li> */}
-          {container.exercises.map((item, index) => (
-            <>
-              <SortableExerciseItem key={item.id} id={item.id}>
-                <ExerciseItem
-                  index={index + 1}
-                  exerciseName={item.name}
-                  muscle={item.muscle}
-                  volumeLandmark={item.rank}
-                  sets={item.sets}
-                  reps={item.reps}
-                  lbs={item.weight}
-                />
-              </SortableExerciseItem>
-              {/* <div className="flex text-xs text-primary-800">
-                rest between exercises: 2:00
-              </div> */}
-            </>
-          ))}
-        </ul>
-      </SessionItem>
-    </SortableContext>
+    <>
+      <div className="col-start-2  text-white">{sets}</div>
+      <div className=" text-white">{reps}</div>
+      <div className=" text-white">{totalDuration}min</div>
+    </>
   );
 };

@@ -1,5 +1,99 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
+const MUSCLE_PRIORITY_LIST: PrioritizedMuscleType[] = [
+  {
+    name: "back",
+    volume_landmark: "MRV",
+    frequency_range: [3, 4],
+    frequency_target: 0,
+  },
+  {
+    name: "delts_side",
+    volume_landmark: "MRV",
+    frequency_range: [3, 6],
+    frequency_target: 0,
+  },
+  {
+    name: "triceps",
+    volume_landmark: "MRV",
+    frequency_range: [2, 4],
+    frequency_target: 0,
+  },
+  {
+    name: "hamstrings",
+    volume_landmark: "MRV",
+    frequency_range: [2, 3],
+    frequency_target: 0,
+  },
+  {
+    name: "quads",
+    volume_landmark: "MEV",
+    frequency_range: [2, 5],
+    frequency_target: 0,
+  },
+  {
+    name: "delts_rear",
+    volume_landmark: "MEV",
+    frequency_range: [3, 6],
+    frequency_target: 0,
+  },
+  {
+    name: "forearms",
+    volume_landmark: "MEV",
+    frequency_range: [3, 6],
+    frequency_target: 0,
+  },
+  {
+    name: "traps",
+    volume_landmark: "MEV",
+    frequency_range: [2, 4],
+    frequency_target: 0,
+  },
+  {
+    name: "biceps",
+    volume_landmark: "MEV",
+    frequency_range: [3, 6],
+    frequency_target: 0,
+  },
+  {
+    name: "chest",
+    volume_landmark: "MV",
+    frequency_range: [2, 4],
+    frequency_target: 0,
+  },
+  {
+    name: "calves",
+    volume_landmark: "MV",
+    frequency_range: [3, 6],
+    frequency_target: 0,
+  },
+  {
+    name: "delts_front",
+    volume_landmark: "MV",
+    frequency_range: [2, 3],
+    frequency_target: 0,
+  },
+  {
+    name: "abs",
+    volume_landmark: "MV",
+    frequency_range: [3, 6],
+    frequency_target: 0,
+  },
+  {
+    name: "glutes",
+    volume_landmark: "MV",
+    frequency_range: [2, 5],
+    frequency_target: 0,
+  },
+];
+
+type PrioritizedMuscleType = {
+  name: string;
+  volume_landmark: string;
+  frequency_range: [number, number];
+  frequency_target: number;
+};
+
 type ConfigurationSettingsType = {
   frequency: {
     total: number;
@@ -7,10 +101,11 @@ type ConfigurationSettingsType = {
     max_sessions_per_day: number;
   };
   split: {
-    split: string;
+    name: string;
+    sessions: string[];
   };
   muscles: {
-    prioritized: string[];
+    prioritized: PrioritizedMuscleType[];
     mrv_breakpoint: number;
     mev_breakpoint: number;
   };
@@ -21,13 +116,7 @@ type ConfigurationSettingsType = {
     microcycles: number;
   };
 };
-const PRIORITIZED_MUSCLE = {
-  name: "abs",
-  frequency: {
-    range: [0, 1],
-    target: 1,
-  },
-};
+
 const CONFIGURATION_SETTINGS: ConfigurationSettingsType = {
   frequency: {
     total: 5,
@@ -35,25 +124,11 @@ const CONFIGURATION_SETTINGS: ConfigurationSettingsType = {
     max_sessions_per_day: 1,
   },
   split: {
-    split: "OPT",
+    name: "OPT",
+    sessions: [],
   },
   muscles: {
-    prioritized: [
-      "abs",
-      "back",
-      "biceps",
-      "calves",
-      "chest",
-      "delts_front",
-      "delts_rear",
-      "delts_side",
-      "forearms",
-      "glutes",
-      "hamstrings",
-      "quads",
-      "traps",
-      "triceps",
-    ],
+    prioritized: [...MUSCLE_PRIORITY_LIST],
     mrv_breakpoint: 4,
     mev_breakpoint: 9,
   },

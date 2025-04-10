@@ -117,22 +117,28 @@ type SessionClientType = SessionType & {
   getTotalSessionDuration: () => number;
 };
 
+type SetNumberType = number;
+type RepsType = number;
+type LbsType = number;
+type RirType = number;
+type SetType = [SetNumberType, RepsType, LbsType, RirType];
+
 type SessionExerciseType = {
   id: ExerciseType["id"];
-  sets: {
-    number: number;
-    reps: number;
-    lbs: number;
-    rir: number;
-  }[];
+  sets: SetType[];
+  rest_between_sets?: number;
+};
+
+type MesocycleExercisesType = {
+  mesocycle: number;
+  exercises: SessionExerciseType[];
 };
 
 type SessionType = {
   id: string;
   name: string;
   day: DayType;
-  // mesocycle: number;
-  exercises: SessionExerciseType[][];
+  exercises_by_mesocycle: MesocycleExercisesType[];
   duration_variables?: {
     warmup: number;
     rest_between_sets: number;
@@ -145,9 +151,7 @@ const SESSION: SessionType = {
   id: "session-1",
   name: "lower",
   day: "Monday",
-
-  // mesocycle: 1,
-  exercises: [],
+  exercises_by_mesocycle: [],
   duration_variables: {
     warmup: 500,
     rest_between_sets: 120,

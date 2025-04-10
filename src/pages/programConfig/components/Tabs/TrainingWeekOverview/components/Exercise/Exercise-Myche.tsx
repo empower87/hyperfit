@@ -25,7 +25,6 @@ import {
   TooltipTrigger,
 } from "~/components/ui/tooltip";
 import { ExerciseType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
-import { useToggleCyclesContext } from "~/pages/programConfig/components/MesocycleToggle/hooks/useMesocycleToggle";
 import { getRankColor } from "~/utils/getIndicatorColors";
 
 type SortableExerciseItemProps = {
@@ -56,13 +55,6 @@ type ExerciseItemProps = {
   exercise: ExerciseType;
 };
 export const ExerciseItem = memo(({ index, exercise }: ExerciseItemProps) => {
-  const { selectedMicrocycle, selectedMesocycle } = useToggleCyclesContext();
-
-  const sets = exercise.setProgression
-    ? exercise.setProgression[selectedMesocycle][selectedMicrocycle]
-    : exercise.sets;
-  const reps = exercise.reps;
-
   const bgColorByRank = getRankColor(exercise.rank).bg;
 
   return (
@@ -74,7 +66,7 @@ export const ExerciseItem = memo(({ index, exercise }: ExerciseItemProps) => {
         <div className="flex justify-between">
           <div className="flex p-2 pr-0">
             <div className="text-semibold flex truncate text-xs leading-tight text-secondary-300">
-              {sets} x {reps}
+              {exercise.sets} x {exercise.reps}
             </div>
           </div>
 

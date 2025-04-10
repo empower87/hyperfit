@@ -1,18 +1,12 @@
 import { ReactNode, createContext, useContext } from "react";
-import useSessionDurationVariables, {
-  DURATION_TIME_CONSTRAINTS,
-} from "./useSessionDurationVariables";
+import useSessionDurationVariables from "./useSessionDurationVariables";
 
 type SessionDurationVariablesType = ReturnType<
   typeof useSessionDurationVariables
 >;
 
 const SessionDurationVariablesContext =
-  createContext<SessionDurationVariablesType>({
-    durationTimeConstants: { ...DURATION_TIME_CONSTRAINTS },
-    sessionDurationCalculator: () => 0,
-    onTimeChange: () => null,
-  });
+  createContext<SessionDurationVariablesType | null>(null);
 
 const SessionDurationVariablesProvider = ({
   children,
@@ -28,6 +22,12 @@ const SessionDurationVariablesProvider = ({
 };
 
 const useSessionDurationVariablesContext = () => {
-  return useContext(SessionDurationVariablesContext);
+  const context = useContext(SessionDurationVariablesContext);
+  if (!context) {
+    throw new Error(
+      "useSessionDurationVariablesContext must be used within a SessionDurationVariablesProvider"
+    );
+  }
+  return context;
 };
 export { SessionDurationVariablesProvider, useSessionDurationVariablesContext };

@@ -14,7 +14,6 @@ import {
 } from "./split_sessions/distributeSessionsIntoSplits";
 import { distributeSplitAcrossWeek } from "./training_block/distributeSplitAcrossTrainingWeek";
 import { initializeTrainingBlock } from "./training_block/trainingBlockHelpers";
-import { setProgressionForExercises } from "./exercises/getExercises";
 
 export function trainingProgramHandler(
   total_sessions: [number, number],
@@ -59,14 +58,6 @@ export function trainingProgramHandler(
     new_split_sessions
   );
 
-  const exercisedUp = reordered_items.map(each => {
-    const updated = setProgressionForExercises(
-      each,
-      4
-    )
-    return {...each,  exercises: updated}
-  })
-  
   const new_training_week = distributeSplitAcrossWeek(
     total,
     new_split_sessions
@@ -74,7 +65,7 @@ export function trainingProgramHandler(
 
   const new_training_block = initializeTrainingBlock(
     new_split_sessions,
-    exercisedUp,
+    reordered_items,
     new_training_week,
     total,
     mesocycles
@@ -94,7 +85,7 @@ export function trainingProgramHandler(
     frequency: total_sessions,
     split_sessions: new_split_sessions,
     training_block: new_training_block,
-    muscle_priority_list: exercisedUp,
+    muscle_priority_list: reordered_items,
     mrv_breakpoint: breakpoints[0],
     mev_breakpoint: breakpoints[1],
   };

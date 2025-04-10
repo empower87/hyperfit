@@ -241,7 +241,8 @@ const DroppableSession = memo(
 
     const totalDuration = sessionDurationCalculator(
       exercises,
-      selectedMicrocycleIndex
+      selectedMicrocycleIndex,
+      2
     );
 
     const onCloseDurationModal = () => setIsDurationModalOpen(false);

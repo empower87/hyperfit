@@ -95,7 +95,11 @@ export default function useSessionDurationVariables() {
   );
 
   const sessionDurationCalculator = useCallback(
-    (exercises: ExerciseType[], currentMicrocycleIndex: number) => {
+    (
+      exercises: ExerciseType[],
+      currentMicrocycleIndex: number,
+      currentMesocycleIndex: number
+    ) => {
       const { warmup, rest, rep, superset } = durationTimeConstants;
 
       const totalExercises = exercises.length;
@@ -105,14 +109,17 @@ export default function useSessionDurationVariables() {
       let totalRestTime = 0;
 
       for (let i = 0; i < exercises.length; i++) {
-        const exercise = exercises[i].mesocycle_progression;
+        const setProg = exercises[i].setProgression;
+        const totalSets = setProg
+          ? setProg[currentMesocycleIndex][currentMicrocycleIndex]
+          : 0;
         const modality = exercises[i].trainingModality;
         // const { sets, reps } = exercise[currentMicrocycleIndex];
         const sets = exercises[i].initialSetsPerMeso[currentMicrocycleIndex];
-        const reps = 12;
+        const reps = exercises[i].reps;
         const repTime = exerciseModalityRepCalculator(
           modality,
-          sets,
+          totalSets,
           reps,
           rep
         );

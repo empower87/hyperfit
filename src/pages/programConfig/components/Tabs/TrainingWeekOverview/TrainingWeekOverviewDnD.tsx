@@ -31,6 +31,7 @@ import { getRankColor } from "~/utils/getIndicatorColors";
 import { useToggleCyclesContext } from "../../MesocycleToggle/hooks/useMesocycleToggle";
 import { SortableSessionItemContainer } from "./components/Session/SessionItem";
 import SessionDurationVariables from "./components/Settings/SessionDuration/SessionDurationVariables";
+import { SessionDurationVariablesProvider } from "./components/Settings/SessionDuration/sessionDurationVariablesContext";
 import { DraggableExercises } from "./hooks/useExerciseSelection";
 import { hydrateTrainingWeek } from "./hooks/useTrainingWeek";
 
@@ -166,21 +167,23 @@ function TrainingWeekOverview() {
   );
 
   return (
-    <div id="exercise_editor" className={`flex flex-col space-y-5 rounded`}>
-      <div className="flex flex-col rounded-md border border-primary-700">
-        {/* <MesocycleToggle
+    <SessionDurationVariablesProvider>
+      <div id="exercise_editor" className={`flex flex-col space-y-5 rounded`}>
+        <div className="flex flex-col rounded-md border border-primary-700">
+          {/* <MesocycleToggle
           mesocycles={mesocycle_titles}
           microcycles={microcycle_titles}
           selectedMesocycleIndex={selectedMesocycleIndex}
           selectedMicrocycleIndex={selectedMicrocycleIndex}
           onClickHandler={onClickHandler}
-        /> */}
+          /> */}
 
-        <SessionDurationVariables />
+          <SessionDurationVariables />
+        </div>
+
+        <WeekSessions training_week={memoizedTrainingWeek} />
       </div>
-
-      <WeekSessions training_week={memoizedTrainingWeek} />
-    </div>
+    </SessionDurationVariablesProvider>
   );
 }
 
