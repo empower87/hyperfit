@@ -396,7 +396,7 @@ export const initializeSetProgression = (
 export const INITIAL_EXERCISE: ExerciseType = {
   name: "Triceps Extension (cable, single-arm)",
   id: "001_Triceps Extension (cable, single-arm)",
-  muscle: "back",
+  muscle: "triceps",
   rank: "MRV",
   session: 0,
   sets: 2,
@@ -418,6 +418,7 @@ export const INITIAL_EXERCISE: ExerciseType = {
     },
   },
   setProgression: [],
+  rep_range: [8, 12],
 };
 
 const matrixIndexValidator = (index: number, matrix: number[][][]) => {
@@ -473,66 +474,48 @@ export const setProgressionForExercises = (
   return exercises;
 };
 
-type RepsStrength = [3, 5];
-type RepsHeavy = [5, 8];
-type RepsHypertrophy = [8, 12];
-type RepsModerate = [12, 16];
-type RepsLight = [15, 20];
-type RepsLighter = [20, 50];
-
-const REP_RANGES = [
-  [3, 5],
-  [5, 8],
-  [8, 12],
-  [12, 15],
-  [15, 20],
-  [20, 50],
-];
-
-// 3 -  3 -  4 -  4 -  5
-// 8 - 10 - 15 - 10 - 12
-// 24 - 25 - 26 - 27 - 28
-
-// 8 - 8 - 8
-// 9 - 8 - 8
-// 9 - 9 - 8
-// 9 - 9 - 9
-
-const REPS_MATRIX_ONE = [
-  [[5]],
-  [[5], [12]],
-  [[5], [12], [10]],
-  [[5], [12], [10], [12]],
-  [[5], [12], [10], [12], [8]],
-  [[5], [12], [10], [12], [8], [15]],
-];
-
-const REPS_MATRIX_TWO = [
-  [[5, 12]],
-  [
-    [5, 12],
-    [10, 12],
-  ],
-  [
-    [5, 12],
-    [10, 12],
-    [8, 10],
-  ],
-  [[5, 12], [10, 12], [8, 10], [15]],
-  [[5, 12], [10, 12], [8, 10], [15], [8]],
-  [[5, 12], [10, 12], [8, 10], [15], [8], [12]],
-];
 const REPS_ARR = [5, 12, 10, 12, 8, 10, 15, 8, 12];
+// const REPS_ARR = [
+//   [5, 8],
+//   [12, 15],
+//   [10, 13],
+//   [12, 15],
+//   [8, 12],
+//   [10, 13],
+//   [15, 18],
+//   [8, 12],
+//   [12, 15],
+// ]
 
+const WeightIncrementTuple = {
+  barbell: [45, 5],
+  dumbbell: [20, 2.5],
+  cable: [10, 2.5],
+  machine: [20, 5],
+  bodyweight: [0, 0],
+};
+const getWeightData = (requirements: string[]) => {
+  return Object.entries(WeightIncrementTuple).filter(([key, value]) => {
+    if (requirements.includes(key)) {
+      return value;
+    }
+  })[0][1];
+};
+
+
+const DEFAULT_SET_PROGRESSION_SCHEMA = "ADD_ONE_PER_MICROCYCLE"
+// NOTE: 4/11/2025. Need to create a function to progress weight over mesocycles.
+// linear progression, dynamic progression, etc.
 export const getTotalExercisesFromSetMatrix = (
-  muscleGroup: MuscleType,
-  volume_landmark: VolumeLandmarkType,
-  setProgressionMatrix: number[][][],
-  frequencyProgression: number[]
+  prioritized_muscle: MusclePriorityType,
+  setProgressionMatrix: number[][][]
 ) => {
+  const muscle = prioritized_muscle.muscle;
+  const volume_landmark = prioritized_muscle.volume.landmark;
+
   const finalProgression =
     setProgressionMatrix[setProgressionMatrix.length - 1];
-  const allExercises = getGroupList(muscleGroup);
+  const allExercises = getGroupList(muscle);
   const exercise_list: ExerciseType[][] = [];
 
   let exercises_index = 0;
@@ -546,27 +529,22 @@ export const getTotalExercisesFromSetMatrix = (
       if (!allExercises[exercises_index]) {
         exercises_index = 0;
       }
-
-      const sets = getSetsFromProgressionMatrix(
-        frequencyProgression,
-        setProgressionMatrix,
-        i,
-        j
-      );
-
       const exercise = initNewExercise(
         allExercises[exercises_index],
         volume_landmark
       );
 
+      const weightData = getWeightData(exercise.data.requirements);
       exercise.reps = REPS_ARR[reps_index];
-      exercise.sets = finalProgression[i][j];
+      exercise.weight = weightData[0];
+      exercise.weightIncrement = weightData[1];
       session_exercises.push(exercise);
       exercises_index++;
       reps_index++;
     }
     exercise_list.push(session_exercises);
   }
+
   return exercise_list;
 };
 

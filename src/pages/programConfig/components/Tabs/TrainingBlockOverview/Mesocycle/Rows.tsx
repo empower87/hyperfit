@@ -149,6 +149,7 @@ function SessionSplitRow({
           const muscleGroup = prioritized_muscle_list.filter(
             (muscle) => muscle.muscle === exercise.muscle
           )[0];
+
           const setsOverWeek = getExerciseSetsOverMicrocycles(
             exercise.id,
             muscleGroup,

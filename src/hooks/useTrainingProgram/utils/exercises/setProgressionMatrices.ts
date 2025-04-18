@@ -71,6 +71,43 @@ const MEV_MV_PROGRESSION_MATRIX_TEN = [
   [[2, 2], [2, 2], [2]],
 ];
 
+// REP STUFF -----------------------------------
+// prettier-ignore
+const REPS_MATRIX_ONE = [
+  [[5]],
+  [[5], [12]],
+  [[5], [12], [10]],
+  [[5], [12], [10], [12]],
+  [[5], [12], [10], [12], [8]],
+  [[5], [12], [10], [12], [8], [15]],
+];
+// prettier-ignore
+const REPS_MATRIX_TWO = [
+  [[5, 12]],
+  [[5, 12], [10, 12]],
+  [[5, 12], [10, 12], [8, 10]],
+  [[5, 12], [10, 12], [8, 10], [15]],
+  [[5, 12], [10, 12], [8, 10], [15], [8]],
+  [[5, 12], [10, 12], [8, 10], [15], [8], [12]],
+];
+
+type RepsStrength = [3, 5];
+type RepsHeavy = [5, 8];
+type RepsHypertrophy = [8, 12];
+type RepsModerate = [12, 16];
+type RepsLight = [15, 20];
+type RepsLighter = [20, 50];
+
+const REP_RANGES = [
+  [3, 5],
+  [5, 8],
+  [8, 12],
+  [12, 15],
+  [15, 20],
+  [20, 50],
+];
+// ---------------------------------------------
+
 const getSetProgressionMatrix_mrv = (exercisesPerSession: number) => {
   switch (exercisesPerSession) {
     case 1:

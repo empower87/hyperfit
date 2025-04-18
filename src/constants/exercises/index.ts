@@ -29,3 +29,86 @@ export {
   TRAPS_EXERCISES,
   TRICEPS_EXERCISES,
 };
+
+// NOTES:
+type EquipmentKeyType =
+  | "barbell"
+  | "dumbbell"
+  | "kettle-bell"
+  | "machine pin-loaded"
+  | "machine plate-loaded"
+  | "bodyweight";
+type WeightLoadIncrementType = 1 | 1.5 | 2.5 | 5 | 10 | 15 | 20;
+type InitialWeightNumberType = 0 | 2.5 | 5 | 10 | 12.5 | 15 | 20;
+
+type DumbbellWeightType =
+  | 5
+  | 7.5
+  | 10
+  | 12.5
+  | 15
+  | 17.5
+  | 20
+  | 22.5
+  | 25
+  | 27.5
+  | 30
+  | 32.5
+  | 35
+  | 37.5
+  | 40
+  | 42.5
+  | 45
+  | 47.5
+  | 50
+  | 55
+  | 60
+  | 65
+  | 70
+  | 75
+  | 80
+  | 85
+  | 90
+  | 95
+  | 100
+  | 105
+  | 110
+  | 115
+  | 120;
+
+type CableWeightType =
+  | 5
+  | 10
+  | 15
+  | 20
+  | 25
+  | 30
+  | 35
+  | 42.5
+  | 50
+  | 57.5
+  | 65
+  | 72.5
+  | 80
+  | 87.5
+  | 95;
+
+type BarbellWeightType =
+  | 45
+  | 65
+  | 95
+  | 115
+  | 135
+  | 155
+  | 185
+  | 205
+  | 225
+  | 245
+  | 275
+  | 315;
+
+type ExerciseEquipmentDetailsType = {
+  type: EquipmentKeyType;
+  weight_load_increment: number;
+  initial_weight: number;
+};

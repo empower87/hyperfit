@@ -4,6 +4,7 @@ import {
   MusclePriorityType,
   SplitSessionsNameType,
 } from "../reducer/trainingProgramReducer";
+import { setProgressionForExercises } from "./exercises/getExercises";
 import {
   attachTargetFrequency,
   onMusclePrioritization,
@@ -14,7 +15,6 @@ import {
 } from "./split_sessions/distributeSessionsIntoSplits";
 import { distributeSplitAcrossWeek } from "./training_block/distributeSplitAcrossTrainingWeek";
 import { initializeTrainingBlock } from "./training_block/trainingBlockHelpers";
-import { setProgressionForExercises } from "./exercises/getExercises";
 
 export function trainingProgramHandler(
   total_sessions: [number, number],
@@ -59,14 +59,13 @@ export function trainingProgramHandler(
     new_split_sessions
   );
 
-  const exercisedUp = reordered_items.map(each => {
-    const updated = setProgressionForExercises(
-      each,
-      4
-    )
-    return {...each,  exercises: updated}
-  })
-  
+  const microcycles = 4;
+
+  const exercisedUp = reordered_items.map((each) => {
+    const updated = setProgressionForExercises(each, microcycles);
+    return { ...each, exercises: updated };
+  });
+
   const new_training_week = distributeSplitAcrossWeek(
     total,
     new_split_sessions

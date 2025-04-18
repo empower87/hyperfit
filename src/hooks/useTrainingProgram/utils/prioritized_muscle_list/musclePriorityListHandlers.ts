@@ -284,6 +284,7 @@ export const attachTargetFrequency = (
   // const updated_list = structuredClone(muscle_priority_list);
 
   for (let i = 0; i < updated_list.length; i++) {
+    const prioritized_muscle = updated_list[i];
     const muscle = updated_list[i].muscle;
     const muscleData = getMuscleData(muscle);
     const exercisesPerSessionSchema =
@@ -317,10 +318,8 @@ export const attachTargetFrequency = (
     );
 
     const exercises = getTotalExercisesFromSetMatrix(
-      muscle,
-      volume_landmark,
-      setProgressionMatrix,
-      frequencyProgression
+      prioritized_muscle,
+      setProgressionMatrix
     );
 
     updated_list[i].frequency.progression = frequencyProgression;

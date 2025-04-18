@@ -228,6 +228,35 @@ export type ExerciseDataType = {
   };
 };
 
+// NOTE: Testing new ExerciseType structure. 4/17/2025
+//----------------------------------------------------
+type SetsType = number;
+type RepsType = number;
+type LbsType = number;
+type RirType = number;
+
+type MicrocycleSetType = [RepsType, LbsType, RirType];
+type ProgressiveOverloadMethod =
+  | "SINGLE"
+  | "DYNAMIC_SINGLE"
+  | "DOUBLE"
+  | "DYNAMIC_DOUBLE"
+  | "TRIPLE";
+
+type ExerciseSetsType = {
+  progressive_overload_method: ProgressiveOverloadMethod;
+  set_progression_schema: SetProgressionType;
+  rep_range: [number, number];
+  weight_increment: number;
+  training_modality: ExerciseTrainingModality;
+  sets_matrix: MicrocycleSetType[][][];
+  superset_id?: string | null;
+};
+export type ExerciseWithSetsType = ExerciseType & {
+  set_progression: ExerciseSetsType;
+};
+//-----------------------------------------------------
+
 export type ExerciseType = {
   id: string;
   name: string;
@@ -246,7 +275,8 @@ export type ExerciseType = {
   setProgressionSchema: SetProgressionType[];
   data: ExerciseDataType;
   initialSets?: InitialSets;
-  setProgression?: number[][]
+  setProgression?: number[][];
+  rep_range?: [number, number];
 };
 
 export type TrainingProgramParamsType = {

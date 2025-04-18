@@ -19,7 +19,8 @@ export const attachTargetFrequency = (
   split_sessions: SplitSessionsType
 ) => {
   for (let i = 0; i < muscle_priority_list.length; i++) {
-    const muscle = muscle_priority_list[i].muscle;
+    const prioritized_muscle = muscle_priority_list[i];
+    const muscle = prioritized_muscle.muscle;
     const muscleData = getMuscleData(muscle);
     const exercisesPerSessionSchema =
       muscle_priority_list[i].volume.exercisesPerSessionSchema;
@@ -43,10 +44,8 @@ export const attachTargetFrequency = (
     );
 
     const exercises = getTotalExercisesFromSetMatrix(
-      muscle,
-      volume_landmark,
-      setProgressionMatrix,
-      frequencyProgression
+      prioritized_muscle,
+      setProgressionMatrix
     );
 
     muscle_priority_list[i].frequency.progression = frequencyProgression;

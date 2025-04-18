@@ -110,16 +110,18 @@ export default function useSessionDurationVariables() {
 
       for (let i = 0; i < exercises.length; i++) {
         const setProg = exercises[i].setProgression;
-        const totalSets = setProg
-          ? setProg[currentMesocycleIndex][currentMicrocycleIndex]
-          : 0;
+
         const modality = exercises[i].trainingModality;
         // const { sets, reps } = exercise[currentMicrocycleIndex];
-        const sets = exercises[i].initialSetsPerMeso[currentMicrocycleIndex];
+
+        // const sets = exercises[i].initialSetsPerMeso[currentMicrocycleIndex];
+        const sets = setProg
+          ? setProg[currentMesocycleIndex][currentMicrocycleIndex]
+          : 0;
         const reps = exercises[i].reps;
         const repTime = exerciseModalityRepCalculator(
           modality,
-          totalSets,
+          sets,
           reps,
           rep
         );
