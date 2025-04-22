@@ -158,13 +158,131 @@ const INITIAL_EXERCISE = {
 
 // BACK -- mrv = 20-26 | mrv-a = 20-26 | mrv-p = 26-34
 
+// 34 / 4 = 8.5
+// 34 - 5 =
+
+// 30 / 3 = 10 = 10 10 10
+// 29 / 3 = 9.67 = 10 + 10 + 9
+// 28 / 3 = 9.33 = 10 + 9 + 9
+// 27 / 3 = 9
+
+// 30 / 4 = 7.5  = 8 8 7 7
+// 29 / 4 = 7.25 = 8 7 7 7
+// 28 / 4 = 7    = 7 7 7 7
+// 27 / 4 = 6.75 = 7 7 7 6
+
+// 30 / 5 = 6.0  = 6 6 6 6 6
+// 29 / 5 = 5.8  = 6 6 6 6 5
+// 28 / 5 = 5.6  = 6 6 6 5 5
+// 27 / 5 = 5.4  = 6 6 6 6 6
+const MIN_SETS = 2;
+const MAX_SETS = 5;
+const MAX_SETS_PER_SESSION = 12;
+
+const totalSessionsWithOneExercise = (frequency: number) => {
+  switch (frequency) {
+    case 7:
+      return 4;
+    case 6:
+      return 3;
+    case 5:
+      return 2;
+    case 4:
+      return 1;
+    default:
+      return 0;
+  }
+};
+
+export const accumulateFinalMicrocycleSets = (
+  sets_range: number[],
+  initial_sets: number[][]
+) => {
+  const frequency = initial_sets.length;
+  const total_one_exercise_sessions = totalSessionsWithOneExercise(frequency);
+  const sets_to_subtract = total_one_exercise_sessions * MAX_SETS;
+  const total_many_exercise_sets = sets_range[1] - sets_to_subtract;
+
+  const remaining_sessions = frequency - total_one_exercise_sessions;
+  const total_sets_per_two_exercise_session =
+    total_many_exercise_sets / remaining_sessions;
+  const sets_integer = Math.floor(total_sets_per_two_exercise_session);
+  const sets_decimal = total_sets_per_two_exercise_session - sets_integer;
+
+  const decimal_fixer = (sets_decimal * remaining_sessions).toFixed();
+  let total_sessions_to_add_one_set = Number(decimal_fixer);
+
+  let array: number[][] = [];
+  for (let i = 0; i < remaining_sessions; i++) {
+    let sets: number[] = [];
+
+    let sets_ = sets_integer;
+    if (total_sessions_to_add_one_set > 0) {
+      sets_ = sets_integer + 1;
+      total_sessions_to_add_one_set--;
+    }
+    let split_sets = sets_ / 2;
+    const sets_one = Math.floor(split_sets);
+    const sets_two = Math.ceil(split_sets);
+    sets = [sets_two, sets_one];
+
+    array.push(sets);
+  }
+  const single_set_sessions: number[][] = Array.from(
+    Array(total_one_exercise_sessions),
+    (e, i) => [e]
+  );
+  console.log(
+    sets_range,
+    initial_sets,
+    array,
+    single_set_sessions,
+    total_one_exercise_sessions,
+    sets_to_subtract,
+    total_many_exercise_sets,
+    remaining_sessions,
+    total_sets_per_two_exercise_session,
+    sets_integer,
+    sets_decimal,
+    decimal_fixer,
+    total_sessions_to_add_one_set,
+    "ok first test"
+  );
+
+  // NOTE: 4/22/2025. SEEMS TO WORK!
+  return [...array, ...single_set_sessions];
+};
+
+//  FIRST MESO - 2x
+//       3,2 2,2 = 9
+//       3,3 3,2 = 11
+//       4,3 3,3 = 13
+//       4,4 4,3 = 15
+
+// MIDDLE MESO - 3x
+//   3,3 3,2 3,2 = 16
+//   4,3 3,3 3,3 = 19
+//   4,4 4,3 4,3 = 22
+//   5,4 4,4 4,4 = 25
+
+//  FINAL MESO - 4x
+// 4,3 4,3 3,4 2 = 23
+// 4,4 4,4 4,4 3 = 27
+// 4,5 5,4 4,5 4 = 31
+// 5,5 5,5 5,4 5 = 34
+
+// 2,2 2,2 2,2 2 = 14
+// 3,2 3,2 3,2 3 = 18
+// 3,3 3,3 3,3 4 = 22
+// 4,3 4,3 4,3 5 = 26
+
 // MRV_INIT
-// 7  20  [2, 2]    [2, 2]   [2, 2]   [2]   [2]   [2]   [2]
-// 6  18  [2, 2]    [2, 2]   [2, 2]   [2]   [2]   [2]
-// 5  16  [2, 2]    [2, 2]   [2, 2]   [2]   [2]
-// 4  14  [2, 2]    [2, 2]   [2, 2]   [2]
-// 3  12  [2, 2]    [2, 2]   [2, 2]
-// 2   8  [2, 2]    [2, 2]
+// 7  20  [2, 2]   [2, 2]   [2, 2]   [2]   [2]   [2]   [2]
+// 6  18  [2, 2]   [2, 2]   [2, 2]   [2]   [2]   [2]
+// 5  16  [2, 2]   [2, 2]   [2, 2]   [2]   [2]
+// 4  14  [2, 2]   [2, 2]   [2, 2]   [2]
+// 3  12  [2, 2]   [2, 2]   [2, 2]
+// 2   8  [2, 2]   [2, 2]
 
 // MRV = 20-26
 // 7    [3, 3]    [3, 2]   [3, 2]   [3]   [3]   [2]   [2]

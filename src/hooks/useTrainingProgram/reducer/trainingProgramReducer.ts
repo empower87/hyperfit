@@ -290,6 +290,7 @@ export type TrainingProgramParamsType = {
 
 export type MusclePriorityVolumeType = {
   landmark: VolumeLandmarkType;
+  range: number[];
   exercisesPerSessionSchema: number;
 };
 export type MusclePriorityFrequencyType = {

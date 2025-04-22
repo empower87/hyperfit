@@ -3,12 +3,13 @@ import {
   getTotalExercisesFromSetMatrix,
   initializeSetProgression,
 } from "~/hooks/useTrainingProgram/utils/exercises/getExercises";
-import { getMuscleData } from "~/utils/getMuscleData";
+import { getJSONMuscle, getMuscleData } from "~/utils/getMuscleData";
 
 import {
   SplitSessionsType,
   type MusclePriorityType,
 } from "../../reducer/trainingProgramReducer";
+import { accumulateFinalMicrocycleSets } from "../exercises/repsAndWeightProgression";
 import {
   determineFrequencyByRange,
   getFrequencyRange,
@@ -21,6 +22,7 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
     muscle: "back",
     exercises: [],
     volume: {
+      range: [12, 20],
       landmark: "MRV",
       exercisesPerSessionSchema: 2,
     },
@@ -36,6 +38,7 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
     muscle: "delts_side",
     exercises: [],
     volume: {
+      range: [12, 20],
       landmark: "MRV",
       exercisesPerSessionSchema: 2,
     },
@@ -51,6 +54,7 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
     muscle: "triceps",
     exercises: [],
     volume: {
+      range: [12, 20],
       landmark: "MRV",
       exercisesPerSessionSchema: 1,
     },
@@ -66,6 +70,7 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
     muscle: "hamstrings",
     exercises: [],
     volume: {
+      range: [12, 20],
       landmark: "MRV",
       exercisesPerSessionSchema: 1,
     },
@@ -81,6 +86,7 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
     muscle: "quads",
     exercises: [],
     volume: {
+      range: [12, 20],
       landmark: "MEV",
       exercisesPerSessionSchema: 2,
     },
@@ -96,6 +102,7 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
     muscle: "delts_rear",
     exercises: [],
     volume: {
+      range: [12, 20],
       landmark: "MEV",
       exercisesPerSessionSchema: 1,
     },
@@ -111,6 +118,7 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
     muscle: "forearms",
     exercises: [],
     volume: {
+      range: [12, 20],
       landmark: "MEV",
       exercisesPerSessionSchema: 1,
     },
@@ -126,6 +134,7 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
     muscle: "traps",
     exercises: [],
     volume: {
+      range: [12, 20],
       landmark: "MEV",
       exercisesPerSessionSchema: 1,
     },
@@ -141,6 +150,7 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
     muscle: "biceps",
     exercises: [],
     volume: {
+      range: [12, 20],
       landmark: "MEV",
       exercisesPerSessionSchema: 1,
     },
@@ -156,6 +166,7 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
     muscle: "chest",
     exercises: [],
     volume: {
+      range: [12, 20],
       landmark: "MV",
       exercisesPerSessionSchema: 2,
     },
@@ -171,6 +182,7 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
     muscle: "calves",
     exercises: [],
     volume: {
+      range: [12, 20],
       landmark: "MV",
       exercisesPerSessionSchema: 1,
     },
@@ -186,6 +198,7 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
     muscle: "delts_front",
     exercises: [],
     volume: {
+      range: [12, 20],
       landmark: "MV",
       exercisesPerSessionSchema: 1,
     },
@@ -201,6 +214,7 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
     muscle: "abs",
     exercises: [],
     volume: {
+      range: [12, 20],
       landmark: "MV",
       exercisesPerSessionSchema: 1,
     },
@@ -216,6 +230,7 @@ export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
     muscle: "glutes",
     exercises: [],
     volume: {
+      range: [12, 20],
       landmark: "MV",
       exercisesPerSessionSchema: 1,
     },
@@ -245,6 +260,7 @@ export const getVolumeLandmarkForMuscle = (
   }
 };
 
+const DEFAULT_PROGRESSIVE_OVERLOAD_METHOD = "TRIPLE";
 export const onMusclePrioritization = (
   muscle_priority_list: MusclePriorityType[],
   breakpoints: [number, number],
@@ -256,6 +272,11 @@ export const onMusclePrioritization = (
   for (let i = 0; i < updated_list.length; i++) {
     const muscle = updated_list[i].muscle;
     const volume_landmark = getVolumeLandmarkForMuscle(i, breakpoints);
+    const muscle_json = getJSONMuscle(muscle);
+    const total_volume_range =
+      DEFAULT_PROGRESSIVE_OVERLOAD_METHOD === "TRIPLE"
+        ? muscle_json.volume[volume_landmark]
+        : [12, 20];
 
     const frequency_range = getFrequencyRange(
       muscle,
@@ -269,8 +290,10 @@ export const onMusclePrioritization = (
       breakpoints,
       total_sessions
     );
+
     updated_list[i].volume.landmark = volume_landmark;
     updated_list[i].frequency.target = target;
+    updated_list[i].volume.range = total_volume_range;
   }
   return updated_list;
 };
@@ -308,7 +331,10 @@ export const attachTargetFrequency = (
         ? muscleData[volume_landmark]
         : exercisesPerSessionSchema
     );
-
+    const test_final_week_sets = accumulateFinalMicrocycleSets(
+      prioritized_muscle.volume.range,
+      setProgressionMatrix[setProgressionMatrix.length - 1]
+    );
     console.log(
       muscle,
       split_sessions,
