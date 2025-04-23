@@ -179,27 +179,43 @@ const MIN_SETS = 2;
 const MAX_SETS = 5;
 const MAX_SETS_PER_SESSION = 12;
 
-const totalSessionsWithOneExercise = (frequency: number) => {
-  switch (frequency) {
-    case 7:
-      return 4;
-    case 6:
-      return 3;
-    case 5:
-      return 2;
-    case 4:
-      return 1;
-    default:
-      return 0;
+const totalSessionsWithOneExercise = (initial_sets: number[][]) => {
+  let total = 0;
+  for (let i = 0; i < initial_sets.length; i++) {
+    if (initial_sets[i].length === 1) {
+      total++;
+    }
   }
+  return total;
 };
 
 export const accumulateFinalMicrocycleSets = (
+  rank: number,
+  muscle_name: string,
   sets_range: number[],
   initial_sets: number[][]
 ) => {
   const frequency = initial_sets.length;
-  const total_one_exercise_sessions = totalSessionsWithOneExercise(frequency);
+  const total_one_exercise_sessions =
+    totalSessionsWithOneExercise(initial_sets);
+  const single_set_sessions: number[][] = Array.from(
+    Array(total_one_exercise_sessions),
+    (e, i) => [MAX_SETS]
+  );
+
+  if (total_one_exercise_sessions === frequency) {
+    console.log(
+      rank,
+      muscle_name,
+      sets_range,
+      initial_sets,
+      total_one_exercise_sessions,
+      single_set_sessions,
+      "ok first test - first first"
+    );
+    return single_set_sessions;
+  }
+
   const sets_to_subtract = total_one_exercise_sessions * MAX_SETS;
   const total_many_exercise_sets = sets_range[1] - sets_to_subtract;
 
@@ -221,6 +237,7 @@ export const accumulateFinalMicrocycleSets = (
       sets_ = sets_integer + 1;
       total_sessions_to_add_one_set--;
     }
+
     let split_sets = sets_ / 2;
     const sets_one = Math.floor(split_sets);
     const sets_two = Math.ceil(split_sets);
@@ -228,11 +245,10 @@ export const accumulateFinalMicrocycleSets = (
 
     array.push(sets);
   }
-  const single_set_sessions: number[][] = Array.from(
-    Array(total_one_exercise_sessions),
-    (e, i) => [e]
-  );
+
   console.log(
+    rank,
+    muscle_name,
     sets_range,
     initial_sets,
     array,

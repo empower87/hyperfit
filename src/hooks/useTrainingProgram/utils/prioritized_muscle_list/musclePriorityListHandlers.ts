@@ -273,6 +273,7 @@ export const onMusclePrioritization = (
     const muscle = updated_list[i].muscle;
     const volume_landmark = getVolumeLandmarkForMuscle(i, breakpoints);
     const muscle_json = getJSONMuscle(muscle);
+
     const total_volume_range =
       DEFAULT_PROGRESSIVE_OVERLOAD_METHOD === "TRIPLE"
         ? muscle_json.volume[volume_landmark]
@@ -332,9 +333,12 @@ export const attachTargetFrequency = (
         : exercisesPerSessionSchema
     );
     const test_final_week_sets = accumulateFinalMicrocycleSets(
+      i + 1,
+      muscle,
       prioritized_muscle.volume.range,
       setProgressionMatrix[setProgressionMatrix.length - 1]
     );
+
     console.log(
       muscle,
       split_sessions,
