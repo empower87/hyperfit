@@ -179,7 +179,7 @@ const MIN_SETS = 2;
 const MAX_SETS = 5;
 const MAX_SETS_PER_SESSION = 12;
 
-const totalSessionsWithOneExercise = (initial_sets: number[][]) => {
+const getTotalSessionsWithOneExercise = (initial_sets: number[][]) => {
   let total = 0;
   for (let i = 0; i < initial_sets.length; i++) {
     if (initial_sets[i].length === 1) {
@@ -219,6 +219,66 @@ const areSetsWithinRange = (sets_range: number[], sets: number[][]) => {
   return total_sets >= sets_range[0] && total_sets <= sets_range[1];
 };
 
+const filterOutZeroSets = (sets: number[][]) => {
+  return sets.filter((session) => {
+    const total_sets = session.reduce((acc, curr) => acc + curr, 0);
+    if (total_sets > 0) return session;
+  });
+};
+
+// to add = 5
+// sets: [[5]]
+
+// sets: [[5], [5]]
+const addAdditionalSets = (sets: number[], sets_to_add: number) => {
+  const total_sets = sets.reduce((acc, curr) => acc + curr, 0);
+
+  const loop_limit = sets.length + 1;
+  let sets_counter = sets_to_add;
+  for (let i = 0; i < loop_limit; i++) {
+    if (!sets[i] && sets_counter > 0) {
+      sets.push(sets_counter);
+      sets_counter = sets_counter - sets_counter;
+    }
+    const addable_sets = MAX_SETS - sets[i];
+    sets[i] = sets[i] + addable_sets;
+    sets_counter = sets_counter - addable_sets;
+  }
+  return { sets, sets_counter };
+};
+
+const adjustSets = (sets_range: number[], sets: number[][]) => {
+  const total_sets = sets.reduce((acc, curr) => acc + curr[0], 0);
+  let total_difference = sets_range[1] - total_sets;
+
+  let sets_to_add_per_session = Math.floor(total_difference / sets.length);
+
+  const sets_integer = Math.floor(sets_to_add_per_session);
+  const sets_decimal = sets_to_add_per_session - sets_integer;
+  const decimal_fixer = (sets_decimal * sets.length).toFixed();
+
+  let total_sessions_to_add_one_set = Number(decimal_fixer);
+
+  for (let i = 0; i < sets.length; i++) {
+    let session_sets = sets[i];
+    const stuff = addAdditionalSets(session_sets, sets_integer);
+    session_sets = stuff.sets;
+    total_difference = total_difference - stuff.sets_counter;
+
+    let add_only_one = total_sessions_to_add_one_set > 0 ? 1 : 0;
+    if (add_only_one) {
+      for (let j = 0; j < session_sets.length; j++) {
+        if (session_sets[j] < MAX_SETS && add_only_one > 0) {
+          session_sets[j] += 1;
+          total_sessions_to_add_one_set--;
+        }
+      }
+    }
+    sets[i] = session_sets;
+  }
+  return sets;
+};
+
 export const accumulateFinalMicrocycleSets = (
   rank: number,
   muscle_name: string,
@@ -227,7 +287,7 @@ export const accumulateFinalMicrocycleSets = (
 ) => {
   const frequency = initial_sets.length;
   const total_one_exercise_sessions =
-    totalSessionsWithOneExercise(initial_sets);
+    getTotalSessionsWithOneExercise(initial_sets);
   const single_set_sessions: number[][] = getSingleExerciseSessionSets(
     sets_range[1],
     total_one_exercise_sessions
@@ -242,6 +302,10 @@ export const accumulateFinalMicrocycleSets = (
     total_one_exercise_sessions === frequency ||
     total_many_exercise_sets <= 0
   ) {
+    const totals = single_set_sessions.reduce(
+      (acc, curr) => acc + curr.reduce((a, c) => a + c, 0),
+      0
+    );
     console.log(
       rank,
       muscle_name,
@@ -251,6 +315,21 @@ export const accumulateFinalMicrocycleSets = (
       single_set_sessions,
       "ok first test - first first"
     );
+    if (sets_range[1] > totals) {
+      const adjusted_sets = adjustSets(sets_range, single_set_sessions);
+      console.log(
+        rank,
+        muscle_name,
+        sets_range,
+        initial_sets,
+        total_one_exercise_sessions,
+        single_set_sessions,
+        adjusted_sets,
+        totals,
+        "ok first test - first first"
+      );
+      return adjusted_sets;
+    }
     return single_set_sessions;
   }
 
@@ -281,6 +360,39 @@ export const accumulateFinalMicrocycleSets = (
   }
 
   const total_sets = [...double_set_sessions, ...single_set_sessions];
+  const filtered_total_sets = filterOutZeroSets(total_sets);
+
+  const totals = filtered_total_sets.reduce(
+    (acc, curr) => acc + curr.reduce((a, c) => a + c, 0),
+    0
+  );
+
+  if (sets_range[1] > totals) {
+    console.log(
+      rank,
+      muscle_name,
+      sets_range,
+      initial_sets,
+      double_set_sessions,
+      single_set_sessions,
+      total_one_exercise_sessions,
+      sets_to_subtract,
+      total_many_exercise_sets,
+      remaining_sessions,
+      total_sets_per_two_exercise_session,
+      sets_integer,
+      sets_decimal,
+      decimal_fixer,
+      total_sessions_to_add_one_set,
+      total_sets,
+      filtered_total_sets,
+      totals,
+      "ok first test LOL"
+    );
+    const adjusted_sets = adjustSets(sets_range, filtered_total_sets);
+    return adjusted_sets;
+  }
+
   console.log(
     rank,
     muscle_name,
@@ -298,10 +410,11 @@ export const accumulateFinalMicrocycleSets = (
     decimal_fixer,
     total_sessions_to_add_one_set,
     total_sets,
+    filtered_total_sets,
+    totals,
     "ok first test"
   );
 
-  // NOTE: 4/22/2025. SEEMS TO WORK!
   return total_sets;
 };
 
