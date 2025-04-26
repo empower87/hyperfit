@@ -302,10 +302,6 @@ export const accumulateFinalMicrocycleSets = (
     total_one_exercise_sessions === frequency ||
     total_many_exercise_sets <= 0
   ) {
-    const totals = single_set_sessions.reduce(
-      (acc, curr) => acc + curr.reduce((a, c) => a + c, 0),
-      0
-    );
     console.log(
       rank,
       muscle_name,
@@ -315,21 +311,21 @@ export const accumulateFinalMicrocycleSets = (
       single_set_sessions,
       "ok first test - first first"
     );
-    if (sets_range[1] > totals) {
-      const adjusted_sets = adjustSets(sets_range, single_set_sessions);
-      console.log(
-        rank,
-        muscle_name,
-        sets_range,
-        initial_sets,
-        total_one_exercise_sessions,
-        single_set_sessions,
-        adjusted_sets,
-        totals,
-        "ok first test - first first"
-      );
-      return adjusted_sets;
-    }
+    // if (sets_range[1] > totals) {
+    //   const adjusted_sets = adjustSets(sets_range, single_set_sessions);
+    //   console.log(
+    //     rank,
+    //     muscle_name,
+    //     sets_range,
+    //     initial_sets,
+    //     total_one_exercise_sessions,
+    //     single_set_sessions,
+    //     adjusted_sets,
+    //     totals,
+    //     "ok first test - first first"
+    //   );
+    //   return adjusted_sets;
+    // }
     return single_set_sessions;
   }
 
@@ -367,31 +363,31 @@ export const accumulateFinalMicrocycleSets = (
     0
   );
 
-  if (sets_range[1] > totals) {
-    console.log(
-      rank,
-      muscle_name,
-      sets_range,
-      initial_sets,
-      double_set_sessions,
-      single_set_sessions,
-      total_one_exercise_sessions,
-      sets_to_subtract,
-      total_many_exercise_sets,
-      remaining_sessions,
-      total_sets_per_two_exercise_session,
-      sets_integer,
-      sets_decimal,
-      decimal_fixer,
-      total_sessions_to_add_one_set,
-      total_sets,
-      filtered_total_sets,
-      totals,
-      "ok first test LOL"
-    );
-    const adjusted_sets = adjustSets(sets_range, filtered_total_sets);
-    return adjusted_sets;
-  }
+  // if (sets_range[1] > totals) {
+  //   console.log(
+  //     rank,
+  //     muscle_name,
+  //     sets_range,
+  //     initial_sets,
+  //     double_set_sessions,
+  //     single_set_sessions,
+  //     total_one_exercise_sessions,
+  //     sets_to_subtract,
+  //     total_many_exercise_sets,
+  //     remaining_sessions,
+  //     total_sets_per_two_exercise_session,
+  //     sets_integer,
+  //     sets_decimal,
+  //     decimal_fixer,
+  //     total_sessions_to_add_one_set,
+  //     total_sets,
+  //     filtered_total_sets,
+  //     totals,
+  //     "ok first test LOL"
+  //   );
+  //   const adjusted_sets = adjustSets(sets_range, filtered_total_sets);
+  //   return adjusted_sets;
+  // }
 
   console.log(
     rank,
