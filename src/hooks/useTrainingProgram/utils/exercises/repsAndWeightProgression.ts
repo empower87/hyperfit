@@ -83,10 +83,6 @@ const ex_prog = {
 // 2. get setProgressionMatrix depending on progression_method.
 // 3.
 
-const SET = [1, 8, 105, 2];
-
-const MICROCYCLE = [8, 105, 2];
-
 // type SetsType = number;
 type RepsType = number;
 type LbsType = number;
@@ -226,10 +222,6 @@ const filterOutZeroSets = (sets: number[][]) => {
   });
 };
 
-// to add = 5
-// sets: [[5]]
-
-// sets: [[5], [5]]
 const addAdditionalSets = (sets: number[], sets_to_add: number) => {
   const total_sets = sets.reduce((acc, curr) => acc + curr, 0);
 
@@ -279,64 +271,167 @@ const adjustSets = (sets_range: number[], sets: number[][]) => {
   return sets;
 };
 
-// 34 / 4 = 8.5
-// = 9 + 9 + 8 + 8
-// = 10 + 10 + 9 + 5
-// FREQ | SUN  |  MON  |  TUE  |  WED  | THU  | FRI  | SAT     3-2-1 SETS      SET TOTAL
-//      |  1   |   2   |   3   |   4   |  5   |  6   |  7
-//--------------------------------------------------------------------------------------
-//  7x  |  2   |   1   |   2   |   1   |  2   |  1   |  1   =  0-3-4 =  0 + 30 + 20 = 50
-//  --  |  3   |   1   |   1   |   3   |  1   |  1   |  1   =  2-0-5 = 24 +  0 + 25 = 49
-//  --  |  3   |   1   |   1   |   2   |  1   |  2   |  1   =  1-2-4 = 12 + 20 + 20 = 52
-//  --  |  3   |   1   |   1   |   2   |  1   |  1   |  1   =  1-1-5 = 12 + 10 + 25 = 47
-//  --  |  3   |   1   |   1   |   1   |  1   |  1   |  1   =  1-0-6 = 12 +  0 + 30 = 42
-//  --  |  2   |   1   |   1   |   2   |  1   |  1   |  1   =  0-2-5 =  0 + 20 + 25 = 45
-//  --  |  1   |   1   |   1   |   2   |  1   |  1   |  1   =  0-1-6 =  0 + 10 + 30 = 40
-//  --  |  1   |   1   |   1   |   1   |  1   |  1   |  1   =  0-0-7 =  0 +  0 + 35 = 35
-// -------------------------------------------------------------------------------------
-//  6x  |  0   |   1   |   2   |   1   |  2   |  1   |  2   =  0-3-3 =  0 + 30 + 15 = 45
-//  --  |  0   |   3   |   1   |   1   |  2   |  1   |  2   =  1-2-3 = 12 + 20 + 15 = 47
-//  --  |  0   |   3   |   1   |   1   |  2   |  1   |  1   =  1-1-4 = 12 + 10 + 20 = 42
-//  --  |  0   |   3   |   1   |   1   |  3   |  1   |  1   =  2-0-4 = 24 +  0 + 20 = 44
-//  --  |  0   |   1   |   1   |   2   |  1   |  1   |  1   =  0-1-5 =  0 + 10 + 25 = 35
-//  --  |  0   |   1   |   1   |   1   |  1   |  1   |  1   =  0-0-6 =  0 +  0 + 30 = 30
-// -------------------------------------------------------------------------------------
-//  5x  |  0   |   2   |   1   |   2   |  0   |  2   |  1   =  0-3-2 =  0 + 30 + 10 = 40
-//  --  |  0   |   3   |   1   |   1   |  0   |  3   |  1   =  2-0-3 = 24 +  0 + 15 = 39
-//  --  |  0   |   3   |   1   |   1   |  0   |  2   |  1   =  1-1-3 = 12 + 10 + 15 = 37
-//  --  |  0   |   3   |   1   |   1   |  0   |  1   |  1   =  1-0-4 =  0 + 12 + 20 = 32
-//  --  |  0   |   1   |   1   |   1   |  0   |  1   |  1   =  0-0-5 =  0 +  0 + 25 = 25
-// -------------------------------------------------------------------------------------
-//  4x  |  0   |   2   |   0   |   2   |  0   |  2   |  1   =  0-3-1 =  0 + 30 +  5 = 35
-//  --  |  0   |   2   |   0   |   2   |  0   |  1   |  1   =  0-2-2 =  0 + 20 + 10 = 30
-//  --  |  0   |   2   |   0   |   2   |  0   |  2   |  1   =  0-1-3 =  0 + 10 + 15 = 25
-//  --  |  0   |   3   |   0   |   1   |  0   |  3   |  1   =  2-0-2 = 24 +  0 + 10 = 34
-//  --  |  0   |   3   |   0   |   1   |  0   |  2   |  1   =  1-1-2 = 12 + 10 + 10 = 37
-//  --  |  0   |   3   |   0   |   1   |  0   |  1   |  1   =  1-0-3 = 12 +  0 + 15 = 27
-//  --  |  0   |   1   |   0   |   1   |  0   |  1   |  1   =  0-0-4 =  0 +  0 + 20 = 20
-// -------------------------------------------------------------------------------------
-//  3x  |  0   |   2   |   0   |   0   |  2   |  0   |  1   =  0-2-1 =  0 + 20 +  5 = 25
-//  --  |  0   |   2   |   0   |   0   |  2   |  0   |  2   =  0-3-0 =  0 + 30 +  0 = 30
-//  --  |  0   |   2   |   0   |   0   |  1   |  0   |  1   =  0-1-2 =  0 + 10 + 10 = 20
-//  --  |  0   |   3   |   0   |   0   |  3   |  0   |  1   =  2-0-1 = 24 +  0 +  5 = 29
-//  --  |  0   |   3   |   0   |   0   |  2   |  0   |  1   =  1-1-1 = 12 + 10 +  5 = 27
-//  --  |  0   |   1   |   0   |   1   |  0   |  1   |  0   =  0-0-3 =  0 +  0 + 15 = 15
-// -------------------------------------------------------------------------------------
-//  2x  |  0   |   2   |   0   |   0   |  2   |  0   |  0   =  0-2-0 =  0 + 20 +  0 = 20
-//  --  |  0   |   2   |   0   |   0   |  1   |  0   |  0   =  0-1-1 =  0 + 10 +  5 = 15
-//  --  |  0   |   3   |   0   |   0   |  3   |  0   |  0   =  2-0-0 = 24 +  0 +  0 = 24
-//  --  |  0   |   3   |   0   |   0   |  2   |  0   |  0   =  1-1-0 = 12 + 10 +  0 = 22
-//  --  |  0   |   1   |   0   |   1   |  0   |  0   |  0   =  1-0-1 = 12 +  0 +  5 = 17
-//  --  |  0   |   1   |   0   |   1   |  0   |  0   |  0   =  0-0-2 =  0 +  0 + 10 = 10
-
 // NOTES: the max amount of exercises per sessions is determined by the rest period.
 // [1] = at least 24 hrs rest between sessions
 // [1, 2] = at least 48 hrs rest between sessions
 // [1, 2, 3] = at least 72 hrs rest between sessions
 
+const getMinSetRange = (matrix: number[][][]) => {
+  return matrix.map((row) => row.flat().reduce((acc, curr) => acc + curr, 0));
+};
+const getMaxSetRange = (matrix: number[][][]) => {
+  return matrix.map((row) =>
+    row.reduce(
+      (acc, curr) =>
+        acc +
+        (curr.length >= 3
+          ? 12
+          : curr.length === 2
+          ? 10
+          : curr.length === 1
+          ? 5
+          : 0),
+      0
+    )
+  );
+};
+
+const getIdealSetIndex = (max_sets_range: number[], max_sets: number) => {
+  let index = 0;
+  let diff = 50;
+  for (let i = 0; i < max_sets_range.length; i++) {
+    const curr = max_sets_range[i];
+    const curr_diff = curr - max_sets;
+    if (curr_diff < diff && curr >= max_sets) {
+      diff = curr_diff;
+      index = i;
+    }
+  }
+  return index;
+};
+
+// NOTE: By pulling from these matrices, every time a final microcycle set array is pushed out,
+//       it will be guaranteed to fulfill the set range requirements.
+export const getIdealSets = (frequency: number, set_range: number[]) => {
+  switch (frequency) {
+    case 7:
+      const max_sets_7 = getMaxSetRange(FREQUENCY_MATRIX_SEVEN);
+      const index_7 = getIdealSetIndex(max_sets_7, set_range[1]);
+      return FREQUENCY_MATRIX_SEVEN[index_7];
+    case 6:
+      const max_sets_6 = getMaxSetRange(FREQUENCY_MATRIX_SIX);
+      const index_6 = getIdealSetIndex(max_sets_6, set_range[1]);
+      return FREQUENCY_MATRIX_SIX[index_6];
+    case 5:
+      const max_sets_5 = getMaxSetRange(FREQUENCY_MATRIX_FIVE);
+      const index_5 = getIdealSetIndex(max_sets_5, set_range[1]);
+      return FREQUENCY_MATRIX_FIVE[index_5];
+    case 4:
+      const max_sets_4 = getMaxSetRange(FREQUENCY_MATRIX_FOUR);
+      const index_4 = getIdealSetIndex(max_sets_4, set_range[1]);
+      return FREQUENCY_MATRIX_FOUR[index_4];
+    case 3:
+      const max_sets_3 = getMaxSetRange(FREQUENCY_MATRIX_THREE);
+      const index_3 = getIdealSetIndex(max_sets_3, set_range[1]);
+      return FREQUENCY_MATRIX_THREE[index_3];
+    case 2:
+      const max_sets_2 = getMaxSetRange(FREQUENCY_MATRIX_TWO);
+      const index_2 = getIdealSetIndex(max_sets_2, set_range[1]);
+      return FREQUENCY_MATRIX_TWO[index_2];
+    default:
+      const max_sets_1 = getMaxSetRange(FREQUENCY_MATRIX_ONE);
+      const index_1 = getIdealSetIndex(max_sets_1, set_range[1]);
+      return FREQUENCY_MATRIX_ONE[index_1];
+  }
+};
+
+// prettier-ignore
+const FREQUENCY_MATRIX_SEVEN = [                                                 // SETS   INIT MAX
+  [[2, 2, 2], [      2], [      2], [   2, 2], [      2], [   2, 2], [      2]], // 1-2-4   22  52
+  [[   2, 2], [      2], [   2, 2], [      2], [   2, 2], [      2], [      2]], // 0-3-4   20  50
+  [[2, 2, 2], [      2], [      2], [2, 2, 2], [      2], [      2], [      2]], // 2-0-5   22  49
+  [[2, 2, 2], [      2], [      2], [   2, 2], [      2], [      2], [      2]], // 1-1-5   20  47
+  [[   2, 2], [      2], [   2, 2], [      2], [      2], [      2], [      2]], // 0-2-5   18  45
+  [[2, 2, 2], [      2], [      2], [      2], [      2], [      2], [      2]], // 1-0-6   18  42
+  [[   2, 2], [      2], [      2], [      2], [      2], [      2], [      2]], // 0-1-6   16  40
+  [[      2], [      2], [      2], [      2], [      2], [      2], [      2]], // 0-0-7   14  35
+]
+const IDEAL_FREQUENCY_MATRIX_SEVEN = FREQUENCY_MATRIX_SEVEN[4];
+
+// prettier-ignore
+const FREQUENCY_MATRIX_SIX = [                                                   // SETS   INIT MAX
+  [[       ], [2, 2, 2], [      2], [   2, 2], [      2], [   2, 2], [      2]], // 1-2-3   20  47
+  [[       ], [   2, 2], [      2], [   2, 2], [      2], [   2, 2], [      2]], // 0-3-3   18  45
+  [[       ], [2, 2, 2], [      2], [      2], [2, 2, 2], [      2], [      2]], // 2-0-4   20  44
+  [[       ], [2, 2, 2], [      2], [   2, 2], [      2], [      2], [      2]], // 1-1-4   18  42
+  [[       ], [   2, 2], [      2], [      2], [      2], [      2], [      2]], // 0-1-5   14  35
+  [[       ], [      2], [      2], [      2], [      2], [      2], [      2]], // 0-0-6   12  30
+]
+const IDEAL_FREQUENCY_MATRIX_SIX = FREQUENCY_MATRIX_SIX[4];
+
+// prettier-ignore
+const FREQUENCY_MATRIX_FIVE = [                                                  // SETS   INIT MAX
+  [[       ], [   2, 2], [      2], [   2, 2], [       ], [   2, 2], [      2]], // 0-3-2   16  40
+  [[       ], [2, 2, 2], [      2], [      2], [       ], [2, 2, 2], [      2]], // 2-0-3   18  39
+  [[       ], [2, 2, 2], [      2], [      2], [       ], [   2, 2], [      2]], // 1-1-3   16  37
+  [[       ], [2, 2, 2], [      2], [      2], [       ], [      2], [      2]], // 1-0-4   14  32
+  [[       ], [      2], [      2], [      2], [       ], [      2], [      2]], // 0-0-5   10  25
+]
+const IDEAL_FREQUENCY_MATRIX_FIVE = FREQUENCY_MATRIX_FIVE[0];
+
+// prettier-ignore
+const FREQUENCY_MATRIX_FOUR = [                                                  // SETS   INIT MAX
+  [[       ], [   2, 2], [       ], [   2, 2], [       ], [   2, 2], [      2]], // 0-3-1   14  35
+  [[       ], [2, 2, 2], [       ], [      2], [       ], [2, 2, 2], [      2]], // 2-0-2   16  34
+  [[       ], [2, 2, 2], [       ], [      2], [       ], [   2, 2], [      2]], // 1-1-2   14  32
+  [[       ], [   2, 2], [       ], [   2, 2], [       ], [      2], [      2]], // 0-2-2   12  30
+  [[       ], [2, 2, 2], [       ], [      2], [       ], [      2], [      2]], // 1-0-3   12  27
+  [[       ], [   2, 2], [       ], [      2], [       ], [      2], [      2]], // 0-1-3   10  25
+  [[       ], [      2], [       ], [      2], [       ], [      2], [      2]], // 0-0-4    8  20
+]
+const IDEAL_FREQUENCY_MATRIX_FOUR = FREQUENCY_MATRIX_FOUR[0];
+
+// prettier-ignore
+const FREQUENCY_MATRIX_THREE = [                                                 // SETS   INIT MAX
+  [[       ], [   2, 2], [       ], [   2, 2], [       ], [   2, 2], [       ]], // 0-3-0   16  30
+  [[       ], [2, 2, 2], [       ], [      2], [       ], [2, 2, 2], [       ]], // 2-0-1   12  29
+  [[       ], [2, 2, 2], [       ], [      2], [       ], [   2, 2], [       ]], // 1-1-1   12  27
+  [[       ], [   2, 2], [       ], [   2, 2], [       ], [      2], [       ]], // 0-2-1   14  25
+  [[       ], [   2, 2], [       ], [      2], [       ], [      2], [       ]], // 0-1-2   14  20
+  [[       ], [      2], [       ], [      2], [       ], [      2], [       ]], // 0-1-3   10  15
+]
+const IDEAL_FREQUENCY_MATRIX_THREE = FREQUENCY_MATRIX_THREE[0];
+
+// prettier-ignore
+const FREQUENCY_MATRIX_TWO = [                                                   // SETS   INIT MAX
+  [[       ], [2, 2, 2], [       ], [       ], [       ], [2, 2, 2], [       ]], // 2-0-0   12  24
+  [[       ], [2, 2, 2], [       ], [       ], [       ], [   2, 2], [       ]], // 1-1-0   10  22
+  [[       ], [   2, 2], [       ], [       ], [       ], [   2, 2], [       ]], // 0-2-0    8  20
+  [[       ], [2, 2, 2], [       ], [       ], [       ], [      2], [       ]], // 1-0-1    8  17
+  [[       ], [   2, 2], [       ], [       ], [       ], [      2], [       ]], // 0-1-1    6  15
+  [[       ], [      2], [       ], [       ], [       ], [      2], [       ]], // 0-0-2    4  10
+]
+const IDEAL_FREQUENCY_MATRIX_TWO = FREQUENCY_MATRIX_TWO[1];
+
+// prettier-ignore
+const FREQUENCY_MATRIX_ONE = [                                                   // SETS   INIT MAX
+  [[       ], [2, 2, 2], [       ], [       ], [       ], [       ], [       ]], // 1-0-0    6  12
+  [[       ], [   2, 2], [       ], [       ], [       ], [       ], [       ]], // 0-1-0    4  10
+  [[       ], [      2], [       ], [       ], [       ], [       ], [       ]], // 0-0-1    2   5
+]
+const IDEAL_FREQUENCY_MATRIX_ONE = FREQUENCY_MATRIX_ONE[0];
+
+const FREQUENCY_MATRIX_COMBINED = [
+  FREQUENCY_MATRIX_ONE,
+  FREQUENCY_MATRIX_TWO,
+  FREQUENCY_MATRIX_THREE,
+  FREQUENCY_MATRIX_FOUR,
+  FREQUENCY_MATRIX_FIVE,
+  FREQUENCY_MATRIX_SIX,
+  FREQUENCY_MATRIX_SEVEN,
+];
+
 export const accumulateFinalMicrocycleSets = (
-  rank: number,
-  muscle_name: string,
   sets_range: number[],
   initial_sets: number[][]
 ) => {
@@ -358,8 +453,6 @@ export const accumulateFinalMicrocycleSets = (
     total_many_exercise_sets <= 0
   ) {
     console.log(
-      rank,
-      muscle_name,
       sets_range,
       initial_sets,
       total_one_exercise_sessions,
@@ -418,35 +511,7 @@ export const accumulateFinalMicrocycleSets = (
     0
   );
 
-  // if (sets_range[1] > totals) {
-  //   console.log(
-  //     rank,
-  //     muscle_name,
-  //     sets_range,
-  //     initial_sets,
-  //     double_set_sessions,
-  //     single_set_sessions,
-  //     total_one_exercise_sessions,
-  //     sets_to_subtract,
-  //     total_many_exercise_sets,
-  //     remaining_sessions,
-  //     total_sets_per_two_exercise_session,
-  //     sets_integer,
-  //     sets_decimal,
-  //     decimal_fixer,
-  //     total_sessions_to_add_one_set,
-  //     total_sets,
-  //     filtered_total_sets,
-  //     totals,
-  //     "ok first test LOL"
-  //   );
-  //   const adjusted_sets = adjustSets(sets_range, filtered_total_sets);
-  //   return adjusted_sets;
-  // }
-
   console.log(
-    rank,
-    muscle_name,
     sets_range,
     initial_sets,
     double_set_sessions,

@@ -9,7 +9,10 @@ import {
   SplitSessionsType,
   type MusclePriorityType,
 } from "../../reducer/trainingProgramReducer";
-import { accumulateFinalMicrocycleSets } from "../exercises/repsAndWeightProgression";
+import {
+  accumulateFinalMicrocycleSets,
+  getIdealSets,
+} from "../exercises/repsAndWeightProgression";
 import {
   determineFrequencyByRange,
   getFrequencyRange,
@@ -332,18 +335,21 @@ export const attachTargetFrequency = (
         ? muscleData[volume_landmark]
         : exercisesPerSessionSchema
     );
+    const ideal_sets = getIdealSets(target, prioritized_muscle.volume.range);
+    const ideal_sets_filtered = ideal_sets.filter((set) => set.length > 0);
     const test_final_week_sets = accumulateFinalMicrocycleSets(
-      i + 1,
-      muscle,
       prioritized_muscle.volume.range,
-      setProgressionMatrix[setProgressionMatrix.length - 1]
+      ideal_sets_filtered
     );
 
     console.log(
       muscle,
       split_sessions,
       target,
+      prioritized_muscle.volume.range,
       frequencyProgression,
+      ideal_sets,
+      ideal_sets_filtered,
       "THESE KINDA SHOULD BE THE SAME I THINK"
     );
 
