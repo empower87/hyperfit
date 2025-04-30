@@ -15,7 +15,13 @@
     },
     "restPeriod": 1,
     "systemicallyFatiguing": false,
-    "localSystemicFatigue": []
+    "localSystemicFatigue": [],
+    "exteriorAnatomy": [
+      "Rectus Abdominis (Upper)",
+      "Rectus Abdominis (Lower)",
+      "External Obliques",
+      "Serratus"
+    ]
   },
   {
     "name": "back",
@@ -33,7 +39,15 @@
     },
     "restPeriod": 2,
     "systemicallyFatiguing": true,
-    "localSystemicFatigue": ["biceps"]
+    "localSystemicFatigue": ["biceps"],
+    "exteriorAnatomy": [
+      "Trapezius (Upper)",
+      "Trapezius (Lower)",
+      "Teres Major",
+      "Teres Minor",
+      "Infraspinatus",
+      "Latissimus Dorsi"
+    ]
   },
   {
     "name": "biceps",
@@ -51,7 +65,12 @@
     },
     "restPeriod": 1,
     "systemicallyFatiguing": false,
-    "localSystemicFatigue": ["back"]
+    "localSystemicFatigue": ["back"],
+    "exteriorAnatomy": [
+      "Biceps Brachii (Long Head)",
+      "Biceps Brachii (Short Head)",
+      "Brachialis"
+    ]
   },
   {
     "name": "calves",
@@ -69,7 +88,8 @@
     },
     "restPeriod": 1,
     "systemicallyFatiguing": false,
-    "localSystemicFatigue": ["hamstrings"]
+    "localSystemicFatigue": ["hamstrings"],
+    "exteriorAnatomy": []
   },
   {
     "name": "chest",
@@ -87,7 +107,8 @@
     },
     "restPeriod": 2,
     "systemicallyFatiguing": true,
-    "localSystemicFatigue": ["triceps", "delts_front"]
+    "localSystemicFatigue": ["triceps", "delts_front"],
+    "exteriorAnatomy": []
   },
   {
     "name": "delts_front",
@@ -105,7 +126,8 @@
     },
     "restPeriod": 2,
     "systemicallyFatiguing": false,
-    "localSystemicFatigue": ["chest"]
+    "localSystemicFatigue": ["chest"],
+    "exteriorAnatomy": []
   },
   {
     "name": "delts_rear",
@@ -123,7 +145,8 @@
     },
     "restPeriod": 1,
     "systemicallyFatiguing": false,
-    "localSystemicFatigue": ["back", "delts_side", "delts_front"]
+    "localSystemicFatigue": ["back", "delts_side", "delts_front"],
+    "exteriorAnatomy": []
   },
   {
     "name": "delts_side",
@@ -141,7 +164,8 @@
     },
     "restPeriod": 1,
     "systemicallyFatiguing": false,
-    "localSystemicFatigue": ["delts_rear", "delts_front", "traps"]
+    "localSystemicFatigue": ["delts_rear", "delts_front", "traps"],
+    "exteriorAnatomy": []
   },
   {
     "name": "forearms",
@@ -159,7 +183,8 @@
     },
     "restPeriod": 1,
     "systemicallyFatiguing": false,
-    "localSystemicFatigue": ["biceps"]
+    "localSystemicFatigue": ["biceps"],
+    "exteriorAnatomy": []
   },
   {
     "name": "glutes",
@@ -177,7 +202,8 @@
     },
     "restPeriod": 2,
     "systemicallyFatiguing": true,
-    "localSystemicFatigue": ["hamstrings", "quads"]
+    "localSystemicFatigue": ["hamstrings", "quads"],
+    "exteriorAnatomy": []
   },
   {
     "name": "hamstrings",
@@ -195,7 +221,8 @@
     },
     "restPeriod": 2,
     "systemicallyFatiguing": true,
-    "localSystemicFatigue": ["quads", "hamstrings"]
+    "localSystemicFatigue": ["quads", "hamstrings"],
+    "exteriorAnatomy": []
   },
   {
     "name": "quads",
@@ -213,7 +240,8 @@
     },
     "restPeriod": 2,
     "systemicallyFatiguing": true,
-    "localSystemicFatigue": ["hamstrings", "glutes"]
+    "localSystemicFatigue": ["hamstrings", "glutes"],
+    "exteriorAnatomy": []
   },
   {
     "name": "traps",
@@ -231,7 +259,8 @@
     },
     "restPeriod": 1,
     "systemicallyFatiguing": false,
-    "localSystemicFatigue": ["delts_rear", "delts_side", "delts_front"]
+    "localSystemicFatigue": ["delts_rear", "delts_side", "delts_front"],
+    "exteriorAnatomy": []
   },
   {
     "name": "triceps",
@@ -249,6 +278,7 @@
     },
     "restPeriod": 1,
     "systemicallyFatiguing": false,
-    "localSystemicFatigue": ["chest"]
+    "localSystemicFatigue": ["chest"],
+    "exteriorAnatomy": []
   }
 ]

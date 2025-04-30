@@ -299,6 +299,7 @@ const getMaxSetRange = (matrix: number[][][]) => {
 const getIdealSetIndex = (max_sets_range: number[], max_sets: number) => {
   let index = 0;
   let diff = 50;
+
   for (let i = 0; i < max_sets_range.length; i++) {
     const curr = max_sets_range[i];
     const curr_diff = curr - max_sets;
@@ -307,8 +308,15 @@ const getIdealSetIndex = (max_sets_range: number[], max_sets: number) => {
       index = i;
     }
   }
+
   return index;
 };
+
+
+// TODO: 4/30/25 --------------
+//      1. muscle-data.json. Finish recording external anatomy of each muscle. Potentially break that down further into bodybuilding terms.
+//      2. Potentially make use of how many exercises are involved in each frequency set range. With that information and the breakdown of muscles anatomy
+//         determine which amount of exercises will be needed to fully develop that muscle group.
 
 // NOTE: By pulling from these matrices, every time a final microcycle set array is pushed out,
 //       it will be guaranteed to fulfill the set range requirements.
@@ -370,24 +378,25 @@ const FREQUENCY_MATRIX_SIX = [                                                  
 const IDEAL_FREQUENCY_MATRIX_SIX = FREQUENCY_MATRIX_SIX[4];
 
 // prettier-ignore
-const FREQUENCY_MATRIX_FIVE = [                                                  // SETS   INIT MAX
-  [[       ], [   2, 2], [      2], [   2, 2], [       ], [   2, 2], [      2]], // 0-3-2   16  40
-  [[       ], [2, 2, 2], [      2], [      2], [       ], [2, 2, 2], [      2]], // 2-0-3   18  39
-  [[       ], [2, 2, 2], [      2], [      2], [       ], [   2, 2], [      2]], // 1-1-3   16  37
-  [[       ], [2, 2, 2], [      2], [      2], [       ], [      2], [      2]], // 1-0-4   14  32
-  [[       ], [      2], [      2], [      2], [       ], [      2], [      2]], // 0-0-5   10  25
+const FREQUENCY_MATRIX_FIVE = [                                                  // SETS   INIT MAX EXERCISES
+  [[       ], [   2, 2], [      2], [   2, 2], [       ], [   2, 2], [      2]], // 0-3-2   16  40  8
+  [[       ], [2, 2, 2], [      2], [      2], [       ], [2, 2, 2], [      2]], // 2-0-3   18  39  9
+  [[       ], [2, 2, 2], [      2], [      2], [       ], [   2, 2], [      2]], // 1-1-3   16  37  8
+  [[       ], [2, 2, 2], [      2], [      2], [       ], [      2], [      2]], // 1-0-4   14  32  7
+  [[       ], [   2, 2], [      2], [      2], [       ], [      2], [      2]], // 0-1-4   12  30  6
+  [[       ], [      2], [      2], [      2], [       ], [      2], [      2]], // 0-0-5   10  25  5
 ]
 const IDEAL_FREQUENCY_MATRIX_FIVE = FREQUENCY_MATRIX_FIVE[0];
 
 // prettier-ignore
-const FREQUENCY_MATRIX_FOUR = [                                                  // SETS   INIT MAX
-  [[       ], [   2, 2], [       ], [   2, 2], [       ], [   2, 2], [      2]], // 0-3-1   14  35
-  [[       ], [2, 2, 2], [       ], [      2], [       ], [2, 2, 2], [      2]], // 2-0-2   16  34
-  [[       ], [2, 2, 2], [       ], [      2], [       ], [   2, 2], [      2]], // 1-1-2   14  32
-  [[       ], [   2, 2], [       ], [   2, 2], [       ], [      2], [      2]], // 0-2-2   12  30
-  [[       ], [2, 2, 2], [       ], [      2], [       ], [      2], [      2]], // 1-0-3   12  27
-  [[       ], [   2, 2], [       ], [      2], [       ], [      2], [      2]], // 0-1-3   10  25
-  [[       ], [      2], [       ], [      2], [       ], [      2], [      2]], // 0-0-4    8  20
+const FREQUENCY_MATRIX_FOUR = [                                                  // SETS   INIT MAX EXERCISES
+  [[       ], [   2, 2], [       ], [   2, 2], [       ], [   2, 2], [      2]], // 0-3-1   14  35  8
+  [[       ], [2, 2, 2], [       ], [      2], [       ], [2, 2, 2], [      2]], // 2-0-2   16  34  8
+  [[       ], [2, 2, 2], [       ], [      2], [       ], [   2, 2], [      2]], // 1-1-2   14  32  7
+  [[       ], [   2, 2], [       ], [   2, 2], [       ], [      2], [      2]], // 0-2-2   12  30  6
+  [[       ], [2, 2, 2], [       ], [      2], [       ], [      2], [      2]], // 1-0-3   12  27  6
+  [[       ], [   2, 2], [       ], [      2], [       ], [      2], [      2]], // 0-1-3   10  25  5
+  [[       ], [      2], [       ], [      2], [       ], [      2], [      2]], // 0-0-4    8  20  4
 ]
 const IDEAL_FREQUENCY_MATRIX_FOUR = FREQUENCY_MATRIX_FOUR[0];
 
