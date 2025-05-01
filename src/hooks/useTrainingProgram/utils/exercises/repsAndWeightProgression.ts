@@ -312,11 +312,11 @@ const getIdealSetIndex = (max_sets_range: number[], max_sets: number) => {
   return index;
 };
 
-
-// TODO: 4/30/25 --------------
+// TODO: 4/30/25 -------------------------
 //      1. muscle-data.json. Finish recording external anatomy of each muscle. Potentially break that down further into bodybuilding terms.
 //      2. Potentially make use of how many exercises are involved in each frequency set range. With that information and the breakdown of muscles anatomy
 //         determine which amount of exercises will be needed to fully develop that muscle group.
+//      3. 5/1/25.. Potentially go throw and hardcode a desired amount of exercises per group.
 
 // NOTE: By pulling from these matrices, every time a final microcycle set array is pushed out,
 //       it will be guaranteed to fulfill the set range requirements.

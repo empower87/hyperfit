@@ -41,13 +41,12 @@
     "systemicallyFatiguing": true,
     "localSystemicFatigue": ["biceps"],
     "exteriorAnatomy": [
-      "Trapezius (Upper)",
-      "Trapezius (Lower)",
       "Teres Major",
       "Teres Minor",
       "Infraspinatus",
       "Latissimus Dorsi"
-    ]
+    ],
+    "bodybuildingAnatomy": ["Back (Upper)", "Lats (Upper)", "Lats (Lower)"]
   },
   {
     "name": "biceps",
@@ -70,7 +69,8 @@
       "Biceps Brachii (Long Head)",
       "Biceps Brachii (Short Head)",
       "Brachialis"
-    ]
+    ],
+    "bodybuildingAnatomy": ["Biceps (Long Head)", "Biceps (Short Head)"]
   },
   {
     "name": "calves",
@@ -89,7 +89,8 @@
     "restPeriod": 1,
     "systemicallyFatiguing": false,
     "localSystemicFatigue": ["hamstrings"],
-    "exteriorAnatomy": []
+    "exteriorAnatomy": ["Gastrocnemius", "Soleus"],
+    "bodybuildingAnatomy": ["Calves"]
   },
   {
     "name": "chest",
@@ -108,7 +109,8 @@
     "restPeriod": 2,
     "systemicallyFatiguing": true,
     "localSystemicFatigue": ["triceps", "delts_front"],
-    "exteriorAnatomy": []
+    "exteriorAnatomy": ["Pectoralis Major"],
+    "bodybuildingAnatomy": ["Pecs (Upper)", "Pecs (Middle)", "Pecs (Lower)"]
   },
   {
     "name": "delts_front",
@@ -127,7 +129,8 @@
     "restPeriod": 2,
     "systemicallyFatiguing": false,
     "localSystemicFatigue": ["chest"],
-    "exteriorAnatomy": []
+    "exteriorAnatomy": ["Deltoid (Anterior)"],
+    "bodybuildingAnatomy": ["Delts (Front)"]
   },
   {
     "name": "delts_rear",
@@ -146,7 +149,8 @@
     "restPeriod": 1,
     "systemicallyFatiguing": false,
     "localSystemicFatigue": ["back", "delts_side", "delts_front"],
-    "exteriorAnatomy": []
+    "exteriorAnatomy": ["Deltoid (Posterior)"],
+    "bodybuildingAnatomy": ["Delts (Rear)"]
   },
   {
     "name": "delts_side",
@@ -165,7 +169,8 @@
     "restPeriod": 1,
     "systemicallyFatiguing": false,
     "localSystemicFatigue": ["delts_rear", "delts_front", "traps"],
-    "exteriorAnatomy": []
+    "exteriorAnatomy": ["Deltoid (Lateral)"],
+    "bodybuildingAnatomy": ["Delts (Side)"]
   },
   {
     "name": "forearms",
@@ -184,7 +189,19 @@
     "restPeriod": 1,
     "systemicallyFatiguing": false,
     "localSystemicFatigue": ["biceps"],
-    "exteriorAnatomy": []
+    "exteriorAnatomy": [
+      "Brachioradialis",
+      "Extensor Carpi Radialis Longus & Brevis",
+      "Extensor Digitorum",
+      "Extensor Digit Minimi",
+      "Extensor Carpi Ulnaris",
+      "Anconeus",
+      "Flexor Carpi Ulnaris",
+      "Palmaris Longus",
+      "Flexor Carpi Radialis",
+      "Pronator Teres"
+    ],
+    "bodybuildingAnatomy": ["Brachioradialis", "Flexors", "Extensors"]
   },
   {
     "name": "glutes",
@@ -203,7 +220,8 @@
     "restPeriod": 2,
     "systemicallyFatiguing": true,
     "localSystemicFatigue": ["hamstrings", "quads"],
-    "exteriorAnatomy": []
+    "exteriorAnatomy": ["Glutes Maximus", "Glutes Medius"],
+    "bodybuildingAnatomy": ["Gluteus Maximus", "Gluteus Medius"]
   },
   {
     "name": "hamstrings",
@@ -222,7 +240,8 @@
     "restPeriod": 2,
     "systemicallyFatiguing": true,
     "localSystemicFatigue": ["quads", "hamstrings"],
-    "exteriorAnatomy": []
+    "exteriorAnatomy": ["Biceps Femoris", "Semimembranosus", "Semitendinosus"],
+    "bodybuildingAnatomy": ["Biceps Femoris"]
   },
   {
     "name": "quads",
@@ -241,7 +260,15 @@
     "restPeriod": 2,
     "systemicallyFatiguing": true,
     "localSystemicFatigue": ["hamstrings", "glutes"],
-    "exteriorAnatomy": []
+    "interorAnatomy": ["Vastus Intermedius"],
+    "exteriorAnatomy": [
+      "Vastus Lateralis",
+      "Vastus Medialis",
+      "Rectus Femoris",
+      "Sartorius",
+      "Adductor Lungus"
+    ],
+    "bodybuildingAnatomy": ["Quads Vastus", "Quads Rectus", "Adductors"]
   },
   {
     "name": "traps",
@@ -260,7 +287,8 @@
     "restPeriod": 1,
     "systemicallyFatiguing": false,
     "localSystemicFatigue": ["delts_rear", "delts_side", "delts_front"],
-    "exteriorAnatomy": []
+    "exteriorAnatomy": ["Trapezius"],
+    "bodybuildingAnatomy": ["Traps (Upper)", "Traps (Middle)", "Traps (Lower)"]
   },
   {
     "name": "triceps",
@@ -279,6 +307,7 @@
     "restPeriod": 1,
     "systemicallyFatiguing": false,
     "localSystemicFatigue": ["chest"],
-    "exteriorAnatomy": []
+    "exteriorAnatomy": ["Triceps Brachii"],
+    "bodybuildingAnatomy": ["Triceps (Lateral Head)", "Triceps (Long Head)"]
   }
 ]
