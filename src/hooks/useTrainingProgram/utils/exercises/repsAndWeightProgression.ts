@@ -257,7 +257,7 @@ const adjustSets = (sets_range: number[], sets: number[][]) => {
     session_sets = stuff.sets;
     total_difference = total_difference - stuff.sets_counter;
 
-    let add_only_one = total_sessions_to_add_one_set > 0 ? 1 : 0;
+    const add_only_one = total_sessions_to_add_one_set > 0 ? 1 : 0;
     if (add_only_one) {
       for (let j = 0; j < session_sets.length; j++) {
         if (session_sets[j] < MAX_SETS && add_only_one > 0) {
@@ -303,6 +303,7 @@ const getIdealSetIndex = (max_sets_range: number[], max_sets: number) => {
   for (let i = 0; i < max_sets_range.length; i++) {
     const curr = max_sets_range[i];
     const curr_diff = curr - max_sets;
+
     if (curr_diff < diff && curr >= max_sets) {
       diff = curr_diff;
       index = i;
@@ -317,9 +318,11 @@ const getIdealSetIndex = (max_sets_range: number[], max_sets: number) => {
 //      2. Potentially make use of how many exercises are involved in each frequency set range. With that information and the breakdown of muscles anatomy
 //         determine which amount of exercises will be needed to fully develop that muscle group.
 //      3. 5/1/25.. Potentially go throw and hardcode a desired amount of exercises per group.
+//      4. 5/2/25
 
 // NOTE: By pulling from these matrices, every time a final microcycle set array is pushed out,
 //       it will be guaranteed to fulfill the set range requirements.
+
 export const getIdealSets = (frequency: number, set_range: number[]) => {
   switch (frequency) {
     case 7:
