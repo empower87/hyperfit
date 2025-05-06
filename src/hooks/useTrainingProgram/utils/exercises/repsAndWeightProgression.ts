@@ -297,7 +297,7 @@ const getMaxSetRange = (matrix: number[][][]) => {
 };
 
 const getIdealSetIndex = (max_sets_range: number[], max_sets: number) => {
-  let index = 0;
+  let index = -1
   let diff = 50;
 
   for (let i = 0; i < max_sets_range.length; i++) {
@@ -313,12 +313,71 @@ const getIdealSetIndex = (max_sets_range: number[], max_sets: number) => {
   return index;
 };
 
+
+type ExerciseSessionsType = {
+  "1": number[][][]
+  "2": number[][][]
+  "3": number[][][]
+}
+const splitMatricesByExercisesInASession = (matrix: number[][][]) => {
+
+  const exercise_sessions: ExerciseSessionsType = {
+    "1": [],
+    "2": [],
+    "3": []
+  }
+
+  for (let i = 0; i < matrix.length; i++) {
+    let exercises_key: "1" | "2" | "3" = "1"
+    const current_row = matrix[i]
+    for (let j = 0; j < matrix[i].length; j++) {
+      const curr = matrix[i][j]
+      if (curr.length === 3) {
+        exercises_key = "3"
+        break;
+      }
+      if (curr.length === 2) {
+        exercises_key = "2"
+      }
+    }
+    exercise_sessions[exercises_key].push(current_row)
+  }
+  return exercise_sessions
+}
+
+// NOTE: may be easier to just loop thru array backwards and check against variation.
+const filterMatrix = (
+  exercise_sessions: ExerciseSessionsType,
+  variationPerSessionRange: number[],
+  maxSets: number,
+  matrix: number[][][],
+) => {
+  const max = variationPerSessionRange[1]
+  
+
+  for (let i = max; i >= 1; i--) {
+    const key = i.toString()
+    const range = getMaxSetRange(exercise_sessions[key as "1" | "2" | "3"])
+    const index = getIdealSetIndex(range, maxSets)
+
+  }
+
+  let index_one = -1
+  let index_two = -1
+  
+  for (let i = 0; i < matrix.length; i++) {
+
+  }
+
+}
+
+
 // TODO: 4/30/25 -------------------------
 //      1. muscle-data.json. Finish recording external anatomy of each muscle. Potentially break that down further into bodybuilding terms.
 //      2. Potentially make use of how many exercises are involved in each frequency set range. With that information and the breakdown of muscles anatomy
 //         determine which amount of exercises will be needed to fully develop that muscle group.
 //      3. 5/1/25.. Potentially go throw and hardcode a desired amount of exercises per group.
-//      4. 5/2/25
+//      4. 5/2/25.. Have to sort based on closest to range of desired sets. Then filter through to see if it fits within variationPerSessionRange.
 
 // NOTE: By pulling from these matrices, every time a final microcycle set array is pushed out,
 //       it will be guaranteed to fulfill the set range requirements.
