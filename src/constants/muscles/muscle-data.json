@@ -155,7 +155,7 @@
     "systemicallyFatiguing": false,
     "localSystemicFatigue": ["chest"],
     "exteriorAnatomy": ["Deltoid (Anterior)"],
-    "bodybuildingAnatomy": ["Delts (Front)"]
+    "bodybuildingAnatomy": ["Front Delts"]
   },
   {
     "name": "delts_rear",
@@ -179,7 +179,7 @@
     "systemicallyFatiguing": false,
     "localSystemicFatigue": ["back", "delts_side", "delts_front"],
     "exteriorAnatomy": ["Deltoid (Posterior)"],
-    "bodybuildingAnatomy": ["Delts (Rear)"]
+    "bodybuildingAnatomy": ["Rear Delts"]
   },
   {
     "name": "delts_side",
@@ -203,7 +203,7 @@
     "systemicallyFatiguing": false,
     "localSystemicFatigue": ["delts_rear", "delts_front", "traps"],
     "exteriorAnatomy": ["Deltoid (Lateral)"],
-    "bodybuildingAnatomy": ["Delts (Side)"]
+    "bodybuildingAnatomy": ["Side Delts"]
   },
   {
     "name": "forearms",

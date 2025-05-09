@@ -297,7 +297,7 @@ const getMaxSetRange = (matrix: number[][][]) => {
 };
 
 const getIdealSetIndex = (max_sets_range: number[], max_sets: number) => {
-  let index = -1
+  let index = -1;
   let diff = 50;
 
   for (let i = 0; i < max_sets_range.length; i++) {
@@ -313,64 +313,81 @@ const getIdealSetIndex = (max_sets_range: number[], max_sets: number) => {
   return index;
 };
 
-
 type ExerciseSessionsType = {
-  "1": number[][][]
-  "2": number[][][]
-  "3": number[][][]
-}
+  "1": number[][][];
+  "2": number[][][];
+  "3": number[][][];
+};
 const splitMatricesByExercisesInASession = (matrix: number[][][]) => {
-
   const exercise_sessions: ExerciseSessionsType = {
     "1": [],
     "2": [],
-    "3": []
-  }
+    "3": [],
+  };
 
   for (let i = 0; i < matrix.length; i++) {
-    let exercises_key: "1" | "2" | "3" = "1"
-    const current_row = matrix[i]
+    let exercises_key: "1" | "2" | "3" = "1";
+    const current_row = matrix[i];
     for (let j = 0; j < matrix[i].length; j++) {
-      const curr = matrix[i][j]
+      const curr = matrix[i][j];
       if (curr.length === 3) {
-        exercises_key = "3"
+        exercises_key = "3";
         break;
       }
       if (curr.length === 2) {
-        exercises_key = "2"
+        exercises_key = "2";
       }
     }
-    exercise_sessions[exercises_key].push(current_row)
+    exercise_sessions[exercises_key].push(current_row);
   }
-  return exercise_sessions
-}
+  return exercise_sessions;
+};
 
 // NOTE: may be easier to just loop thru array backwards and check against variation.
 const filterMatrix = (
-  exercise_sessions: ExerciseSessionsType,
+  // exercise_sessions: ExerciseSessionsType,
   variationPerSessionRange: number[],
-  maxSets: number,
-  matrix: number[][][],
+  // maxSets: number,
+  matrix: number[][][]
 ) => {
-  const max = variationPerSessionRange[1]
-  
+  const max = variationPerSessionRange[1];
 
-  for (let i = max; i >= 1; i--) {
-    const key = i.toString()
-    const range = getMaxSetRange(exercise_sessions[key as "1" | "2" | "3"])
-    const index = getIdealSetIndex(range, maxSets)
+  // for (let i = max; i >= 1; i--) {
+  //   const key = i.toString()
+  //   const range = getMaxSetRange(exercise_sessions[key as "1" | "2" | "3"])
+  //   const index = getIdealSetIndex(range, maxSets)
 
-  }
+  // }
 
-  let index_one = -1
-  let index_two = -1
-  
-  for (let i = 0; i < matrix.length; i++) {
+  const WEIGHTS = {
+    volume: 35,
+    maxVariationPerSession: 3,
+    maxExercisesPerSession: 5,
+  };
 
-  }
+  const excess_exercises = 3;
+  let index_one = -1;
+  let index_two = -1;
 
-}
+  const sorted_matrix = matrix.sort((a, b) =>
+    a[0].length > 0 ? a[0].length - b[0].length : a[1].length - b[1].length
+  );
+  console.log(sorted_matrix, "SORTED MATRIX");
 
+  let left = 0;
+  let right = 1;
+
+  // WEIGHTING NOTES:
+  // 1.  Does total volume less than or equal to total volume?
+  // 1a. If so, sort by the smaller difference between the two.
+  // 2.  Does this matrix have a max exercises per session equal to or less than maxVariationPerSession?
+  // 2a. If so, sort by the smaller difference between the two.
+  // 3 . Does this matrix have a smaller exercise total than the previous matrix?
+  // for (let i = 0; sorted_matrix.length; i++) {
+  //   // 1. check if it fits within set_range
+  //   // 2.
+  // }
+};
 
 // TODO: 4/30/25 -------------------------
 //      1. muscle-data.json. Finish recording external anatomy of each muscle. Potentially break that down further into bodybuilding terms.
@@ -387,30 +404,38 @@ export const getIdealSets = (frequency: number, set_range: number[]) => {
     case 7:
       const max_sets_7 = getMaxSetRange(FREQUENCY_MATRIX_SEVEN);
       const index_7 = getIdealSetIndex(max_sets_7, set_range[1]);
+      const lol1 = filterMatrix([1, 2], FREQUENCY_MATRIX_SEVEN);
+
       return FREQUENCY_MATRIX_SEVEN[index_7];
     case 6:
       const max_sets_6 = getMaxSetRange(FREQUENCY_MATRIX_SIX);
       const index_6 = getIdealSetIndex(max_sets_6, set_range[1]);
+      const lol2 = filterMatrix([1, 2], FREQUENCY_MATRIX_SIX);
       return FREQUENCY_MATRIX_SIX[index_6];
     case 5:
       const max_sets_5 = getMaxSetRange(FREQUENCY_MATRIX_FIVE);
       const index_5 = getIdealSetIndex(max_sets_5, set_range[1]);
+      const lol3 = filterMatrix([1, 2], FREQUENCY_MATRIX_FIVE);
       return FREQUENCY_MATRIX_FIVE[index_5];
     case 4:
       const max_sets_4 = getMaxSetRange(FREQUENCY_MATRIX_FOUR);
       const index_4 = getIdealSetIndex(max_sets_4, set_range[1]);
+      const lol4 = filterMatrix([1, 2], FREQUENCY_MATRIX_FOUR);
       return FREQUENCY_MATRIX_FOUR[index_4];
     case 3:
       const max_sets_3 = getMaxSetRange(FREQUENCY_MATRIX_THREE);
       const index_3 = getIdealSetIndex(max_sets_3, set_range[1]);
+      const lol5 = filterMatrix([1, 2], FREQUENCY_MATRIX_THREE);
       return FREQUENCY_MATRIX_THREE[index_3];
     case 2:
       const max_sets_2 = getMaxSetRange(FREQUENCY_MATRIX_TWO);
       const index_2 = getIdealSetIndex(max_sets_2, set_range[1]);
+      const lol6 = filterMatrix([1, 2], FREQUENCY_MATRIX_TWO);
       return FREQUENCY_MATRIX_TWO[index_2];
     default:
       const max_sets_1 = getMaxSetRange(FREQUENCY_MATRIX_ONE);
       const index_1 = getIdealSetIndex(max_sets_1, set_range[1]);
+      const lol7 = filterMatrix([1, 2], FREQUENCY_MATRIX_ONE);
       return FREQUENCY_MATRIX_ONE[index_1];
   }
 };
