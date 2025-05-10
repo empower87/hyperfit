@@ -311,18 +311,24 @@ export const attachTargetFrequency = (
   // const updated_list = structuredClone(muscle_priority_list);
 
   for (let i = 0; i < updated_list.length; i++) {
-    const prioritized_muscle = updated_list[i];
-    const muscle = updated_list[i].muscle;
-    const muscleData = getMuscleData(muscle);
-    const exercisesPerSessionSchema =
-      updated_list[i].volume.exercisesPerSessionSchema;
-    const volume_landmark = updated_list[i].volume.landmark;
-    let target = updated_list[i].frequency.target;
+    const muscle = updated_list[i];
+    const muscle_name = muscle.muscle;
+    const exercisesPerSessionSchema = muscle.volume.exercisesPerSessionSchema;
+    const volume_landmark = muscle.volume.landmark;
+    const volume_range = muscle.volume.range;
 
-    const readjusted_target = getMusclesMaxFrequency(split_sessions, muscle);
+    const muscleData = getMuscleData(muscle_name);
+    const muscle_data = getJSONMuscle(muscle_name);
+    const volume_range_from_json = muscle_data.volume[volume_landmark];
+    const ex_per_session_range = muscle_data.exercises.variationPerSessionRange;
 
+    const readjusted_target = getMusclesMaxFrequency(
+      split_sessions,
+      muscle_name
+    );
+
+    let target = muscle.frequency.target;
     target = Math.min(target, readjusted_target);
-
     const frequencyProgression = initFrequencyProgressionAcrossMesocycles(
       mesocycles,
       target
@@ -335,18 +341,26 @@ export const attachTargetFrequency = (
         ? muscleData[volume_landmark]
         : exercisesPerSessionSchema
     );
-    const ideal_sets = getIdealSets(target, prioritized_muscle.volume.range);
+
+    const ideal_sets = getIdealSets(
+      muscle_name,
+      ex_per_session_range,
+      target,
+      volume_range
+    );
     const ideal_sets_filtered = ideal_sets.filter((set) => set.length > 0);
     const test_final_week_sets = accumulateFinalMicrocycleSets(
-      prioritized_muscle.volume.range,
+      muscle.volume.range,
       ideal_sets_filtered
     );
 
     console.log(
-      muscle,
+      muscle_name,
       split_sessions,
       target,
-      prioritized_muscle.volume.range,
+      ex_per_session_range,
+      muscle.volume.range,
+      volume_range_from_json,
       frequencyProgression,
       ideal_sets,
       ideal_sets_filtered,
@@ -354,7 +368,7 @@ export const attachTargetFrequency = (
     );
 
     const exercises = getTotalExercisesFromSetMatrix(
-      prioritized_muscle,
+      muscle,
       setProgressionMatrix
     );
 

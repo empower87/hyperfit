@@ -118,5 +118,29 @@
       },
       "fatigue": 0
     }
+  },
+  {
+    "id": "0006-traps-exercise",
+    "name": "Seated Shrug Row",
+    "rank": 6,
+    "group": "traps",
+    "region": "upper",
+    "requirements": ["machine"],
+    "variations": [],
+    "tips": "1. Place feet higher on support, close to cable. 2. Lean back 45 degrees. 3. Use a neutral and wide grip attachment.",
+    "movement_type": "compound",
+    "hypertrophy_criteria": {
+      "target_function": 0,
+      "stability": 4,
+      "limiting_factor": 0,
+      "time_efficiency": 0,
+      "loadability": 0,
+      "stretch": {
+        "lengthened": 0,
+        "challenging": 0,
+        "partial_friendly": 0
+      },
+      "fatigue": 0
+    }
   }
 ]

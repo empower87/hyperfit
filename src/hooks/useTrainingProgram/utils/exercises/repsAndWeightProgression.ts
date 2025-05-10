@@ -275,7 +275,9 @@ const adjustSets = (sets_range: number[], sets: number[][]) => {
 // [1] = at least 24 hrs rest between sessions
 // [1, 2] = at least 48 hrs rest between sessions
 // [1, 2, 3] = at least 72 hrs rest between sessions
-
+const getTotalExercises = (matrix: number[][][]) => {
+  return matrix.map((row) => row.reduce((acc, curr) => acc + curr.length, 0));
+};
 const getMinSetRange = (matrix: number[][][]) => {
   return matrix.map((row) => row.flat().reduce((acc, curr) => acc + curr, 0));
 };
@@ -343,50 +345,52 @@ const splitMatricesByExercisesInASession = (matrix: number[][][]) => {
   return exercise_sessions;
 };
 
-// NOTE: may be easier to just loop thru array backwards and check against variation.
 const filterMatrix = (
-  // exercise_sessions: ExerciseSessionsType,
+  muscle_name: string,
+  frequency: number,
   variationPerSessionRange: number[],
-  // maxSets: number,
+  set_range: number[],
   matrix: number[][][]
 ) => {
-  const max = variationPerSessionRange[1];
-
-  // for (let i = max; i >= 1; i--) {
-  //   const key = i.toString()
-  //   const range = getMaxSetRange(exercise_sessions[key as "1" | "2" | "3"])
-  //   const index = getIdealSetIndex(range, maxSets)
-
-  // }
-
-  const WEIGHTS = {
-    volume: 35,
-    maxVariationPerSession: 3,
-    maxExercisesPerSession: 5,
-  };
-
-  const excess_exercises = 3;
-  let index_one = -1;
-  let index_two = -1;
-
-  const sorted_matrix = matrix.sort((a, b) =>
-    a[0].length > 0 ? a[0].length - b[0].length : a[1].length - b[1].length
-  );
-  console.log(sorted_matrix, "SORTED MATRIX");
-
-  let left = 0;
-  let right = 1;
-
   // WEIGHTING NOTES:
   // 1.  Does total volume less than or equal to total volume?
   // 1a. If so, sort by the smaller difference between the two.
   // 2.  Does this matrix have a max exercises per session equal to or less than maxVariationPerSession?
   // 2a. If so, sort by the smaller difference between the two.
   // 3 . Does this matrix have a smaller exercise total than the previous matrix?
-  // for (let i = 0; sorted_matrix.length; i++) {
-  //   // 1. check if it fits within set_range
-  //   // 2.
-  // }
+
+  // NOTE: 5/9/2025.. WELL IT SEEMS A LOT EASIER IF I JUST SORT THE MATRICES BY HAND. FIRST BY maxExercisesPerSession.
+  //                  THEN BY LEAST AMOUNT OF EXERCISES PER WEEK.
+  //                  TTHEN THEN THEN.. I'd loop over this sorted matrix and check to see if it meets the volume requirements!
+
+  const max = variationPerSessionRange[1];
+  const max_volume = set_range[1];
+  const max_sets = getMaxSetRange(matrix);
+
+  let index = 0;
+  for (let i = 0; i < matrix.length; i++) {
+    const max_ex_per_session = matrix[i][0].length;
+    const curr_max_volume = max_sets[i];
+
+    if (max_ex_per_session > max) break;
+    if (curr_max_volume >= max_volume) {
+      index = i;
+      break;
+    }
+  }
+
+  const optimal_matrix = matrix[index];
+  console.log(
+    muscle_name,
+    frequency,
+    variationPerSessionRange,
+    set_range,
+    index,
+    max_sets,
+    optimal_matrix,
+    "OPTIMAL MATRIX"
+  );
+  return optimal_matrix;
 };
 
 // TODO: 4/30/25 -------------------------
@@ -399,46 +403,140 @@ const filterMatrix = (
 // NOTE: By pulling from these matrices, every time a final microcycle set array is pushed out,
 //       it will be guaranteed to fulfill the set range requirements.
 
-export const getIdealSets = (frequency: number, set_range: number[]) => {
+export const getIdealSets = (
+  muscle: string,
+  ex_per_session_range: number[],
+  frequency: number,
+  set_range: number[]
+) => {
   switch (frequency) {
     case 7:
-      const max_sets_7 = getMaxSetRange(FREQUENCY_MATRIX_SEVEN);
-      const index_7 = getIdealSetIndex(max_sets_7, set_range[1]);
-      const lol1 = filterMatrix([1, 2], FREQUENCY_MATRIX_SEVEN);
-
-      return FREQUENCY_MATRIX_SEVEN[index_7];
+      return filterMatrix(
+        muscle,
+        frequency,
+        ex_per_session_range,
+        set_range,
+        FREQUENCY_MATRIX_SEVEN_SORTED
+      );
     case 6:
-      const max_sets_6 = getMaxSetRange(FREQUENCY_MATRIX_SIX);
-      const index_6 = getIdealSetIndex(max_sets_6, set_range[1]);
-      const lol2 = filterMatrix([1, 2], FREQUENCY_MATRIX_SIX);
-      return FREQUENCY_MATRIX_SIX[index_6];
+      return filterMatrix(
+        muscle,
+        frequency,
+        ex_per_session_range,
+        set_range,
+        FREQUENCY_MATRIX_SIX_SORTED
+      );
     case 5:
-      const max_sets_5 = getMaxSetRange(FREQUENCY_MATRIX_FIVE);
-      const index_5 = getIdealSetIndex(max_sets_5, set_range[1]);
-      const lol3 = filterMatrix([1, 2], FREQUENCY_MATRIX_FIVE);
-      return FREQUENCY_MATRIX_FIVE[index_5];
+      return filterMatrix(
+        muscle,
+        frequency,
+        ex_per_session_range,
+        set_range,
+        FREQUENCY_MATRIX_FIVE_SORTED
+      );
     case 4:
-      const max_sets_4 = getMaxSetRange(FREQUENCY_MATRIX_FOUR);
-      const index_4 = getIdealSetIndex(max_sets_4, set_range[1]);
-      const lol4 = filterMatrix([1, 2], FREQUENCY_MATRIX_FOUR);
-      return FREQUENCY_MATRIX_FOUR[index_4];
+      return filterMatrix(
+        muscle,
+        frequency,
+        ex_per_session_range,
+        set_range,
+        FREQUENCY_MATRIX_FOUR_SORTED
+      );
     case 3:
-      const max_sets_3 = getMaxSetRange(FREQUENCY_MATRIX_THREE);
-      const index_3 = getIdealSetIndex(max_sets_3, set_range[1]);
-      const lol5 = filterMatrix([1, 2], FREQUENCY_MATRIX_THREE);
-      return FREQUENCY_MATRIX_THREE[index_3];
+      return filterMatrix(
+        muscle,
+        frequency,
+        ex_per_session_range,
+        set_range,
+        FREQUENCY_MATRIX_THREE_SORTED
+      );
     case 2:
-      const max_sets_2 = getMaxSetRange(FREQUENCY_MATRIX_TWO);
-      const index_2 = getIdealSetIndex(max_sets_2, set_range[1]);
-      const lol6 = filterMatrix([1, 2], FREQUENCY_MATRIX_TWO);
-      return FREQUENCY_MATRIX_TWO[index_2];
+      return filterMatrix(
+        muscle,
+        frequency,
+        ex_per_session_range,
+        set_range,
+        FREQUENCY_MATRIX_TWO_SORTED
+      );
+    case 1:
+      return filterMatrix(
+        muscle,
+        frequency,
+        ex_per_session_range,
+        set_range,
+        FREQUENCY_MATRIX_ONE_SORTED
+      );
     default:
-      const max_sets_1 = getMaxSetRange(FREQUENCY_MATRIX_ONE);
-      const index_1 = getIdealSetIndex(max_sets_1, set_range[1]);
-      const lol7 = filterMatrix([1, 2], FREQUENCY_MATRIX_ONE);
-      return FREQUENCY_MATRIX_ONE[index_1];
+      return [];
   }
 };
+
+// prettier-ignore
+const FREQUENCY_MATRIX_SEVEN_SORTED = [                                          // SETS  MEPS INIT MAX EX
+  [[      2], [      2], [      2], [      2], [      2], [      2], [      2]], // 0-0-7   1   14  35  7
+  [[   2, 2], [      2], [      2], [      2], [      2], [      2], [      2]], // 0-1-6   2   16  40  8
+  [[   2, 2], [      2], [   2, 2], [      2], [      2], [      2], [      2]], // 0-2-5   2   18  45  9
+  [[   2, 2], [      2], [   2, 2], [      2], [   2, 2], [      2], [      2]], // 0-3-4   2   20  50  10
+  [[2, 2, 2], [      2], [      2], [      2], [      2], [      2], [      2]], // 1-0-6   3   18  42  9
+  [[2, 2, 2], [      2], [      2], [   2, 2], [      2], [      2], [      2]], // 1-1-5   3   20  47  10
+  [[2, 2, 2], [      2], [      2], [   2, 2], [      2], [   2, 2], [      2]], // 1-2-4   3   22  52  11
+  [[2, 2, 2], [      2], [      2], [2, 2, 2], [      2], [      2], [      2]], // 2-0-5   3   22  49  11
+]
+// prettier-ignore
+const FREQUENCY_MATRIX_SIX_SORTED = [                                            // SETS  MEPS INIT MAX EX
+  [[      2], [      2], [      2], [      2], [      2], [      2], [       ]], // 0-0-6   1   12  30  6
+  [[   2, 2], [      2], [      2], [      2], [      2], [      2], [       ]], // 0-1-5   2   14  35  7
+  [[   2, 2], [      2], [   2, 2], [      2], [      2], [      2], [       ]], // 0-2-4   2   16  40  8
+  [[   2, 2], [      2], [   2, 2], [      2], [   2, 2], [      2], [       ]], // 0-3-3   2   18  45  9
+  [[2, 2, 2], [      2], [   2, 2], [      2], [      2], [      2], [       ]], // 1-1-4   3   18  42  9
+  [[2, 2, 2], [      2], [      2], [2, 2, 2], [      2], [      2], [       ]], // 2-0-4   3   20  44  10
+  [[2, 2, 2], [      2], [   2, 2], [      2], [   2, 2], [      2], [       ]], // 1-2-3   3   20  47  10
+]
+// prettier-ignore
+const FREQUENCY_MATRIX_FIVE_SORTED = [                                           // SETS  MEPS INIT MAX EX
+  [[      2], [      2], [      2], [       ], [      2], [      2], [       ]], // 0-0-5   1   10  25  5
+  [[   2, 2], [      2], [      2], [       ], [      2], [      2], [       ]], // 0-1-4   2   12  30  6
+  [[   2, 2], [      2], [   2, 2], [       ], [      2], [      2], [       ]], // 0-2-3   2   14  35  7
+  [[   2, 2], [      2], [   2, 2], [       ], [   2, 2], [      2], [       ]], // 0-3-2   2   16  40  8
+  [[2, 2, 2], [      2], [      2], [       ], [      2], [      2], [       ]], // 1-0-4   3   14  32  7
+  [[2, 2, 2], [      2], [      2], [       ], [   2, 2], [      2], [       ]], // 1-1-3   3   16  37  8
+  [[2, 2, 2], [      2], [      2], [       ], [2, 2, 2], [      2], [       ]], // 2-0-3   3   18  39  9
+]
+// prettier-ignore
+const FREQUENCY_MATRIX_FOUR_SORTED = [                                           // SETS  MEPS INIT MAX EX
+  [[      2], [       ], [      2], [       ], [      2], [      2], [       ]], // 0-0-4   1    8  20  4
+  [[   2, 2], [       ], [      2], [       ], [      2], [      2], [       ]], // 0-1-3   2   10  25  5
+  [[   2, 2], [       ], [   2, 2], [       ], [      2], [      2], [       ]], // 0-2-2   2   12  30  6
+  [[   2, 2], [       ], [   2, 2], [       ], [   2, 2], [      2], [       ]], // 0-3-1   2   14  35  7
+  [[2, 2, 2], [       ], [      2], [       ], [      2], [      2], [       ]], // 1-0-3   3   12  27  6
+  [[2, 2, 2], [       ], [      2], [       ], [   2, 2], [      2], [       ]], // 1-1-2   3   14  32  7
+  [[2, 2, 2], [       ], [      2], [       ], [2, 2, 2], [      2], [       ]], // 2-0-2   3   16  34  8
+]
+// prettier-ignore
+const FREQUENCY_MATRIX_THREE_SORTED = [                                          // SETS  MEPS INIT MAX EX
+  [[      2], [       ], [      2], [       ], [      2], [       ], [       ]], // 0-0-3   2   10  15  3
+  [[   2, 2], [       ], [      2], [       ], [      2], [       ], [       ]], // 0-1-2   2   14  20  4
+  [[   2, 2], [       ], [   2, 2], [       ], [      2], [       ], [       ]], // 0-2-1   2   14  25  5
+  [[   2, 2], [       ], [   2, 2], [       ], [   2, 2], [       ], [       ]], // 0-3-0   2   16  30  6
+  [[2, 2, 2], [       ], [      2], [       ], [      2], [       ], [       ]], // 1-0-2   3   10  22  5
+  [[2, 2, 2], [       ], [      2], [       ], [   2, 2], [       ], [       ]], // 1-1-1   3   12  27  6
+  [[2, 2, 2], [       ], [      2], [       ], [2, 2, 2], [       ], [       ]], // 2-0-1   3   14  29  7
+]
+// prettier-ignore
+const FREQUENCY_MATRIX_TWO_SORTED = [                                            // SETS  MEPS INIT MAX EX
+  [[      2], [       ], [       ], [       ], [      2], [       ], [       ]], // 0-0-2   1   4   10  2
+  [[   2, 2], [       ], [       ], [       ], [      2], [       ], [       ]], // 0-1-1   2   6   15  3
+  [[   2, 2], [       ], [       ], [       ], [   2, 2], [       ], [       ]], // 0-2-0   2   8   20  4
+  [[2, 2, 2], [       ], [       ], [       ], [      2], [       ], [       ]], // 1-0-1   3   8   17  4
+  [[2, 2, 2], [       ], [       ], [       ], [   2, 2], [       ], [       ]], // 1-1-0   3   10  22  5
+  [[2, 2, 2], [       ], [       ], [       ], [2, 2, 2], [       ], [       ]], // 2-0-0   3   12  24  6
+]
+// prettier-ignore
+const FREQUENCY_MATRIX_ONE_SORTED = [                                            // SETS  MEPS INIT MAX EX
+  [[      2], [       ], [       ], [       ], [       ], [       ], [       ]], // 0-0-1   1   2   5   1
+  [[   2, 2], [       ], [       ], [       ], [       ], [       ], [       ]], // 0-1-0   2   4   10  2
+  [[2, 2, 2], [       ], [       ], [       ], [       ], [       ], [       ]], // 1-0-0   3   6   12  3
+]
 
 // prettier-ignore
 const FREQUENCY_MATRIX_SEVEN = [                                                 // SETS   INIT MAX
@@ -459,6 +557,7 @@ const FREQUENCY_MATRIX_SIX = [                                                  
   [[       ], [   2, 2], [      2], [   2, 2], [      2], [   2, 2], [      2]], // 0-3-3   18  45
   [[       ], [2, 2, 2], [      2], [      2], [2, 2, 2], [      2], [      2]], // 2-0-4   20  44
   [[       ], [2, 2, 2], [      2], [   2, 2], [      2], [      2], [      2]], // 1-1-4   18  42
+  [[       ], [   2, 2], [      2], [   2, 2], [      2], [      2], [      2]], // 0-2-4   16  40  8
   [[       ], [   2, 2], [      2], [      2], [      2], [      2], [      2]], // 0-1-5   14  35
   [[       ], [      2], [      2], [      2], [      2], [      2], [      2]], // 0-0-6   12  30
 ]
