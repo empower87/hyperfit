@@ -298,78 +298,22 @@ const getMaxSetRange = (matrix: number[][][]) => {
   );
 };
 
-const getIdealSetIndex = (max_sets_range: number[], max_sets: number) => {
-  let index = -1;
-  let diff = 50;
-
-  for (let i = 0; i < max_sets_range.length; i++) {
-    const curr = max_sets_range[i];
-    const curr_diff = curr - max_sets;
-
-    if (curr_diff < diff && curr >= max_sets) {
-      diff = curr_diff;
-      index = i;
-    }
-  }
-
-  return index;
-};
-
-type ExerciseSessionsType = {
-  "1": number[][][];
-  "2": number[][][];
-  "3": number[][][];
-};
-const splitMatricesByExercisesInASession = (matrix: number[][][]) => {
-  const exercise_sessions: ExerciseSessionsType = {
-    "1": [],
-    "2": [],
-    "3": [],
-  };
-
-  for (let i = 0; i < matrix.length; i++) {
-    let exercises_key: "1" | "2" | "3" = "1";
-    const current_row = matrix[i];
-    for (let j = 0; j < matrix[i].length; j++) {
-      const curr = matrix[i][j];
-      if (curr.length === 3) {
-        exercises_key = "3";
-        break;
-      }
-      if (curr.length === 2) {
-        exercises_key = "2";
-      }
-    }
-    exercise_sessions[exercises_key].push(current_row);
-  }
-  return exercise_sessions;
-};
-
-const filterMatrix = (
-  muscle_name: string,
-  frequency: number,
+// NOTE: This function intends to find the optimal placeholder by preferring the least amount of exercises
+//       per session, then the least amount of exercises per week. By filtering through this pre-sorted
+//       matrix, we then find the first row with total set volume that exceeds the max set_range.
+//       This ideally should return the "optimal" placeholder.
+const findOptimalPlaceholderExerciseLayout = (
   variationPerSessionRange: number[],
   set_range: number[],
-  matrix: number[][][]
+  frequency_matrix: number[][][]
 ) => {
-  // WEIGHTING NOTES:
-  // 1.  Does total volume less than or equal to total volume?
-  // 1a. If so, sort by the smaller difference between the two.
-  // 2.  Does this matrix have a max exercises per session equal to or less than maxVariationPerSession?
-  // 2a. If so, sort by the smaller difference between the two.
-  // 3 . Does this matrix have a smaller exercise total than the previous matrix?
-
-  // NOTE: 5/9/2025.. WELL IT SEEMS A LOT EASIER IF I JUST SORT THE MATRICES BY HAND. FIRST BY maxExercisesPerSession.
-  //                  THEN BY LEAST AMOUNT OF EXERCISES PER WEEK.
-  //                  TTHEN THEN THEN.. I'd loop over this sorted matrix and check to see if it meets the volume requirements!
-
   const max = variationPerSessionRange[1];
   const max_volume = set_range[1];
-  const max_sets = getMaxSetRange(matrix);
+  const max_sets = getMaxSetRange(frequency_matrix);
 
   let index = 0;
-  for (let i = 0; i < matrix.length; i++) {
-    const max_ex_per_session = matrix[i][0].length;
+  for (let i = 0; i < frequency_matrix.length; i++) {
+    const max_ex_per_session = frequency_matrix[i][0].length;
     const curr_max_volume = max_sets[i];
 
     if (max_ex_per_session > max) break;
@@ -379,18 +323,8 @@ const filterMatrix = (
     }
   }
 
-  const optimal_matrix = matrix[index];
-  console.log(
-    muscle_name,
-    frequency,
-    variationPerSessionRange,
-    set_range,
-    index,
-    max_sets,
-    optimal_matrix,
-    "OPTIMAL MATRIX"
-  );
-  return optimal_matrix;
+  const optimal_placeholder = frequency_matrix[index];
+  return optimal_placeholder;
 };
 
 // TODO: 4/30/25 -------------------------
@@ -403,73 +337,55 @@ const filterMatrix = (
 // NOTE: By pulling from these matrices, every time a final microcycle set array is pushed out,
 //       it will be guaranteed to fulfill the set range requirements.
 
-export const getIdealSets = (
-  muscle: string,
+export const getPlaceholderExerciseLayout = (
   ex_per_session_range: number[],
   frequency: number,
   set_range: number[]
 ) => {
+  let frequency_matrix: number[][][] = [];
+
   switch (frequency) {
     case 7:
-      return filterMatrix(
-        muscle,
-        frequency,
-        ex_per_session_range,
-        set_range,
-        FREQUENCY_MATRIX_SEVEN_SORTED
-      );
+      frequency_matrix = FREQUENCY_MATRIX_SEVEN_SORTED;
+      break;
     case 6:
-      return filterMatrix(
-        muscle,
-        frequency,
-        ex_per_session_range,
-        set_range,
-        FREQUENCY_MATRIX_SIX_SORTED
-      );
+      frequency_matrix = FREQUENCY_MATRIX_SIX_SORTED;
+      break;
     case 5:
-      return filterMatrix(
-        muscle,
-        frequency,
-        ex_per_session_range,
-        set_range,
-        FREQUENCY_MATRIX_FIVE_SORTED
-      );
+      frequency_matrix = FREQUENCY_MATRIX_FIVE_SORTED;
+      break;
     case 4:
-      return filterMatrix(
-        muscle,
-        frequency,
-        ex_per_session_range,
-        set_range,
-        FREQUENCY_MATRIX_FOUR_SORTED
-      );
+      frequency_matrix = FREQUENCY_MATRIX_FOUR_SORTED;
+      break;
     case 3:
-      return filterMatrix(
-        muscle,
-        frequency,
-        ex_per_session_range,
-        set_range,
-        FREQUENCY_MATRIX_THREE_SORTED
-      );
+      frequency_matrix = FREQUENCY_MATRIX_THREE_SORTED;
+      break;
     case 2:
-      return filterMatrix(
-        muscle,
-        frequency,
-        ex_per_session_range,
-        set_range,
-        FREQUENCY_MATRIX_TWO_SORTED
-      );
+      frequency_matrix = FREQUENCY_MATRIX_TWO_SORTED;
+      break;
     case 1:
-      return filterMatrix(
-        muscle,
-        frequency,
-        ex_per_session_range,
-        set_range,
-        FREQUENCY_MATRIX_ONE_SORTED
-      );
+      frequency_matrix = FREQUENCY_MATRIX_ONE_SORTED;
+      break;
     default:
-      return [];
+      break;
   }
+
+  if (frequency_matrix.length === 0) return [];
+  return findOptimalPlaceholderExerciseLayout(
+    ex_per_session_range,
+    set_range,
+    frequency_matrix
+  );
 };
+
+// FUNCTIONALITY:
+// Purpose: Considering user's ideal frequency for a muscle group.
+// 1.  Seven matrices for total frequencies possible in a training week (Not considering, multiple sessions per day).
+// 1a. Each of these seven matrices contains layouts of possible total exercises represented by 2s.
+// 2.(SORTING PRIORITY):
+//   A) Descending by lowest total exercises in a session for whole week.
+//   B) If matrices have equal lowest total exercises in a session, sort by the lowest total exercises in a week.
+//   C) If both above are equal, sort by 2nd lowest total exercises in a session.
 
 // prettier-ignore
 const FREQUENCY_MATRIX_SEVEN_SORTED = [                                          // SETS  MEPS INIT MAX EX

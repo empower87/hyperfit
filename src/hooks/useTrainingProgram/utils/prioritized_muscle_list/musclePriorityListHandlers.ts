@@ -11,7 +11,7 @@ import {
 } from "../../reducer/trainingProgramReducer";
 import {
   accumulateFinalMicrocycleSets,
-  getIdealSets,
+  getPlaceholderExerciseLayout,
 } from "../exercises/repsAndWeightProgression";
 import {
   determineFrequencyByRange,
@@ -342,8 +342,7 @@ export const attachTargetFrequency = (
         : exercisesPerSessionSchema
     );
 
-    const ideal_sets = getIdealSets(
-      muscle_name,
+    const ideal_sets = getPlaceholderExerciseLayout(
       ex_per_session_range,
       target,
       volume_range
