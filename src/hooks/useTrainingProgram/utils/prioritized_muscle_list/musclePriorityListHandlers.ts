@@ -9,10 +9,8 @@ import {
   SplitSessionsType,
   type MusclePriorityType,
 } from "../../reducer/trainingProgramReducer";
-import {
-  accumulateFinalMicrocycleSets,
-  getPlaceholderExerciseLayout,
-} from "../exercises/repsAndWeightProgression";
+import { getPlaceholderExerciseLayout } from "../exercises/exercisePlaceholders";
+import { accumulateFinalMicrocycleSets } from "../exercises/repsAndWeightProgression";
 import {
   determineFrequencyByRange,
   getFrequencyRange,
@@ -363,6 +361,7 @@ export const attachTargetFrequency = (
       frequencyProgression,
       ideal_sets,
       ideal_sets_filtered,
+      test_final_week_sets,
       "THESE KINDA SHOULD BE THE SAME I THINK"
     );
 
