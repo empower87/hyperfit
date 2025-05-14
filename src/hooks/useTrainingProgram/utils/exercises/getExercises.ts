@@ -27,7 +27,7 @@ import {
   TRAPS_EXERCISES,
   TRICEPS_EXERCISES,
 } from "../../../../constants/exercises/index";
-import { getMuscleData } from "../../../../utils/getMuscleData";
+import { getJSONMuscle, getMuscleData } from "../../../../utils/getMuscleData";
 import { setProgression_addOnePerMicrocycle_TEST } from "./setProgressionOverMicrocycles";
 
 // back
@@ -502,8 +502,7 @@ const getWeightData = (requirements: string[]) => {
   })[0][1];
 };
 
-
-const DEFAULT_SET_PROGRESSION_SCHEMA = "ADD_ONE_PER_MICROCYCLE"
+const DEFAULT_SET_PROGRESSION_SCHEMA = "ADD_ONE_PER_MICROCYCLE";
 // NOTE: 4/11/2025. Need to create a function to progress weight over mesocycles.
 // linear progression, dynamic progression, etc.
 export const getTotalExercisesFromSetMatrix = (
@@ -776,4 +775,103 @@ export const getExerciseSetsOverMicrocycles = (
   );
 
   return sets;
+};
+
+// NOTE: 5/13/2025. New exercise builders via new setProgressionMatrix functionality.
+//       Currently works well. But requires smarter logic.
+//       1. Create a logical algorithm for determining how to err on min_variation vs. max_variation.
+//       2. Exercise selection algorithm will be helpful.
+//          Different angles, equipment, etc..
+const LOADING_DIFFERENTIATION = ["heavy", "medium", "light"];
+export const getExercises = (
+  muscle_name: string,
+  exercise_placeholders: number[][],
+  min_variation: number,
+  max_variation: number
+) => {
+  const total_exercises = exercise_placeholders.reduce(
+    (acc, session) => acc + session.length,
+    0
+  );
+  if (total_exercises <= 0) return [];
+
+  const json_exercises = getGroupList(muscle_name);
+
+  const ending_index = Math.min(max_variation, total_exercises);
+  const unique_exercises: JSONExercise[] = json_exercises.slice(
+    0,
+    ending_index
+  );
+
+  const repeated_exercises: JSONExercise[] = [];
+
+  let total_possible_repeated_exercises =
+    total_exercises - unique_exercises.length;
+  let loading_diff_index = 0;
+  for (let i = 0; i < unique_exercises.length; i++) {
+    if (total_possible_repeated_exercises <= 0) break;
+    const repeated_exercise = { ...unique_exercises[i] };
+    repeated_exercise.id = `${repeated_exercise.id}_${LOADING_DIFFERENTIATION[loading_diff_index]}`;
+    repeated_exercises.push(repeated_exercise);
+
+    total_possible_repeated_exercises--;
+    if (loading_diff_index >= LOADING_DIFFERENTIATION.length) {
+      loading_diff_index = 0;
+    } else {
+      loading_diff_index++;
+    }
+  }
+
+  const final_exercises = [...unique_exercises, ...repeated_exercises];
+  console.log(
+    muscle_name,
+    exercise_placeholders,
+    max_variation,
+    total_exercises,
+    json_exercises.length,
+    ending_index,
+    unique_exercises.length,
+    repeated_exercises.length,
+    final_exercises,
+    "GET EXERCISES MUCHO DATA LULZ"
+  );
+  return final_exercises;
+};
+
+const addExercisesToPlaceholders = (
+  prioritized_muscle: MusclePriorityType,
+  exercisePlaceholders: number[][]
+) => {
+  const muscle = prioritized_muscle.muscle;
+  const volume_landmark = prioritized_muscle.volume.landmark;
+  // NOTE: muscle_data, may have to just put this on prioritized_muscle?
+  const muscle_data = getJSONMuscle(muscle);
+  const exercise_variation_range = muscle_data.exercises.variationPerWeekRange;
+  const ex_var_min = exercise_variation_range[0];
+  const ex_var_max = exercise_variation_range[1];
+
+  const allExercises = getGroupList(muscle);
+  const exercise_list: ExerciseType[][] = [];
+
+  let exercises_index = 0;
+  for (let i = 0; i < exercisePlaceholders.length; i++) {
+    const session = exercisePlaceholders[i];
+    const session_exercises: ExerciseType[] = [];
+
+    for (let j = 0; j < session.length; j++) {
+      if (session[j] === 0) continue;
+      if (!allExercises[exercises_index]) {
+        exercises_index = 0;
+      }
+      const exercise = initNewExercise(
+        allExercises[exercises_index],
+        volume_landmark
+      );
+      session_exercises.push(exercise);
+      exercises_index++;
+    }
+    exercise_list.push(session_exercises);
+  }
+
+  return exercise_list;
 };

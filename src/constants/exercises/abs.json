@@ -118,5 +118,29 @@
       },
       "fatigue": 0
     }
+  },
+  {
+    "id": "0006-abs-vup",
+    "name": "Sit Up",
+    "rank": 6,
+    "group": "abs",
+    "region": "",
+    "requirements": [],
+    "variations": [],
+    "tips": "",
+    "movement_type": "compound",
+    "hypertrophy_criteria": {
+      "target_function": 0,
+      "stability": 1,
+      "limiting_factor": 0,
+      "time_efficiency": 0,
+      "loadability": 0,
+      "stretch": {
+        "lengthened": 0,
+        "challenging": 0,
+        "partial_friendly": 0
+      },
+      "fatigue": 0
+    }
   }
 ]

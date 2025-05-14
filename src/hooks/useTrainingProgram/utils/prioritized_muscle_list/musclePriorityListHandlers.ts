@@ -1,5 +1,6 @@
 import { getMusclesMaxFrequency } from "~/constants/workoutSplits";
 import {
+  getExercises,
   getTotalExercisesFromSetMatrix,
   initializeSetProgression,
 } from "~/hooks/useTrainingProgram/utils/exercises/getExercises";
@@ -319,6 +320,7 @@ export const attachTargetFrequency = (
     const muscle_data = getJSONMuscle(muscle_name);
     const volume_range_from_json = muscle_data.volume[volume_landmark];
     const ex_per_session_range = muscle_data.exercises.variationPerSessionRange;
+    const ex_per_week_range = muscle_data.exercises.variationPerWeekRange;
 
     const readjusted_target = getMusclesMaxFrequency(
       split_sessions,
@@ -349,6 +351,12 @@ export const attachTargetFrequency = (
     const test_final_week_sets = accumulateFinalMicrocycleSets(
       muscle.volume.range,
       ideal_sets_filtered
+    );
+    const exursizes = getExercises(
+      muscle_name,
+      ideal_sets,
+      ex_per_week_range[0],
+      ex_per_week_range[1]
     );
 
     console.log(

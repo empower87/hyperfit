@@ -1,7 +1,7 @@
 [
   {
-    "id": "0001-calves-machinecalves",
-    "name": "Machine Calves",
+    "id": "0001-calves-seatedmachinecalves",
+    "name": "Seated Machine Calves",
     "rank": 1,
     "group": "calves",
     "region": "",
@@ -84,6 +84,54 @@
     "hypertrophy_criteria": {
       "target_function": 0,
       "stability": 1,
+      "limiting_factor": 0,
+      "time_efficiency": 0,
+      "loadability": 0,
+      "stretch": {
+        "lengthened": 0,
+        "challenging": 0,
+        "partial_friendly": 0
+      },
+      "fatigue": 0
+    }
+  },
+  {
+    "id": "0005-calves-calfraiseonhacksquat",
+    "name": "Calf Raise on Hack Squat",
+    "rank": 5,
+    "group": "calves",
+    "region": "",
+    "requirements": ["machine"],
+    "variations": ["single-leg"],
+    "tips": "",
+    "movement_type": "isolation",
+    "hypertrophy_criteria": {
+      "target_function": 0,
+      "stability": 5,
+      "limiting_factor": 0,
+      "time_efficiency": 0,
+      "loadability": 0,
+      "stretch": {
+        "lengthened": 0,
+        "challenging": 0,
+        "partial_friendly": 0
+      },
+      "fatigue": 0
+    }
+  },
+  {
+    "id": "0006-calves-standingmachinecalves",
+    "name": "Standing Machine Calves",
+    "rank": 6,
+    "group": "calves",
+    "region": "",
+    "requirements": ["machine"],
+    "variations": ["single-leg"],
+    "tips": "",
+    "movement_type": "isolation",
+    "hypertrophy_criteria": {
+      "target_function": 0,
+      "stability": 5,
       "limiting_factor": 0,
       "time_efficiency": 0,
       "loadability": 0,
