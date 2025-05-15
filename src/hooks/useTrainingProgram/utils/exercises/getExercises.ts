@@ -777,6 +777,24 @@ export const getExerciseSetsOverMicrocycles = (
   return sets;
 };
 
+// prettier-ignore
+const EXERCISE_LOCATION = [
+  "cable-single",
+  "cable-single bench",
+  "cable-multi",
+  "cable-multi bench",
+  "smith-machine", 
+  "machine", 
+  "power-rack", 
+  "power-rack bench", 
+  "power-tower", 
+  "bench", 
+  "incline-bench",
+  "floor-tight",
+  "floor-open",
+] as const
+type ExerciseLocationType = (typeof EXERCISE_LOCATION)[number];
+
 // NOTE: 5/13/2025. New exercise builders via new setProgressionMatrix functionality.
 //       Currently works well. But requires smarter logic.
 //       1. Create a logical algorithm for determining how to err on min_variation vs. max_variation.
