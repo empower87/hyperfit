@@ -1,3 +1,4 @@
+import { sortExercisesByCriteria } from "~/components/Modals/SelectExercise/SelectExerciseContext";
 import { MuscleType } from "~/constants/workoutSplits";
 import {
   ExerciseType,
@@ -795,6 +796,11 @@ const EXERCISE_LOCATION = [
 ] as const
 type ExerciseLocationType = (typeof EXERCISE_LOCATION)[number];
 
+const sortExercises = (json_exercises: JSONExercise[]) => {
+  const sorted = sortExercisesByCriteria(json_exercises, "rank");
+  return sorted;
+};
+
 // NOTE: 5/13/2025. New exercise builders via new setProgressionMatrix functionality.
 //       Currently works well. But requires smarter logic.
 //       1. Create a logical algorithm for determining how to err on min_variation vs. max_variation.
@@ -803,6 +809,7 @@ type ExerciseLocationType = (typeof EXERCISE_LOCATION)[number];
 const LOADING_DIFFERENTIATION = ["heavy", "medium", "light"];
 export const getExercises = (
   muscle_name: string,
+  volume: number,
   exercise_placeholders: number[][],
   min_variation: number,
   max_variation: number
@@ -814,9 +821,9 @@ export const getExercises = (
   if (total_exercises <= 0) return [];
 
   const json_exercises = getGroupList(muscle_name);
-
+  const sorted_json_exercises = sortExercises(json_exercises);
   const ending_index = Math.min(max_variation, total_exercises);
-  const unique_exercises: JSONExercise[] = json_exercises.slice(
+  const unique_exercises: JSONExercise[] = sorted_json_exercises.slice(
     0,
     ending_index
   );
@@ -843,6 +850,7 @@ export const getExercises = (
   const final_exercises = [...unique_exercises, ...repeated_exercises];
   console.log(
     muscle_name,
+    volume,
     exercise_placeholders,
     max_variation,
     total_exercises,
@@ -851,6 +859,7 @@ export const getExercises = (
     unique_exercises.length,
     repeated_exercises.length,
     final_exercises,
+    sorted_json_exercises,
     "GET EXERCISES MUCHO DATA LULZ"
   );
   return final_exercises;

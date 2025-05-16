@@ -345,7 +345,8 @@ export const attachTargetFrequency = (
     const ideal_sets = getPlaceholderExerciseLayout(
       ex_per_session_range,
       target,
-      volume_range
+      volume_range,
+      muscle_name
     );
     const ideal_sets_filtered = ideal_sets.filter((set) => set.length > 0);
     const test_final_week_sets = accumulateFinalMicrocycleSets(
@@ -354,6 +355,7 @@ export const attachTargetFrequency = (
     );
     const exursizes = getExercises(
       muscle_name,
+      volume_range[1],
       ideal_sets,
       ex_per_week_range[0],
       ex_per_week_range[1]

@@ -84,19 +84,20 @@ const getTotalExercises = (matrix: number[][][]) => {
 const getMinSetRange = (matrix: number[][][]) => {
   return matrix.map((row) => row.flat().reduce((acc, curr) => acc + curr, 0));
 };
-
+const MAX_SETS_AT_THREE_EXERCISES = 12;
+const MAX_SETS_AT_TWO_EXERCISES = 10;
+const MAX_SETS_AT_ONE_EXERCISE = 5;
+const MAX_SETS_AT_ONE_EXERCISE_AND_ONE_VARIATION_PER_SESSION_RANGE = 6;
 const getMaxSetRange = (matrix: number[][][]) => {
   return matrix.map((row) =>
     row.reduce(
       (acc, curr) =>
         acc +
         (curr.length >= 3
-          ? 12
+          ? MAX_SETS_AT_THREE_EXERCISES
           : curr.length === 2
-          ? 10
-          : curr.length === 1
-          ? 5
-          : 0),
+          ? MAX_SETS_AT_TWO_EXERCISES
+          : MAX_SETS_AT_ONE_EXERCISE),
       0
     )
   );
@@ -109,25 +110,48 @@ const getMaxSetRange = (matrix: number[][][]) => {
 const findOptimalPlaceholderExerciseLayout = (
   variationPerSessionRange: number[],
   set_range: number[],
-  frequency_matrix: number[][][]
+  frequency_matrix: number[][][],
+  muscle?: string
 ) => {
-  const max = variationPerSessionRange[1];
-  const max_volume = set_range[1];
+  const total_frequency = frequency_matrix[0]?.reduce(
+    (acc, curr) => acc + curr.length,
+    0
+  );
+  const max_ex_per_session = variationPerSessionRange[1];
+  const max_volume_in_sets = set_range[1];
   const max_sets = getMaxSetRange(frequency_matrix);
 
   let index = 0;
   for (let i = 0; i < frequency_matrix.length; i++) {
-    const max_ex_per_session = frequency_matrix[i][0].length;
-    const curr_max_volume = max_sets[i];
+    const curr_max_ex_per_session = frequency_matrix[i][0].length;
+    const curr_max_volume_in_sets = max_sets[i];
 
-    if (max_ex_per_session > max) break;
-    if (curr_max_volume >= max_volume) {
+    if (curr_max_ex_per_session > max_ex_per_session) break;
+    // NOTE: This check ensures that the least amount of variationsPerSession is first to be returned if possible.
+    if (curr_max_volume_in_sets >= max_volume_in_sets) {
       index = i;
       break;
+    }
+    // NOTE: for cases in which max_volume_in_sets never gets met.
+    if (
+      frequency_matrix[index + 1] &&
+      frequency_matrix[i + 1][0].length <= max_ex_per_session
+    ) {
+      index++;
     }
   }
 
   const optimal_placeholder = frequency_matrix[index];
+  console.log(
+    muscle,
+    total_frequency,
+    max_ex_per_session,
+    max_volume_in_sets,
+    max_sets,
+    index,
+    optimal_placeholder,
+    "findOptimalPlaceholderExerciseLayout"
+  );
   return optimal_placeholder;
 };
 
@@ -144,7 +168,8 @@ const findOptimalPlaceholderExerciseLayout = (
 export const getPlaceholderExerciseLayout = (
   ex_per_session_range: number[],
   frequency: number,
-  set_range: number[]
+  set_range: number[],
+  muscle?: string
 ) => {
   let frequency_matrix: number[][][] = [];
 
@@ -178,6 +203,7 @@ export const getPlaceholderExerciseLayout = (
   return findOptimalPlaceholderExerciseLayout(
     ex_per_session_range,
     set_range,
-    frequency_matrix
+    frequency_matrix,
+    muscle
   );
 };

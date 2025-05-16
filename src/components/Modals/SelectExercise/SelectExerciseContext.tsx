@@ -58,10 +58,10 @@ const filterExercisesByTags = (
   return filteredExercises;
 };
 
-type KeyKey = keyof JSONExercise["hypertrophy_criteria"];
-const sortExercisesByCriteria = (
+type HypertrophyCriteriaKey = keyof JSONExercise["hypertrophy_criteria"];
+export const sortExercisesByCriteria = (
   exercises: JSONExercise[],
-  key: KeyKey | "rank",
+  key: HypertrophyCriteriaKey | "rank",
   secondKey?: "lengthened" | "challenging"
 ) => {
   const sorted = exercises.sort((a, b) => {
@@ -252,7 +252,7 @@ function useSelectExercise(exerciseId: string, muscle?: MusclePriorityType) {
 
   const onSortHandler = useCallback(
     (key: string, secondKey?: "lengthened" | "challenging") => {
-      const keykey = key as KeyKey;
+      const keykey = key as HypertrophyCriteriaKey;
 
       const sorted = sortExercisesByCriteria(
         [...visibleExercises],

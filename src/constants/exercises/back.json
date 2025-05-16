@@ -1,7 +1,7 @@
 [
   {
-    "id": "0001-back-barbellrow",
-    "name": "Barbell Row",
+    "id": "0001-back-bentoverbarbellrow",
+    "name": "Bent-Over Barbell Row",
     "alt_names": [],
     "rank": 1,
     "group": "back",
@@ -60,6 +60,7 @@
     "rank": 3,
     "group": "back",
     "region": "upper-back",
+    "exercise_location": ["floor-open"],
     "requirements": ["barbell"],
     "variations": [],
     "tips": "",
@@ -80,8 +81,8 @@
     }
   },
   {
-    "id": "0004-back-dumbbellrow",
-    "name": "Dumbbell Row",
+    "id": "0004-back-bentoverdumbbellrow",
+    "name": "Bent-Over Dumbbell Row",
     "alt_names": [],
     "rank": 4,
     "group": "back",
