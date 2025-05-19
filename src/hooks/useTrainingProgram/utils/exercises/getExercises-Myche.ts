@@ -490,7 +490,7 @@ const REPS_ARR = [5, 12, 10, 12, 8, 10, 15, 8, 12];
 
 const WeightIncrementTuple = {
   barbell: [45, 5],
-  dumbbell: [10, 2.5],
+  dumbbell: [20, 2.5],
   cable: [10, 2.5],
   machine: [20, 5],
   bodyweight: [0, 0],
@@ -796,179 +796,10 @@ const EXERCISE_LOCATION = [
 ] as const
 type ExerciseLocationType = (typeof EXERCISE_LOCATION)[number];
 
-
-
-// CHEST            IDEAL          |          MATH
-// 0.50 0.40 .1
-// FREQ     upper | middle | lower | upper | middle | lower
-//   7       3        3       1    |  3.5     2.8      0.7  = 3 3 1
-//   6       3        2       1    |  3.0     2.4      0.6  = 3 2 1 
-//   5       3        2       0    |  2.5     2.0      0.5  = 3 2 0
-//   4       2        2       0    |  2.0     1.6      0.4  = 2 2 0
-//   3       2        1       0    |  1.5     1.2      0.3  = 2 1 0
-//   2       1        1       0    |  1.0     0.8      0.2  = 1 1 0
-//   1       1        0       0    |  0.5     0.4      0.1  = 1 0 0
-
-// CHEST            IDEAL          |          MATH
-// 0.50 0.425 0.075
-// FREQ     upper | middle | lower | upper  | middle  | lower
-//   7       4        3       1    |  3.50     2.97     0.525  = 3 3 1
-//   6       3        2       1    |  3.00     2.55     0.45   = 3 3 0
-//   5       3        2       0    |  2.50     2.13     0.38   = 3 2 0
-//   4       2        2       0    |  2.00     1.7      0.3    = 2 2 0
-//   3       2        1       0    |  1.50     1.28     0.23   = 2 1 0 
-//   2       1        1       0    |  1.00     0.85     0.15   = 1 1 0
-//   1       1        0       0    |  0.50     0.43     0.08   = 1 0 0
-
-// TRICEPS  .65  IDEAL .35  |     MATH
-// FREQ     long | lateral  | long | lateral 
-//   7       4        3     |  4.55   2.45  = 5 2
-//   6       3        3     |  3.9    2.1   = 4 2
-//   5       3        2     |  3.25   1.75  = 3 2
-//   4       2        2     |  2.0    2.0   = 2 2
-//   3       2        1     |  1.95   1.05  = 2 1
-//   2       1        1     |  1.3    0.7   = 1 1
-//   1       1        0     |  0.65   0.35  = 1 0
-
-// TRICEPS  .55  IDEAL .45  |     MATH
-// FREQ     long | lateral  | long | lateral 
-//   7       4        3     |  3.85   3.15  = 4 3
-//   6       3        3     |  3.30   2.70  = 3 3
-//   5       3        2     |  2.75   2.25  = 3 2
-//   4       2        2     |  2.2    1.8   = 2 2
-//   3       2        1     |  1.65   1.35  = 2 1
-//   2       1        1     |  1.10   0.90  = 1 1
-//   1       1        0     |  0.55   0.45  = 1 0
-
-// BICEPS            IDEAL          |          MATH
-// 0.40 0.40 0.20
-// FREQ     long  | short | brachi |  long   | short | brachi
-//   7       4        3       1    |  2.80     2.80     1.40   = 3 3 1
-//   6       3        2       1    |  2.40     2.40     1.20   = 3 2 1
-//   5       3        2       0    |  2.00     2.00     1.00   = 2 2 1
-//   4       2        2       0    |  1.60     1.60     0.80   = 2 2 0
-//   3       2        1       0    |  1.20     1.20     0.60   = 1 1 1 
-//   2       1        1       0    |  0.80     0.80     0.40   = 1 1 0
-//   1       1        0       0    |  0.40     0.40     0.20   = 1 0 0
-
-// BICEPS            IDEAL          |          MATH
-// 0.45 0.41 0.14
-// FREQ     long  | short | brachi |  long   | short | brachi
-//   7       3        3       1    |  3.15     2.87     0.98   = 3 3 1
-//   6       3        2       1    |  2.70     2.46     0.84   = 3 2 1
-//   5       3        2       0    |  2.25     2.05     0.70   = 2 2 1
-//   4       2        2       0    |  1.80     1.64     0.56   = 2 2 0
-//   3       2        1       0    |  1.35     1.23     0.42   = 1 1 1 
-//   2       1        1       0    |  0.80     0.80     0.40   = 1 1 0
-//   1       1        0       0    |  0.40     0.40     0.20   = 1 0 0
-// BICEPS            IDEAL          |          MATH
-// 0.45 0.41 0.14
-// FREQ     long  | short | brachi |  long   | short | brachi
-//   7       3        3       1    |  3.15     2.87     0.98   = 3 3 1
-//   6       3        2       1    |  2.70     2.46     0.84   = 3 2 1
-//   5       3        2       0    |  2.25     2.05     0.70   = 2 2 1
-//   4       2        2       0    |  1.80     1.64     0.56   = 2 2 0
-//   3       2        1       0    |  1.35     1.23     0.42   = 1 1 1 
-//   2       1        1       0    |  0.80     0.80     0.40   = 1 1 0
-//   1       1        0       0    |  0.40     0.40     0.20   = 1 0 0
-// BICEPS            IDEAL          |          MATH
-// 0.50 0.39 0.11
-// FREQ     long  | short | brachi |  long   | short | brachi
-//   7       3        3       1    |  3.50     2.73     0.77   = 3 3 1
-//   6       3        2       1    |  3.00     2.34     0.66   = 3 2 1
-//   5       3        2       0    |  2.50     1.95     0.55   = 3 2 0
-//   4       2        2       0    |  2.00     1.56     0.44   = 2 2 0
-//   3       2        1       0    |  1.50     1.17     0.33   = 2 1 0 
-//   2       1        1       0    |  1.00     0.80     0.20   = 1 1 0
-//   1       1        0       0    |  0.40     0.40     0.10   = 1 0 0
-
-// BICEPS            IDEAL          |          MATH
-// 0.49 0.39 0.12
-// FREQ     long  | short | brachi |  long   | short | brachi
-//   7       3        3       1    |  3.43     2.73     0.84   = 3 3 1
-//   6       3        2       1    |  2.94     2.34     0.70   = 3 2 1
-//   5       3        2       0    |  2.45     1.95     0.60   = 2 2 1
-//   4       2        2       0    |  1.96     1.56     0.48   = 2 2 0
-//   3       2        1       0    |  1.47     1.17     0.36   = 2 1 0 
-//   2       1        1       0    |  0.98     0.78     0.24   = 1 1 0
-//   1       1        0       0    |  0.40     0.40     0.10   = 1 0 0
-
-// TRAPS            IDEAL          |          MATH
-// 0.75 0.15 0.10
-// FREQ     long  | short | brachi |  long   | short | brachi
-//   7       5        1       1    |  5.25     1.05     1.00   = 5 1 1
-//   6       4        1       1    |  4.50     0.90     0.60   = 5 1 1
-//   5       4        1       0    |  3.75     0.75     0.50   = 4 1 1
-//   4       3        1       0    |  3.00     0.60     0.40   = 3 1 0
-//   3       3        0       0    |  2.25     0.45     0.30   = 2 0 0 
-//   2       2        0       0    |  1.50     0.30     0.20   = 2 0 0
-//   1       1        0       0    |  0.75     0.15     0.10   = 1 0 0
-
-// NOTE. if frequency doesn't match on rounding. If under: add to top. If over: subtract from bottom.
-const MUSCLE_GROUP_REGION_WEIGHTS = {
-  abs: { // not finalized
-    upper: 0.30,
-    lower: 0.30,
-    obliques: 0.40
-  },
-  back: {
-    lats: 0.55,
-    upper: 0.45,
-  },
-  biceps: {
-    long: 0.49,
-    short: 0.39,
-    brachialis: 0.12
-  },
-  calves: {
-    calves: 1,
-  },
-  chest: {
-    upper: .49,
-    middle: .39,
-    lower: .12,
-  },
-  delts_front: {
-    front: 1
-  },
-  delts_rear: {
-    rear: 1
-  },
-  delts_side: {
-    side: 1
-  },
-  forearms: { // not finalized
-    brachioradialis: .40,
-    flexors: .35,
-    extensors: .25,
-  },
-  glutes: {
-    glutes: 1
-  },
-  hamstrings: {
-    hamstrings: 1
-  },
-  quads: { // not finalized
-    rectus: 0.50,
-    vastus: 0.40,
-    adductors: 0.10
-  },
-  traps: { // not finalized
-    upper: 0.75,
-    middle: 0.15,
-    lower: 0.10
-  },
-  triceps: {
-    long: 0.55,
-    lateral: 0.45,
-  },
-}
-
-const lolsort = (
-  
-) => {
-
-}
+const sortExercises = (json_exercises: JSONExercise[]) => {
+  const sorted = sortExercisesByCriteria(json_exercises, "rank");
+  return sorted;
+};
 
 // NOTE: 5/13/2025. New exercise builders via new setProgressionMatrix functionality.
 //       Currently works well. But requires smarter logic.
@@ -990,7 +821,7 @@ export const getExercises = (
   if (total_exercises <= 0) return [];
 
   const json_exercises = getGroupList(muscle_name);
-  const sorted_json_exercises = sortExercisesByCriteria(json_exercises, "rank");
+  const sorted_json_exercises = sortExercises(json_exercises);
   const ending_index = Math.min(max_variation, total_exercises);
   const unique_exercises: JSONExercise[] = sorted_json_exercises.slice(
     0,

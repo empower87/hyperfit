@@ -40,7 +40,7 @@
       "time_efficiency": 5,
       "loadability": 9,
       "stretch": {
-        "lengthened": 10,
+        "lengthened": 2,
         "challenging": 10,
         "partial_friendly": 10
       },
@@ -144,13 +144,47 @@
     }
   },
   {
-    "id": "0007-chest-cablefly",
-    "name": "Cable Fly",
+    "id": "0007-chest-standingcablefly",
+    "name": "Standing Cable Fly",
     "rank": 7,
     "group": "chest",
     "region": "",
     "requirements": ["cable"],
-    "variations": [],
+    "variations": [
+      "NOTE: NO COMMENTS IN JSON. NEED TO KEEP TRACK OF ALL POSSIBLE EXERCISES",
+      "dumbbell bench press",
+      "incline dumbbell bench press",
+      "decline dumbbell bench press",
+      "barbell bench press",
+      "incline barbell bench press",
+      "decline barbell bench press",
+      "smith-machine bench press",
+      "incline smith-machine bench press",
+      "standing cable crossover",
+      "standing high-cable crossover",
+      "standing low-cable crossover",
+      "seated cable crossover",
+      "seated high-cable crossover",
+      "seated low-cable crossover",
+      "standing unilateral cable crossover",
+      "standing unilateral high-cable crossover",
+      "standing unilateral low-cable crossover",
+      "seated unilateral cable crossover",
+      "seated unilateral high-cable crossover",
+      "seated unilateral low-cable crossover",
+      "dumbbell fly",
+      "incline dumbbell fly",
+      "decline dumbbell fly",
+      "cable fly",
+      "incline cable fly",
+      "machine fly",
+      "chest press",
+      "incline chest press",
+      "iso-lateral chest press",
+      "incline iso-lateral chest press",
+      "chest dip",
+      "machine dip"
+    ],
     "tips": "",
     "movement_type": "isolation",
     "hypertrophy_criteria": {
@@ -170,6 +204,7 @@
   {
     "id": "0008-chest-machinefly",
     "name": "Machine Fly",
+    "alt_names": ["Pec Deck"],
     "rank": 8,
     "group": "chest",
     "region": "",
@@ -213,6 +248,30 @@
         "partial_friendly": 10
       },
       "fatigue": 7
+    }
+  },
+  {
+    "id": "0010-chest-seatedunilateralcablecrossover",
+    "name": "Seated Unilateral Cable Crossover",
+    "rank": 10,
+    "group": "chest",
+    "region": "upper",
+    "requirements": ["cable", "bench"],
+    "variations": [],
+    "tips": "1. Lean slightly into arm. 2. bottom rung of cable and drive upward.",
+    "movement_type": "isolation",
+    "hypertrophy_criteria": {
+      "target_function": 5,
+      "stability": 4,
+      "limiting_factor": 5,
+      "time_efficiency": 2,
+      "loadability": 5,
+      "stretch": {
+        "lengthened": 5,
+        "challenging": 3,
+        "partial_friendly": 3
+      },
+      "fatigue": 3
     }
   }
 ]
