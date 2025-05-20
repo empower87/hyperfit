@@ -904,6 +904,29 @@ type ExerciseLocationType = (typeof EXERCISE_LOCATION)[number];
 //   2       2        0       0    |  1.50     0.30     0.20   = 2 0 0
 //   1       1        0       0    |  0.75     0.15     0.10   = 1 0 0
 
+// QUADS            IDEAL          |          MATH
+// 0.70 0.20 0.10
+// FREQ     rect  | vasti | adduct |  rect   | vasti | adduct
+//   7       5        1       1    |  4.90     1.40     0.70   = 5 1 1
+//   6       4        1       1    |  4.20     1.20     0.60   = 4 1 1
+//   5       4        1       0    |  3.50     1.00     0.50   = 4 1 0
+//   4       3        1       0    |  2.80     0.80     0.40   = 3 1 0
+//   3       3        0       0    |  2.10     0.60     0.30   = 2 1 0 
+//   2       2        0       0    |  1.40     0.40     0.20   = 1 0 0
+//   1       1        0       0    |  0.70     0.20     0.10   = 1 0 0
+
+// FOREARMS         IDEAL          |          MATH
+// 0.40 0.35 0.25
+// FREQ     brach | flex  | extens |  brach  | flex  | extens
+//   7       3        2       2    |  2.80     2.45     1.75   = 3 2 2
+//   6       2        2       2    |  2.40     2.10     1.50   = 2 2 2
+//   5       2        2       1    |  2.00     1.75     1.25   = 2 2 1
+//   4       2        1       1    |  1.60     1.40     1.00   = 2 1 1
+//   3       1        1       1    |  1.20     1.05     0.75   = 1 1 1 
+//   2       1        1       0    |  0.80     0.70     0.50   = 1 1 1
+//   1       1        0       0    |  0.40     0.35     0.25   = 0 0 0
+
+
 // NOTE. if frequency doesn't match on rounding. If under: add to top. If over: subtract from bottom.
 const MUSCLE_GROUP_REGION_WEIGHTS = {
   abs: { // not finalized
@@ -937,7 +960,7 @@ const MUSCLE_GROUP_REGION_WEIGHTS = {
   delts_side: {
     side: 1
   },
-  forearms: { // not finalized
+  forearms: {
     brachioradialis: .40,
     flexors: .35,
     extensors: .25,
@@ -948,12 +971,12 @@ const MUSCLE_GROUP_REGION_WEIGHTS = {
   hamstrings: {
     hamstrings: 1
   },
-  quads: { // not finalized
-    rectus: 0.50,
-    vastus: 0.40,
+  quads: {
+    rectus: 0.70,
+    vastus: 0.20,
     adductors: 0.10
   },
-  traps: { // not finalized
+  traps: {
     upper: 0.75,
     middle: 0.15,
     lower: 0.10
@@ -965,9 +988,13 @@ const MUSCLE_GROUP_REGION_WEIGHTS = {
 }
 
 const lolsort = (
-  
+  muscle_name: string,
+  json_exercises: JSONExercise[],
 ) => {
-
+  const weights = MUSCLE_GROUP_REGION_WEIGHTS[muscle_name as keyof typeof MUSCLE_GROUP_REGION_WEIGHTS]
+  for (let i = 0; i < json_exercises.length; i++) {
+    const region = json_exercises[i].region
+  }
 }
 
 // NOTE: 5/13/2025. New exercise builders via new setProgressionMatrix functionality.
