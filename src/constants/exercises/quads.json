@@ -4,7 +4,7 @@
     "name": "Barbell Squat",
     "rank": 1,
     "group": "quads",
-    "region": "",
+    "region": "vastus",
     "requirements": ["rack", "barbell"],
     "variations": [],
     "tips": "",
@@ -28,7 +28,7 @@
     "name": "Front Squat",
     "rank": 2,
     "group": "quads",
-    "region": "",
+    "region": "vastus",
     "requirements": ["barbell"],
     "variations": [],
     "tips": "",
@@ -52,7 +52,7 @@
     "name": "Leg Press",
     "rank": 3,
     "group": "quads",
-    "region": "",
+    "region": "vastus",
     "requirements": ["machine"],
     "variations": ["single-leg"],
     "tips": "",
@@ -72,11 +72,12 @@
     }
   },
   {
-    "id": "0004-quads-exercise",
+    "id": "0004-quads-bulgariansplitsquat",
     "name": "Bulgarian Split Squat",
     "rank": 4,
     "group": "quads",
-    "region": "",
+    "region": "vastus",
+    "target_functions": ["hip-flexion", "knee-extension"],
     "requirements": ["dumbbell", "bench"],
     "variations": [],
     "tips": "",
@@ -96,11 +97,11 @@
     }
   },
   {
-    "id": "0005-quads-exercise",
+    "id": "0005-quads-lunge",
     "name": "Lunge",
     "rank": 5,
     "group": "quads",
-    "region": "",
+    "region": "vastus",
     "requirements": ["barbell", "dumbbell"],
     "variations": ["barbell", "dumbbell"],
     "tips": "",
@@ -120,27 +121,75 @@
     }
   },
   {
-    "id": "0006-quads-exercise",
+    "id": "0006-quads-legextension",
     "name": "Leg Extension",
     "rank": 6,
     "group": "quads",
-    "region": "",
+    "region": "rectus",
     "requirements": ["machine"],
     "variations": ["single-leg"],
     "tips": "",
-    "movement_type": "compound",
+    "movement_type": "isolation",
     "hypertrophy_criteria": {
-      "target_function": 0,
+      "target_function": 5,
       "stability": 5,
-      "limiting_factor": 0,
-      "time_efficiency": 0,
-      "loadability": 0,
+      "limiting_factor": 5,
+      "time_efficiency": 5,
+      "loadability": 4,
       "stretch": {
-        "lengthened": 0,
-        "challenging": 0,
-        "partial_friendly": 0
+        "lengthened": 4,
+        "challenging": 3,
+        "partial_friendly": 4
       },
-      "fatigue": 0
+      "fatigue": 2
+    }
+  },
+  {
+    "id": "0007-quads-reversenordiccurl",
+    "name": "Reverse Nordic Curl",
+    "rank": 7,
+    "group": "quads",
+    "region": "rectus",
+    "requirements": ["bodyweight"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "isolation",
+    "hypertrophy_criteria": {
+      "target_function": 5,
+      "stability": 2,
+      "limiting_factor": 3,
+      "time_efficiency": 5,
+      "loadability": 1,
+      "stretch": {
+        "lengthened": 5,
+        "challenging": 5,
+        "partial_friendly": 3
+      },
+      "fatigue": 2
+    }
+  },
+  {
+    "id": "0008-quads-adductormachine",
+    "name": "Adductor Machine",
+    "rank": 8,
+    "group": "quads",
+    "region": "adductors",
+    "requirements": ["machine"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "isolation",
+    "hypertrophy_criteria": {
+      "target_function": 5,
+      "stability": 2,
+      "limiting_factor": 3,
+      "time_efficiency": 5,
+      "loadability": 1,
+      "stretch": {
+        "lengthened": 5,
+        "challenging": 5,
+        "partial_friendly": 3
+      },
+      "fatigue": 2
     }
   }
 ]

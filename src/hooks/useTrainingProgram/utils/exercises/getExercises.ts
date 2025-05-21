@@ -796,13 +796,11 @@ const EXERCISE_LOCATION = [
 ] as const
 type ExerciseLocationType = (typeof EXERCISE_LOCATION)[number];
 
-
-
 // CHEST            IDEAL          |          MATH
 // 0.50 0.40 .1
 // FREQ     upper | middle | lower | upper | middle | lower
 //   7       3        3       1    |  3.5     2.8      0.7  = 3 3 1
-//   6       3        2       1    |  3.0     2.4      0.6  = 3 2 1 
+//   6       3        2       1    |  3.0     2.4      0.6  = 3 2 1
 //   5       3        2       0    |  2.5     2.0      0.5  = 3 2 0
 //   4       2        2       0    |  2.0     1.6      0.4  = 2 2 0
 //   3       2        1       0    |  1.5     1.2      0.3  = 2 1 0
@@ -816,12 +814,12 @@ type ExerciseLocationType = (typeof EXERCISE_LOCATION)[number];
 //   6       3        2       1    |  3.00     2.55     0.45   = 3 3 0
 //   5       3        2       0    |  2.50     2.13     0.38   = 3 2 0
 //   4       2        2       0    |  2.00     1.7      0.3    = 2 2 0
-//   3       2        1       0    |  1.50     1.28     0.23   = 2 1 0 
+//   3       2        1       0    |  1.50     1.28     0.23   = 2 1 0
 //   2       1        1       0    |  1.00     0.85     0.15   = 1 1 0
 //   1       1        0       0    |  0.50     0.43     0.08   = 1 0 0
 
 // TRICEPS  .65  IDEAL .35  |     MATH
-// FREQ     long | lateral  | long | lateral 
+// FREQ     long | lateral  | long | lateral
 //   7       4        3     |  4.55   2.45  = 5 2
 //   6       3        3     |  3.9    2.1   = 4 2
 //   5       3        2     |  3.25   1.75  = 3 2
@@ -831,7 +829,7 @@ type ExerciseLocationType = (typeof EXERCISE_LOCATION)[number];
 //   1       1        0     |  0.65   0.35  = 1 0
 
 // TRICEPS  .55  IDEAL .45  |     MATH
-// FREQ     long | lateral  | long | lateral 
+// FREQ     long | lateral  | long | lateral
 //   7       4        3     |  3.85   3.15  = 4 3
 //   6       3        3     |  3.30   2.70  = 3 3
 //   5       3        2     |  2.75   2.25  = 3 2
@@ -847,7 +845,7 @@ type ExerciseLocationType = (typeof EXERCISE_LOCATION)[number];
 //   6       3        2       1    |  2.40     2.40     1.20   = 3 2 1
 //   5       3        2       0    |  2.00     2.00     1.00   = 2 2 1
 //   4       2        2       0    |  1.60     1.60     0.80   = 2 2 0
-//   3       2        1       0    |  1.20     1.20     0.60   = 1 1 1 
+//   3       2        1       0    |  1.20     1.20     0.60   = 1 1 1
 //   2       1        1       0    |  0.80     0.80     0.40   = 1 1 0
 //   1       1        0       0    |  0.40     0.40     0.20   = 1 0 0
 
@@ -858,7 +856,7 @@ type ExerciseLocationType = (typeof EXERCISE_LOCATION)[number];
 //   6       3        2       1    |  2.70     2.46     0.84   = 3 2 1
 //   5       3        2       0    |  2.25     2.05     0.70   = 2 2 1
 //   4       2        2       0    |  1.80     1.64     0.56   = 2 2 0
-//   3       2        1       0    |  1.35     1.23     0.42   = 1 1 1 
+//   3       2        1       0    |  1.35     1.23     0.42   = 1 1 1
 //   2       1        1       0    |  0.80     0.80     0.40   = 1 1 0
 //   1       1        0       0    |  0.40     0.40     0.20   = 1 0 0
 // BICEPS            IDEAL          |          MATH
@@ -868,7 +866,7 @@ type ExerciseLocationType = (typeof EXERCISE_LOCATION)[number];
 //   6       3        2       1    |  2.70     2.46     0.84   = 3 2 1
 //   5       3        2       0    |  2.25     2.05     0.70   = 2 2 1
 //   4       2        2       0    |  1.80     1.64     0.56   = 2 2 0
-//   3       2        1       0    |  1.35     1.23     0.42   = 1 1 1 
+//   3       2        1       0    |  1.35     1.23     0.42   = 1 1 1
 //   2       1        1       0    |  0.80     0.80     0.40   = 1 1 0
 //   1       1        0       0    |  0.40     0.40     0.20   = 1 0 0
 // BICEPS            IDEAL          |          MATH
@@ -878,7 +876,7 @@ type ExerciseLocationType = (typeof EXERCISE_LOCATION)[number];
 //   6       3        2       1    |  3.00     2.34     0.66   = 3 2 1
 //   5       3        2       0    |  2.50     1.95     0.55   = 3 2 0
 //   4       2        2       0    |  2.00     1.56     0.44   = 2 2 0
-//   3       2        1       0    |  1.50     1.17     0.33   = 2 1 0 
+//   3       2        1       0    |  1.50     1.17     0.33   = 2 1 0
 //   2       1        1       0    |  1.00     0.80     0.20   = 1 1 0
 //   1       1        0       0    |  0.40     0.40     0.10   = 1 0 0
 
@@ -889,7 +887,7 @@ type ExerciseLocationType = (typeof EXERCISE_LOCATION)[number];
 //   6       3        2       1    |  2.94     2.34     0.70   = 3 2 1
 //   5       3        2       0    |  2.45     1.95     0.60   = 2 2 1
 //   4       2        2       0    |  1.96     1.56     0.48   = 2 2 0
-//   3       2        1       0    |  1.47     1.17     0.36   = 2 1 0 
+//   3       2        1       0    |  1.47     1.17     0.36   = 2 1 0
 //   2       1        1       0    |  0.98     0.78     0.24   = 1 1 0
 //   1       1        0       0    |  0.40     0.40     0.10   = 1 0 0
 
@@ -900,7 +898,7 @@ type ExerciseLocationType = (typeof EXERCISE_LOCATION)[number];
 //   6       4        1       1    |  4.50     0.90     0.60   = 5 1 1
 //   5       4        1       0    |  3.75     0.75     0.50   = 4 1 1
 //   4       3        1       0    |  3.00     0.60     0.40   = 3 1 0
-//   3       3        0       0    |  2.25     0.45     0.30   = 2 0 0 
+//   3       3        0       0    |  2.25     0.45     0.30   = 2 0 0
 //   2       2        0       0    |  1.50     0.30     0.20   = 2 0 0
 //   1       1        0       0    |  0.75     0.15     0.10   = 1 0 0
 
@@ -911,7 +909,7 @@ type ExerciseLocationType = (typeof EXERCISE_LOCATION)[number];
 //   6       4        1       1    |  4.20     1.20     0.60   = 4 1 1
 //   5       4        1       0    |  3.50     1.00     0.50   = 4 1 0
 //   4       3        1       0    |  2.80     0.80     0.40   = 3 1 0
-//   3       3        0       0    |  2.10     0.60     0.30   = 2 1 0 
+//   3       3        0       0    |  2.10     0.60     0.30   = 2 1 0
 //   2       2        0       0    |  1.40     0.40     0.20   = 1 0 0
 //   1       1        0       0    |  0.70     0.20     0.10   = 1 0 0
 
@@ -922,17 +920,21 @@ type ExerciseLocationType = (typeof EXERCISE_LOCATION)[number];
 //   6       2        2       2    |  2.40     2.10     1.50   = 2 2 2
 //   5       2        2       1    |  2.00     1.75     1.25   = 2 2 1
 //   4       2        1       1    |  1.60     1.40     1.00   = 2 1 1
-//   3       1        1       1    |  1.20     1.05     0.75   = 1 1 1 
+//   3       1        1       1    |  1.20     1.05     0.75   = 1 1 1
 //   2       1        1       0    |  0.80     0.70     0.50   = 1 1 1
 //   1       1        0       0    |  0.40     0.35     0.25   = 0 0 0
 
-
 // NOTE. if frequency doesn't match on rounding. If under: add to top. If over: subtract from bottom.
-const MUSCLE_GROUP_REGION_WEIGHTS = {
-  abs: { // not finalized
-    upper: 0.30,
-    lower: 0.30,
-    obliques: 0.40
+type MuscleGroupRegionWeights = {
+  [key: string]: {
+    [key: string]: number;
+  };
+};
+const MUSCLE_GROUP_REGION_WEIGHTS: MuscleGroupRegionWeights = {
+  abs: {
+    upper: 0.3,
+    lower: 0.3,
+    obliques: 0.4,
   },
   back: {
     lats: 0.55,
@@ -941,61 +943,127 @@ const MUSCLE_GROUP_REGION_WEIGHTS = {
   biceps: {
     long: 0.49,
     short: 0.39,
-    brachialis: 0.12
+    brachialis: 0.12,
   },
   calves: {
     calves: 1,
   },
   chest: {
-    upper: .49,
-    middle: .39,
-    lower: .12,
+    upper: 0.49,
+    middle: 0.39,
+    lower: 0.12,
   },
   delts_front: {
-    front: 1
+    front: 1,
   },
   delts_rear: {
-    rear: 1
+    rear: 1,
   },
   delts_side: {
-    side: 1
+    side: 1,
   },
   forearms: {
-    brachioradialis: .40,
-    flexors: .35,
-    extensors: .25,
+    brachioradialis: 0.4,
+    flexors: 0.35,
+    extensors: 0.25,
   },
   glutes: {
-    glutes: 1
+    glutes: 1,
   },
   hamstrings: {
-    hamstrings: 1
+    hamstrings: 1,
   },
   quads: {
-    rectus: 0.70,
-    vastus: 0.20,
-    adductors: 0.10
+    vastus: 0.7,
+    rectus: 0.2,
+    adductors: 0.1,
   },
   traps: {
     upper: 0.75,
     middle: 0.15,
-    lower: 0.10
+    lower: 0.1,
   },
   triceps: {
     long: 0.55,
     lateral: 0.45,
   },
-}
+};
 
-const lolsort = (
+const findExercisesByTargetableRegions = (
   muscle_name: string,
-  json_exercises: JSONExercise[],
+  frequency: number,
+  sorted_json_exercises: JSONExercise[]
 ) => {
-  const weights = MUSCLE_GROUP_REGION_WEIGHTS[muscle_name as keyof typeof MUSCLE_GROUP_REGION_WEIGHTS]
-  for (let i = 0; i < json_exercises.length; i++) {
-    const region = json_exercises[i].region
+  // Get region weights for the muscle group
+  const regionWeights = MUSCLE_GROUP_REGION_WEIGHTS[muscle_name];
+  const regionKeys = Object.keys(regionWeights);
+  if (!regionWeights || regionKeys.length <= 1)
+    return sorted_json_exercises.slice(0, frequency);
+
+  // Calculate how many exercises per region (integer division, distribute remainder)
+  const totalWeight = regionKeys.reduce(
+    (sum, key) => sum + regionWeights[key],
+    0
+  );
+  let regionCounts: { [region: string]: number } = {};
+  let totalAssigned = 0;
+
+  // Initial assignment (floor)
+  regionKeys.forEach((region) => {
+    const count = Math.floor((regionWeights[region] / totalWeight) * frequency);
+    regionCounts[region] = count;
+    totalAssigned += count;
+  });
+
+  // Distribute remainder
+  let remainder = frequency - totalAssigned;
+  if (remainder > 0) {
+    // Sort regions by largest fractional remainder
+    const remainders = regionKeys
+      .map((region) => ({
+        region,
+        frac:
+          (regionWeights[region] / totalWeight) * frequency -
+          regionCounts[region],
+      }))
+      .sort((a, b) => b.frac - a.frac);
+
+    for (let i = 0; i < remainder; i++) {
+      regionCounts[remainders[i % remainders.length].region]++;
+    }
   }
-}
+
+  // Select exercises for each region, in order from the sorted list
+  const selected: JSONExercise[] = [];
+  const usedIds = new Set<string>();
+  for (const region of regionKeys) {
+    let count = regionCounts[region];
+    if (count <= 0) continue;
+    for (const ex of sorted_json_exercises) {
+      if (usedIds.has(ex.id)) continue;
+      // If region is "", treat as default (include if no region specified)
+      if (ex.region === region || (region === "default" && !ex.region)) {
+        selected.push(ex);
+        usedIds.add(ex.id);
+        count--;
+        if (count === 0) break;
+      }
+    }
+  }
+
+  // If not enough found, fill from remaining exercises
+  if (selected.length < frequency) {
+    for (const ex of sorted_json_exercises) {
+      if (selected.length >= frequency) break;
+      if (!usedIds.has(ex.id)) {
+        selected.push(ex);
+        usedIds.add(ex.id);
+      }
+    }
+  }
+
+  return selected;
+};
 
 // NOTE: 5/13/2025. New exercise builders via new setProgressionMatrix functionality.
 //       Currently works well. But requires smarter logic.
@@ -1018,6 +1086,14 @@ export const getExercises = (
 
   const json_exercises = getGroupList(muscle_name);
   const sorted_json_exercises = sortExercisesByCriteria(json_exercises, "rank");
+  const frequency = exercise_placeholders.filter(
+    (session) => session.length
+  ).length;
+  const exercises = findExercisesByTargetableRegions(
+    muscle_name,
+    frequency,
+    sorted_json_exercises
+  );
   const ending_index = Math.min(max_variation, total_exercises);
   const unique_exercises: JSONExercise[] = sorted_json_exercises.slice(
     0,
@@ -1029,6 +1105,7 @@ export const getExercises = (
   let total_possible_repeated_exercises =
     total_exercises - unique_exercises.length;
   let loading_diff_index = 0;
+
   for (let i = 0; i < unique_exercises.length; i++) {
     if (total_possible_repeated_exercises <= 0) break;
     const repeated_exercise = { ...unique_exercises[i] };
@@ -1056,6 +1133,7 @@ export const getExercises = (
     repeated_exercises.length,
     final_exercises,
     sorted_json_exercises,
+    exercises,
     "GET EXERCISES MUCHO DATA LULZ"
   );
   return final_exercises;
