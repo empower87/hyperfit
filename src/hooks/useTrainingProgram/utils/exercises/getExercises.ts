@@ -925,12 +925,7 @@ type ExerciseLocationType = (typeof EXERCISE_LOCATION)[number];
 //   1       1        0       0    |  0.40     0.35     0.25   = 0 0 0
 
 // NOTE. if frequency doesn't match on rounding. If under: add to top. If over: subtract from bottom.
-type MuscleGroupRegionWeights = {
-  [key: string]: {
-    [key: string]: number;
-  };
-};
-const MUSCLE_GROUP_REGION_WEIGHTS: MuscleGroupRegionWeights = {
+const MUSCLE_GROUP_REGION_WEIGHTS = {
   abs: {
     upper: 0.3,
     lower: 0.3,
@@ -987,16 +982,18 @@ const MUSCLE_GROUP_REGION_WEIGHTS: MuscleGroupRegionWeights = {
     long: 0.55,
     lateral: 0.45,
   },
-};
+} as const;
 
-const findExercisesByTargetableRegions = (
-  muscle_name: string,
+const findExercisesByTargetRegions = (
+  muscle_name: MuscleType,
   frequency: number,
   sorted_json_exercises: JSONExercise[]
 ) => {
   // Get region weights for the muscle group
   const regionWeights = MUSCLE_GROUP_REGION_WEIGHTS[muscle_name];
-  const regionKeys = Object.keys(regionWeights);
+  const regionKeys = Object.keys(regionWeights) as Array<
+    keyof typeof regionWeights
+  >;
   if (!regionWeights || regionKeys.length <= 1)
     return sorted_json_exercises.slice(0, frequency);
 
@@ -1072,7 +1069,7 @@ const findExercisesByTargetableRegions = (
 //          Different angles, equipment, etc..
 const LOADING_DIFFERENTIATION = ["heavy", "medium", "light"];
 export const getExercises = (
-  muscle_name: string,
+  muscle_name: MuscleType,
   volume: number,
   exercise_placeholders: number[][],
   min_variation: number,
@@ -1089,13 +1086,15 @@ export const getExercises = (
   const frequency = exercise_placeholders.filter(
     (session) => session.length
   ).length;
-  const exercises = findExercisesByTargetableRegions(
+
+  const exercises = findExercisesByTargetRegions(
     muscle_name,
     frequency,
     sorted_json_exercises
   );
+
   const ending_index = Math.min(max_variation, total_exercises);
-  const unique_exercises: JSONExercise[] = sorted_json_exercises.slice(
+  const unique_exercises: JSONExercise[] = exercises.slice(
     0,
     ending_index
   );

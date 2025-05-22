@@ -1,11 +1,11 @@
 [
   {
-    "id": "0001-forearms-barbellwristcurl",
-    "name": "Barbell Wrist Curl",
+    "id": "0001-forearms-seatedbarbellwristcurl",
+    "name": "Seated Barbell Wrist Curl",
     "rank": 1,
     "group": "forearms",
-    "region": "",
-    "requirements": ["barbell"],
+    "region": "flexors",
+    "requirements": ["bench", "barbell"],
     "variations": [],
     "tips": "",
     "movement_type": "isolation",
@@ -24,12 +24,252 @@
     }
   },
   {
-    "id": "0002-forearms-dumbbellwristcurl",
-    "name": "Dumbbell Wrist Curl",
+    "id": "0002-forearms-seateddumbbellwristcurl",
+    "name": "Seated Dumbbell Wrist Curl",
     "rank": 2,
     "group": "forearms",
-    "region": "",
+    "region": "flexors",
+    "requirements": ["bench", "dumbbell"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "isolation",
+    "hypertrophy_criteria": {
+      "target_function": 0,
+      "stability": 4,
+      "limiting_factor": 0,
+      "time_efficiency": 0,
+      "loadability": 0,
+      "stretch": {
+        "lengthened": 0,
+        "challenging": 0,
+        "partial_friendly": 0
+      },
+      "fatigue": 0
+    }
+  },
+  {
+    "id": "0003-forearms-seatedreversegripdumbbellwristcurl",
+    "name": "Seated Reverse-Grip Dumbbell Wrist Curl",
+    "rank": 3,
+    "group": "forearms",
+    "region": "extensors",
+    "requirements": ["bench", "dumbbell"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "isolation",
+    "hypertrophy_criteria": {
+      "target_function": 0,
+      "stability": 4,
+      "limiting_factor": 0,
+      "time_efficiency": 0,
+      "loadability": 0,
+      "stretch": {
+        "lengthened": 0,
+        "challenging": 0,
+        "partial_friendly": 0
+      },
+      "fatigue": 0
+    }
+  },
+  {
+    "id": "0004-forearms-seatedreversegripbarbellwristcurl",
+    "name": "Seated Reverse-Grip Barbell Wrist Curl",
+    "rank": 4,
+    "group": "forearms",
+    "region": "extensors",
+    "requirements": ["bench", "barbell"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "isolation",
+    "hypertrophy_criteria": {
+      "target_function": 0,
+      "stability": 4,
+      "limiting_factor": 0,
+      "time_efficiency": 0,
+      "loadability": 0,
+      "stretch": {
+        "lengthened": 0,
+        "challenging": 0,
+        "partial_friendly": 0
+      },
+      "fatigue": 0
+    }
+  },
+  {
+    "id": "0005-forearms-reversegripbarbellcurl",
+    "name": "Reverse-Grip Barbell Curl",
+    "rank": 5,
+    "group": "forearms",
+    "region": "brachioradialis",
+    "requirements": ["barbell"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "isolation",
+    "hypertrophy_criteria": {
+      "target_function": 0,
+      "stability": 4,
+      "limiting_factor": 0,
+      "time_efficiency": 0,
+      "loadability": 0,
+      "stretch": {
+        "lengthened": 0,
+        "challenging": 0,
+        "partial_friendly": 0
+      },
+      "fatigue": 0
+    }
+  },
+  {
+    "id": "0006-forearms-reversegripdumbbellcurl",
+    "name": "Reverse-Grip Dumbbell Curl",
+    "rank": 6,
+    "group": "forearms",
+    "region": "brachioradialis",
     "requirements": ["dumbbell"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "isolation",
+    "hypertrophy_criteria": {
+      "target_function": 0,
+      "stability": 4,
+      "limiting_factor": 0,
+      "time_efficiency": 0,
+      "loadability": 0,
+      "stretch": {
+        "lengthened": 0,
+        "challenging": 0,
+        "partial_friendly": 0
+      },
+      "fatigue": 0
+    }
+  },
+  {
+    "id": "0007-forearms-reversegripdumbbellcurl",
+    "name": "Reverse-Grip Cable Curl",
+    "rank": 7,
+    "group": "forearms",
+    "region": "brachioradialis",
+    "requirements": ["dumbbell"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "isolation",
+    "hypertrophy_criteria": {
+      "target_function": 0,
+      "stability": 4,
+      "limiting_factor": 0,
+      "time_efficiency": 0,
+      "loadability": 0,
+      "stretch": {
+        "lengthened": 0,
+        "challenging": 0,
+        "partial_friendly": 0
+      },
+      "fatigue": 0
+    }
+  },
+  {
+    "id": "0008-forearms-cablewristcurl",
+    "name": "Cable Wrist Curl",
+    "rank": 8,
+    "group": "forearms",
+    "region": "flexors",
+    "requirements": ["cable"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "isolation",
+    "hypertrophy_criteria": {
+      "target_function": 0,
+      "stability": 4,
+      "limiting_factor": 0,
+      "time_efficiency": 0,
+      "loadability": 0,
+      "stretch": {
+        "lengthened": 0,
+        "challenging": 0,
+        "partial_friendly": 0
+      },
+      "fatigue": 0
+    }
+  },
+  {
+    "id": "0009-forearms-neutralgripcablewristcurl",
+    "name": "Neutral-Grip Cable Wrist Curl",
+    "rank": 9,
+    "group": "forearms",
+    "region": "flexors",
+    "requirements": ["cable"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "isolation",
+    "hypertrophy_criteria": {
+      "target_function": 0,
+      "stability": 4,
+      "limiting_factor": 0,
+      "time_efficiency": 0,
+      "loadability": 0,
+      "stretch": {
+        "lengthened": 0,
+        "challenging": 0,
+        "partial_friendly": 0
+      },
+      "fatigue": 0
+    }
+  },
+  {
+    "id": "0010-forearms-cablewristcurl",
+    "name": "Seated Neutral-Grip Dumbbell Wrist Curl",
+    "rank": 10,
+    "group": "forearms",
+    "region": "flexors",
+    "requirements": ["bench", "dumbbell"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "isolation",
+    "hypertrophy_criteria": {
+      "target_function": 0,
+      "stability": 4,
+      "limiting_factor": 0,
+      "time_efficiency": 0,
+      "loadability": 0,
+      "stretch": {
+        "lengthened": 0,
+        "challenging": 0,
+        "partial_friendly": 0
+      },
+      "fatigue": 0
+    }
+  },
+  {
+    "id": "0011-forearms-straightbarunilateralulnardeviation",
+    "name": "Straight-Bar Unilateral Ulnar Deviation",
+    "rank": 11,
+    "group": "forearms",
+    "region": "flexors",
+    "requirements": ["barbell"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "isolation",
+    "hypertrophy_criteria": {
+      "target_function": 0,
+      "stability": 4,
+      "limiting_factor": 0,
+      "time_efficiency": 0,
+      "loadability": 0,
+      "stretch": {
+        "lengthened": 0,
+        "challenging": 0,
+        "partial_friendly": 0
+      },
+      "fatigue": 0
+    }
+  },
+  {
+    "id": "0012-forearms-straightbarunilateralulnardeviation",
+    "name": "Unilateral Cable Ulnar Deviation",
+    "rank": 12,
+    "group": "forearms",
+    "region": "flexors",
+    "requirements": ["cable"],
     "variations": [],
     "tips": "",
     "movement_type": "isolation",
