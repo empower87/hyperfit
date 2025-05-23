@@ -1076,17 +1076,17 @@ export const getExercises = (
   max_variation: number
 ) => {
   const total_exercises = exercise_placeholders.reduce(
-    (acc, session) => acc + session.length,
+    (acc, exercise_day) => acc + exercise_day.length,
     0
   );
   if (total_exercises <= 0) return [];
 
   const json_exercises = getGroupList(muscle_name);
   const sorted_json_exercises = sortExercisesByCriteria(json_exercises, "rank");
-  const frequency = exercise_placeholders.filter(
-    (session) => session.length
-  ).length;
 
+  const frequency = exercise_placeholders.filter(
+    (exercise_day) => exercise_day.length
+  ).length;
   const exercises = findExercisesByTargetRegions(
     muscle_name,
     frequency,
@@ -1094,17 +1094,12 @@ export const getExercises = (
   );
 
   const ending_index = Math.min(max_variation, total_exercises);
-  const unique_exercises: JSONExercise[] = exercises.slice(
-    0,
-    ending_index
-  );
-
+  const unique_exercises: JSONExercise[] = exercises.slice(0, ending_index);
   const repeated_exercises: JSONExercise[] = [];
 
   let total_possible_repeated_exercises =
     total_exercises - unique_exercises.length;
   let loading_diff_index = 0;
-
   for (let i = 0; i < unique_exercises.length; i++) {
     if (total_possible_repeated_exercises <= 0) break;
     const repeated_exercise = { ...unique_exercises[i] };
@@ -1133,7 +1128,7 @@ export const getExercises = (
     final_exercises,
     sorted_json_exercises,
     exercises,
-    "GET EXERCISES MUCHO DATA LULZ"
+    "FUNCTION: getExercises => getExercises.ts"
   );
   return final_exercises;
 };
@@ -1175,3 +1170,68 @@ const addExercisesToPlaceholders = (
 
   return exercise_list;
 };
+
+const getMaxSets = (exercises_in_session: number) => {
+  switch (exercises_in_session) {
+    case 1:
+      return [5]
+    case 2:
+      return [5, 5];
+    case 3:
+      return [4, 4, 4];
+    default:
+      return []
+  }
+}
+
+const setsPerExerciseOverMesocycles = (
+  frequency_progression: number[],
+  exercise_placeholders: number[][],
+  microcycles: number,
+) => {
+  const final_microcycle_sets = exercise_placeholders.map((e) => getMaxSets(e.length));
+  const initial_microcycle_sets = Array.from(Array(microcycles), (e, i) => final_microcycle_sets)
+  let microcycle_counter = microcycles;
+
+  const set_progression: number[][][][] = []
+  for (let i = frequency_progression.length; i > 0; i--) {
+    const all_microcycle_sets = set_progression[set_progression.length - 1] ? set_progression[set_progression.length - 1] : initial_microcycle_sets;
+
+    let total_sets_to_subtract_from_microcycle = frequency_progression[i];
+    for (let j = all_microcycle_sets.length; j > 0; j--) {
+      const curr_microcycle_sets = all_microcycle_sets[j];
+
+      for (let k = 0; k < curr_microcycle_sets.length; k++) {
+        const session = curr_microcycle_sets[k];
+        if (!session.length) continue;
+        const index = findLeastSetsIndex(session);
+        session[index]--;
+      }
+    }
+    set_progression.push(all_microcycle_sets);
+
+  }
+}
+
+// freq_prog = 2 > 3 > 4     volume on final week = 30
+// 2 [2, 2], [2, 2]           = 20
+// 3 [2, 2], [2, 2], [2]      = 25
+// 4 [2, 2], [2, 2], [2], [2] = 30
+
+// FREQUENCY = 2
+// week 1 = [2, 2], [2, 2]           = 8
+// week 2 = [2, 3], [3, 2]           = 10
+// week 3 = [3, 3], [3, 3]           = 12
+// week 4 = [4, 3], [3, 4]           = 14
+
+// FREQUENCY = 3
+// week 1 = [3, 2], [3, 2], [2]      = 12
+// week 2 = [3, 3], [3, 3], [3]      = 15
+// week 3 = [4, 3], [4, 3], [4]      = 18
+// week 4 = [4, 4], [4, 4], [5]      = 21
+
+// FREQUENCY = 4
+// week 1 = [3, 3], [3, 3], [3], [2] = 17
+// week 2 = [4, 3], [4, 3], [4], [3] = 21
+// week 3 = [4, 4], [4, 4], [5], [4] = 25
+// week 4 = [5, 4], [5, 4], [5], [5] = 29

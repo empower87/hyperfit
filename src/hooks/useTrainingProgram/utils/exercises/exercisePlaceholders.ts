@@ -84,10 +84,11 @@ const getTotalExercises = (matrix: number[][][]) => {
 const getMinSetRange = (matrix: number[][][]) => {
   return matrix.map((row) => row.flat().reduce((acc, curr) => acc + curr, 0));
 };
-const MAX_SETS_AT_THREE_EXERCISES = 12;
-const MAX_SETS_AT_TWO_EXERCISES = 10;
-const MAX_SETS_AT_ONE_EXERCISE = 5;
-const MAX_SETS_AT_ONE_EXERCISE_AND_ONE_VARIATION_PER_SESSION_RANGE = 6;
+export const MAX_SETS_AT_THREE_EXERCISES = 12;
+export const MAX_SETS_AT_TWO_EXERCISES = 10;
+export const MAX_SETS_AT_ONE_EXERCISE = 5;
+export const MAX_SETS_AT_ONE_EXERCISE_AND_ONE_VARIATION_PER_SESSION_RANGE = 6;
+
 const getMaxSetRange = (matrix: number[][][]) => {
   return matrix.map((row) =>
     row.reduce(
@@ -97,7 +98,9 @@ const getMaxSetRange = (matrix: number[][][]) => {
           ? MAX_SETS_AT_THREE_EXERCISES
           : curr.length === 2
           ? MAX_SETS_AT_TWO_EXERCISES
-          : MAX_SETS_AT_ONE_EXERCISE),
+          : curr.length === 1
+          ? MAX_SETS_AT_ONE_EXERCISE
+          : 0),
       0
     )
   );
@@ -145,6 +148,7 @@ const findOptimalPlaceholderExerciseLayout = (
   console.log(
     muscle,
     total_frequency,
+    frequency_matrix,
     max_ex_per_session,
     max_volume_in_sets,
     max_sets,

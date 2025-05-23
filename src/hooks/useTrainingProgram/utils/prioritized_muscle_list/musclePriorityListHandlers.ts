@@ -372,7 +372,7 @@ export const attachTargetFrequency = (
       ideal_sets,
       ideal_sets_filtered,
       test_final_week_sets,
-      "THESE KINDA SHOULD BE THE SAME I THINK"
+      "FUNCTION: attachTargetFrequency => musclePriorityListHandlers.ts"
     );
 
     const exercises = getTotalExercisesFromSetMatrix(
