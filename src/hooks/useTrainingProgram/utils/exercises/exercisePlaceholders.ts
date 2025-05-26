@@ -87,6 +87,7 @@ const getMinSetRange = (matrix: number[][][]) => {
 export const MAX_SETS_AT_THREE_EXERCISES = 12;
 export const MAX_SETS_AT_TWO_EXERCISES = 10;
 export const MAX_SETS_AT_ONE_EXERCISE = 5;
+export const MIN_SETS_PER_EXERCISE = 2;
 export const MAX_SETS_AT_ONE_EXERCISE_AND_ONE_VARIATION_PER_SESSION_RANGE = 6;
 
 const getMaxSetRange = (matrix: number[][][]) => {

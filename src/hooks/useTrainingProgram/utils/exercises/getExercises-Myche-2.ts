@@ -29,7 +29,6 @@ import {
   TRICEPS_EXERCISES,
 } from "../../../../constants/exercises/index";
 import { getJSONMuscle, getMuscleData } from "../../../../utils/getMuscleData";
-import { MIN_SETS_PER_EXERCISE } from "./exercisePlaceholders";
 import { setProgression_addOnePerMicrocycle_TEST } from "./setProgressionOverMicrocycles";
 
 // back
@@ -181,19 +180,11 @@ export const getGroupList = (group: string): JSONExercise[] => {
   return rankedExercises.sort((a, b) => b.rank - a.rank);
 };
 
-const findGreatestSetsIndex = (session_sets: number[]) => {
+// get init
+const findLeastSetsIndex = (sessionSets: number[]) => {
   let index = 0;
-
-  for (let i = 0; i < session_sets.length; i++) {
-    index = session_sets[i] >= session_sets[index] ? i : index;
-  }
-  return index;
-};
-const findLeastSetsIndex = (session_sets: number[]) => {
-  let index = 0;
-
-  for (let i = 0; i < session_sets.length; i++) {
-    index = session_sets[i] < session_sets[index] ? i : index;
+  for (let i = 0; i < sessionSets.length; i++) {
+    index = sessionSets[i] < sessionSets[index] ? i : index;
   }
   return index;
 };
@@ -1233,17 +1224,20 @@ const setsPerExerciseOverMesocycles = (
   }
 };
 
-// prettier-ignore
 export const getInitialWeekFromVolume = (
   max_sets: number,
   microcycles: number,
   frequency: number,
   exercise_placeholders: number[][]
 ) => {
-  const placeholder_total_volume = exercise_placeholders.reduce((acc, curr) => acc + curr.reduce((a, c) => a + c, 0), 0);
-  const initial_microcycle_total_volume = max_sets - (microcycles - 1) * frequency;
-  const volume_difference = initial_microcycle_total_volume - placeholder_total_volume;
-  if (volume_difference <= 0 || placeholder_total_volume <= 0) return exercise_placeholders;
+  const placeholder_total_volume = exercise_placeholders.reduce(
+    (acc, curr) => acc + curr.reduce((a, c) => a + c, 0),
+    0
+  );
+  const initial_microcycle_total_volume =
+    max_sets - (microcycles - 1) * frequency;
+  const volume_difference =
+    initial_microcycle_total_volume - placeholder_total_volume;
 
   const sets_to_add_to_each_session = Math.floor(volume_difference / frequency);
   let sets_to_add_to_each_session_remainder = volume_difference % frequency;
@@ -1257,14 +1251,12 @@ export const getInitialWeekFromVolume = (
   });
 
   const cloned_placeholders = structuredClone(exercise_placeholders);
-
   let sets_to_add_over_week_index = 0;
   for (let i = 0; i < cloned_placeholders.length; i++) {
     const session = cloned_placeholders[i];
     if (!session.length) continue;
 
     const sets_to_add = sets_to_add_over_week[sets_to_add_over_week_index];
-
     let session_index = 0;
     for (let j = 0; j < sets_to_add; j++) {
       session[session_index]++;
@@ -1275,13 +1267,7 @@ export const getInitialWeekFromVolume = (
     }
     sets_to_add_over_week_index++;
   }
-
   console.log(
-    placeholder_total_volume,
-    initial_microcycle_total_volume,
-    volume_difference,
-    sets_to_add_to_each_session,
-    sets_to_add_to_each_session_remainder,
     exercise_placeholders,
     cloned_placeholders,
     sets_to_add_over_week,
@@ -1291,53 +1277,6 @@ export const getInitialWeekFromVolume = (
     "FUNCTION: getInitialWeekFromVolume => getExercises.ts"
   );
   return cloned_placeholders;
-};
-
-export const getInitialWeeksFromFinalWeek = (
-  frequency_progression: number[],
-  final_week: number[][]
-) => {
-  const clone_week = structuredClone(final_week);
-  const initial_weeks: number[][][] = [clone_week];
-  const totals = frequency_progression.reduce((acc, curr) => acc + curr, 0);
-  if (totals <= 0) return [];
-
-  const SETS_TO_SUBTRACT = 1;
-  const reversed_frequency_progression = [...frequency_progression].reverse();
-  for (let i = 1; i < reversed_frequency_progression.length; i++) {
-    let frequency_count = reversed_frequency_progression[i];
-
-    const previous_week = structuredClone(initial_weeks[i - 1]);
-
-    for (let j = 0; j < previous_week.length; j++) {
-      let session = [...previous_week[j]];
-      if (session.length === 0) continue;
-      if (frequency_count > 0) {
-        const index = findGreatestSetsIndex(session);
-        const new_sets = session[index] - SETS_TO_SUBTRACT;
-        session[index] =
-          new_sets >= MIN_SETS_PER_EXERCISE ? new_sets : MIN_SETS_PER_EXERCISE;
-        frequency_count--;
-      } else {
-        session = [];
-      }
-      previous_week[j] = session;
-    }
-
-    initial_weeks.push(previous_week);
-  }
-
-  const reverse_initial_weeks = initial_weeks.reverse();
-  console.log(
-    frequency_progression,
-    reversed_frequency_progression,
-    final_week,
-    clone_week,
-    initial_weeks,
-    reverse_initial_weeks,
-    "FUNCTION: getInitialWeeksForEachMesocycle => getExercises.ts"
-  );
-  return reverse_initial_weeks;
 };
 
 // freq_prog = 2 > 3 > 4     volume on final week = 30
