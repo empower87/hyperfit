@@ -30,6 +30,7 @@ import {
 } from "../../../../constants/exercises/index";
 import { getJSONMuscle, getMuscleData } from "../../../../utils/getMuscleData";
 import { MIN_SETS_PER_EXERCISE } from "./exercisePlaceholders";
+import { ProgressionMethodType } from "./repsAndWeightProgression";
 import { setProgression_addOnePerMicrocycle_TEST } from "./setProgressionOverMicrocycles";
 
 // back
@@ -1193,46 +1194,6 @@ const getMaxSets = (exercises_in_session: number) => {
   }
 };
 
-const setsPerExerciseOverMesocycles = (
-  frequency_progression: number[],
-  exercise_placeholders: number[][],
-  microcycles: number
-) => {
-  const final_microcycle_sets = exercise_placeholders.map((e) =>
-    getMaxSets(e.length)
-  );
-  const initial_microcycle_sets = Array.from(
-    Array(microcycles),
-    (e, i) => final_microcycle_sets
-  );
-
-  for (let h = 0; h < microcycles; h++) {
-    for (let g = 0; g < final_microcycle_sets.length; g++) {}
-  }
-
-  let microcycle_counter = microcycles;
-
-  const set_progression: number[][][][] = [];
-  for (let i = frequency_progression.length; i > 0; i--) {
-    const all_microcycle_sets = set_progression[set_progression.length - 1]
-      ? set_progression[set_progression.length - 1]
-      : initial_microcycle_sets;
-
-    let total_sets_to_subtract_from_microcycle = frequency_progression[i];
-    for (let j = all_microcycle_sets.length; j > 0; j--) {
-      const curr_microcycle_sets = all_microcycle_sets[j];
-
-      for (let k = 0; k < curr_microcycle_sets.length; k++) {
-        const session = curr_microcycle_sets[k];
-        if (!session.length) continue;
-        const index = findLeastSetsIndex(session);
-        session[index]--;
-      }
-    }
-    set_progression.push(all_microcycle_sets);
-  }
-};
-
 // prettier-ignore
 export const getInitialWeekFromVolume = (
   max_sets: number,
@@ -1297,8 +1258,7 @@ export const getInitialWeeksFromFinalWeek = (
   frequency_progression: number[],
   final_week: number[][]
 ) => {
-  const clone_week = structuredClone(final_week);
-  const initial_weeks: number[][][] = [clone_week];
+  const initial_weeks: number[][][] = [final_week];
   const totals = frequency_progression.reduce((acc, curr) => acc + curr, 0);
   if (totals <= 0) return [];
 
@@ -1332,13 +1292,37 @@ export const getInitialWeeksFromFinalWeek = (
     frequency_progression,
     reversed_frequency_progression,
     final_week,
-    clone_week,
     initial_weeks,
     reverse_initial_weeks,
     "FUNCTION: getInitialWeeksForEachMesocycle => getExercises.ts"
   );
   return reverse_initial_weeks;
 };
+
+// DOUBLE | DYNAMIC_DOUBLE
+
+// DOUBLE_SET_WEIGHT
+// SETS = add 1 set to an exercise in a session each microcycle until the final week.
+// REPS = add 1 rep per set
+
+// TRIPLE
+
+// 1RM Calculation
+// EPLEY FORMULA: 1RM = Weight * (1 + (Reps / 30)). This formula is simple and widely used, but it might overestimate 1RM, especially for a higher number of reps
+// 540 x 5  = 630
+// 540 x 8  = 684
+// 450 x 12 = 630
+// BRZYCKI FORMULA: 1RM = Weight / (1.0278 - (0.0278 * Reps)). This formula is another popular option, often considered more accurate than Epley for a wider range of repetitions
+// 450 x 12 = 651
+// 540 x &  = 670
+
+const exerciseProgressionHandler = (
+  exercise: ExerciseType,
+  frequency: number,
+  microcycles: number,
+  progression_method: ProgressionMethodType,
+  final_week: number[][]
+) => {};
 
 // freq_prog = 2 > 3 > 4     volume on final week = 30
 // 2 [2, 2], [2, 2]           = 20

@@ -13,7 +13,10 @@ import {
   type MusclePriorityType,
 } from "../../reducer/trainingProgramReducer";
 import { getPlaceholderExerciseLayout } from "../exercises/exercisePlaceholders";
-import { accumulateFinalMicrocycleSets } from "../exercises/repsAndWeightProgression";
+import {
+  accumulateFinalMicrocycleSets,
+  ProgressionMethodType,
+} from "../exercises/repsAndWeightProgression";
 import {
   determineFrequencyByRange,
   getFrequencyRange,
@@ -264,7 +267,7 @@ export const getVolumeLandmarkForMuscle = (
   }
 };
 
-const DEFAULT_PROGRESSIVE_OVERLOAD_METHOD = "TRIPLE";
+const DEFAULT_PROGRESSIVE_OVERLOAD_METHOD: ProgressionMethodType = "TRIPLE";
 export const onMusclePrioritization = (
   muscle_priority_list: MusclePriorityType[],
   breakpoints: [number, number],

@@ -77,11 +77,19 @@ const ex_prog = {
 //     RIR:  Keep RIR fixed across all sets. Ideally, 1-2 RIR (or 8-9 RPE) for hypertrophy.
 //    CONS: Lyle McDonald claims to have never had to use this method.
 
-// EXERCISES---
+// EXERCISES --------------------------------
 // 1. based on frequency_progression[frequency_progression.length - 1]. Get exercises by this.
 //    i.e. frequency_progression = 4 > [ex 1, ex 2], [ex 3, ex 4], [ex 5, ex 6], [ex 7, ex 8]
 // 2. get setProgressionMatrix depending on progression_method.
 // 3.
+
+export type ProgressionMethodType =
+  | "SINGLE"
+  | "DYNAMIC_SINGLE"
+  | "DOUBLE"
+  | "DOUBLE_SETS_WEIGHT"
+  | "DYNAMIC_DOUBLE"
+  | "TRIPLE";
 
 // type SetsType = number;
 type RepsType = number;
@@ -379,31 +387,8 @@ export const accumulateFinalMicrocycleSets = (
   if (
     total_one_exercise_sessions === frequency ||
     total_many_exercise_sets <= 0
-  ) {
-    console.log(
-      sets_range,
-      initial_sets,
-      total_one_exercise_sessions,
-      single_set_sessions,
-      "ok first test - first first"
-    );
-    // if (sets_range[1] > totals) {
-    //   const adjusted_sets = adjustSets(sets_range, single_set_sessions);
-    //   console.log(
-    //     rank,
-    //     muscle_name,
-    //     sets_range,
-    //     initial_sets,
-    //     total_one_exercise_sessions,
-    //     single_set_sessions,
-    //     adjusted_sets,
-    //     totals,
-    //     "ok first test - first first"
-    //   );
-    //   return adjusted_sets;
-    // }
+  )
     return single_set_sessions;
-  }
 
   const remaining_sessions = frequency - total_one_exercise_sessions;
   const total_sets_per_two_exercise_session =
