@@ -1299,13 +1299,41 @@ export const getInitialWeeksFromFinalWeek = (
   return reverse_initial_weeks;
 };
 
-// DOUBLE | DYNAMIC_DOUBLE
+// SINGLE
+// IDEAL: low reps. i.e. 3-5, 5-8
+// Requires skill with RiR.
+// 100lbs x 8 reps at 3 rir
+// 105lbs x 8 reps at 2 rir
+// 100lbs x 5 reps at 1 rir > 100lbs x 5 reps at 2rir 100 lbs x 5 reps at 3rir
+const progressionHandler_single = (
+  one_rep_max: number,
+  initial_rir: number,
+  target_rir: number,
+  reps: number,
+  load_increment: number,
+) => {
+  // 1. Calculate starting load based on 1RM and initial_rir.
+  // 2. Weight increases when target_rir is reached.
+  //    THIS IS UNDETERMINED LOGIC. Should rir be increased by week, or every other week?
+  // 3. Add load by increment. And reset RIR to initial_rir.
+}
+
+// DYNAMIC_SINGLE
+
+// DOUBLE
+// Requires 3-5 rep range spread. i.e. 5-8, 8-10, 8-12, 12-15, 15-20
+
+// DYNAMIC_DOUBLE
 
 // DOUBLE_SET_WEIGHT
 // SETS = add 1 set to an exercise in a session each microcycle until the final week.
-// REPS = add 1 rep per set
+// REPS = within a range
+// LOAD = When upper rep range is 
 
 // TRIPLE
+// IDEAL: Best for isolation exercises.
+// progress to the top end of rep range. Then add a set. Progress again to top end of rep range. Add weight and restart.
+
 
 // 1RM Calculation
 // EPLEY FORMULA: 1RM = Weight * (1 + (Reps / 30)). This formula is simple and widely used, but it might overestimate 1RM, especially for a higher number of reps
@@ -1316,13 +1344,19 @@ export const getInitialWeeksFromFinalWeek = (
 // 450 x 12 = 651
 // 540 x &  = 670
 
+// LOAD = 1RM / [1 + (Reps / 30)] 
+// 651 1RM for 10 reps = 488.25lbs
+
 const exerciseProgressionHandler = (
   exercise: ExerciseType,
   frequency: number,
   microcycles: number,
   progression_method: ProgressionMethodType,
   final_week: number[][]
-) => {};
+) => {
+
+
+};
 
 // freq_prog = 2 > 3 > 4     volume on final week = 30
 // 2 [2, 2], [2, 2]           = 20
