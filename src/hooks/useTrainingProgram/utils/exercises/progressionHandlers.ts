@@ -71,8 +71,10 @@ const progressionHandler_doubleSetWeight = (
   initial_rir: number,
   target_rir: number,
   rep_range: number[],
-  load_increment: number
+  load_increment: number,
+  set_range: number[] = [2, 4]
 ) => {
+  const microcycles = 4;
   // 1. Calculate starting load based on 1RM and initial_rir.
   //    initial_weight:
   //      rep_total  = rep_range[0] + initial_rir
@@ -81,11 +83,95 @@ const progressionHandler_doubleSetWeight = (
   // 2. Sets increase by 0 or 1 each week until target sets[1] is reached.
   // 3. Reps decrease by 1 each week until the target_rir is reached.
   // 4. Weight increases by load_increment each week until the target_rir is reached.
+  const SETS = 2;
+  const REPS = rep_range[1];
+  const LBS = 100;
+  const RIR = initial_rir;
+  let initial_microcycle: number[] = [SETS, REPS, LBS, RIR];
+  let microcycle_progression: number[][] = [initial_microcycle];
+  for (let i = 1; i <= microcycles; i++) {
+    let previous_microcycle = microcycle_progression[i - 1];
+    let prev_sets = previous_microcycle[0];
+    let prev_reps = previous_microcycle[1];
+    let prev_lbs = previous_microcycle[2];
+    let prev_rir = previous_microcycle[3];
+
+    const new_sets = prev_sets < set_range[1] ? prev_sets + 1 : prev_sets;
+    const new_reps = prev_reps > rep_range[0] ? prev_reps - 1 : prev_reps;
+    const new_lbs = prev_lbs + load_increment;
+    const new_rir = prev_rir > target_rir ? prev_rir - 1 : prev_rir;
+    let new_microcycle: number[] = [new_sets, new_reps, new_lbs, new_rir];
+
+    microcycle_progression.push(new_microcycle);
+  }
+  return microcycle_progression;
 };
 
 // TRIPLE
 // IDEAL: Best for isolation exercises.
 // progress to the top end of rep range. Then add a set. Progress again to top end of rep range. Add weight and restart.
+// LOAD = When upper rep range is
+// ALGO MAP ----------------------------
+//  sets = 2,3; reps = 8,10; lbs = 100; target_rir = 2; load_increment = 5
+// WEEK   1   2   3   4   5   6   7   8
+// SETS   2   2   2   3   3   3   2   2
+// REPS   8   9  10   8   9  10   8   9
+//  LBS  100 100 100 100 100 100 105 105
+//  RIR   2   2   2   2   2   2   2   2
+const progressionHandler_triple = (
+  one_rep_max: number,
+  target_rir: number,
+  rep_range: number[],
+  load_increment: number,
+  set_range: number[] = [2, 4]
+) => {
+  const microcycles = 4;
+  // 1. Calculate starting load based on 1RM and initial_rir.
+  //    initial_weight:
+  //      rep_total  = rep_range[0] + initial_rir
+  //      percentage_of_1rm = PERCENTAGE_OF_1RM_REPS[rep_total]
+  //      load = one_rep_max * percentage_of_1rm
+  // 2. Sets increase by 0 or 1 each week until target sets[1] is reached.
+  // 3. Reps decrease by 1 each week until the target_rir is reached.
+  // 4. Weight increases by load_increment each week until the target_rir is reached.
+  const SETS = 2;
+  const REPS = rep_range[0];
+  const LBS = 100;
+  const RIR = target_rir;
+  let initial_microcycle: number[] = [SETS, REPS, LBS, RIR];
+  let microcycle_progression: number[][] = [initial_microcycle];
+
+  // 1. Add reps until rep_range[1] is reached.
+  // 2. Add a set if possible. Reset reps to rep_range[0].
+  //    If set is at set_range[1], then increase weight and reset reps/sets.
+  for (let i = 1; i <= microcycles; i++) {
+    let previous_microcycle = microcycle_progression[i - 1];
+    let prev_sets = previous_microcycle[0];
+    let prev_reps = previous_microcycle[1];
+    let prev_lbs = previous_microcycle[2];
+    let prev_rir = previous_microcycle[3];
+
+    const new_reps = prev_reps + 1;
+    const new_sets = prev_sets + 1;
+    if (new_reps === rep_range[1]) {
+      if (new_sets >= set_range[1]) {
+        prev_lbs += load_increment;
+        prev_reps = rep_range[0];
+        prev_sets = set_range[0];
+      } else {
+        prev_reps = rep_range[0];
+        prev_sets = new_sets;
+      }
+    } else {
+      prev_reps = new_reps;
+    }
+
+    let new_microcycle: number[] = [prev_sets, prev_reps, prev_lbs, prev_rir];
+
+    microcycle_progression.push(new_microcycle);
+  }
+  return microcycle_progression;
+};
 
 // 1RM Calculation
 // EPLEY FORMULA: 1RM = Weight * (1 + (Reps / 30)). This formula is simple and widely used, but it might overestimate 1RM, especially for a higher number of reps
