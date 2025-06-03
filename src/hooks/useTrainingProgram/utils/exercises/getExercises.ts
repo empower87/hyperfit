@@ -1305,35 +1305,79 @@ export const getInitialWeeksFromFinalWeek = (
 // 100lbs x 8 reps at 3 rir
 // 105lbs x 8 reps at 2 rir
 // 100lbs x 5 reps at 1 rir > 100lbs x 5 reps at 2rir 100 lbs x 5 reps at 3rir
+// ALGO MAP ----------------------------
+//  sets = 3; reps = 5; lbs = 100; initial_rir = 1; target_rir = 3; load_increment = 5
+// WEEK   1   2   3   4   5   6   7   8
+// SETS   3   3   3   3   3   3   3   3
+// REPS   5   5   5   5   5   5   5   5
+//  LBS  100 100 100 105 105 105 110 110
+//  RIR   1   2   3   1   2   3   1   2
 const progressionHandler_single = (
   one_rep_max: number,
   initial_rir: number,
   target_rir: number,
   reps: number,
-  load_increment: number,
+  load_increment: number
 ) => {
   // 1. Calculate starting load based on 1RM and initial_rir.
   // 2. Weight increases when target_rir is reached.
   //    THIS IS UNDETERMINED LOGIC. Should rir be increased by week, or every other week?
   // 3. Add load by increment. And reset RIR to initial_rir.
-}
+};
 
 // DYNAMIC_SINGLE
 
 // DOUBLE
 // Requires 3-5 rep range spread. i.e. 5-8, 8-10, 8-12, 12-15, 15-20
 
+// freqeuncy = 2, 3, 4
+// 1. get final week placeholders.
+// 2. get full macrocycle placeholders. [[2, 2], [2, 2, 2], [2, 2, 2, 2]]
+// ALGO MAP ----------------------------
+//  sets = 3; reps = 3,5; lbs = 100; target_rir = 2; load_increment = 5
+// WEEK   1   2   3   4   5   6   7   8
+// SETS   3   3   3   3   3   3   3   3
+// REPS   5   6   7   8   5   6   7   8
+//  LBS  100 100 100 100 105 105 105 105
+//  RIR   2   2   2   2   2   2   2   2
+const progressionHandler_double = (
+  one_rep_max: number,
+  target_rir: number,
+  rep_range: number[],
+  load_increment: number
+) => {
+  // 1. Calculate starting load based on 1RM and initial_rir.
+  //    initial_weight:
+  //      rep_total  = rep_range[0] + target_rir
+  //      percentage_of_1rm = PERCENTAGE_OF_1RM_REPS[rep_total]
+  //      load = one_rep_max * percentage_of_1rm
+  // 2. Weight increases when last set hits the top end of the rep range.
+  //
+};
+
 // DYNAMIC_DOUBLE
 
 // DOUBLE_SET_WEIGHT
 // SETS = add 1 set to an exercise in a session each microcycle until the final week.
-// REPS = within a range
-// LOAD = When upper rep range is 
+// REPS = within a range. ideally larger range. i.e. 5-10, 10-15, 15-20, 10-20
+// LOAD = When upper rep range is
+// ALGO MAP ----------------------------
+//  sets = 2,4; reps = 5,10; lbs = 100; target_rir = 2; load_increment = 5
+// WEEK   1   2   3   4   5   6   7   8
+// SETS   2   3   3   4   3   4   4   5
+// REPS   9   8   6   5   5   6   7   8
+//  LBS  100 105 110 115 105 110 115 120
+//  RIR   3   2   1   0   3   2   1   0
+const progressionHandler_doubleSetWeight = (
+  one_rep_max: number,
+  target_rir: number,
+  rep_range: number[],
+  load_increment: number
+) => {};
 
 // TRIPLE
 // IDEAL: Best for isolation exercises.
 // progress to the top end of rep range. Then add a set. Progress again to top end of rep range. Add weight and restart.
-
 
 // 1RM Calculation
 // EPLEY FORMULA: 1RM = Weight * (1 + (Reps / 30)). This formula is simple and widely used, but it might overestimate 1RM, especially for a higher number of reps
@@ -1344,7 +1388,7 @@ const progressionHandler_single = (
 // 450 x 12 = 651
 // 540 x &  = 670
 
-// LOAD = 1RM / [1 + (Reps / 30)] 
+// LOAD = 1RM / [1 + (Reps / 30)]
 // 651 1RM for 10 reps = 488.25lbs
 
 const exerciseProgressionHandler = (
@@ -1353,9 +1397,52 @@ const exerciseProgressionHandler = (
   microcycles: number,
   progression_method: ProgressionMethodType,
   final_week: number[][]
-) => {
+) => {};
 
+// 1RM - 225
+// reps = 8 - 12
+// rir = 2
+// reps + rir = 10
+// load = 75% of 1rm = 168.75lbs
+//        80% of 1rm = 180lbs
 
+// KEEPING REPS WITHIN A RANGE AT A PARTICULAR RIR. In lost reps per set.
+// ===================================================
+// 1 rep = 2-3% of weight
+// 2 reps = 4-6% of weight
+
+// PERCENTAGE OF 1RM CHART----------------------------
+// ===================================================
+// %1RM  Maximal number of reps that can be completed
+// 100   1
+// 95    2
+// 93    3
+// 90    4
+// 87    5
+// 85    6
+// 83    7
+// 80    8
+// 77    9
+// 75    10
+// 70    11
+// 67    12
+// 65    15
+const PERCENTAGE_OF_1RM_REPS = {
+  0: 0,
+  1: 1,
+  2: 0.95,
+  3: 0.93,
+  4: 0.9,
+  5: 0.87,
+  6: 0.85,
+  7: 0.83,
+  8: 0.8,
+  9: 0.77,
+  10: 0.75,
+  11: 0.7,
+  12: 0.67,
+  13: 0.65,
+  // NOTE. This is a rough estimate, not exact.
 };
 
 // freq_prog = 2 > 3 > 4     volume on final week = 30
