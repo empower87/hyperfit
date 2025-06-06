@@ -51,6 +51,32 @@ const progressionHandler_double = (
   //      load = one_rep_max * percentage_of_1rm
   // 2. Weight increases when last set hits the top end of the rep range.
   //
+  const microcycles = 4;
+  const SETS = 2;
+  const REPS = rep_range[0];
+  const LBS = 100;
+  const RIR = target_rir;
+  let initial_microcycle: number[] = [SETS, REPS, LBS, RIR];
+  let microcycle_progression: number[][] = [initial_microcycle];
+  for (let i = 1; i <= microcycles; i++) {
+    let previous_microcycle = microcycle_progression[i - 1];
+    let prev_sets = previous_microcycle[0];
+    let prev_reps = previous_microcycle[1];
+    let prev_lbs = previous_microcycle[2];
+    let prev_rir = previous_microcycle[3];
+
+    const new_reps = prev_reps + 1;
+    if (new_reps > rep_range[1]) {
+      prev_reps = rep_range[0];
+      prev_lbs += load_increment;
+    } else {
+      prev_reps += 1;
+    }
+
+    let new_microcycle: number[] = [prev_sets, prev_reps, prev_lbs, prev_rir];
+    microcycle_progression.push(new_microcycle);
+  }
+  return microcycle_progression;
 };
 
 // DYNAMIC_DOUBLE
