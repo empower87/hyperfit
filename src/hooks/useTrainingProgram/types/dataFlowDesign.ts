@@ -1,3 +1,5 @@
+import { ProgressionMethodType } from "../utils/exercises/repsAndWeightProgression";
+
 type UserT = {
   id: string;
   name: string;
@@ -58,4 +60,56 @@ type SessionT = {
   exercises: ExerciseT[];
 };
 
-type ExerciseT = {};
+type ExerciseT = {
+  id: string;
+  name: string;
+  progression_method: ProgressionMethodType;
+};
+
+type ExerciseMapT = {
+  id: ExerciseT["id"]
+  name: ExerciseT["name"];
+  mesocycle_progression: number[][][]
+}
+
+
+// NOTES: 06/07/2025
+// Each exercise will contain the full mesocycle progression for sets, reps, lbs, and rir.
+// The EXERCISE_MESO_MAP will contain the mapping of exercises to their particular sessions over mesocycles.
+const EXERCISE: ExerciseMapT = {
+  id: "exercise_id",
+  name: "Bench Press",
+  mesocycle_progression: [
+    [
+      [
+        2,   // Sets
+        8,   // Reps
+        135, // Lbs
+        2,   // RIR
+      ],  // Week 1
+      [], // Week 2
+      [], // Week 3
+      [], // Week 4
+    ],  // Meso 1
+    [], // Meso 2
+    []  // Meso 3
+  ]
+}
+const EXERCISE_MESO_MAP: ExerciseMapT["id"][][][][] = [
+  [
+    [], // Monday
+    [
+      [
+        EXERCISE["id"], // Exercise 1
+      ],  // Session 1
+      [], // Session 2
+    ], // Tuesday
+    [], // Wednesday
+    [], // Thursday
+    [], // Friday
+    [], // Saturday
+    []  // Sunday
+  ],  // Mesocycle 1
+  [], // Mesocycle 2
+  []  // Mesocycle 3
+]
