@@ -67,11 +67,10 @@ type ExerciseT = {
 };
 
 type ExerciseMapT = {
-  id: ExerciseT["id"]
+  id: ExerciseT["id"];
   name: ExerciseT["name"];
-  mesocycle_progression: number[][][]
-}
-
+  mesocycle_progression: number[][][];
+};
 
 // NOTES: 06/07/2025
 // Each exercise will contain the full mesocycle progression for sets, reps, lbs, and rir.
@@ -82,34 +81,34 @@ const EXERCISE: ExerciseMapT = {
   mesocycle_progression: [
     [
       [
-        2,   // Sets
-        8,   // Reps
+        2, // Sets
+        8, // Reps
         135, // Lbs
-        2,   // RIR
-      ],  // Week 1
+        2, // RIR
+      ], // Week 1
       [], // Week 2
       [], // Week 3
       [], // Week 4
-    ],  // Meso 1
+    ], // Meso 1
     [], // Meso 2
-    []  // Meso 3
-  ]
-}
+    [], // Meso 3
+  ],
+};
 const EXERCISE_MESO_MAP: ExerciseMapT["id"][][][][] = [
   [
     [], // Monday
     [
       [
         EXERCISE["id"], // Exercise 1
-      ],  // Session 1
+      ], // Session 1
       [], // Session 2
     ], // Tuesday
     [], // Wednesday
     [], // Thursday
     [], // Friday
     [], // Saturday
-    []  // Sunday
-  ],  // Mesocycle 1
+    [], // Sunday
+  ], // Mesocycle 1
   [], // Mesocycle 2
-  []  // Mesocycle 3
-]
+  [], // Mesocycle 3
+];
