@@ -66,10 +66,16 @@ type ExerciseT = {
   progression_method: ProgressionMethodType;
 };
 
+const sets = [
+  [2, 2, 2, 2], // MESO 1
+  [2, 2, 2, 2], // MESO 2
+  [2, 2, 2, 2], // MESO 3
+];
 type ExerciseMapT = {
   id: ExerciseT["id"];
   name: ExerciseT["name"];
-  mesocycle_progression: number[][][];
+  exercise_order_index: number;
+  exercise_progression: number[][][];
 };
 
 // NOTES: 06/07/2025
@@ -78,22 +84,24 @@ type ExerciseMapT = {
 const EXERCISE: ExerciseMapT = {
   id: "exercise_id",
   name: "Bench Press",
-  mesocycle_progression: [
+  exercise_order_index: 0,
+  exercise_progression: [
     [
       [
         2, // Sets
         8, // Reps
         135, // Lbs
         2, // RIR
-      ], // Week 1
-      [], // Week 2
-      [], // Week 3
-      [], // Week 4
-    ], // Meso 1
-    [], // Meso 2
-    [], // Meso 3
+      ], // Microcycle 1
+      [], // Microcycle 2
+      [], // Microcycle 3
+      [], // Microcycle 4
+    ], // Mesocycle 1
+    [], // Mesocycle 2
+    [], // Mesocycle 3
   ],
 };
+
 const EXERCISE_MESO_MAP: ExerciseMapT["id"][][][][] = [
   [
     [], // Monday

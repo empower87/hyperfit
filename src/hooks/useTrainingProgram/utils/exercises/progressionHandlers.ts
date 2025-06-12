@@ -92,6 +92,37 @@ const progressionHandler_double = (
 // REPS   9   8   6   5   5   6   7   8
 //  LBS  100 105 110 115 105 110 115 120
 //  RIR   3   2   1   0   3   2   1   0
+
+
+const buildSetProgression = (
+  session_sets: number[],
+  microcycles: number
+) => {
+    // Clone the initial sets so we don't mutate the input
+  let currentSets = [...session_sets];
+  const progression: number[][] = [];
+
+  for (let i = 0; i < microcycles; i++) {
+    // Find the index(es) of the minimum set value(s)
+    const minSets = Math.min(...currentSets);
+    const minIndexes = currentSets
+      .map((val, idx) => (val === minSets ? idx : -1))
+      .filter(idx => idx !== -1);
+
+    // Pick the first exercise with the minimum sets (could randomize or round-robin if you want)
+    const chosenIdx = minIndexes[0];
+
+    // Create a binary array for this microcycle
+    const binary = currentSets.map((_, idx) => (idx === chosenIdx ? 1 : 0));
+    progression.push(binary);
+
+    // Add a set to the chosen exercise
+    currentSets[chosenIdx]++;
+  }
+
+  return progression;
+}
+
 const progressionHandler_doubleSetWeight = (
   one_rep_max: number,
   initial_rir: number,
@@ -109,7 +140,7 @@ const progressionHandler_doubleSetWeight = (
   // 2. Sets increase by 0 or 1 each week until target sets[1] is reached.
   // 3. Reps decrease by 1 each week until the target_rir is reached.
   // 4. Weight increases by load_increment each week until the target_rir is reached.
-  const SETS = 2;
+  const SETS = set_range[0];
   const REPS = rep_range[1];
   const LBS = 100;
   const RIR = initial_rir;
