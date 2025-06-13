@@ -1195,7 +1195,7 @@ const getMaxSets = (exercises_in_session: number) => {
 };
 
 // prettier-ignore
-export const getInitialWeekFromVolume = (
+export const getInitialMicrocycleFromVolume = (
   max_sets: number,
   microcycles: number,
   frequency: number,
@@ -1254,11 +1254,11 @@ export const getInitialWeekFromVolume = (
   return cloned_placeholders;
 };
 
-export const getInitialWeeksFromFinalWeek = (
+export const getInitialMicrocyclesFromFinalMicrocycle = (
   frequency_progression: number[],
-  final_week: number[][]
+  final_microcycle: number[][]
 ) => {
-  const initial_weeks: number[][][] = [final_week];
+  const initial_weeks: number[][][] = [final_microcycle];
   const totals = frequency_progression.reduce((acc, curr) => acc + curr, 0);
   if (totals <= 0) return [];
 
@@ -1291,7 +1291,7 @@ export const getInitialWeeksFromFinalWeek = (
   console.log(
     frequency_progression,
     reversed_frequency_progression,
-    final_week,
+    final_microcycle,
     initial_weeks,
     reverse_initial_weeks,
     "FUNCTION: getInitialWeeksForEachMesocycle => getExercises.ts"

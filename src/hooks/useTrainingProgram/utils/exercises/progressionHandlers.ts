@@ -10,12 +10,20 @@
 // SETS   3   3   3   3   3   3   3   3
 // REPS   5   5   5   5   5   5   5   5
 //  LBS  100 100 100 105 105 105 110 110
+
+import {
+  ExerciseType,
+  VolumeLandmarkType,
+} from "../../reducer/trainingProgramReducer";
+import { initNewExercise, JSONExercise } from "./getExercises";
+import { ProgressionMethodType } from "./repsAndWeightProgression";
+
 //  RIR   1   2   3   1   2   3   1   2
 const progressionHandler_single = (
   one_rep_max: number,
-  initial_rir: number,
-  target_rir: number,
-  reps: number,
+  rir_range: number[],
+  rep_range: number[],
+  set_range: number[] = [2, 4],
   load_increment: number
 ) => {
   // 1. Calculate starting load based on 1RM and initial_rir.
@@ -40,8 +48,9 @@ const progressionHandler_single = (
 //  RIR   2   2   2   2   2   2   2   2
 const progressionHandler_double = (
   one_rep_max: number,
-  target_rir: number,
+  rir_range: number[],
   rep_range: number[],
+  set_range: number[] = [2, 4],
   load_increment: number
 ) => {
   // 1. Calculate starting load based on 1RM and initial_rir.
@@ -52,10 +61,10 @@ const progressionHandler_double = (
   // 2. Weight increases when last set hits the top end of the rep range.
   //
   const microcycles = 4;
-  const SETS = 2;
+  const SETS = set_range[0];
   const REPS = rep_range[0];
   const LBS = 100;
-  const RIR = target_rir;
+  const RIR = rir_range[0];
   let initial_microcycle: number[] = [SETS, REPS, LBS, RIR];
   let microcycle_progression: number[][] = [initial_microcycle];
   for (let i = 1; i <= microcycles; i++) {
@@ -93,43 +102,12 @@ const progressionHandler_double = (
 //  LBS  100 105 110 115 105 110 115 120
 //  RIR   3   2   1   0   3   2   1   0
 
-
-const buildSetProgression = (
-  session_sets: number[],
-  microcycles: number
-) => {
-    // Clone the initial sets so we don't mutate the input
-  let currentSets = [...session_sets];
-  const progression: number[][] = [];
-
-  for (let i = 0; i < microcycles; i++) {
-    // Find the index(es) of the minimum set value(s)
-    const minSets = Math.min(...currentSets);
-    const minIndexes = currentSets
-      .map((val, idx) => (val === minSets ? idx : -1))
-      .filter(idx => idx !== -1);
-
-    // Pick the first exercise with the minimum sets (could randomize or round-robin if you want)
-    const chosenIdx = minIndexes[0];
-
-    // Create a binary array for this microcycle
-    const binary = currentSets.map((_, idx) => (idx === chosenIdx ? 1 : 0));
-    progression.push(binary);
-
-    // Add a set to the chosen exercise
-    currentSets[chosenIdx]++;
-  }
-
-  return progression;
-}
-
 const progressionHandler_doubleSetWeight = (
   one_rep_max: number,
-  initial_rir: number,
-  target_rir: number,
+  rir_range: number[],
   rep_range: number[],
-  load_increment: number,
-  set_range: number[] = [2, 4]
+  set_range: number[] = [2, 4],
+  load_increment: number
 ) => {
   const microcycles = 4;
   // 1. Calculate starting load based on 1RM and initial_rir.
@@ -143,7 +121,7 @@ const progressionHandler_doubleSetWeight = (
   const SETS = set_range[0];
   const REPS = rep_range[1];
   const LBS = 100;
-  const RIR = initial_rir;
+  const RIR = rir_range[0];
   let initial_microcycle: number[] = [SETS, REPS, LBS, RIR];
   let microcycle_progression: number[][] = [initial_microcycle];
   for (let i = 1; i <= microcycles; i++) {
@@ -156,7 +134,7 @@ const progressionHandler_doubleSetWeight = (
     const new_sets = prev_sets < set_range[1] ? prev_sets + 1 : prev_sets;
     const new_reps = prev_reps > rep_range[0] ? prev_reps - 1 : prev_reps;
     const new_lbs = prev_lbs + load_increment;
-    const new_rir = prev_rir > target_rir ? prev_rir - 1 : prev_rir;
+    const new_rir = prev_rir > rir_range[1] ? prev_rir - 1 : prev_rir;
     let new_microcycle: number[] = [new_sets, new_reps, new_lbs, new_rir];
 
     microcycle_progression.push(new_microcycle);
@@ -177,10 +155,10 @@ const progressionHandler_doubleSetWeight = (
 //  RIR   2   2   2   2   2   2   2   2
 const progressionHandler_triple = (
   one_rep_max: number,
-  target_rir: number,
+  rir_range: number[],
   rep_range: number[],
-  load_increment: number,
-  set_range: number[] = [2, 4]
+  set_range: number[] = [2, 4],
+  load_increment: number
 ) => {
   const microcycles = 4;
   // 1. Calculate starting load based on 1RM and initial_rir.
@@ -194,7 +172,7 @@ const progressionHandler_triple = (
   const SETS = 2;
   const REPS = rep_range[0];
   const LBS = 100;
-  const RIR = target_rir;
+  const RIR = rir_range[0];
   let initial_microcycle: number[] = [SETS, REPS, LBS, RIR];
   let microcycle_progression: number[][] = [initial_microcycle];
 
@@ -241,3 +219,117 @@ const progressionHandler_triple = (
 
 // LOAD = 1RM / [1 + (Reps / 30)]
 // 651 1RM for 10 reps = 488.25lbs
+
+const buildSetProgression = (session_sets: number[], microcycles: number) => {
+  // Clone the initial sets so we don't mutate the input
+  let currentSets = [...session_sets];
+  const progression: number[][] = [];
+
+  for (let i = 0; i < microcycles; i++) {
+    // Find the index(es) of the minimum set value(s)
+    const minSets = Math.min(...currentSets);
+    const minIndexes = currentSets
+      .map((val, idx) => (val === minSets ? idx : -1))
+      .filter((idx) => idx !== -1);
+
+    // Pick the first exercise with the minimum sets (could randomize or round-robin if you want)
+    const chosenIdx = minIndexes[0];
+
+    // Create a binary array for this microcycle
+    const binary = currentSets.map((_, idx) => (idx === chosenIdx ? 1 : 0));
+    progression.push(binary);
+
+    // Add a set to the chosen exercise
+    currentSets[chosenIdx]++;
+  }
+
+  return progression;
+};
+
+const buildExercises = (
+  exercises: JSONExercise[],
+  set_progression: number[][][],
+  volume_landmark: VolumeLandmarkType,
+  microcycles: number = 4
+) => {
+  const final_mesocycle = set_progression[set_progression.length - 1];
+
+  let exercise_index = 0;
+  const total_exercises: ExerciseType[][] = [];
+  for (let i = 0; i < final_mesocycle.length; i++) {
+    const session_exercises = final_mesocycle[i];
+    if (!session_exercises) {
+      total_exercises.push([]);
+      continue;
+    }
+
+    for (let j = 0; j < session_exercises.length; j++) {
+      const new_exercise = initNewExercise(
+        exercises[exercise_index],
+        volume_landmark
+      );
+      exercise_index++;
+    }
+  }
+};
+
+const buildExerciseProgression = (
+  progression_method: ProgressionMethodType,
+  exercise: ExerciseType,
+  rir_range: number[],
+  rep_range: number[],
+  set_range: number[] = [2, 4]
+) => {
+  switch (progression_method) {
+    case "SINGLE":
+      return progressionHandler_single(
+        225,
+        rir_range,
+        rep_range,
+        set_range,
+        exercise.weightIncrement
+      );
+    case "DYNAMIC_SINGLE":
+      return progressionHandler_single(
+        225,
+        rir_range,
+        rep_range,
+        set_range,
+        exercise.weightIncrement
+      );
+    case "DOUBLE":
+      return progressionHandler_double(
+        225,
+        rir_range,
+        rep_range,
+        set_range,
+        exercise.weightIncrement
+      );
+    case "DYNAMIC_DOUBLE":
+      return progressionHandler_double(
+        225,
+        rir_range,
+        rep_range,
+        set_range,
+        exercise.weightIncrement
+      );
+    case "DOUBLE_SETS_WEIGHT":
+      return progressionHandler_doubleSetWeight(
+        225,
+        rir_range,
+        rep_range,
+        set_range,
+        exercise.weightIncrement
+      );
+    case "TRIPLE":
+      return progressionHandler_triple(
+        225,
+        rir_range,
+        rep_range,
+        set_range,
+        exercise.weightIncrement
+      );
+    default:
+      throw new Error(`Unknown progression method: ${progression_method}`);
+  }
+};

@@ -1,8 +1,8 @@
 import { getMusclesMaxFrequency } from "~/constants/workoutSplits";
 import {
   getExercises,
-  getInitialWeekFromVolume,
-  getInitialWeeksFromFinalWeek,
+  getInitialMicrocycleFromVolume,
+  getInitialMicrocyclesFromFinalMicrocycle,
   getTotalExercisesFromSetMatrix,
   initializeSetProgression,
 } from "~/hooks/useTrainingProgram/utils/exercises/getExercises";
@@ -355,16 +355,17 @@ export const attachTargetFrequency = (
     );
 
     const microcycles = 4;
-    const initial_sets = getInitialWeekFromVolume(
+    const initial_sets = getInitialMicrocycleFromVolume(
       volume_range[1],
       microcycles,
       frequencyProgression[frequencyProgression.length - 1],
       ideal_sets
     );
-    const all_sets = getInitialWeeksFromFinalWeek(
+    const all_sets = getInitialMicrocyclesFromFinalMicrocycle(
       frequencyProgression,
       initial_sets
     );
+
     const ideal_sets_filtered = ideal_sets.filter((set) => set.length > 0);
     const test_final_week_sets = accumulateFinalMicrocycleSets(
       muscle.volume.range,
