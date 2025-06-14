@@ -30,6 +30,7 @@ const progressionHandler_single = (
   // 2. Weight increases when target_rir is reached.
   //    THIS IS UNDETERMINED LOGIC. Should rir be increased by week, or every other week?
   // 3. Add load by increment. And reset RIR to initial_rir.
+  return [] as number[][];
 };
 
 // DYNAMIC_SINGLE
@@ -247,6 +248,7 @@ const buildSetProgression = (session_sets: number[], microcycles: number) => {
 };
 
 const buildExercises = (
+  default_progression_method: ProgressionMethodType = "DOUBLE_SETS_WEIGHT",
   exercises: JSONExercise[],
   set_progression: number[][][],
   volume_landmark: VolumeLandmarkType,
@@ -257,13 +259,31 @@ const buildExercises = (
   let exercise_index = 0;
   const total_exercises: ExerciseType[][] = [];
   for (let i = 0; i < final_mesocycle.length; i++) {
-    const session_exercises = final_mesocycle[i];
-    if (!session_exercises) {
+    const session_exercises_sets = final_mesocycle[i];
+    if (!session_exercises_sets) {
       total_exercises.push([]);
       continue;
     }
+    const session_exercises: ExerciseType[] = [];
 
-    for (let j = 0; j < session_exercises.length; j++) {
+    for (let j = 0; j < session_exercises_sets.length; j++) {
+      const lol_prog_wow: number[][][] = [];
+      for (let k = 0; k < set_progression.length; k++) {
+        const curr_mesocycle_sets = set_progression[k];
+        const curr_session_sets = curr_mesocycle_sets[j];
+        if (curr_session_sets.length) {
+          const add_sets = buildSetProgression(curr_session_sets, microcycles);
+          const sets_over_microcycles = curr_session_sets.map((set, index) => {
+            let curr_set = set;
+            return add_sets[index].map((bool, i) => {
+              if (bool === 0) return curr_set;
+              curr_set++;
+              return curr_set;
+            });
+          });
+        }
+      }
+
       const new_exercise = initNewExercise(
         exercises[exercise_index],
         volume_landmark

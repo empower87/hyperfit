@@ -391,6 +391,7 @@ export const attachTargetFrequency = (
       ideal_sets_filtered,
       test_final_week_sets,
       initial_sets,
+      all_sets,
       "FUNCTION: attachTargetFrequency => musclePriorityListHandlers.ts"
     );
 
