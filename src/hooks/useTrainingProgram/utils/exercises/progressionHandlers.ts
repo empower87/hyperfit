@@ -20,7 +20,7 @@ import { ProgressionMethodType } from "./repsAndWeightProgression";
 
 //  RIR   1   2   3   1   2   3   1   2
 const progressionHandler_single = (
-  one_rep_max: number,
+  initial_lbs: number,
   rir_range: number[],
   rep_range: number[],
   set_range: number[] = [2, 4],
@@ -48,7 +48,7 @@ const progressionHandler_single = (
 //  LBS  100 100 100 100 105 105 105 105
 //  RIR   2   2   2   2   2   2   2   2
 const progressionHandler_double = (
-  one_rep_max: number,
+  initial_lbs: number,
   rir_range: number[],
   rep_range: number[],
   set_range: number[] = [2, 4],
@@ -64,7 +64,7 @@ const progressionHandler_double = (
   const microcycles = 4;
   const SETS = set_range[0];
   const REPS = rep_range[0];
-  const LBS = 100;
+  const LBS = initial_lbs;
   const RIR = rir_range[0];
   let initial_microcycle: number[] = [SETS, REPS, LBS, RIR];
   let microcycle_progression: number[][] = [initial_microcycle];
@@ -104,7 +104,7 @@ const progressionHandler_double = (
 //  RIR   3   2   1   0   3   2   1   0
 
 const progressionHandler_doubleSetWeight = (
-  one_rep_max: number,
+  initial_lbs: number,
   rir_range: number[],
   rep_range: number[],
   set_range: number[] = [2, 4],
@@ -121,7 +121,7 @@ const progressionHandler_doubleSetWeight = (
   // 4. Weight increases by load_increment each week until the target_rir is reached.
   const SETS = set_range[0];
   const REPS = rep_range[1];
-  const LBS = 100;
+  const LBS = initial_lbs;
   const RIR = rir_range[0];
   let initial_microcycle: number[] = [SETS, REPS, LBS, RIR];
   let microcycle_progression: number[][] = [initial_microcycle];
@@ -155,7 +155,7 @@ const progressionHandler_doubleSetWeight = (
 //  LBS  100 100 100 100 100 100 105 105
 //  RIR   2   2   2   2   2   2   2   2
 const progressionHandler_triple = (
-  one_rep_max: number,
+  initial_lbs: number,
   rir_range: number[],
   rep_range: number[],
   set_range: number[] = [2, 4],
@@ -170,9 +170,9 @@ const progressionHandler_triple = (
   // 2. Sets increase by 0 or 1 each week until target sets[1] is reached.
   // 3. Reps decrease by 1 each week until the target_rir is reached.
   // 4. Weight increases by load_increment each week until the target_rir is reached.
-  const SETS = 2;
+  const SETS = set_range[0];
   const REPS = rep_range[0];
-  const LBS = 100;
+  const LBS = initial_lbs;
   const RIR = rir_range[0];
   let initial_microcycle: number[] = [SETS, REPS, LBS, RIR];
   let microcycle_progression: number[][] = [initial_microcycle];
@@ -254,6 +254,7 @@ const buildExercises = (
   volume_landmark: VolumeLandmarkType,
   microcycles: number = 4
 ) => {
+  const total_mesocycles = set_progression.length;
   const final_mesocycle = set_progression[set_progression.length - 1];
 
   let exercise_index = 0;
@@ -264,15 +265,53 @@ const buildExercises = (
       total_exercises.push([]);
       continue;
     }
+
     const session_exercises: ExerciseType[] = [];
 
     for (let j = 0; j < session_exercises_sets.length; j++) {
       const lol_prog_wow: number[][][] = [];
+      // SET_PROGRESSION
+      // ex.
+      // [
+      //    [ [ 2, 2 ], [], [], [], [], [], [] ],
+      //    [ [ 2, 2 ], [], [ 2 ], [], [], [], [] ],
+      //    [ [ 3, 2 ], [], [ 3 ], [], [ 3 ], [], [] ]
+      // ]
+      const session_index = i;
+      for (let j = 0; j < total_mesocycles; j++) {
+        const curr_mesocycle = j;
+        const tar_session_sets = set_progression[curr_mesocycle][session_index];
+
+        const add_sets = buildSetProgression(tar_session_sets, microcycles);
+        // SETS_OVER_MICROCYCLES
+        // ex. curr_session_sets = [2, 3]
+        // [
+        //  [2, 3, 3, 4],
+        //  [3, 3, 4, 4]
+        // ]
+        const sets_over_microcycles = tar_session_sets.map((set, index) => {
+          let curr_set = set;
+          return add_sets[index].map((bool, i) => {
+            if (bool === 0) return curr_set;
+            curr_set++;
+            return curr_set;
+          });
+        });
+      }
+
+      // probably don't need to loop over entire set_progression
       for (let k = 0; k < set_progression.length; k++) {
         const curr_mesocycle_sets = set_progression[k];
         const curr_session_sets = curr_mesocycle_sets[j];
+
         if (curr_session_sets.length) {
           const add_sets = buildSetProgression(curr_session_sets, microcycles);
+          // SETS_OVER_MICROCYCLES
+          // ex. curr_session_sets = [2, 3]
+          // [
+          //  [2, 3, 3, 4],
+          //  [3, 3, 4, 4]
+          // ]
           const sets_over_microcycles = curr_session_sets.map((set, index) => {
             let curr_set = set;
             return add_sets[index].map((bool, i) => {
@@ -296,6 +335,7 @@ const buildExercises = (
 const buildExerciseProgression = (
   progression_method: ProgressionMethodType,
   exercise: ExerciseType,
+  weight: number,
   rir_range: number[],
   rep_range: number[],
   set_range: number[] = [2, 4]
