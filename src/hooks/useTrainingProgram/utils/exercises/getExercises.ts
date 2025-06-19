@@ -1097,6 +1097,7 @@ export const getExercises = (
   const frequency = exercise_placeholders.filter(
     (exercise_day) => exercise_day.length
   ).length;
+
   const exercises = findExercisesByTargetRegions(
     muscle_name,
     frequency,
