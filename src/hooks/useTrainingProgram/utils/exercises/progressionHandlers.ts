@@ -123,6 +123,7 @@ const progressionHandler_doubleSetWeight = (
   const REPS = rep_range[1];
   const LBS = initial_lbs;
   const RIR = rir_range[0];
+
   let initial_microcycle: number[] = [SETS, REPS, LBS, RIR];
   let microcycle_progression: number[][] = [initial_microcycle];
   for (let i = 1; i <= microcycles; i++) {
@@ -173,10 +174,10 @@ const progressionHandler_triple = (
   // 2. Sets increase by 0 or 1 each week until target sets[1] is reached.
   // 3. Reps decrease by 1 each week until the target_rir is reached.
   // 4. Weight increases by load_increment each week until the target_rir is reached.
-  const SETS = curr_sets
-  const REPS = curr_reps
+  const SETS = curr_sets;
+  const REPS = curr_reps;
   const LBS = curr_lbs;
-  const RIR = curr_rir
+  const RIR = curr_rir;
   let initial_microcycle: number[] = [SETS, REPS, LBS, RIR];
   let microcycle_progression: number[][] = [initial_microcycle];
 
@@ -271,9 +272,9 @@ const buildExercises = (
 
     const session_exercises: ExerciseType[] = [];
 
-    let rir_range: number[] = []
-    let rep_range: number[] = []
-    let lbs: number = 0
+    let rir_range: number[] = [];
+    let rep_range: number[] = [];
+    let lbs: number = 0;
     for (let j = 0; j < session_exercises_sets.length; j++) {
       const lol_prog_wow: number[][][] = [];
       // SET_PROGRESSION
@@ -287,7 +288,7 @@ const buildExercises = (
       const session_index = i;
       const tar_session_sets = set_progression[curr_mesocycle][session_index];
       const add_sets = buildSetProgression(tar_session_sets, microcycles);
-      const curr_exercise_set_prog = add_sets[j]
+      const curr_exercise_set_prog = add_sets[j];
 
       for (let j = 0; j < total_mesocycles; j++) {
         // SETS_OVER_MICROCYCLES
@@ -317,7 +318,7 @@ const buildExercises = (
           rir_range,
           rep_range,
           curr_exercise_set_prog
-        )
+        );
       }
 
       // probably don't need to loop over entire set_progression
@@ -353,7 +354,6 @@ const buildExercises = (
   }
 };
 
-
 const buildExerciseProgression = (
   progression_method: ProgressionMethodType,
   exercise: ExerciseType,
@@ -362,8 +362,8 @@ const buildExerciseProgression = (
   rep_range: number[],
   set_range: number[] = [2, 4]
 ) => {
-  const mesocycles = 3
-  const microcycles = 4
+  const mesocycles = 3;
+  const microcycles = 4;
   switch (progression_method) {
     case "SINGLE":
       return progressionHandler_single(
@@ -398,13 +398,13 @@ const buildExerciseProgression = (
         exercise.weightIncrement
       );
     case "DOUBLE_SETS_WEIGHT":
-      let curr_sets_dsw = set_range[0]
-      let curr_reps_dsw = rep_range[0]
-      let curr_lbs_dsw = weight
-      let curr_rir_dsw = rir_range[0]
+      let curr_sets_dsw = set_range[0];
+      let curr_reps_dsw = rep_range[0];
+      let curr_lbs_dsw = weight;
+      let curr_rir_dsw = rir_range[0];
 
-      const full_progression_dsw: number[][][] = []
-      for (let i = 0; i < mesocycles; i ++) {
+      const full_progression_dsw: number[][][] = [];
+      for (let i = 0; i < mesocycles; i++) {
         const prog = progressionHandler_triple(
           set_range,
           rep_range,
@@ -416,36 +416,35 @@ const buildExerciseProgression = (
           exercise.weightIncrement,
           microcycles
         );
-        full_progression_dsw.push(prog)
+        full_progression_dsw.push(prog);
 
-        const last_index = prog.length - 1
-        const last_prog = prog[last_index]
-        const last_set_total = last_prog[0]
-        const last_rep_total = last_prog[1]
-        const last_lbs_total = last_prog[2]
-        curr_sets_dsw = last_set_total
-        curr_reps_dsw = last_rep_total
-        curr_lbs_dsw = last_lbs_total
+        const last_index = prog.length - 1;
+        const last_prog = prog[last_index];
+        const last_set_total = last_prog[0];
+        const last_rep_total = last_prog[1];
+        const last_lbs_total = last_prog[2];
+        curr_sets_dsw = last_set_total;
+        curr_reps_dsw = last_rep_total;
+        curr_lbs_dsw = last_lbs_total;
       }
 
-      return full_progression_dsw
+      return full_progression_dsw;
 
+    // return progressionHandler_doubleSetWeight(
+    //   weight,
+    //   rir_range,
+    //   rep_range,
+    //   set_range,
+    //   exercise.weightIncrement
+    // );
+    case "TRIPLE":
+      let curr_sets = set_range[0];
+      let curr_reps = rep_range[0];
+      let curr_lbs = weight;
+      let curr_rir = rir_range[0];
 
-      // return progressionHandler_doubleSetWeight(
-      //   weight,
-      //   rir_range,
-      //   rep_range,
-      //   set_range,
-      //   exercise.weightIncrement
-      // );
-    case "TRIPLE":      
-      let curr_sets = set_range[0]
-      let curr_reps = rep_range[0]
-      let curr_lbs = weight
-      let curr_rir = rir_range[0]
-
-      const full_progression: number[][][] = []
-      for (let i = 0; i < mesocycles; i ++) {
+      const full_progression: number[][][] = [];
+      for (let i = 0; i < mesocycles; i++) {
         const prog = progressionHandler_triple(
           set_range,
           rep_range,
@@ -457,19 +456,19 @@ const buildExerciseProgression = (
           exercise.weightIncrement,
           microcycles
         );
-        full_progression.push(prog)
+        full_progression.push(prog);
 
-        const last_index = prog.length - 1
-        const last_prog = prog[last_index]
-        const last_set_total = last_prog[0]
-        const last_rep_total = last_prog[1]
-        const last_lbs_total = last_prog[2]
-        curr_sets = last_set_total
-        curr_reps = last_rep_total
-        curr_lbs = last_lbs_total
+        const last_index = prog.length - 1;
+        const last_prog = prog[last_index];
+        const last_set_total = last_prog[0];
+        const last_rep_total = last_prog[1];
+        const last_lbs_total = last_prog[2];
+        curr_sets = last_set_total;
+        curr_reps = last_rep_total;
+        curr_lbs = last_lbs_total;
       }
 
-      return full_progression
+      return full_progression;
 
     default:
       throw new Error(`Unknown progression method: ${progression_method}`);

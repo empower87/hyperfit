@@ -1,3 +1,4 @@
+import { SplitType } from "../reducer/trainingProgramReducer";
 import { ProgressionMethodType } from "../utils/exercises/repsAndWeightProgression";
 
 type UserT = {
@@ -52,10 +53,11 @@ type MicrocycleT = SessionSetT[];
 type MesocycleT = MicrocycleT[];
 type MacrocycleT = MesocycleT[];
 
-type SessionT = {
+type WorkoutT = {
   id: string;
   training_program_id: TrainingProgramT["id"];
   day: string; // e.g., "Monday"
+  day_number: number;
   split: string; // e.g., "Upper Body", "Lower Body"
   exercises: ExerciseT[];
 };
@@ -65,6 +67,10 @@ type ExerciseT = {
   name: string;
   progression_method: ProgressionMethodType;
 };
+
+type MesocyclePlanT = {
+
+}
 
 const sets = [
   [2, 2, 2, 2], // MESO 1
@@ -120,3 +126,63 @@ const EXERCISE_MESO_MAP: ExerciseMapT["id"][][][][] = [
   [], // Mesocycle 2
   [], // Mesocycle 3
 ];
+
+
+// New Attempt: 6/20/25
+// Entities: 
+// 1. User
+// 2. TrainingProgram
+// 3. Workout
+// 4. Exercise
+// 5. Sets
+type UserA = {
+  id: string;
+  first_name: string;
+  last_name: string;
+}
+
+type TrainingProgramA = {
+  id: string;
+  user_id: UserA["id"]
+}
+
+type WorkoutA = {
+  id: string;
+  training_program_id: TrainingProgramA["id"]
+  mesocycle_number: number;
+  day_number: number;
+  split: SplitType
+}
+
+type WorkoutItemsA = {
+  id: string;
+  workout_id: WorkoutA["id"]
+  exercise_id: ExerciseA["id"]
+  rank: number;
+}
+
+type ExerciseA = {
+  id: string;
+  workout_id: WorkoutA["id"]
+}
+
+type SetsA = {
+  id: string;
+  workout_item_id: WorkoutItemsA["id"]
+  rep_count: number;
+  weight: number;
+  duration: number
+}
+
+
+type ExercisePeriodizationA = {
+  id: string;
+  exercise_id: ExerciseA["id"]
+  mesocycle_number: number;
+  sets: number[]
+  reps: number[]
+  weight: number[]
+  rir: number[]
+  weight_increment: number
+
+}
