@@ -4,18 +4,54 @@
 // Microcycles
 // Sessions
 // Exercises
-// 
+//
 type UserA = {
   id: string;
   name: string;
   email: string;
 };
 
+type MuscleGroupName =
+  | "chest"
+  | "back"
+  | "quads"
+  | "hamstrings"
+  | "delts_front"
+  | "delts_rear"
+  | "delts_side"
+  | "biceps"
+  | "triceps"
+  | "forearms"
+  | "abs"
+  | "glutes"
+  | "calves"
+  | "traps";
+
+type SetVolumeLandmark = "MV" | "MEV" | "MAV" | "MAV-P" | "MRV" | "MRV-P";
+
+type Muscle = {
+  name: MuscleGroupName;
+  set_volume_landmark: SetVolumeLandmark;
+  frequency_range: [number, number]; // e.g. [2, 4] for 2-4 times per week
+  frequency_target: number; // e.g. 3 for 3 times per week
+  frequency_mesocycle_progression: number[]; // e.g. Mesocycle 1 = 2x frequency, Mesocycle 2 = 3x frequency, Mesocycle 3 = 4x frequency
+  set_mesocycle_progression: number[][][];
+};
+
+type TrainingSplit =
+  | "Push/Pull/Legs"
+  | "Upper/Lower"
+  | "Push/Pull/Legs Upper/Lower"
+  | "Bro"
+  | "Full Body"
+  | "Custom";
+
 type TrainingProgram = {
   id: string;
   user_id: string;
   name: string;
-  training_split: string; // e.g. Push/Pull/Legs
+  training_split: TrainingSplit;
+  muscle_priority_list: Muscle[];
   sessions_per_week: number;
   created_at: Date;
   updated_at: Date;
@@ -76,7 +112,7 @@ type ProgressionScheme = {
   id: string;
   name: string;
   description: string;
-  type: 'linear' | 'double_progression' | 'wave' | 'rpe' | 'custom';
+  type: "linear" | "double_progression" | "wave" | "rpe" | "custom";
   config: any; // depends on type
 };
 
@@ -106,24 +142,23 @@ type ClientState = {
     selectedWeek: number;
     selectedSessionId?: string;
   };
-}
+};
 const CLIENT_STATE = {
   trainingPrograms: {
     "tp-1": {
       user_id: "user-1",
-
-    }
+    },
   },
-  trainingBlocks:{
+  trainingBlocks: {
     "tb-1": {
       id: "tb-1",
       program_id: "tp-1",
       name: "",
       training_split: "PPL",
-      mesocycles: ["meso-1", "meso-2", "meso-3"]
-    }
+      mesocycles: ["meso-1", "meso-2", "meso-3"],
+    },
   },
-  mesocycles:{
+  mesocycles: {
     "meso-1": {
       id: "meso-1",
       block_id: "tb-1",
@@ -131,18 +166,18 @@ const CLIENT_STATE = {
       week_count: 4,
       order: 1,
       microcycles: ["micro-1", "micro-2", "micro-3", "micro-4"],
-    }
+    },
   },
-  microcycles:{},
-  sessions:{},
-  sessionItems:{},
-  exercises:{},
-  progressionSchemes:{},
+  microcycles: {},
+  sessions: {},
+  sessionItems: {},
+  exercises: {},
+  progressionSchemes: {},
   currentProgramId: {},
   ui: {
     selectedWeek: 0,
-  }
-}
+  },
+};
 
 const SESSION_ITEM = {
   "session-item-1": {
@@ -154,7 +189,6 @@ const SESSION_ITEM = {
     reps: 12,
     lbs: 105,
     rir: 2,
-    progression_id: "progression-1"
-
-  }
-}
+    progression_id: "progression-1",
+  },
+};
