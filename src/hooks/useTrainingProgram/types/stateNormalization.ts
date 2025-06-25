@@ -93,11 +93,12 @@ type SessionItem = {
   id: string;
   session_id: string;
   exercise_id: string;
+  progression_method: ProgressionMethodType; // e.g. "single", "dynamic_single", "double", etc.
   order: number;
-  sets: number;
-  reps: number;
-  rir?: number;
-  progression_id?: string;
+  initial_sets?: number;
+  initial_reps?: number;
+  initial_lbs?: number;
+  initial_rir?: number;
 };
 
 type Exercise = {
@@ -143,6 +144,7 @@ type ClientState = {
     selectedSessionId?: string;
   };
 };
+
 const CLIENT_STATE = {
   trainingPrograms: {
     "tp-1": {
@@ -184,11 +186,21 @@ const SESSION_ITEM = {
     id: "session-item-1",
     exercise_id: "exercise-1",
     session_id: "session-1",
+    progression_method: "single",
     order: 1,
-    sets: 3,
-    reps: 12,
-    lbs: 105,
-    rir: 2,
-    progression_id: "progression-1",
+    initial_sets: 3,
+    initial_reps: 12,
+    initial_lbs: 105,
+    initial_rir: 2,
   },
 };
+
+type ProgressionMethodType = 
+  | "single"
+  | "dynamic_single"
+  | "double"
+  | "dynamic_double"
+  | "double_setsWeight"
+  | "triple"
+  | "wave"
+  | "custom";
