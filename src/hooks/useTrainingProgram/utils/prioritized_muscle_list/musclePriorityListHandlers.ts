@@ -22,6 +22,7 @@ import {
   getFrequencyRange,
   initFrequencyProgressionAcrossMesocycles,
 } from "./maximumFrequencyHandlers";
+import { allowable_muscles_per_split, assignExercises, returnSessionSplits } from "../../types/stateNormalization";
 
 export const MUSCLE_PRIORITY_LIST: MusclePriorityType[] = [
   {
@@ -404,6 +405,18 @@ export const attachTargetFrequency = (
     updated_list[i].frequency.setProgressionMatrix = setProgressionMatrix;
     updated_list[i].exercises = exercises;
   }
+  
+    // ChatGPT code testing
+    const split_list = returnSessionSplits(
+      split_sessions)
+
+    const sessions_set = assignExercises(
+      updated_list,
+      split_list,
+      allowable_muscles_per_split,
+      mesocycles,
+    )
+    console.log(split_list,split_sessions, sessions_set,  "FUNCTION: attachTargetFrequency TESTS => musclePriorityListHandlers.ts");
   return updated_list;
 };
 

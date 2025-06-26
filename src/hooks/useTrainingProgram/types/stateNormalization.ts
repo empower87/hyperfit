@@ -4,6 +4,10 @@
 // Microcycles
 // Sessions
 // Exercises
+
+import { exitCode } from "process";
+import { ExerciseType, MusclePriorityType, SplitSessionsType } from "../reducer/trainingProgramReducer";
+
 //
 type UserA = {
   id: string;
@@ -50,9 +54,7 @@ type TrainingProgram = {
   id: string;
   user_id: string;
   name: string;
-  training_split: TrainingSplit;
-  muscle_priority_list: Muscle[];
-  sessions_per_week: number;
+  training_block_ids: string[]
   created_at: Date;
   updated_at: Date;
 };
@@ -61,9 +63,12 @@ type TrainingBlock = {
   id: string;
   program_id: string;
   name: string;
+  training_split: TrainingSplit;
+  muscle_priority_list: Muscle[];
+  sessions_per_week: number;
+  mesocycles: string[]; // or denormalize if ordering is key
   start_date?: Date;
   end_date?: Date;
-  mesocycles: string[]; // or denormalize if ordering is key
 };
 
 type Mesocycle = {
@@ -99,6 +104,7 @@ type SessionItem = {
   initial_reps?: number;
   initial_lbs?: number;
   initial_rir?: number;
+  superset_id?: string; // for supersets, if applicable
 };
 
 type Exercise = {
@@ -200,7 +206,204 @@ type ProgressionMethodType =
   | "dynamic_single"
   | "double"
   | "dynamic_double"
-  | "double_setsWeight"
+  | "double_sets-weight"
   | "triple"
   | "wave"
   | "custom";
+
+
+ 
+// SESSIONS WIP - 6/25/25
+// upper = 2, lower = 1, full = 2
+// 1. Back -       2,3,4
+// 2. Side Delts - 2,3,4 
+// 3. Triceps -    1,2,3
+// 4. Hamstrings - 1,2,3
+// 5. Quads -      1,2,3 
+// 6. Rear Delts - 1,2,2
+// 7. Foreams -    1,1,1
+// 8. Traps -      1,2,2
+// 9. Biceps -     1,2,2
+// 10. Chest -     1,2,2
+// 11. Calves -    1,2,2
+// 12. Fnt Delts - 0,0,0
+// 13. Abs -       0,0,0
+// 14. Glutes -    0,0,0
+
+// upper 1  = back_1
+//            back_1
+//            sdelts_1
+//            sdelts_1
+//            triceps_1
+
+
+// upper 2 =  back_2
+//            back_2
+//            sdelts_2
+//            sdelts_2
+//            triceps_2
+
+// lower 1 =  hamstrings_1
+//            hamstrings_1
+//            quads_1
+//            quads_1
+
+// full 1  =  back_3
+//            back_3
+//            sdelts_3
+//            sdelts_3
+//            triceps_3
+
+
+// full 2  =  back_4
+//            sdelts_4
+//            hamstrings_2
+//            quads_2
+
+export const allowable_muscles_per_split = {
+  upper: ["back", "traps", "chest", "delts_front", "delts_rear", "delts_side", "biceps", "triceps", "forearms"],
+  lower: ["quads", "hamstrings", "glutes", "calves"],
+  push: ["chest", "delts_front", "delts_side", "triceps"],
+  pull: ["back", "delts_rear", "biceps", "forearms"],
+  legs: ["quads", "hamstrings", "glutes", "calves"],
+  full: [
+    "chest",
+    "back",
+    "quads",
+    "hamstrings",
+    "delts_front",
+    "delts_rear",
+    "delts_side",
+    "biceps",
+    "triceps",
+    "forearms",
+    "abs",
+    "glutes",
+    "calves",
+    "traps"
+  ],
+  back: ["back", "traps"],
+  chest: ["chest"],
+  shoulders: ["delts_front", "delts_rear", "delts_side", "traps"],
+  arms: ["biceps", "triceps", "forearms"],
+}
+
+// const muscle_priority_example_1 = [
+//   {
+//     name: "back",
+//     set_volume_landmark: "MRV",
+//     frequency_range: [2, 4],
+//     frequency_target: 4,
+//     frequency_mesocycle_progression: [2, 3, 4],
+//     exercises: [
+//       [{
+//         id: "exercise_1",
+//         name: "Pull Up",
+//         is_unilateral: false,
+//         is_compound: true,
+//         muscle_groups: ["back"],
+//       },
+//       {
+//         id: "exercise_2",
+//         name: "Bent Over Row",
+//         is_unilateral: false,
+//         is_compound: true,
+//         muscle_groups: ["back"],
+//       }], // exercises for session 1
+//       [EXERCISE_3, EXERCISE_4], // exercises for session 2
+//       [EXERCISE_5, EXERCISE_6], // exercises for session 3
+//       [EXERCISE_7] // exercises for session 4
+//     ]  
+//   },
+//   { ...BICEPS },
+//   { ...TRICEPS },
+//   { ...QUADS },
+//   ...etc
+// ]
+
+
+
+interface MusclePriority {
+  name: string;
+  set_volume_landmark: string;
+  frequency_range: [number, number];
+  frequency_target: number;
+  frequency_mesocycle_progression: number[];
+  exercises: Exercise[][]; // ordered by importance, grouped per intended session
+}
+
+interface AssignedExercise {
+  sessionIndex: number;
+  exerciseGroup: ExerciseType[];
+  muscle: string;
+}
+
+export function returnSessionSplits(
+  split_sessions: SplitSessionsType
+): string[] {
+  const split_keys: string[] = []
+  for (const key in split_sessions.sessions) {
+      const num_value = split_sessions.sessions[key as keyof typeof split_sessions.sessions];
+      const repeat = `${key}-`.repeat(num_value ?? 1)
+      const keyWithoutDash = repeat.split("-")
+      split_keys.push(...keyWithoutDash);
+  }
+  return split_keys.filter((split) => split !== "");
+}
+
+// Helpers
+function getValidSessionIndicesForMuscle(
+  splitList: string[],
+  allowable: Record<string, string[]>,
+  muscleName: string
+): number[] {
+  return splitList
+    .map((split, i) => (allowable[split]?.includes(muscleName) ? i : null))
+    .filter((i): i is number => i !== null);
+}
+
+function chooseOptimalSessions(
+  valid: number[],
+  target: number,
+  prefer: Set<number>
+): number[] {
+  const preferred = valid.filter((i) => prefer.has(i));
+  const remaining = valid.filter((i) => !prefer.has(i));
+
+  const chosen = [...preferred.slice(0, target), ...remaining.slice(0, target - preferred.length)];
+  return chosen.sort((a, b) => a - b);
+}
+
+// Core function
+export function assignExercises(
+  musclePriorityList: MusclePriorityType[],
+  splitList: string[],
+  allowableMuscles: Record<string, string[]>,
+  totalMesocycles: number
+) {
+  const finalPlan: Record<number, Record<number, AssignedExercise[]>> = {}; // meso -> session -> exercises
+
+  for (const muscle of musclePriorityList) {
+    const sessionIndices = getValidSessionIndicesForMuscle(splitList, allowableMuscles, muscle.muscle);
+    let assignedSessions = new Set<number>();
+
+    for (let meso = 0; meso < totalMesocycles; meso++) {
+      const freq = muscle.frequency.progression[meso] ?? muscle.frequency.target;
+      const chosenSessions = chooseOptimalSessions(sessionIndices, freq, assignedSessions);
+
+      assignedSessions = new Set([...assignedSessions, ...chosenSessions]);
+
+      if (!finalPlan[meso]) finalPlan[meso] = {};
+
+      for (let i = 0; i < freq; i++) {
+        const sessionIdx = chosenSessions[i];
+        const exerciseGroup = muscle.exercises[i] ?? [];
+
+        if (!finalPlan[meso][sessionIdx]) finalPlan[meso][sessionIdx] = [];
+        finalPlan[meso][sessionIdx].push({ sessionIndex: sessionIdx, exerciseGroup, muscle: muscle.muscle });
+      }
+    }
+  }
+
+  return finalPlan; // [mesocycle][session] => AssignedExercise[]
+}
