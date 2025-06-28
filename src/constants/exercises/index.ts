@@ -27,17 +27,36 @@ export {
   HAMSTRINGS_EXERCISES,
   QUADS_EXERCISES,
   TRAPS_EXERCISES,
-  TRICEPS_EXERCISES,
+  TRICEPS_EXERCISES
 };
 
 // NOTES:
+
+type ExerciseMachineType =
+  | "iso-lateral row"
+  | "iso-lateral high-row"
+  | "iso-lateral low-row"
+  | "iso-lateral front lat pulldown"
+  | "iso-lateral chest press"
+  | "iso-lateral incline press"
+  | "iso-lateral decline press"
+  | "iso-lateral shoulder press"
+  | "iso-lateral lateral raise";
+
 type EquipmentKeyType =
   | "barbell"
   | "dumbbell"
-  | "kettle-bell"
-  | "machine pin-loaded"
-  | "machine plate-loaded"
-  | "bodyweight";
+  | "kettlebell"
+  | "machine_pin-loaded"
+  | "machine_plate-loaded"
+  | "machine_cable"
+  | "smith_machine"
+  | "machine_free-loaded"
+  | "bodyweight"
+  | "band"
+  | "bench"
+  | "mat"
+  | "bosu_ball";
 type WeightLoadIncrementType = 1 | 1.5 | 2.5 | 5 | 10 | 15 | 20;
 type InitialWeightNumberType = 0 | 2.5 | 5 | 10 | 12.5 | 15 | 20;
 
@@ -112,3 +131,40 @@ type ExerciseEquipmentDetailsType = {
   weight_load_increment: number;
   initial_weight: number;
 };
+
+// NOTES: for extended information on exercise equipment details, refer to the following:
+// Iso-lateral machines are machines that allow for independent movement of each limb, such as the iso-lateral chest press or iso-lateral row.
+// Pin-loaded machines are machines that use a pin to select the weight and don't typically allow for iso-lateral movement.
+// Plate-loaded machines are machines that use plates to add weight and can be either iso-lateral or not.
+
+type EquipmentType = {
+  name: string;
+  load_type: "pin-loaded" | "plate-loaded";
+  movement_type: "iso-lateral" | "bilateral";
+};
+
+type CableMachineType = {
+  min_load_increment: 1.5;
+  max_load_increment: 7;
+  performable_exercises: "multiple";
+};
+
+type MachineType = {
+  load_type: "pin-loaded" | "plate-loaded";
+};
+
+type ExerciseSpaceLocationType = 
+  | "bench"
+  | "smith_machine"
+  | "cable_machine"
+  | "isolation_machine"
+  | "mat"
+  | "power_rack"
+
+const EXERCISE_SPACE_GROUPING = {
+  bench: ["dumbbell", "bodyweight", "barbell"],
+  smith_machine: ["barbell", "dumbbell", "bodyweight"],
+  cable_machine: ["dumbbell", "bodyweight"],
+  isolation_machine: ["dumbbell", "bodyweight"],
+  mat: ["bodyweight", "dumbbell", "barbell"]
+}
