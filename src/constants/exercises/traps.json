@@ -50,7 +50,7 @@
   {
     "id": "0003-traps-exercise",
     "name": "Seated Dumbbell Shrug",
-    "rank": 2,
+    "rank": 3,
     "group": "traps",
     "region": "upper",
     "requirements": ["dumbbell", "bench"],
@@ -74,7 +74,7 @@
   {
     "id": "0004-traps-exercise",
     "name": "Machine Shrug",
-    "rank": 3,
+    "rank": 4,
     "group": "traps",
     "region": "upper",
     "requirements": ["machine"],
@@ -98,7 +98,7 @@
   {
     "id": "0005-traps-exercise",
     "name": "Y-Raise",
-    "rank": 4,
+    "rank": 5,
     "group": "traps",
     "region": "middle",
     "requirements": ["dumbbell", "bench"],
@@ -123,6 +123,30 @@
     "id": "0006-traps-exercise",
     "name": "Seated Shrug Row",
     "rank": 6,
+    "group": "traps",
+    "region": "upper",
+    "requirements": ["machine"],
+    "variations": [],
+    "tips": "1. Place feet higher on support, close to cable. 2. Lean back 45 degrees. 3. Use a neutral and wide grip attachment.",
+    "movement_type": "compound",
+    "hypertrophy_criteria": {
+      "target_function": 0,
+      "stability": 4,
+      "limiting_factor": 0,
+      "time_efficiency": 0,
+      "loadability": 0,
+      "stretch": {
+        "lengthened": 0,
+        "challenging": 0,
+        "partial_friendly": 0
+      },
+      "fatigue": 0
+    }
+  },
+  {
+    "id": "0007-traps-kelsoshrugonlowrowmachine",
+    "name": "Kelso Shrug On Low Row Machine",
+    "rank": 7,
     "group": "traps",
     "region": "upper",
     "requirements": ["machine"],
