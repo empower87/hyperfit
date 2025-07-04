@@ -186,3 +186,83 @@ type ExercisePeriodizationA = {
   weight_increment: number
 
 }
+
+// splits = upper, upper, lower, full, full
+// back        = 2,3,4
+// side_delts  = 2,3,4
+// triceps     = 1,2,3
+// hamstrings  = 1,2,3
+// quads       = 1,2,3
+// delts_rear  = 1,2,2
+// forearms    = 1,1,1
+// traps       = 1,2,2
+// biceps      = 1,2,2
+// chest       = 1,2,2
+// calves      = 1,2,2
+// delts_front = 0,0,0
+// abs         = 0,0,0
+// glutes      = 0,0,0
+
+// meso 1
+// upper = back, sdelts, tris, forearms, biceps,
+// upper = back, sdelts, rdelts, traps, chest,
+// lower = hams, quads, calves
+
+// meso 2
+// upper = back, sdelts, tris, forearms, biceps, traps, chest
+// upper = back, sdelts, rdelts, traps, chest, biceps,
+// lower = hams, quads, calves
+// full  = back, sdelts, tris, hams, quads, rdelts, calves,
+
+// meso 3
+// upper 7 = back, sdelts, tris, forearms, biceps, traps, chest 
+// upper 6 = back, sdelts, rdelts, traps, chest, biceps,
+// lower 3 = hams, quads, calves
+// full  7 = back, sdelts, tris, hams, quads, rdelts, calves,
+// full  5 = back, sdelts, tris, hams, quads,
+
+
+// meso 1
+// upper = back, sdes, tris, rdes, trap, chst
+// upper = back, sdes, tris, frms, bics,
+// lower = hams, quad, calf,
+
+// meso 2
+// upper = back, sdes, tris, rdes, frms, bics,
+// upper = back, sdes, tris, rdes, trap, chst,
+// lower = hams, quad, calf, 
+// full  = back, sdes, hams, quad, trap, bics, chst, calf
+
+// meso 3
+// upper  = back, sdes, tris, rdes, frms, bics,
+// upper  = back, sdes, tris, rdes, trap, bics,
+// lower  = hams, quad, calf,
+// full   = back, sdes, tris, hams, quad, chst, calf,
+// full   = back, sdes, hams, quad, trap, chst,
+
+
+
+// NOTE: With this algorithm.
+// 1. Start from top of muscle list.
+// 2. Start with all splits available on last mesocycle, then fill each preceding meso.
+// 3. For each meso:
+//    a. If muscle is filled in previous meso then carry it over.
+//    b. If muscle has not been filled then find least full session with default on the first available.
+
+// meso 1
+// upper = back, sdel, tris, fore, bics,
+// upper = back, sdel, rdel, trap, chst,
+// lower = hams, quad,
+
+// meso 2
+// upper = back, sdel, tris, rdel, fore, bics,
+// upper = back, sdel, tris, rdel, trap, bics, chst,
+// lower = hams, quad,
+// full  = back, sdel, hams, quad, trap, chst,
+
+// meso 3
+// upper  = back, sdel, tris, rdel, fore, bics,
+// upper  = back, sdel, tris, rdel, trap, bics, chst,
+// lower  = hams, quad, calf,
+// full   = back, sdel, tris, hams, quad, chst,
+// full   = back, sdel, hams, quad, trap, calf
