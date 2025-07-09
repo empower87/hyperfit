@@ -607,6 +607,84 @@ function rebalanceExercisesInMesocycle(
   return newMeso;
 }
 
+const lolAI = (
+  priorityMuscle: MusclePriorityType,
+  splitList: string[],
+  allowableMuscles: Record<string, string[]>,
+  mesoIdx: number
+) => {
+  const splitToBestMuscle: Record<string, { muscle: string; freq: number }> =
+    {};
+
+  for (const split of splitList) {
+    if (allowableMuscles[split]?.includes(priorityMuscle.muscle)) {
+      const freq =
+        priorityMuscle.frequency.progression[mesoIdx] ??
+        priorityMuscle.frequency.target;
+      if (freq > 0) {
+        splitToBestMuscle[split] = { muscle: priorityMuscle.muscle, freq };
+        break; // Only take the highest-ranked muscle for this split
+      }
+    }
+  }
+};
+
+function getSessionSplitsForMesocycle(
+  musclePriorityList: MusclePriorityType[],
+  splitList: string[],
+  allowableMuscles: Record<string, string[]>,
+  mesoIdx: number
+): string[] {
+  // 1. For each split, find the highest-ranked muscle that can be assigned to it
+  const splitToBestMuscle: Record<string, { muscle: string; freq: number }> =
+    {};
+
+  for (const split of splitList) {
+    for (const muscle of musclePriorityList) {
+      if (allowableMuscles[split]?.includes(muscle.muscle)) {
+        const freq =
+          muscle.frequency.progression[mesoIdx] ?? muscle.frequency.target;
+        if (freq > 0) {
+          splitToBestMuscle[split] = { muscle: muscle.muscle, freq };
+          break; // Only take the highest-ranked muscle for this split
+        }
+      }
+    }
+  }
+
+  // 2. Build a session list, preferring more specific splits before "full"
+  // We'll fill each split as many times as the best muscle for that split requires
+  // but only add "full" if needed to reach the total frequency required by all muscles
+  const sessionSplits: string[] = [];
+  const splitsNoFull = splitList.filter((s) => s !== "full");
+  const splitsToUse = [
+    ...splitsNoFull,
+    ...(splitList.includes("full") ? ["full"] : []),
+  ];
+
+  for (const split of splitsToUse) {
+    const best = splitToBestMuscle[split];
+    if (best && best.freq > 0) {
+      for (let i = 0; i < best.freq; i++) {
+        sessionSplits.push(split);
+      }
+    }
+  }
+
+  // If we have fewer sessions than the highest frequency for any muscle, fill with "full"
+  // (This is rare, but possible if e.g. a muscle needs more sessions than there are splits)
+  const maxFreq = Math.max(
+    ...musclePriorityList.map(
+      (m) => m.frequency.progression[mesoIdx] ?? m.frequency.target
+    )
+  );
+  while (sessionSplits.length < maxFreq && splitList.includes("full")) {
+    sessionSplits.push("full");
+  }
+
+  return sessionSplits;
+}
+
 export function assignExercises(
   musclePriorityList: MusclePriorityType[],
   splitList: string[],
@@ -615,106 +693,61 @@ export function assignExercises(
 ) {
   const finalPlan: Record<number, Record<number, AssignedExercise[]>> = {};
 
-  // Helper to get the optimal session splits for a mesocycle
-  function getOptimalSessionSplits(
-    musclePriorityList: MusclePriorityType[],
-    splitList: string[],
-    allowableMuscles: Record<string, string[]>,
-    mesoIdx: number,
-    useAll: boolean = false
-  ): { splits: string[]; indices: number[] } {
-    if (useAll) {
-      return { splits: [...splitList], indices: splitList.map((_, i) => i) };
-    }
-
-    // For each split, find the highest-ranked muscle that can be assigned to it
-    const splitToBestMuscle: Record<string, { muscle: string; freq: number }> =
-      {};
-    for (const split of splitList) {
+  // 1. For each mesocycle, determine how many sessions to use
+  const sessionsPerMeso: number[] = [];
+  for (let meso = 0; meso < totalMesocycles; meso++) {
+    if (meso === totalMesocycles - 1) {
+      // Last mesocycle: use all sessions
+      sessionsPerMeso[meso] = splitList.length;
+    } else {
+      // Use the highest frequency for this mesocycle
+      let maxFreq = 0;
       for (const muscle of musclePriorityList) {
-        if (allowableMuscles[split]?.includes(muscle.muscle)) {
-          const freq =
-            muscle.frequency.progression[mesoIdx] ?? muscle.frequency.target;
-          if (freq > 0) {
-            splitToBestMuscle[split] = { muscle: muscle.muscle, freq };
-            break;
-          }
-        }
+        const freq =
+          muscle.frequency.progression[meso] ?? muscle.frequency.target;
+        if (freq > maxFreq) maxFreq = freq;
       }
+      sessionsPerMeso[meso] = maxFreq;
     }
-
-    // Prefer specific splits before "full"
-    const splitsNoFull = splitList.filter((s) => s !== "full");
-    const splitsToUse = [
-      ...splitsNoFull,
-      ...(splitList.includes("full") ? ["full"] : []),
-    ];
-
-    // For each split, add it as many times as needed for the best muscle for that split
-    const sessionSplits: string[] = [];
-    const sessionIndices: number[] = [];
-    for (const split of splitsToUse) {
-      const best = splitToBestMuscle[split];
-      if (best && best.freq > 0) {
-        // Find all indices for this split in splitList
-        const indices = splitList
-          .map((s, i) => (s === split ? i : -1))
-          .filter((i) => i !== -1);
-        // Only add as many as available or needed
-        for (let i = 0; i < Math.min(best.freq, indices.length); i++) {
-          sessionSplits.push(split);
-          sessionIndices.push(indices[i]);
-        }
-      }
-    }
-
-    // If not enough sessions to cover the highest frequency, fill with "full"
-    const maxFreq = Math.max(
-      ...musclePriorityList.map(
-        (m) => m.frequency.progression[mesoIdx] ?? m.frequency.target
-      )
-    );
-    while (sessionSplits.length < maxFreq && splitList.includes("full")) {
-      // Find next available "full" index
-      const fullIndices = splitList
-        .map((s, i) => (s === "full" && !sessionIndices.includes(i) ? i : -1))
-        .filter((i) => i !== -1);
-      if (fullIndices.length === 0) break;
-      sessionSplits.push("full");
-      sessionIndices.push(fullIndices[0]);
-    }
-
-    return { splits: sessionSplits, indices: sessionIndices };
   }
 
-  // Main assignment loop
-  for (let meso = 0; meso < totalMesocycles; meso++) {
-    // Use all sessions for last mesocycle, otherwise optimal
-    const { splits: sessionSplits, indices: sessionIndices } =
-      getOptimalSessionSplits(
-        musclePriorityList,
-        splitList,
-        allowableMuscles,
-        meso,
-        meso === totalMesocycles - 1
-      );
+  console.log(sessionsPerMeso, splitList, totalMesocycles, "sessionsPerMeso");
+  // 2. For each muscle, assign exercises to sessions for each mesocycle
+  for (const muscle of musclePriorityList) {
+    const allSessionIndices = getValidSessionIndicesForMuscle(
+      splitList,
+      allowableMuscles,
+      muscle.muscle
+    );
 
-    // For each muscle, assign exercises to valid sessions for this mesocycle
-    for (const muscle of musclePriorityList) {
-      // Find which session indices are valid for this muscle
-      const validSessionIndices = sessionIndices.filter((idx) =>
-        allowableMuscles[splitList[idx]]?.includes(muscle.muscle)
-      );
+    for (let meso = 0; meso < totalMesocycles; meso++) {
       const freq =
         muscle.frequency.progression[meso] ?? muscle.frequency.target;
+      const sessionCount = sessionsPerMeso[meso];
+
+      // Only use the first N session indices for this mesocycle
+      const sessionIndices = allSessionIndices.slice(0, sessionCount);
 
       // Sort by current load (least loaded first)
-      const sessionExerciseCounts = validSessionIndices.map((idx) => ({
+      const sessionExerciseCounts = sessionIndices.map((idx) => ({
         idx,
         count: finalPlan[meso]?.[idx]?.length ?? 0,
       }));
       sessionExerciseCounts.sort((a, b) => a.count - b.count);
       const sortedSessionIndices = sessionExerciseCounts.map((obj) => obj.idx);
+
+      let sessionSplits: string[];
+      if (meso === totalMesocycles - 1) {
+        // Last mesocycle: use all sessions
+        sessionSplits = [...splitList];
+      } else {
+        sessionSplits = getSessionSplitsForMesocycle(
+          musclePriorityList,
+          splitList,
+          allowableMuscles,
+          meso
+        );
+      }
 
       // Pick the first `freq` sessions with the least exercises
       const chosenSessions = sortedSessionIndices.slice(0, freq);
@@ -724,6 +757,7 @@ export function assignExercises(
       for (let i = 0; i < freq; i++) {
         const sessionIdx = chosenSessions[i];
         const exerciseGroup = muscle.exercises[i] ?? [];
+
         if (!finalPlan[meso][sessionIdx]) finalPlan[meso][sessionIdx] = [];
         finalPlan[meso][sessionIdx].push({
           sessionIndex: sessionIdx,
@@ -798,3 +832,116 @@ export function assignExercises(
 
 //   return finalPlan; // [mesocycle][session] => AssignedExercise[]
 // }
+
+// NOTE: With this algorithm.
+// 1. Start from top of muscle list.
+// 2. Start with all splits available on last mesocycle, then fill each preceding meso.
+// 3. For each meso:
+//    a. If muscle is filled in previous meso then carry it over.
+//    b. If muscle has not been filled then find least full session with default on the first available.
+
+// meso 1
+// upper = back, sdel, tris, fore, bics,
+// upper = back, sdel, rdel, trap, chst,
+// lower = hams, quad,
+
+// meso 2
+// upper = back, sdel, tris, rdel, fore, bics,
+// upper = back, sdel, tris, rdel, trap, bics, chst,
+// lower = hams, quad,
+// full  = back, sdel, hams, quad, trap, chst,
+
+// meso 3
+// upper  = back, sdel, tris, rdel, fore, bics,
+// upper  = back, sdel, tris, rdel, trap, bics, chst,
+// lower  = hams, quad, calf,
+// full   = back, sdel, tris, hams, quad, chst,
+// full   = back, sdel, hams, quad, trap, calf
+export const disperseExercisesIntoSessions = (
+  musclePriorityList: MusclePriorityType[],
+  splitList: string[],
+  allowableMuscles: Record<string, string[]>,
+  mesocycles: number
+) => {
+  const finalPlan: Record<number, Record<number, AssignedExercise[]>> = {};
+
+  // 1. Create the final mesocycle with all the splits in splitList and fill with empty exercises
+  for (let j = 0; j < mesocycles; j++) {
+    if (j === mesocycles - 1) {
+      for (let i = 0; i < splitList.length; i++) {
+        finalPlan[mesocycles - 1] = { ...finalPlan[mesocycles - 1], [i]: [] };
+      }
+    } else {
+      finalPlan[j] = {};
+    }
+  }
+
+  // hardcoding test here 7/9/2025
+  const maxFrequencies = {
+    0: {
+      upper: 2,
+      lower: 1,
+      full: 0,
+    },
+    1: {
+      upper: 2,
+      lower: 1,
+      full: 1,
+    },
+    2: {
+      upper: 2,
+      lower: 1,
+      full: 2,
+    },
+  };
+
+  const maxFrequenciesArrays: Record<number, (string | null)[]> = {
+    0: ["lower", "upper", "upper", "full", "full"],
+    1: ["lower", "upper", "upper", "full", null],
+    2: ["lower", "upper", "upper", null, null],
+  };
+
+  for (const muscle of musclePriorityList) {
+    const frequency_progression_reversed =
+      muscle.frequency.progression.reverse();
+
+    for (let i = 0; i < frequency_progression_reversed.length; i++) {
+      const freq = frequency_progression_reversed[i] ?? muscle.frequency.target;
+      const sessionIndices = getValidSessionIndicesForMuscle(
+        splitList,
+        allowableMuscles,
+        muscle.muscle
+      );
+      const filteredIndices = sessionIndices.filter((idx) => {
+        const split = maxFrequenciesArrays[i][idx];
+        if (split) return idx;
+      });
+
+      console.log(sessionIndices, filteredIndices, splitList, muscle, "LOL");
+      // Sort by current load (least loaded first)
+      const sessionExerciseCounts = filteredIndices.map((idx) => ({
+        idx,
+        count: finalPlan[mesocycles - 1][idx]?.length ?? 0,
+      }));
+      sessionExerciseCounts.sort((a, b) => a.count - b.count);
+      const sortedSessionIndices = sessionExerciseCounts.map((obj) => obj.idx);
+
+      // Pick the first `freq` sessions with the least exercises
+      const chosenSessions = sortedSessionIndices.slice(0, freq);
+
+      for (let j = 0; j < freq; j++) {
+        const sessionIdx = chosenSessions[j];
+        const exerciseGroup = muscle.exercises[j] ?? [];
+
+        if (!finalPlan[i][sessionIdx]) finalPlan[i][sessionIdx] = [];
+        finalPlan[i][sessionIdx].push({
+          sessionIndex: sessionIdx,
+          split: splitList[sessionIdx],
+          exerciseGroup,
+          muscle: muscle.muscle,
+        });
+      }
+    }
+  }
+  return finalPlan;
+};

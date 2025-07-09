@@ -15,6 +15,7 @@ import {
 import {
   allowable_muscles_per_split,
   assignExercises,
+  disperseExercisesIntoSessions,
   returnSessionSplits,
 } from "../../types/stateNormalization";
 import { getPlaceholderExerciseLayout } from "../exercises/exercisePlaceholders";
@@ -418,10 +419,18 @@ export const attachTargetFrequency = (
     allowable_muscles_per_split,
     mesocycles
   );
+
+  const first_test = disperseExercisesIntoSessions(
+    updated_list,
+    split_list,
+    allowable_muscles_per_split,
+    mesocycles
+  );
   console.log(
     split_list,
     split_sessions,
     sessions_set,
+    first_test,
     "FUNCTION: attachTargetFrequency TESTS => musclePriorityListHandlers.ts"
   );
   return updated_list;
