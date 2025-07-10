@@ -68,9 +68,7 @@ type ExerciseT = {
   progression_method: ProgressionMethodType;
 };
 
-type MesocyclePlanT = {
-
-}
+type MesocyclePlanT = {};
 
 const sets = [
   [2, 2, 2, 2], // MESO 1
@@ -127,9 +125,8 @@ const EXERCISE_MESO_MAP: ExerciseMapT["id"][][][][] = [
   [], // Mesocycle 3
 ];
 
-
 // New Attempt: 6/20/25
-// Entities: 
+// Entities:
 // 1. User
 // 2. TrainingProgram
 // 3. Workout
@@ -139,53 +136,51 @@ type UserA = {
   id: string;
   first_name: string;
   last_name: string;
-}
+};
 
 type TrainingProgramA = {
   id: string;
-  user_id: UserA["id"]
-}
+  user_id: UserA["id"];
+};
 
 type WorkoutA = {
   id: string;
-  training_program_id: TrainingProgramA["id"]
+  training_program_id: TrainingProgramA["id"];
   mesocycle_number: number;
   day_number: number;
-  split: SplitType
-}
+  split: SplitType;
+};
 
 type WorkoutItemsA = {
   id: string;
-  workout_id: WorkoutA["id"]
-  exercise_id: ExerciseA["id"]
+  workout_id: WorkoutA["id"];
+  exercise_id: ExerciseA["id"];
   rank: number;
-}
+};
 
 type ExerciseA = {
   id: string;
-  workout_id: WorkoutA["id"]
-}
+  workout_id: WorkoutA["id"];
+};
 
 type SetsA = {
   id: string;
-  workout_item_id: WorkoutItemsA["id"]
+  workout_item_id: WorkoutItemsA["id"];
   rep_count: number;
   weight: number;
-  duration: number
-}
-
+  duration: number;
+};
 
 type ExercisePeriodizationA = {
   id: string;
-  exercise_id: ExerciseA["id"]
+  exercise_id: ExerciseA["id"];
   mesocycle_number: number;
-  sets: number[]
-  reps: number[]
-  weight: number[]
-  rir: number[]
-  weight_increment: number
-
-}
+  sets: number[];
+  reps: number[];
+  weight: number[];
+  rir: number[];
+  weight_increment: number;
+};
 
 // splits = upper, upper, lower, full, full
 // back        = 2,3,4
@@ -215,12 +210,11 @@ type ExercisePeriodizationA = {
 // full  = back, sdelts, tris, hams, quads, rdelts, calves,
 
 // meso 3
-// upper 7 = back, sdelts, tris, forearms, biceps, traps, chest 
+// upper 7 = back, sdelts, tris, forearms, biceps, traps, chest
 // upper 6 = back, sdelts, rdelts, traps, chest, biceps,
 // lower 3 = hams, quads, calves
 // full  7 = back, sdelts, tris, hams, quads, rdelts, calves,
 // full  5 = back, sdelts, tris, hams, quads,
-
 
 // meso 1
 // upper = back, sdes, tris, rdes, trap, chst
@@ -230,7 +224,7 @@ type ExercisePeriodizationA = {
 // meso 2
 // upper = back, sdes, tris, rdes, frms, bics,
 // upper = back, sdes, tris, rdes, trap, chst,
-// lower = hams, quad, calf, 
+// lower = hams, quad, calf,
 // full  = back, sdes, hams, quad, trap, bics, chst, calf
 
 // meso 3
@@ -239,8 +233,6 @@ type ExercisePeriodizationA = {
 // lower  = hams, quad, calf,
 // full   = back, sdes, tris, hams, quad, chst, calf,
 // full   = back, sdes, hams, quad, trap, chst,
-
-
 
 // NOTE: With this algorithm.
 // 1. Start from top of muscle list.

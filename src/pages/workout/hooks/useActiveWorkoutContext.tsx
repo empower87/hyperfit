@@ -173,3 +173,6 @@ const useActiveWorkout = () => {
     localStorageTrainingProgram,
   };
 };
+
+// NOTES:
+// 3/28/2025 - Add a popup on completion that will let user know that a PR has been reached and for them to double check it's accuracy. Needs to be able to not show this popup again.

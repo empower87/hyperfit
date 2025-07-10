@@ -896,45 +896,76 @@ export const disperseExercisesIntoSessions = (
   };
 
   const maxFrequenciesArrays: Record<number, (string | null)[]> = {
-    0: ["lower", "upper", "upper", "full", "full"],
+    0: ["lower", "upper", "upper", null, null],
     1: ["lower", "upper", "upper", "full", null],
-    2: ["lower", "upper", "upper", null, null],
+    2: ["lower", "upper", "upper", "full", "full"],
   };
 
   for (const muscle of musclePriorityList) {
-    const frequency_progression_reversed =
-      muscle.frequency.progression.reverse();
+    const frequency_progression = muscle.frequency.progression;
 
-    for (let i = 0; i < frequency_progression_reversed.length; i++) {
-      const freq = frequency_progression_reversed[i] ?? muscle.frequency.target;
+    for (let meso = frequency_progression.length - 1; meso >= 0; meso--) {
+      const freq = frequency_progression[meso] ?? muscle.frequency.target;
       const sessionIndices = getValidSessionIndicesForMuscle(
         splitList,
         allowableMuscles,
         muscle.muscle
       );
       const filteredIndices = sessionIndices.filter((idx) => {
-        const split = maxFrequenciesArrays[i][idx];
-        if (split) return idx;
+        const split = maxFrequenciesArrays[meso][idx];
+        if (split !== null) return true;
       });
 
-      console.log(sessionIndices, filteredIndices, splitList, muscle, "LOL");
       // Sort by current load (least loaded first)
-      const sessionExerciseCounts = filteredIndices.map((idx) => ({
-        idx,
-        count: finalPlan[mesocycles - 1][idx]?.length ?? 0,
-      }));
+      const sessionExerciseCounts = filteredIndices.map((idx) => {
+        const loadCount = {
+          idx: idx,
+          count: finalPlan[meso][idx]?.length ?? 0,
+        };
+        if (muscle.muscle === "quads") {
+          console.log(
+            idx,
+            loadCount,
+            sessionIndices,
+            filteredIndices,
+            maxFrequenciesArrays,
+            maxFrequenciesArrays[meso],
+            "HAHAH SO SPECIF"
+          );
+        }
+        return loadCount;
+      });
+
       sessionExerciseCounts.sort((a, b) => a.count - b.count);
+
       const sortedSessionIndices = sessionExerciseCounts.map((obj) => obj.idx);
 
       // Pick the first `freq` sessions with the least exercises
       const chosenSessions = sortedSessionIndices.slice(0, freq);
 
+      if (muscle.muscle === "quads" || muscle.muscle === "hamstrings") {
+        console.log(
+          muscle.muscle,
+          splitList,
+          frequency_progression,
+          meso,
+          freq,
+          sessionIndices,
+          filteredIndices,
+          sessionExerciseCounts,
+          sortedSessionIndices,
+          chosenSessions,
+          finalPlan,
+          "LOL"
+        );
+      }
+      if (chosenSessions.length === 0) continue;
       for (let j = 0; j < freq; j++) {
         const sessionIdx = chosenSessions[j];
         const exerciseGroup = muscle.exercises[j] ?? [];
 
-        if (!finalPlan[i][sessionIdx]) finalPlan[i][sessionIdx] = [];
-        finalPlan[i][sessionIdx].push({
+        if (!finalPlan[meso][sessionIdx]) finalPlan[meso][sessionIdx] = [];
+        finalPlan[meso][sessionIdx].push({
           sessionIndex: sessionIdx,
           split: splitList[sessionIdx],
           exerciseGroup,
