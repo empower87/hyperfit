@@ -343,8 +343,6 @@ const WeekSessions = ({ training_week }: WeekSessionsProps) => {
       .exercises.findIndex((i) => i.id === item);
   };
 
-  const onSupersetUpdate = () => {};
-
   const memoizedTrainingWeek = useMemo(
     () =>
       exercisesBySelectedMeso?.filter((tday) =>
