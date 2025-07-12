@@ -881,23 +881,57 @@ const determineSessionsPerMesocycle = (
     split_counts[split] = (split_counts[split] || 0) + 1;
   }
 
-  for (const muscle of muscle_priority_list) {
-    const muscle_name = muscle.muscle;
-    const frequency_progression = muscle.frequency.progression;
+  const meso_counts: Record<number, string[]> = {};
+  for (let meso = 0; meso < mesocycles; meso++) {
+    meso_counts[meso] = [];
 
-    const valid_sessions = getValidSessionIndicesForMuscle(
-      split_list,
-      allowable_muscles_per_split,
-      muscle_name
-    );
-    for (
-      let mesocycle = 0;
-      mesocycle < frequency_progression.length;
-      mesocycle++
-    ) {
-      const frequency = frequency_progression[mesocycle];
+    for (const muscle of muscle_priority_list) {
+      const muscle_name = muscle.muscle;
+      const frequency = muscle.frequency.progression;
+      const curr_frequency = frequency[meso];
+
+      const valid_session_indices = getValidSessionIndicesForMuscle(
+        split_list,
+        allowable_muscles_per_split,
+        muscle_name
+      );
+
+      const frequency_session_indices = valid_session_indices.slice(
+        0,
+        curr_frequency
+      );
+
+      console.log(
+        muscle_name,
+        curr_frequency,
+        valid_session_indices,
+        frequency_session_indices,
+        max_frequencies,
+        meso_counts,
+        split_counts,
+        "FUNCTION: determineSessionsPerMesocycle => stateNormalization.ts"
+      );
+      for (let j = 0; j < frequency_session_indices.length; j++) {
+        const split = split_list[frequency_session_indices[j]];
+        const split_with_index = `${split}_${frequency_session_indices[j]}`;
+        if (!meso_counts[meso].includes(split_with_index)) {
+          meso_counts[meso].push(split_with_index);
+        }
+      }
+
+      // frequency_session_indices.forEach((each, index) => {
+      //   if (!meso_counts[meso].includes(split_list[each])) {
+      //     const split_with_index = `${split_list[each]}_${each}`
+      //     meso_counts[meso].push(split_list[each])
+      //   }
+      // })
     }
+    max_frequencies[meso] = max_frequencies[meso].map(
+      (e, i) => meso_counts[meso][i].split("_")[0]
+    );
   }
+
+  return max_frequencies;
 };
 
 export const disperseExercisesIntoSessions = (
@@ -938,11 +972,17 @@ export const disperseExercisesIntoSessions = (
     },
   };
 
-  const maxFrequenciesArrays: Record<number, (string | null)[]> = {
-    0: ["lower", "upper", "upper", null, null],
-    1: ["lower", "upper", "upper", "full", null],
-    2: ["lower", "upper", "upper", "full", "full"],
-  };
+  // const maxFrequenciesArrays: Record<number, (string | null)[]> = {
+  //   0: ["lower", "upper", "upper", null, null],
+  //   1: ["lower", "upper", "upper", "full", null],
+  //   2: ["lower", "upper", "upper", "full", "full"],
+  // };
+
+  const maxFrequenciesArrays = determineSessionsPerMesocycle(
+    muscle_priority_list,
+    split_list,
+    mesocycles
+  );
 
   for (const muscle of muscle_priority_list) {
     const frequency_progression = muscle.frequency.progression;
