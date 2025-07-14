@@ -262,14 +262,14 @@ type ProgressionMethodType =
 export const allowable_muscles_per_split = {
   upper: [
     "back",
-    "traps",
+    "biceps",
     "chest",
     "delts_front",
     "delts_rear",
     "delts_side",
-    "biceps",
-    "triceps",
     "forearms",
+    "traps",
+    "triceps",
   ],
   lower: ["quads", "hamstrings", "glutes", "calves"],
   push: ["chest", "delts_front", "delts_side", "triceps"],
@@ -911,6 +911,7 @@ const determineSessionsPerMesocycle = (
         split_counts,
         "FUNCTION: determineSessionsPerMesocycle => stateNormalization.ts"
       );
+
       for (let j = 0; j < frequency_session_indices.length; j++) {
         const split = split_list[frequency_session_indices[j]];
         const split_with_index = `${split}_${frequency_session_indices[j]}`;
@@ -926,8 +927,8 @@ const determineSessionsPerMesocycle = (
       //   }
       // })
     }
-    max_frequencies[meso] = max_frequencies[meso].map(
-      (e, i) => meso_counts[meso][i].split("_")[0]
+    max_frequencies[meso] = max_frequencies[meso].map((e, i) =>
+      meso_counts[meso][i] ? meso_counts[meso][i].split("_")[0] : null
     );
   }
 
@@ -953,31 +954,7 @@ export const disperseExercisesIntoSessions = (
     }
   }
 
-  // hardcoding test here 7/9/2025
-  const maxFrequencies = {
-    0: {
-      upper: 2,
-      lower: 1,
-      full: 0,
-    },
-    1: {
-      upper: 2,
-      lower: 1,
-      full: 1,
-    },
-    2: {
-      upper: 2,
-      lower: 1,
-      full: 2,
-    },
-  };
-
-  // const maxFrequenciesArrays: Record<number, (string | null)[]> = {
-  //   0: ["lower", "upper", "upper", null, null],
-  //   1: ["lower", "upper", "upper", "full", null],
-  //   2: ["lower", "upper", "upper", "full", "full"],
-  // };
-
+  // 2. Modify the split_list to only include the necessary sessions per mesocycle.
   const maxFrequenciesArrays = determineSessionsPerMesocycle(
     muscle_priority_list,
     split_list,
@@ -1027,5 +1004,36 @@ export const disperseExercisesIntoSessions = (
       }
     }
   }
+
+  const consoleLogFinalPlan = buildConsoleLogFinalPlan(finalPlan, split_list);
+  console.log(
+    maxFrequenciesArrays,
+    consoleLogFinalPlan,
+    "final plan stateNormy"
+  );
   return finalPlan;
 };
+
+// NOTE: This function is only for testing outcomes via console.log
+function buildConsoleLogFinalPlan(
+  finalPlan: Record<number, Record<number, AssignedExercise[]>>,
+  splitList: string[]
+) {
+  const output: Record<string, Record<string, [string, string][]>> = {};
+
+  for (const [mesoIdx, sessions] of Object.entries(finalPlan)) {
+    const mesoKey = `mesocycle_${mesoIdx}`;
+    output[mesoKey] = {};
+
+    for (const [sessionIdx, assignments] of Object.entries(sessions)) {
+      const splitName = splitList[Number(sessionIdx)];
+      const sessionKey = `${splitName}_${sessionIdx}`;
+      output[mesoKey][sessionKey] = assignments.map((a) => [
+        a.muscle,
+        a.exerciseGroup[0]?.name ?? "unknown-exercise",
+      ]);
+    }
+  }
+
+  return output;
+}
