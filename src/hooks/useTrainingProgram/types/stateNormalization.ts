@@ -276,20 +276,20 @@ export const allowable_muscles_per_split = {
   pull: ["back", "delts_rear", "biceps", "forearms"],
   legs: ["quads", "hamstrings", "glutes", "calves"],
   full: [
-    "chest",
+    "abs",
     "back",
-    "quads",
-    "hamstrings",
+    "biceps",
+    "calves",
+    "chest",
     "delts_front",
     "delts_rear",
     "delts_side",
-    "biceps",
-    "triceps",
     "forearms",
-    "abs",
     "glutes",
-    "calves",
+    "hamstrings",
+    "quads",
     "traps",
+    "triceps",
   ],
   back: ["back", "traps"],
   chest: ["chest"],
@@ -340,10 +340,10 @@ interface MusclePriority {
 }
 
 interface AssignedExercise {
-  sessionIndex: number;
+  session_index: number;
   split: string;
-  exerciseGroup: ExerciseType[];
-  muscle: string;
+  muscle_name: string;
+  exercises: ExerciseType[];
 }
 
 export function returnSessionSplits(
@@ -539,8 +539,9 @@ function rebalanceExercisesInMesocycle(
   const groupedByMuscle: Record<string, AssignedExercise[]> = {};
   for (const sessionIndex in mesoSessions) {
     for (const entry of mesoSessions[Number(sessionIndex)]) {
-      if (!groupedByMuscle[entry.muscle]) groupedByMuscle[entry.muscle] = [];
-      groupedByMuscle[entry.muscle].push(entry);
+      if (!groupedByMuscle[entry.muscle_name])
+        groupedByMuscle[entry.muscle_name] = [];
+      groupedByMuscle[entry.muscle_name].push(entry);
     }
   }
 
@@ -562,7 +563,7 @@ function rebalanceExercisesInMesocycle(
     // Group the current muscle's assignments by split type
     const muscleSplitAssignments: Record<string, AssignedExercise[]> = {};
     for (const assignment of assignments) {
-      const split = splitList[assignment.sessionIndex];
+      const split = splitList[assignment.session_index];
       if (!muscleSplitAssignments[split]) muscleSplitAssignments[split] = [];
       muscleSplitAssignments[split].push(assignment);
     }
@@ -598,7 +599,7 @@ function rebalanceExercisesInMesocycle(
 
         newMeso[leastLoadedSession]?.push({
           ...assignment,
-          sessionIndex: leastLoadedSession,
+          session_index: leastLoadedSession,
         });
       }
     }
@@ -756,14 +757,14 @@ export function assignExercises(
 
       for (let i = 0; i < freq; i++) {
         const sessionIdx = chosenSessions[i];
-        const exerciseGroup = muscle.exercises[i] ?? [];
+        const exercises = muscle.exercises[i] ?? [];
 
         if (!finalPlan[meso][sessionIdx]) finalPlan[meso][sessionIdx] = [];
         finalPlan[meso][sessionIdx].push({
-          sessionIndex: sessionIdx,
+          session_index: sessionIdx,
           split: splitList[sessionIdx],
-          exerciseGroup,
-          muscle: muscle.muscle,
+          exercises,
+          muscle_name: muscle.muscle,
         });
       }
     }
@@ -962,15 +963,19 @@ export const disperseExercisesIntoSessions = (
   );
 
   for (const muscle of muscle_priority_list) {
+    const muscle_name = muscle.muscle;
     const frequency_progression = muscle.frequency.progression;
+    const frequency_target = muscle.frequency.target;
+    const exercises = muscle.exercises;
 
     for (let meso = frequency_progression.length - 1; meso >= 0; meso--) {
-      const freq = frequency_progression[meso] ?? muscle.frequency.target;
+      const freq = frequency_progression[meso] ?? frequency_target;
       const sessionIndices = getValidSessionIndicesForMuscle(
         split_list,
         allowableMuscles,
-        muscle.muscle
+        muscle_name
       );
+
       const filteredIndices = sessionIndices.filter((idx) => {
         const split = maxFrequenciesArrays[meso][idx];
         if (split !== null) return true;
@@ -979,7 +984,10 @@ export const disperseExercisesIntoSessions = (
       // Sort by current load (least loaded first)
       const sessionExerciseCounts = filteredIndices.map((idx) => ({
         idx: idx,
-        count: finalPlan[meso][idx]?.length ?? 0,
+        count: finalPlan[meso][idx]?.reduce(
+          (acc, cur) => cur.exercises.length + acc,
+          0
+        ),
       }));
 
       sessionExerciseCounts.sort((a, b) => a.count - b.count);
@@ -992,14 +1000,14 @@ export const disperseExercisesIntoSessions = (
       if (chosenSessions.length === 0) continue;
       for (let j = 0; j < freq; j++) {
         const sessionIdx = chosenSessions[j];
-        const exerciseGroup = muscle.exercises[j] ?? [];
+        const valid_exercises = exercises[j] ?? [];
 
         if (!finalPlan[meso][sessionIdx]) finalPlan[meso][sessionIdx] = [];
         finalPlan[meso][sessionIdx].push({
-          sessionIndex: sessionIdx,
+          session_index: sessionIdx,
           split: split_list[sessionIdx],
-          exerciseGroup,
-          muscle: muscle.muscle,
+          exercises: valid_exercises,
+          muscle_name: muscle_name,
         });
       }
     }
@@ -1028,10 +1036,19 @@ function buildConsoleLogFinalPlan(
     for (const [sessionIdx, assignments] of Object.entries(sessions)) {
       const splitName = splitList[Number(sessionIdx)];
       const sessionKey = `${splitName}_${sessionIdx}`;
-      output[mesoKey][sessionKey] = assignments.map((a) => [
-        a.muscle,
-        a.exerciseGroup[0]?.name ?? "unknown-exercise",
-      ]);
+      output[mesoKey][sessionKey] = assignments
+        .map((a) => {
+          const exercises: [string, string][] = a.exercises.map((ex) => [
+            a.muscle_name,
+            ex.name,
+          ]);
+          return [...exercises];
+        })
+        .flat();
+      // output[mesoKey][sessionKey] = assignments.map((a) => [
+      //   a.muscle,
+      //   a.exerciseGroup[0]?.name ?? "unknown-exercise",
+      // ]);
     }
   }
 

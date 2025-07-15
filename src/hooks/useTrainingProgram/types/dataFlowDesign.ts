@@ -258,3 +258,21 @@ type ExercisePeriodizationA = {
 // lower  = hams, quad, calf,
 // full   = back, sdel, tris, hams, quad, chst,
 // full   = back, sdel, hams, quad, trap, calf
+
+// meso 1
+// upper  = back, back, sdel, sdel, tris, fore, bics,
+// upper  = back, back, sdel, sdel, rdel, trap, chst,
+// lower  = hams, quad, calf,
+
+// meso 3
+// upper  = back, back, sdel, sdel, tris, fore, bics, rdel, chst,
+// upper  = back, back, sdel, sdel, rdel, trap, chst, bics,
+// lower  = hams, quad, calf,
+// full   = back, back, sdel, sdel, tris, hams, quad, trap, calf
+
+// meso 3
+// upper  = back, back, sdel, sdel, tris, fore, bics, rdel,
+// upper  = back, back, sdel, sdel, rdel, trap, chst, bics,
+// lower  = hams, quad, calf,
+// full   = back, back, sdel, sdel, tris, hams, quad, trap,
+// full   = back, sdel, tris, hams, quad, chst, calf
