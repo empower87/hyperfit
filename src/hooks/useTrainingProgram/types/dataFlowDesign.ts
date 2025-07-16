@@ -262,17 +262,76 @@ type ExercisePeriodizationA = {
 // meso 1
 // upper  = back, back, sdel, sdel, tris, fore, bics,
 // upper  = back, back, sdel, sdel, rdel, trap, chst,
-// lower  = hams, quad, calf,
+// lower  = hams,
+
+// meso 2
+// upper  = back, back, sdel, sdel, tris, rdel, trap, chst,
+// upper  = back, back, sdel, sdel, rdel, fore, bics, chst,
+// lower  = hams, quad, calf
+// full   = back, sdel, tris, hams, quad, trap, bics, calf,
 
 // meso 3
-// upper  = back, back, sdel, sdel, tris, fore, bics, rdel, chst,
-// upper  = back, back, sdel, sdel, rdel, trap, chst, bics,
+// upper  = back, back, sdel, sdel, tris, rdel, trap, chst,
+// upper  = back, back, sdel, sdel, tris, rdel, bics,
 // lower  = hams, quad, calf,
-// full   = back, back, sdel, sdel, tris, hams, quad, trap, calf
+// full   = back, back, sdel, sdel, hams, quad, trap, chst
+// full   = back, sdel, tris, hams, quad, fore, bics, calf
+
+// meso 1
+// upper_0  = back, back, sdel, sdel, tris, trap, chst,
+// upper_1  = back, back, sdel, sdel, rdel, fore, bics,
+// lower_2  = hams, quads, calf,
+
+// meso 2
+// upper_0 = back, back, sdel, sdel, tris, rdel, trap, chst,
+// upper_1 = back, back, sdel, sdel, rdel, fore, bics,
+// lower_2 = hams, quad, calf,
+// full_3  = back, sdel, tris, hams, quad, trap, bics, chst, calf,
 
 // meso 3
-// upper  = back, back, sdel, sdel, tris, fore, bics, rdel,
-// upper  = back, back, sdel, sdel, rdel, trap, chst, bics,
-// lower  = hams, quad, calf,
-// full   = back, back, sdel, sdel, tris, hams, quad, trap,
-// full   = back, sdel, tris, hams, quad, chst, calf
+// upper_0 = back, back, sdel, sdel, tris, rdel, trap, chst,
+// upper_1 = back, back, sdel, sdel, tris, rdel, fore, bics,
+// lower_2 = hams, quad, calf,
+// full_3  = back, sdel, tris, hams, quad, trap, bics, chst, calf,
+// full_4  = back, back, sdel, sdel, hams, quad,
+
+// NOTE: 7/16/25:
+// I'm thinking for this algorithm:
+// 1. Start building out sessions by mesocycle. So build out Meso 1 first.
+// 2. Then build the remaining mesocycles by first copying over the previous one.
+// 3. Also, on smaller note this seems to may only work when on building next mesocycle, that I
+//    choose exercises with the least amount of total exercises in the list.
+
+// meso 1
+// upper_0  = back, back, sdel, sdel, tris, fore, bics,
+// upper_1  = back, back, sdel, sdel, rdel, trap, chst,
+// lower_2  = hams, quad, calf,
+
+// meso 2
+// upper_0 = back, back, sdel, sdel, tris, fore, bics, chst,
+// upper_1 = back, back, sdel, sdel, rdel, trap, chst, bics,
+// lower_2 = hams, quad, calf,
+// full_3  = back, sdel, tris, hams, quad, rdel, trap, calf,
+
+// meso 3
+// upper_0 = back, back, sdel, sdel, tris, fore, bics, chst,
+// upper_1 = back, back, sdel, sdel, rdel, trap, chst, bics,
+// lower_2 = hams, quad, calf,
+// full_3  = back, sdel, tris, hams, quad, rdel, trap, calf,
+// full_4  = back, back, sdel, sdel, tris, hams, quad,
+
+// splits = upper, upper, lower, full, full
+// back        = 2,3,4
+// side_delts  = 2,3,4
+// triceps     = 1,2,3
+// hamstrings  = 1,2,3
+// quads       = 1,2,3
+// delts_rear  = 1,2,2
+// forearms    = 1,1,1
+// traps       = 1,2,2
+// biceps      = 1,2,2
+// chest       = 1,2,2
+// calves      = 1,2,2
+// delts_front = 0,0,0
+// abs         = 0,0,0
+// glutes      = 0,0,0
