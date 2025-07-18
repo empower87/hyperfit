@@ -902,17 +902,6 @@ const determineSessionsPerMesocycle = (
         curr_frequency
       );
 
-      console.log(
-        muscle_name,
-        curr_frequency,
-        valid_session_indices,
-        frequency_session_indices,
-        max_frequencies,
-        meso_counts,
-        split_counts,
-        "FUNCTION: determineSessionsPerMesocycle => stateNormalization.ts"
-      );
-
       for (let j = 0; j < frequency_session_indices.length; j++) {
         const split = split_list[frequency_session_indices[j]];
         const split_with_index = `${split}_${frequency_session_indices[j]}`;
@@ -920,47 +909,52 @@ const determineSessionsPerMesocycle = (
           meso_counts[meso].push(split_with_index);
         }
       }
-
-      // frequency_session_indices.forEach((each, index) => {
-      //   if (!meso_counts[meso].includes(split_list[each])) {
-      //     const split_with_index = `${split_list[each]}_${each}`
-      //     meso_counts[meso].push(split_list[each])
-      //   }
-      // })
     }
     max_frequencies[meso] = max_frequencies[meso].map((e, i) =>
-      meso_counts[meso][i] ? meso_counts[meso][i].split("_")[0] : null
+      meso_counts[meso][i] ? meso_counts[meso][i] : null
     );
   }
 
+  console.log(
+    split_counts,
+    max_frequencies,
+    meso_counts,
+    "FUNCTION: determineSessionsPerMesocycle => stateNormalization.ts"
+  );
   return max_frequencies;
 };
 
 export const disperseExercisesIntoSessions = (
   muscle_priority_list: MusclePriorityType[],
   split_list: string[],
-  allowableMuscles: Record<string, string[]>,
+  allowable_muscles: Record<string, string[]>,
   mesocycles: number
 ) => {
-  const finalPlan: Record<number, Record<number, AssignedExercise[]>> = {};
+  const final_plan: Record<number, Record<number, AssignedExercise[]>> = {};
 
-  // 1. Create the final mesocycle with all the splits in split_list and fill with empty exercises
-  for (let j = 0; j < mesocycles; j++) {
-    if (j === mesocycles - 1) {
-      for (let i = 0; i < split_list.length; i++) {
-        finalPlan[mesocycles - 1] = { ...finalPlan[mesocycles - 1], [i]: [] };
-      }
-    } else {
-      finalPlan[j] = {};
-    }
-  }
-
-  // 2. Modify the split_list to only include the necessary sessions per mesocycle.
-  const maxFrequenciesArrays = determineSessionsPerMesocycle(
+  // 1. Modify the split_list to only include the necessary sessions per mesocycle.
+  const max_frequencies = determineSessionsPerMesocycle(
     muscle_priority_list,
     split_list,
     mesocycles
   );
+
+  // 2. Create the final mesocycle with all the splits in split_list and fill with empty exercises
+  for (let j = 0; j < mesocycles; j++) {
+    for (let i = 0; i < split_list.length; i++) {
+      const valid_splits = max_frequencies[j];
+      const selected_split = valid_splits[i];
+      if (selected_split) {
+        const split_index = selected_split.split("_")[1];
+        final_plan[j] = { ...final_plan[j], [split_index]: [] };
+      }
+    }
+  }
+
+  console.log(split_list, final_plan, "WHAT THIS LOOK LIKE AT THIS TIME??");
+  // TEST: 7/18/2025.
+  // This function works pretty well for what I want, however, I want to add some
+  // more structure to it. So I'll try building each mesocycle sequentially then copying over to next mesocycle.
 
   for (const muscle of muscle_priority_list) {
     const muscle_name = muscle.muscle;
@@ -970,42 +964,50 @@ export const disperseExercisesIntoSessions = (
 
     for (let meso = frequency_progression.length - 1; meso >= 0; meso--) {
       const freq = frequency_progression[meso] ?? frequency_target;
-      const sessionIndices = getValidSessionIndicesForMuscle(
+      const session_indices = getValidSessionIndicesForMuscle(
         split_list,
-        allowableMuscles,
+        allowable_muscles,
         muscle_name
       );
 
-      const filteredIndices = sessionIndices.filter((idx) => {
-        const split = maxFrequenciesArrays[meso][idx];
-        if (split !== null) return true;
+      const filtered_indices = session_indices.filter((idx) => {
+        const meso_sessions = max_frequencies[meso];
+        const max_frequencies_indices = meso_sessions.map((each) => {
+          if (each) {
+            return Number(each.split("_")[1]);
+          } else return null;
+        });
+        const split_index = max_frequencies_indices.includes(idx);
+        if (split_index !== null) return true;
       });
 
       // Sort by current load (least loaded first)
-      const sessionExerciseCounts = filteredIndices.map((idx) => ({
+      const session_exercise_counts = filtered_indices.map((idx) => ({
         idx: idx,
-        count: finalPlan[meso][idx]?.reduce(
+        count: final_plan[meso][idx]?.reduce(
           (acc, cur) => cur.exercises.length + acc,
           0
         ),
       }));
 
-      sessionExerciseCounts.sort((a, b) => a.count - b.count);
+      session_exercise_counts.sort((a, b) => a.count - b.count);
 
-      const sortedSessionIndices = sessionExerciseCounts.map((obj) => obj.idx);
+      const sorted_session_indices = session_exercise_counts.map(
+        (obj) => obj.idx
+      );
 
       // Pick the first `freq` sessions with the least exercises
-      const chosenSessions = sortedSessionIndices.slice(0, freq);
+      const chosen_sessions = sorted_session_indices.slice(0, freq);
 
-      if (chosenSessions.length === 0) continue;
+      if (chosen_sessions.length === 0) continue;
       for (let j = 0; j < freq; j++) {
-        const sessionIdx = chosenSessions[j];
+        const session_idx = chosen_sessions[j];
         const valid_exercises = exercises[j] ?? [];
 
-        if (!finalPlan[meso][sessionIdx]) finalPlan[meso][sessionIdx] = [];
-        finalPlan[meso][sessionIdx].push({
-          session_index: sessionIdx,
-          split: split_list[sessionIdx],
+        if (!final_plan[meso][session_idx]) final_plan[meso][session_idx] = [];
+        final_plan[meso][session_idx].push({
+          session_index: session_idx,
+          split: split_list[session_idx],
           exercises: valid_exercises,
           muscle_name: muscle_name,
         });
@@ -1013,13 +1015,17 @@ export const disperseExercisesIntoSessions = (
     }
   }
 
-  const consoleLogFinalPlan = buildConsoleLogFinalPlan(finalPlan, split_list);
+  const console_log_final_plan = buildConsoleLogFinalPlan(
+    final_plan,
+    split_list
+  );
   console.log(
-    maxFrequenciesArrays,
-    consoleLogFinalPlan,
+    max_frequencies,
+    console_log_final_plan,
+    final_plan,
     "final plan stateNormy"
   );
-  return finalPlan;
+  return final_plan;
 };
 
 // NOTE: This function is only for testing outcomes via console.log
@@ -1036,6 +1042,7 @@ function buildConsoleLogFinalPlan(
     for (const [sessionIdx, assignments] of Object.entries(sessions)) {
       const splitName = splitList[Number(sessionIdx)];
       const sessionKey = `${splitName}_${sessionIdx}`;
+
       output[mesoKey][sessionKey] = assignments
         .map((a) => {
           const exercises: [string, string][] = a.exercises.map((ex) => [
@@ -1045,10 +1052,6 @@ function buildConsoleLogFinalPlan(
           return [...exercises];
         })
         .flat();
-      // output[mesoKey][sessionKey] = assignments.map((a) => [
-      //   a.muscle,
-      //   a.exerciseGroup[0]?.name ?? "unknown-exercise",
-      // ]);
     }
   }
 
