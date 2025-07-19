@@ -12,17 +12,15 @@ import {
   SplitSessionsType,
   type MusclePriorityType,
 } from "../../reducer/trainingProgramReducer";
-import {
-  allowable_muscles_per_split,
-  assignExercises,
-  disperseExercisesIntoSessions,
-  returnSessionSplits,
-} from "../../types/stateNormalization";
 import { getPlaceholderExerciseLayout } from "../exercises/exercisePlaceholders";
 import {
   accumulateFinalMicrocycleSets,
   ProgressionMethodType,
 } from "../exercises/repsAndWeightProgression";
+import {
+  createTrainingBlock,
+  getSplitList,
+} from "../training_block/createTrainingBlock";
 import {
   determineFrequencyByRange,
   getFrequencyRange,
@@ -412,24 +410,12 @@ export const attachTargetFrequency = (
   }
 
   // ChatGPT code testing
-  const split_list = returnSessionSplits(split_sessions);
-  const sessions_set = assignExercises(
-    updated_list,
-    split_list,
-    allowable_muscles_per_split,
-    mesocycles
-  );
+  const split_list = getSplitList(split_sessions);
+  const first_test = createTrainingBlock(updated_list, split_list, mesocycles);
 
-  const first_test = disperseExercisesIntoSessions(
-    updated_list,
-    split_list,
-    allowable_muscles_per_split,
-    mesocycles
-  );
   console.log(
     split_list,
     split_sessions,
-    sessions_set,
     first_test,
     "FUNCTION: attachTargetFrequency TESTS => musclePriorityListHandlers.ts"
   );
