@@ -4,8 +4,9 @@ import {
   SplitSessionsType,
 } from "../../reducer/trainingProgramReducer";
 
-export const MUSCLES_IN_SPLIT: Record<string, string[]> = {
+export const MUSCLES_IN_EACH_SPLIT: Record<string, string[]> = {
   upper: [
+    "abs",
     "back",
     "biceps",
     "chest",
@@ -16,10 +17,10 @@ export const MUSCLES_IN_SPLIT: Record<string, string[]> = {
     "traps",
     "triceps",
   ],
-  lower: ["quads", "hamstrings", "glutes", "calves"],
+  lower: ["abs", "calves", "glutes", "hamstrings", "quads"],
   push: ["chest", "delts_front", "delts_side", "triceps"],
-  pull: ["back", "delts_rear", "biceps", "forearms"],
-  legs: ["quads", "hamstrings", "glutes", "calves"],
+  pull: ["back", "biceps", "delts_rear", "forearms"],
+  legs: ["abs", "calves", "glutes", "hamstrings", "quads"],
   full: [
     "abs",
     "back",
@@ -38,8 +39,8 @@ export const MUSCLES_IN_SPLIT: Record<string, string[]> = {
   ],
   back: ["back", "traps"],
   chest: ["chest"],
-  shoulders: ["delts_front", "delts_rear", "delts_side", "traps"],
-  arms: ["biceps", "triceps", "forearms"],
+  shoulders: ["delts_front", "delts_rear", "delts_side"],
+  arms: ["biceps", "forearms", "triceps"],
 };
 
 type AssignedExercise = {
@@ -67,7 +68,7 @@ const getValidSessionIndicesForMuscle = (
 ): number[] => {
   return splitList
     .map((split, i) =>
-      MUSCLES_IN_SPLIT[split]?.includes(muscleName) ? i : null
+      MUSCLES_IN_EACH_SPLIT[split]?.includes(muscleName) ? i : null
     )
     .filter((i): i is number => i !== null);
 };
@@ -85,7 +86,7 @@ const determineSessionsPerMesocycle = (
     max_frequencies[i] = init_null_list;
   }
 
-  let split_counts: Record<string, number> = {};
+  const split_counts: Record<string, number> = {};
   for (const split of split_list) {
     split_counts[split] = (split_counts[split] || 0) + 1;
   }
@@ -117,6 +118,7 @@ const determineSessionsPerMesocycle = (
         }
       }
     }
+
     max_frequencies[meso] = max_frequencies[meso].map((e, i) =>
       meso_counts[meso][i] ? meso_counts[meso][i] : null
     );
@@ -227,7 +229,7 @@ export const createTrainingBlock = (
   return final_tblock;
 };
 
-// NOTE: This function is only for testing outcomes via console.log
+// NOTE: This function is only for development testing outcomes via console.log
 const readableTBlockForTesting = (
   finalPlan: Record<number, Record<number, AssignedExercise[]>>,
   splitList: string[]

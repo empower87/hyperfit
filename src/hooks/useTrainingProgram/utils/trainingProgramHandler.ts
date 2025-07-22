@@ -13,6 +13,10 @@ import {
   distributeSessionsIntoSplits,
   getFrequencyMaxes,
 } from "./split_sessions/distributeSessionsIntoSplits";
+import {
+  createTrainingBlock,
+  getSplitList,
+} from "./training_block/createTrainingBlock";
 import { distributeSplitAcrossWeek } from "./training_block/distributeSplitAcrossTrainingWeek";
 import { initializeTrainingBlock } from "./training_block/trainingBlockHelpers";
 
@@ -79,12 +83,22 @@ export function trainingProgramHandler(
     mesocycles
   );
 
+  // 07/22/2025 - New code for creating a training block that doesn't incorporate where to put each
+  //              split on which day. May need to do that next.
+  const split_list = getSplitList(new_split_sessions);
+  const create_training_block = createTrainingBlock(
+    exercisedUp,
+    split_list,
+    mesocycles
+  );
+
   console.log(
     total_sessions,
     getNGroup,
     reordered_items,
     new_training_week,
     new_training_block[new_training_block.length - 1],
+    create_training_block,
     breakpoints,
     "trainingProgramHandler.ts"
   );

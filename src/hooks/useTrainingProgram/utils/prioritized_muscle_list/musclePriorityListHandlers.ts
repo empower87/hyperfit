@@ -18,10 +18,6 @@ import {
   ProgressionMethodType,
 } from "../exercises/repsAndWeightProgression";
 import {
-  createTrainingBlock,
-  getSplitList,
-} from "../training_block/createTrainingBlock";
-import {
   determineFrequencyByRange,
   getFrequencyRange,
   initFrequencyProgressionAcrossMesocycles,
@@ -375,6 +371,7 @@ export const attachTargetFrequency = (
       muscle.volume.range,
       ideal_sets_filtered
     );
+
     const exursizes = getExercises(
       muscle_name,
       volume_range[1],
@@ -408,17 +405,6 @@ export const attachTargetFrequency = (
     updated_list[i].frequency.setProgressionMatrix = setProgressionMatrix;
     updated_list[i].exercises = exercises;
   }
-
-  // ChatGPT code testing
-  const split_list = getSplitList(split_sessions);
-  const first_test = createTrainingBlock(updated_list, split_list, mesocycles);
-
-  console.log(
-    split_list,
-    split_sessions,
-    first_test,
-    "FUNCTION: attachTargetFrequency TESTS => musclePriorityListHandlers.ts"
-  );
   return updated_list;
 };
 

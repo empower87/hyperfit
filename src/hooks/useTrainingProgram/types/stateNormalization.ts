@@ -252,3 +252,34 @@ type ProgressionMethodType =
 //            sdelts_4
 //            hamstrings_2
 //            quads_2
+
+// WHAT I WANT IT TO LOOK LIKE
+// SPLIT_LIST = [lower, upper, upper, full, full]
+// [SUN, MON, TUE, WED, THU, FRI, SAT]
+//  off, upp, low, off, upp, ful, ful
+//  off, low, upp, off, upp, ful, ful
+//  off, upp, low, off, ful, upp, ful
+
+// SPLIT_LIST = [lower, upper, upper, full, full]
+// OFF_DAYS = 2
+// OFF_DAY_BREAKPOINT = 3
+// [SUN, MON, TUE, WED, THU, FRI, SAT]
+//   LO,
+// LOGIC:
+// 1. Put first split on day 1 to kick it off.
+// 2. Look at previous split and sort
+
+// SPLITS WITH PREFERRED REST PERIODS
+// Upper = 2 days rest
+// Lower = 2 days rest
+// Full  = 1 days rest
+
+// Push = 2 days rest
+// Pull = 2 days rest
+// Legs = 2 days rest
+
+// Arms = 2 days rest
+// Back = 2 days rest
+// Chest = 2 days rest
+// Shoulders = 2 days rest
+// Legs = 2 days rest
