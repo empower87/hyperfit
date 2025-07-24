@@ -5,6 +5,8 @@
 // Sessions
 // Exercises
 
+import { MUSCLES_IN_EACH_SPLIT } from "../utils/training_block/createTrainingBlock";
+
 //
 type UserA = {
   id: string;
@@ -283,3 +285,146 @@ type ProgressionMethodType =
 // Chest = 2 days rest
 // Shoulders = 2 days rest
 // Legs = 2 days rest
+
+export const REST_PERIOD_BY_SPLIT_IN_DAYS = {
+  upper: 2,
+  lower: 2,
+  full: 1,
+  push: 2,
+  pull: 2,
+  legs: 2,
+  arms: 1,
+  back: 2,
+  chest: 2,
+  shoulders: 1,
+};
+
+// example 1
+const splitList_1 = ["lower", "upper", "upper", "full", "full"];
+const splitWeek_1 = ["off", "upper", "lower", "off", "upper", "full", "full"];
+
+// example 2
+const splitList_2 = ["lower", "lower", "upper", "full", "full"];
+const splitWeek_2 = ["off", "lower", "upper", "lower", "off", "full", "full"];
+
+// example 3
+const splitList_3 = ["push", "pull", "legs", "push", "pull"];
+const splitWeek_3 = ["off", "push", "legs", "pull", "off", "push", "pull"];
+
+// example 4
+const splitList_4 = ["upper", "lower", "upper", "push", "lower", "full"];
+const splitWeek_4 = ["off", "upper", "lower", "push", "full", "lower", "upper"];
+
+type RestPeriodMap = Record<string, number>;
+
+export function distributeSplitsAcrossWeek(
+  splitList: string[],
+  REST_PERIOD_BY_SPLIT_IN_DAYS: RestPeriodMap
+): string[] {
+  const week = Array(7).fill("off");
+  const used = Array(7).fill(false);
+
+  // Helper: Check if two splits share muscles
+  function splitsOverlap(splitA: string, splitB: string): boolean {
+    if (!MUSCLES_IN_EACH_SPLIT[splitA] || !MUSCLES_IN_EACH_SPLIT[splitB])
+      return false;
+    return MUSCLES_IN_EACH_SPLIT[splitA].some((muscle) =>
+      MUSCLES_IN_EACH_SPLIT[splitB].includes(muscle)
+    );
+  }
+
+  // Always place first "off" at index 0 (Sunday)
+  week[0] = "off";
+  used[0] = true;
+
+  // Track last placed index for each split
+  const lastPlaced: Record<string, number> = {};
+
+  // Track which splits have been placed
+  const splitsPlaced: boolean[] = Array(splitList.length).fill(false);
+
+  for (let i = 0; i < splitList.length; i++) {
+    const split = splitList[i];
+    let placed = false;
+
+    // Try to place split at earliest valid index
+    for (let day = 1; day < 7; day++) {
+      if (used[day]) continue;
+
+      // Check rest period for same split
+      if (
+        lastPlaced[split] !== undefined &&
+        day - lastPlaced[split] < REST_PERIOD_BY_SPLIT_IN_DAYS[split]
+      ) {
+        continue;
+      }
+
+      // Check for muscle overlap with previous day's split
+      if (
+        day > 0 &&
+        week[day - 1] !== "off" &&
+        splitsOverlap(split, week[day - 1])
+      ) {
+        continue;
+      }
+
+      // Avoid consecutive "off" days
+      if (week[day - 1] === "off" && week[day] === "off") {
+        continue;
+      }
+
+      // Place split
+      week[day] = split;
+      used[day] = true;
+      lastPlaced[split] = day;
+      splitsPlaced[i] = true;
+      placed = true;
+      break;
+    }
+
+    // If not placed, relax only the overlap constraint, but still respect rest period
+    if (!placed) {
+      for (let day = 1; day < 7; day++) {
+        if (used[day]) continue;
+        if (
+          lastPlaced[split] !== undefined &&
+          day - lastPlaced[split] < REST_PERIOD_BY_SPLIT_IN_DAYS[split]
+        ) {
+          continue;
+        }
+        week[day] = split;
+        used[day] = true;
+        lastPlaced[split] = day;
+        splitsPlaced[i] = true;
+        placed = true;
+        break;
+      }
+    }
+
+    // If still not placed, put in any available slot (should be rare)
+    if (!placed) {
+      for (let day = 1; day < 7; day++) {
+        if (!used[day]) {
+          week[day] = split;
+          used[day] = true;
+          lastPlaced[split] = day;
+          splitsPlaced[i] = true;
+          break;
+        }
+      }
+    }
+  }
+
+  // if (week[0] === "off" && week[6] === "off") {
+  //   // Try to move the off day at index 6 to the earliest available non-off slot (indices 1-5)
+  //   for (let i = 1; i < 6; i++) {
+  //     if (week[i] !== "off" && week[i - 1] !== "off") {
+  //       week[6] = week[i];
+  //       week[i] = "off";
+  //       break;
+  //     }
+  //   }
+  // }
+  // No need to fill with more splits; just leave remaining as "off"
+  return week;
+}

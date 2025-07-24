@@ -4,6 +4,10 @@ import {
   MusclePriorityType,
   SplitSessionsNameType,
 } from "../reducer/trainingProgramReducer";
+import {
+  distributeSplitsAcrossWeek,
+  REST_PERIOD_BY_SPLIT_IN_DAYS,
+} from "../types/stateNormalization";
 import { setProgressionForExercises } from "./exercises/getExercises";
 import {
   attachTargetFrequency,
@@ -92,8 +96,14 @@ export function trainingProgramHandler(
     mesocycles
   );
 
+  const testSplitWeek = distributeSplitsAcrossWeek(
+    split_list,
+    REST_PERIOD_BY_SPLIT_IN_DAYS
+  );
   console.log(
     total_sessions,
+    split_list,
+    testSplitWeek,
     getNGroup,
     reordered_items,
     new_training_week,

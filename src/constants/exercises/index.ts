@@ -1,3 +1,4 @@
+import { JSONExercise } from "~/hooks/useTrainingProgram/utils/exercises/getExercises";
 import ABS_EXERCISES from "./abs.json";
 import BACK_EXERCISES from "./back.json";
 import BICEPS_EXERCISES from "./biceps.json";
@@ -168,3 +169,15 @@ const EXERCISE_SPACE_GROUPING = {
   isolation_machine: ["dumbbell", "bodyweight"],
   mat: ["bodyweight", "dumbbell", "barbell"]
 }
+
+// Group exercises by equipment
+const groupByEquipment = (exercises: JSONExercise[]) => {
+  const equipmentMap: Record<string, JSONExercise[]> = {};
+  exercises.forEach(ex => {
+    (ex.requirements.length ? ex.requirements : ["none"]).forEach(eq => {
+      if (!equipmentMap[eq]) equipmentMap[eq] = [];
+      equipmentMap[eq].push(ex);
+    });
+  });
+  return equipmentMap;
+};
