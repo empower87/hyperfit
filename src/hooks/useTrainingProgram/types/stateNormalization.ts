@@ -317,6 +317,25 @@ const splitWeek_4 = ["off", "upper", "lower", "push", "full", "lower", "upper"];
 
 type RestPeriodMap = Record<string, number>;
 
+// OPT = upper, lower, upper, full, upper, full
+//      SUN | MON | TUE | WED | THU | FRI | SAT
+//===============================================
+// 6 =   0     1     1     1     1     1     1
+// 5 =   0     1     1     1     0     1     1
+// 4 =   0     1     1     0     1     0     1
+// 3 =   0     1     0     1     0     1     0
+// 2 =   0     1     0     0     1     0     0
+// 1 =   0     1     0     0     0     0     0
+
+// PREDETERMINED OFF DAYS
+const WEEK_WITH_SEVEN_SESSIONS = [1, 1, 1, 1, 1, 1, 1];
+const WEEK_WITH_SIX_SESSIONS = [0, 1, 1, 1, 1, 1, 1];
+const WEEK_WITH_FIVE_SESSIONS = [0, 1, 1, 1, 0, 1, 1];
+const WEEK_WITH_FOUR_SESSIONS = [0, 1, 1, 0, 1, 0, 1];
+const WEEK_WITH_THREE_SESSIONS = [0, 1, 0, 1, 0, 1, 0];
+const WEEK_WITH_TWO_SESSIONS = [0, 1, 0, 0, 1, 0, 0];
+const WEEK_WITH_ONE_SESSION = [0, 1, 0, 0, 0, 0, 0];
+
 export function distributeSplitsAcrossWeek(
   splitList: string[],
   REST_PERIOD_BY_SPLIT_IN_DAYS: RestPeriodMap

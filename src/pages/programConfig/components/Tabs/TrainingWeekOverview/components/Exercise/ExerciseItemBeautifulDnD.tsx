@@ -30,7 +30,6 @@ type ExerciseItemLayoutProps = {
   muscle: MuscleType;
   sets: number;
   reps: number;
-  lbs: number;
   supersetModal: ReactNode;
   children?: ReactNode;
 };
@@ -40,12 +39,11 @@ export const ExerciseItemLayout = ({
   muscle,
   sets,
   reps,
-  lbs,
   supersetModal,
   children,
 }: ExerciseItemLayoutProps) => {
   return (
-    <li className={`flex`}>
+    <li className={`flex w-full`}>
       <div className="pr-2 text-sm text-white">{index}</div>
       <div className="flex overflow-hidden rounded-md border border-input bg-background/40">
         {children}

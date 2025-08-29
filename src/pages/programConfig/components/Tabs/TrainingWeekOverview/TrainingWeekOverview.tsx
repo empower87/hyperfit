@@ -195,7 +195,6 @@ const ExerciseItem = memo(
         muscle={muscleGroup.muscle}
         sets={sets}
         reps={reps}
-        lbs={lbs}
         supersetModal={
           <DropdownListModal
             items={exercises}

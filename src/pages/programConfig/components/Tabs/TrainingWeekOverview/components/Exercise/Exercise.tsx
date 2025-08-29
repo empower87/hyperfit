@@ -65,14 +65,15 @@ export const ExerciseItem = memo(({ index, exercise }: ExerciseItemProps) => {
 
   const bgColorByRank = getRankColor(exercise.rank).bg;
 
+  const onSelect = () => {};
   return (
-    <li className={`flex`}>
+    <li className={`flex w-full`}>
       <div className="pr-2 text-sm text-white">{index}</div>
-      <div className="flex overflow-hidden rounded-md border border-input bg-background/40">
+      <div className="flex w-full overflow-hidden rounded-md border border-input bg-background/40">
         <DraggableExerciseHandle bgColor={bgColorByRank} />
 
         <div className="flex justify-between">
-          <div className="flex p-2 pr-0">
+          <div className="flex w-10 p-2 pr-0">
             <div className="text-semibold flex truncate text-xs leading-tight text-secondary-300">
               {sets} x {reps}
             </div>
@@ -80,22 +81,54 @@ export const ExerciseItem = memo(({ index, exercise }: ExerciseItemProps) => {
 
           <div className="flex w-40 cursor-default flex-col overflow-hidden p-2 text-xs leading-tight">
             <ExerciseTitle name={exercise.name} />
-            <div className="flex items-center">
+            <div className="flex flex-col justify-between">
               <div className="w-16">{exercise.muscle}</div>
-              {exercise.data.requirements.map((req) => {
-                return (
-                  <div
-                    key={req}
-                    className="px-1 text-xxs font-semibold text-secondary-300"
-                  >
-                    {req}
-                  </div>
-                );
-              })}
+              <div className="flex space-x-2">
+                {exercise.data.requirements.map((req) => {
+                  return (
+                    <div
+                      key={req}
+                      className="text-xxs font-semibold text-secondary-300"
+                    >
+                      {req}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </div>
+          <Dialog>
+            <DropdownMenu>
+              <DropdownMenuTrigger className="mt-1 w-8">
+                <Button size="icon" variant="ghost" className="w-8">
+                  <DotsVerticalIcon fill="white" />
+                </Button>
+              </DropdownMenuTrigger>
 
-          <DotsMenu />
+              <DropdownMenuContent className="w-44">
+                <DialogTrigger asChild>
+                  <DropdownMenuItem>Create Superset</DropdownMenuItem>
+                </DialogTrigger>
+
+                <DropdownMenuItem>Rest Period Per Set</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Create Superset</DialogTitle>
+                <DialogDescription>
+                  Make changes to your profile here. Click save when you're
+                  done.
+                </DialogDescription>
+              </DialogHeader>
+              <div>LOL</div>
+
+              <DialogFooter>
+                <Button type="submit">Save changes</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
     </li>
@@ -136,12 +169,16 @@ const ExerciseTitle = memo(({ name }: ExerciseTitleProps) => {
   );
 });
 
-const DotsMenu = memo(() => {
+type DotsMenuProps = {
+  children?: ReactNode;
+};
+
+const DotsMenu = memo(({ children }: DotsMenuProps) => {
   return (
     <Dialog>
       <DropdownMenu>
-        <DropdownMenuTrigger className="mt-1" asChild>
-          <Button size="icon" variant="ghost">
+        <DropdownMenuTrigger className="mt-1 w-8">
+          <Button size="icon" variant="ghost" className="w-8">
             <DotsVerticalIcon fill="white" />
           </Button>
         </DropdownMenuTrigger>
@@ -163,7 +200,7 @@ const DotsMenu = memo(() => {
           </DialogDescription>
         </DialogHeader>
 
-        {/* {supersetModal} */}
+        {children}
 
         <DialogFooter>
           <Button type="submit">Save changes</Button>

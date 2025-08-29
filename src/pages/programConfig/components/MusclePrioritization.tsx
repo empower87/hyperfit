@@ -55,6 +55,7 @@ function Item({ muscle, index, handle, isCollapsed }: ItemProps) {
         className={`flex cursor-pointer justify-between overflow-hidden rounded-md border border-input bg-background/50 text-sm text-white hover:scale-x-105 hover:scale-y-110`}
       >
         <div className="flex">{handle}</div>
+
         <div className={`flex`}>
           <div className="flex w-24 items-center justify-start p-1 px-2">
             {title}

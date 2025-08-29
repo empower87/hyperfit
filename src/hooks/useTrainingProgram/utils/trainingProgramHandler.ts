@@ -100,13 +100,14 @@ export function trainingProgramHandler(
     split_list,
     REST_PERIOD_BY_SPLIT_IN_DAYS
   );
+
   console.log(
     total_sessions,
     split_list,
-    testSplitWeek,
     getNGroup,
     reordered_items,
     new_training_week,
+    testSplitWeek,
     new_training_block[new_training_block.length - 1],
     create_training_block,
     breakpoints,
