@@ -2,6 +2,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { DotsVerticalIcon, DragHandleDots2Icon } from "@radix-ui/react-icons";
 import { HTMLAttributes, memo, ReactNode } from "react";
+import SelectExercise from "~/components/Modals/SelectExercise/SelectExerciseModal";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
@@ -32,6 +33,7 @@ type SortableExerciseItemProps = {
   id: string;
   children: ReactNode;
 };
+
 export const SortableExerciseItem = ({
   id,
   children,
@@ -55,7 +57,7 @@ type ExerciseItemProps = {
   index: number;
   exercise: ExerciseType;
 };
-export const ExerciseItem = memo(({ index, exercise }: ExerciseItemProps) => {
+export const ExerciseItem = ({ index, exercise }: ExerciseItemProps) => {
   const { selectedMicrocycle, selectedMesocycle } = useToggleCyclesContext();
 
   const sets = exercise.setProgression
@@ -67,9 +69,9 @@ export const ExerciseItem = memo(({ index, exercise }: ExerciseItemProps) => {
 
   const onSelect = () => {};
   return (
-    <li className={`flex w-full`}>
+    <li className={`flex`}>
       <div className="pr-2 text-sm text-white">{index}</div>
-      <div className="flex w-full overflow-hidden rounded-md border border-input bg-background/40">
+      <div className="flex w-full rounded-md border border-input bg-background/40">
         <DraggableExerciseHandle bgColor={bgColorByRank} />
 
         <div className="flex justify-between">
@@ -97,20 +99,23 @@ export const ExerciseItem = memo(({ index, exercise }: ExerciseItemProps) => {
               </div>
             </div>
           </div>
+          {/* <DotsMenu>
+            <SelectExercise exerciseId={exercise.id} onSelect={onSelect} />
+          </DotsMenu> */}
           <Dialog>
             <DropdownMenu>
-              <DropdownMenuTrigger className="mt-1 w-8">
-                <Button size="icon" variant="ghost" className="w-8">
+              <DropdownMenuTrigger className="mt-1">
+                <Button size="icon" variant="ghost" className="">
                   <DotsVerticalIcon fill="white" />
                 </Button>
               </DropdownMenuTrigger>
 
               <DropdownMenuContent className="w-44">
+                <DropdownMenuItem>Rest Period Per Set</DropdownMenuItem>
+
                 <DialogTrigger asChild>
                   <DropdownMenuItem>Create Superset</DropdownMenuItem>
                 </DialogTrigger>
-
-                <DropdownMenuItem>Rest Period Per Set</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
 
@@ -122,7 +127,8 @@ export const ExerciseItem = memo(({ index, exercise }: ExerciseItemProps) => {
                   done.
                 </DialogDescription>
               </DialogHeader>
-              <div>LOL</div>
+
+              <SelectExercise exerciseId={exercise.id} onSelect={onSelect} />
 
               <DialogFooter>
                 <Button type="submit">Save changes</Button>
@@ -133,7 +139,7 @@ export const ExerciseItem = memo(({ index, exercise }: ExerciseItemProps) => {
       </div>
     </li>
   );
-});
+};
 
 interface DraggableExerciseHandleProps extends HTMLAttributes<HTMLDivElement> {
   bgColor: string;
@@ -143,7 +149,7 @@ export const DraggableExerciseHandle = ({
 }: DraggableExerciseHandleProps) => {
   return (
     <div
-      className={`flex items-center justify-start border-r border-input ${bgColor}`}
+      className={`flex items-center justify-start rounded-l-sm border-r border-input ${bgColor}`}
     >
       <DragHandleDots2Icon fill="white" />
     </div>
@@ -184,11 +190,11 @@ const DotsMenu = memo(({ children }: DotsMenuProps) => {
         </DropdownMenuTrigger>
 
         <DropdownMenuContent className="w-44">
+          <DropdownMenuItem>Rest Period Per Set</DropdownMenuItem>
+
           <DialogTrigger asChild>
             <DropdownMenuItem>Create Superset</DropdownMenuItem>
           </DialogTrigger>
-
-          <DropdownMenuItem>Rest Period Per Set</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 

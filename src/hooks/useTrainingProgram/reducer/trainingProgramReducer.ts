@@ -252,6 +252,7 @@ type ExerciseSetsType = {
   sets_matrix: MicrocycleSetType[][][];
   superset_id?: string | null;
 };
+
 export type ExerciseWithSetsType = ExerciseType & {
   set_progression: ExerciseSetsType;
 };

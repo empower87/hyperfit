@@ -80,7 +80,7 @@ const SessionItem = ({
   const onCloseDurationModal = () => setIsDurationModalOpen(false);
 
   return (
-    <li className={`overflow`}>
+    <li className={``}>
       <div className={"flex flex-col"}>
         <div
           className={cn(
