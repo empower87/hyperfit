@@ -30,6 +30,7 @@ import { cn } from "~/lib/clsx";
 import { getRankColor } from "~/utils/getIndicatorColors";
 import { useToggleCyclesContext } from "../../MesocycleToggle/hooks/useMesocycleToggle";
 import { SortableSessionItemContainer } from "./components/Session/SessionItem";
+import { FilterPanel } from "./components/Settings/FilterPanel/FilterPanel";
 import SessionDurationVariables from "./components/Settings/SessionDuration/SessionDurationVariables";
 import { SessionDurationVariablesProvider } from "./components/Settings/SessionDuration/sessionDurationVariablesContext";
 import { DraggableExercises } from "./hooks/useExerciseSelection";
@@ -166,6 +167,9 @@ function TrainingWeekOverview() {
     [draggableExercises, selectedMesocycle]
   );
 
+  const onFilter = () => {
+    console.log("filtering");
+  };
   return (
     <SessionDurationVariablesProvider>
       <div id="exercise_editor" className={`flex flex-col space-y-5 rounded`}>
@@ -179,6 +183,10 @@ function TrainingWeekOverview() {
           /> */}
 
           <SessionDurationVariables />
+          <FilterPanel
+            trainingWeek={memoizedTrainingWeek}
+            onFilter={onFilter}
+          />
         </div>
 
         <WeekSessions training_week={memoizedTrainingWeek} />
