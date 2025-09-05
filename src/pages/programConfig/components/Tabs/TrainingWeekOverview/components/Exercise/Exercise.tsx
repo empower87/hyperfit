@@ -1,7 +1,7 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { DotsVerticalIcon, DragHandleDots2Icon } from "@radix-ui/react-icons";
-import { HTMLAttributes, memo, ReactNode } from "react";
+import { HTMLAttributes, memo, ReactNode, useState } from "react";
 import SelectExercise from "~/components/Modals/SelectExercise/SelectExerciseModal";
 import { Button } from "~/components/ui/button";
 import {
@@ -28,6 +28,7 @@ import {
 import { ExerciseType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { useToggleCyclesContext } from "~/pages/programConfig/components/MesocycleToggle/hooks/useMesocycleToggle";
 import { getRankColor } from "~/utils/getIndicatorColors";
+import { getExerciseHighlightClass } from "../Settings/FilterPanel/FilterPanel";
 
 type SortableExerciseItemProps = {
   id: string;
@@ -56,10 +57,16 @@ export const SortableExerciseItem = ({
 type ExerciseItemProps = {
   index: number;
   exercise: ExerciseType;
+  filteredIds: string[];
 };
-export const ExerciseItem = ({ index, exercise }: ExerciseItemProps) => {
-  const { selectedMicrocycle, selectedMesocycle } = useToggleCyclesContext();
 
+export const ExerciseItem = ({
+  index,
+  exercise,
+  filteredIds,
+}: ExerciseItemProps) => {
+  const { selectedMicrocycle, selectedMesocycle } = useToggleCyclesContext();
+  const [filteredId, setFilteredId] = useState<string>("");
   const sets = exercise.setProgression
     ? exercise.setProgression[selectedMesocycle][selectedMicrocycle]
     : exercise.sets;
@@ -68,10 +75,15 @@ export const ExerciseItem = ({ index, exercise }: ExerciseItemProps) => {
   const bgColorByRank = getRankColor(exercise.rank).bg;
 
   const onSelect = () => {};
+
   return (
     <li className={`flex`}>
       <div className="pr-2 text-sm text-white">{index}</div>
-      <div className="flex w-full rounded-md border border-input bg-background/40">
+      <div
+        className={`flex w-full rounded-md border border-input bg-background/40 ${getExerciseHighlightClass(
+          filteredIds.includes(exercise.id)
+        )}`}
+      >
         <DraggableExerciseHandle bgColor={bgColorByRank} />
 
         <div className="flex justify-between">
@@ -99,9 +111,11 @@ export const ExerciseItem = ({ index, exercise }: ExerciseItemProps) => {
               </div>
             </div>
           </div>
+
           {/* <DotsMenu>
             <SelectExercise exerciseId={exercise.id} onSelect={onSelect} />
           </DotsMenu> */}
+
           <Dialog>
             <DropdownMenu>
               <DropdownMenuTrigger className="mt-1">

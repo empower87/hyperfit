@@ -20,6 +20,7 @@ import { useSessionDurationVariablesContext } from "../Settings/SessionDuration/
 type SortableSessionItemContainerProps = {
   containerId: string;
   container: DraggableSessionType;
+  filteredIds: string[];
 };
 
 // NOTE: 4/5/25.
@@ -28,6 +29,7 @@ type SortableSessionItemContainerProps = {
 export const SortableSessionItemContainer = ({
   containerId,
   container,
+  filteredIds,
 }: SortableSessionItemContainerProps) => {
   return (
     <SortableContext
@@ -44,7 +46,11 @@ export const SortableSessionItemContainer = ({
           {/* <li className="flex text-xs text-primary-800">warmup: 5:00</li> */}
           {container.exercises.map((item, index) => (
             <SortableExerciseItem key={item.id} id={item.id}>
-              <ExerciseItem index={index + 1} exercise={item} />
+              <ExerciseItem
+                index={index + 1}
+                exercise={item}
+                filteredIds={filteredIds}
+              />
             </SortableExerciseItem>
           ))}
         </ul>

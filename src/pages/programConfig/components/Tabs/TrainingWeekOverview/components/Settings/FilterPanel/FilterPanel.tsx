@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { ExerciseType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { cn } from "~/lib/clsx";
 import { DraggableExercises } from "../../../hooks/useExerciseSelection";
@@ -25,20 +25,25 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
   const [activeTags, setActiveTags] = useState<string[]>([]);
 
   // Flatten all exercises from all days/sessions
-  const allExercises: ExerciseType[] = React.useMemo(() => {
-    return trainingWeek.flatMap((day) =>
+  const allExercises: ExerciseType[] = useMemo(() => {
+    return trainingWeek?.flatMap((day) =>
       day.sessions.flatMap((session) => session.exercises)
     );
   }, [trainingWeek]);
 
-  // Filter logic
-  const filtered = allExercises.filter((ex) => {
-    const matchesSearch = ex.name.toLowerCase().includes(search.toLowerCase());
-    const matchesTag =
-      activeTags.length === 0 ||
-      activeTags.some((tag) => ex.data?.requirements?.includes(tag));
-    return matchesSearch && matchesTag;
-  });
+  // Filter logic: nothing filtered if no search and no tags
+  const filtered =
+    search.trim() === "" && activeTags.length === 0
+      ? []
+      : allExercises.filter((ex) => {
+          const matchesSearch = ex.name
+            .toLowerCase()
+            .includes(search.toLowerCase());
+          const matchesTag =
+            activeTags.length === 0 ||
+            activeTags.some((tag) => ex.data?.requirements?.includes(tag));
+          return matchesSearch && matchesTag;
+        });
 
   useEffect(() => {
     onFilter(filtered.map((ex) => ex.id));
@@ -69,8 +74,8 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
             className={cn(
               "rounded-full border px-3 py-1 text-xs font-semibold transition-colors",
               activeTags.includes(tag)
-                ? "border-pink-500 bg-pink-500 text-white"
-                : "border-input bg-background text-secondary-300 hover:bg-pink-100 hover:text-pink-700"
+                ? "border-secondary-400 bg-secondary-400 text-white"
+                : "border-input bg-background text-secondary-300 hover:bg-secondary-200 hover:text-secondary-400"
             )}
           >
             {tag}
@@ -83,4 +88,4 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
 
 // Helper to highlight ExerciseItem (to be used in parent)
 export const getExerciseHighlightClass = (isFiltered: boolean) =>
-  isFiltered ? "border-2 border-pink-500" : "";
+  isFiltered ? "border-2 border-secondary-300" : "";

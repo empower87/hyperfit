@@ -154,6 +154,7 @@ function TrainingWeekOverview() {
   const [draggableExercises, setDraggableExercises] = useState<
     DraggableExercises[][]
   >([]);
+  const [filteredIds, setFilteredIds] = useState<string[]>([]);
 
   useEffect(() => {
     const hydratedTrainingBlock = training_block.map((each) =>
@@ -167,9 +168,10 @@ function TrainingWeekOverview() {
     [draggableExercises, selectedMesocycle]
   );
 
-  const onFilter = () => {
-    console.log("filtering");
-  };
+  const onFilter = useCallback((filteredId: string[]) => {
+    console.log(filteredId, "filtering");
+    setFilteredIds(filteredId);
+  }, []);
   return (
     <SessionDurationVariablesProvider>
       <div id="exercise_editor" className={`flex flex-col space-y-5 rounded`}>
@@ -189,7 +191,10 @@ function TrainingWeekOverview() {
           />
         </div>
 
-        <WeekSessions training_week={memoizedTrainingWeek} />
+        <WeekSessions
+          training_week={memoizedTrainingWeek}
+          filteredIds={filteredIds}
+        />
       </div>
     </SessionDurationVariablesProvider>
   );
@@ -197,9 +202,10 @@ function TrainingWeekOverview() {
 
 type WeekSessionsProps = {
   training_week: DraggableExercises[];
+  filteredIds: string[];
 };
 
-const WeekSessions = ({ training_week }: WeekSessionsProps) => {
+const WeekSessions = ({ training_week, filteredIds }: WeekSessionsProps) => {
   const [exercisesBySelectedMeso, setExercisesBySelectedMeso] =
     useState<DraggableExercises[]>(training_week);
   const [activeContainer, setActiveContainer] =
@@ -377,6 +383,7 @@ const WeekSessions = ({ training_week }: WeekSessionsProps) => {
                       key={`${each.day}_${session.id}`}
                       containerId={`${each.day}#${session.id}`}
                       container={session}
+                      filteredIds={filteredIds}
                     />
                   );
                 })}
