@@ -1,7 +1,7 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { DotsVerticalIcon, DragHandleDots2Icon } from "@radix-ui/react-icons";
-import { HTMLAttributes, memo, ReactNode, useState } from "react";
+import { HTMLAttributes, memo, ReactNode } from "react";
 import SelectExercise from "~/components/Modals/SelectExercise/SelectExerciseModal";
 import { Button } from "~/components/ui/button";
 import {
@@ -28,11 +28,11 @@ import {
 import { ExerciseType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { useToggleCyclesContext } from "~/pages/programConfig/components/MesocycleToggle/hooks/useMesocycleToggle";
 import { getRankColor } from "~/utils/getIndicatorColors";
-import { getExerciseHighlightClass } from "../Settings/FilterPanel/FilterPanel";
+import { getExerciseHighlightClass } from "../Settings/ExerciseFilter/ExerciseFilter";
 
 type SortableExerciseItemProps = {
   id: string;
-  children: ReactNode;
+  children: ReactNode | ((listeners: any) => ReactNode);
 };
 
 export const SortableExerciseItem = ({
@@ -48,8 +48,8 @@ export const SortableExerciseItem = ({
   };
 
   return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      {children}
+    <div ref={setNodeRef} style={style} {...attributes}>
+      {typeof children === "function" ? children(listeners) : children}
     </div>
   );
 };
@@ -66,7 +66,7 @@ export const ExerciseItem = ({
   filteredIds,
 }: ExerciseItemProps) => {
   const { selectedMicrocycle, selectedMesocycle } = useToggleCyclesContext();
-  const [filteredId, setFilteredId] = useState<string>("");
+
   const sets = exercise.setProgression
     ? exercise.setProgression[selectedMesocycle][selectedMicrocycle]
     : exercise.sets;
@@ -77,93 +77,108 @@ export const ExerciseItem = ({
   const onSelect = () => {};
 
   return (
-    <li className={`flex`}>
-      <div className="pr-2 text-sm text-white">{index}</div>
-      <div
-        className={`flex w-full rounded-md border border-input bg-background/40 ${getExerciseHighlightClass(
-          filteredIds.includes(exercise.id)
-        )}`}
-      >
-        <DraggableExerciseHandle bgColor={bgColorByRank} />
-
-        <div className="flex justify-between">
-          <div className="flex w-10 p-2 pr-0">
-            <div className="text-semibold flex truncate text-xs leading-tight text-secondary-300">
-              {sets} x {reps}
-            </div>
-          </div>
-
-          <div className="flex w-40 cursor-default flex-col overflow-hidden p-2 text-xs leading-tight">
-            <ExerciseTitle name={exercise.name} />
-            <div className="flex flex-col justify-between">
-              <div className="w-16">{exercise.muscle}</div>
-              <div className="flex space-x-2">
-                {exercise.data.requirements.map((req) => {
-                  return (
-                    <div
-                      key={req}
-                      className="text-xxs font-semibold text-secondary-300"
-                    >
-                      {req}
-                    </div>
-                  );
-                })}
+    <SortableExerciseItem id={exercise.id}>
+      {(listeners: any) => (
+        <li className={`flex`}>
+          <div className="pr-2 text-sm text-white">{index}</div>
+          <div
+            className={`flex w-full rounded-md border border-input bg-background/40 ${getExerciseHighlightClass(
+              filteredIds.includes(exercise.id)
+            )}`}
+          >
+            <DraggableExerciseHandle
+              bgColor={bgColorByRank}
+              listeners={listeners}
+            />
+            <div className="flex justify-between">
+              <div className="flex w-10 p-2 pr-0">
+                <div className="text-semibold flex truncate text-xs leading-tight text-secondary-300">
+                  {sets} x {reps}
+                </div>
               </div>
+
+              <div className="flex w-40 cursor-default flex-col overflow-hidden p-2 text-xs leading-tight">
+                <ExerciseTitle name={exercise.name} />
+                <div className="flex flex-col justify-between">
+                  <div className="w-16">{exercise.muscle}</div>
+                  <div className="flex space-x-2">
+                    {exercise.data.requirements.map((req) => {
+                      return (
+                        <div
+                          key={req}
+                          className="text-xxs font-semibold text-secondary-300"
+                        >
+                          {req}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+
+              <Dialog>
+                <DropdownMenu>
+                  <DropdownMenuTrigger className="mt-1">
+                    <Button size="icon" variant="ghost" className="">
+                      <DotsVerticalIcon fill="white" />
+                    </Button>
+                  </DropdownMenuTrigger>
+
+                  <DropdownMenuContent className="w-44">
+                    <DropdownMenuItem>Rest Period Per Set</DropdownMenuItem>
+                    <DialogTrigger asChild>
+                      <DropdownMenuItem
+                        onSelect={(e) => {
+                          e.preventDefault();
+                        }}
+                      >
+                        Create Superset
+                      </DropdownMenuItem>
+                    </DialogTrigger>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Create Superset</DialogTitle>
+                    <DialogDescription>
+                      Make changes to your profile here. Click save when you're
+                      done.
+                    </DialogDescription>
+                  </DialogHeader>
+
+                  <SelectExercise
+                    exerciseId={exercise.id}
+                    onSelect={onSelect}
+                  />
+
+                  <DialogFooter>
+                    <Button type="submit">Save changes</Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
             </div>
           </div>
-
-          {/* <DotsMenu>
-            <SelectExercise exerciseId={exercise.id} onSelect={onSelect} />
-          </DotsMenu> */}
-
-          <Dialog>
-            <DropdownMenu>
-              <DropdownMenuTrigger className="mt-1">
-                <Button size="icon" variant="ghost" className="">
-                  <DotsVerticalIcon fill="white" />
-                </Button>
-              </DropdownMenuTrigger>
-
-              <DropdownMenuContent className="w-44">
-                <DropdownMenuItem>Rest Period Per Set</DropdownMenuItem>
-
-                <DialogTrigger asChild>
-                  <DropdownMenuItem>Create Superset</DropdownMenuItem>
-                </DialogTrigger>
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Create Superset</DialogTitle>
-                <DialogDescription>
-                  Make changes to your profile here. Click save when you're
-                  done.
-                </DialogDescription>
-              </DialogHeader>
-
-              <SelectExercise exerciseId={exercise.id} onSelect={onSelect} />
-
-              <DialogFooter>
-                <Button type="submit">Save changes</Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        </div>
-      </div>
-    </li>
+        </li>
+      )}
+    </SortableExerciseItem>
   );
 };
 
 interface DraggableExerciseHandleProps extends HTMLAttributes<HTMLDivElement> {
   bgColor: string;
+  listeners?: any;
 }
 export const DraggableExerciseHandle = ({
   bgColor,
+  listeners = {},
+  ...props
 }: DraggableExerciseHandleProps) => {
   return (
     <div
-      className={`flex items-center justify-start rounded-l-sm border-r border-input ${bgColor}`}
+      className={`flex h-full items-center justify-start rounded-l-sm border-r border-input ${bgColor}`}
+      {...listeners}
+      {...props}
+      data-drag-handle
     >
       <DragHandleDots2Icon fill="white" />
     </div>

@@ -481,7 +481,6 @@ export const setProgressionForExercises = (
       exercises[i][j].setProgression = setsProgression;
     }
   }
-  console.log(exercises, "YO WTFS GOING ON HERE?");
   return exercises;
 };
 

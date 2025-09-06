@@ -94,5 +94,77 @@
       },
       "fatigue": 0
     }
+  },
+  {
+    "id": "0005-glutes-machinehipthrust",
+    "name": "Machine Hip Thrust",
+    "rank": 5,
+    "group": "glutes",
+    "region": "",
+    "requirements": ["machine"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "compound",
+    "hypertrophy_criteria": {
+      "target_function": 0,
+      "stability": 3,
+      "limiting_factor": 0,
+      "time_efficiency": 0,
+      "loadability": 0,
+      "stretch": {
+        "lengthened": 0,
+        "challenging": 0,
+        "partial_friendly": 0
+      },
+      "fatigue": 0
+    }
+  },
+  {
+    "id": "0006-glutes-hipabduction",
+    "name": "Hip Abduction",
+    "rank": 6,
+    "group": "glutes",
+    "region": "",
+    "requirements": ["machine"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "isolation",
+    "hypertrophy_criteria": {
+      "target_function": 0,
+      "stability": 3,
+      "limiting_factor": 0,
+      "time_efficiency": 0,
+      "loadability": 0,
+      "stretch": {
+        "lengthened": 0,
+        "challenging": 0,
+        "partial_friendly": 0
+      },
+      "fatigue": 0
+    }
+  },
+  {
+    "id": "0007-glutes-smithmachinereverselunge",
+    "name": "Smith-Machine Reverse Lunge",
+    "rank": 7,
+    "group": "glutes",
+    "region": "",
+    "requirements": ["machine"],
+    "variations": [],
+    "tips": "",
+    "movement_type": "compound",
+    "hypertrophy_criteria": {
+      "target_function": 0,
+      "stability": 3,
+      "limiting_factor": 0,
+      "time_efficiency": 0,
+      "loadability": 0,
+      "stretch": {
+        "lengthened": 0,
+        "challenging": 0,
+        "partial_friendly": 0
+      },
+      "fatigue": 0
+    }
   }
 ]

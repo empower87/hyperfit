@@ -16,8 +16,17 @@ import {
   useMemo,
   useState,
 } from "react";
+import SelectExercise from "~/components/Modals/SelectExercise/SelectExerciseModal";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "~/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -30,7 +39,7 @@ import { cn } from "~/lib/clsx";
 import { getRankColor } from "~/utils/getIndicatorColors";
 import { useToggleCyclesContext } from "../../MesocycleToggle/hooks/useMesocycleToggle";
 import { SortableSessionItemContainer } from "./components/Session/SessionItem";
-import { FilterPanel } from "./components/Settings/FilterPanel/FilterPanel";
+import { ExerciseFilter } from "./components/Settings/ExerciseFilter/ExerciseFilter";
 import SessionDurationVariables from "./components/Settings/SessionDuration/SessionDurationVariables";
 import { SessionDurationVariablesProvider } from "./components/Settings/SessionDuration/sessionDurationVariablesContext";
 import { DraggableExercises } from "./hooks/useExerciseSelection";
@@ -168,10 +177,14 @@ function TrainingWeekOverview() {
     [draggableExercises, selectedMesocycle]
   );
 
-  const onFilter = useCallback((filteredId: string[]) => {
-    console.log(filteredId, "filtering");
+  const onFilter = (filteredId: string[]) => {
+    console.log(
+      filteredId,
+      "FUNCTION: onFilter() => TrainingWeekOverviewDnD.tsx"
+    );
     setFilteredIds(filteredId);
-  }, []);
+  };
+
   return (
     <SessionDurationVariablesProvider>
       <div id="exercise_editor" className={`flex flex-col space-y-5 rounded`}>
@@ -185,7 +198,7 @@ function TrainingWeekOverview() {
           /> */}
 
           <SessionDurationVariables />
-          <FilterPanel
+          <ExerciseFilter
             trainingWeek={memoizedTrainingWeek}
             onFilter={onFilter}
           />
@@ -365,33 +378,51 @@ const WeekSessions = ({ training_week, filteredIds }: WeekSessionsProps) => {
     [exercisesBySelectedMeso]
   );
 
+  const [open, setOpen] = useState(false);
   return (
     <div className={"flex w-full flex-col"}>
-      <DndContext
-        collisionDetection={closestCenter}
-        onDragStart={handleDragStart}
-        onDragOver={handleDragOver}
-        onDragEnd={handleDragEnd}
-      >
-        <ul className="flex space-x-2 overflow-x-auto">
-          {memoizedTrainingWeek?.map((each, index) => {
-            return (
-              <DayLayout key={`${each.day}_${index}`} session={each}>
-                {each.sessions.map((session) => {
-                  return (
-                    <SortableSessionItemContainer
-                      key={`${each.day}_${session.id}`}
-                      containerId={`${each.day}#${session.id}`}
-                      container={session}
-                      filteredIds={filteredIds}
-                    />
-                  );
-                })}
-              </DayLayout>
-            );
-          })}
-        </ul>
-      </DndContext>
+      <Dialog>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Create Superset</DialogTitle>
+            <DialogDescription>
+              Make changes to your profile here. Click save when you're done.
+            </DialogDescription>
+          </DialogHeader>
+
+          <SelectExercise exerciseId={"exercise.id"} onSelect={() => {}} />
+
+          <DialogFooter>
+            <Button type="submit">Save changes</Button>
+          </DialogFooter>
+        </DialogContent>
+
+        <DndContext
+          collisionDetection={closestCenter}
+          onDragStart={handleDragStart}
+          onDragOver={handleDragOver}
+          onDragEnd={handleDragEnd}
+        >
+          <ul className="flex space-x-2 overflow-x-auto">
+            {memoizedTrainingWeek?.map((each, index) => {
+              return (
+                <DayLayout key={`${each.day}_${index}`} session={each}>
+                  {each.sessions.map((session) => {
+                    return (
+                      <SortableSessionItemContainer
+                        key={`${each.day}_${session.id}`}
+                        containerId={`${each.day}#${session.id}`}
+                        container={session}
+                        filteredIds={filteredIds}
+                      />
+                    );
+                  })}
+                </DayLayout>
+              );
+            })}
+          </ul>
+        </DndContext>
+      </Dialog>
     </div>
   );
 };

@@ -13,7 +13,7 @@ import { cn } from "~/lib/clsx";
 import { useToggleCyclesContext } from "~/pages/programConfig/components/MesocycleToggle/hooks/useMesocycleToggle";
 import { getSplitColor } from "~/utils/getIndicatorColors";
 import { DraggableSessionType } from "../../hooks/useExerciseSelection";
-import { ExerciseItem, SortableExerciseItem } from "../Exercise/Exercise";
+import { ExerciseItem } from "../Exercise/Exercise";
 import SessionDurationVariables from "../Settings/SessionDuration/SessionDurationVariables";
 import { useSessionDurationVariablesContext } from "../Settings/SessionDuration/sessionDurationVariablesContext";
 
@@ -45,13 +45,12 @@ export const SortableSessionItemContainer = ({
         <ul className="space-y-2">
           {/* <li className="flex text-xs text-primary-800">warmup: 5:00</li> */}
           {container.exercises.map((item, index) => (
-            <SortableExerciseItem key={item.id} id={item.id}>
-              <ExerciseItem
-                index={index + 1}
-                exercise={item}
-                filteredIds={filteredIds}
-              />
-            </SortableExerciseItem>
+            <ExerciseItem
+              key={item.id}
+              index={index + 1}
+              exercise={item}
+              filteredIds={filteredIds}
+            />
           ))}
         </ul>
       </SessionItem>
