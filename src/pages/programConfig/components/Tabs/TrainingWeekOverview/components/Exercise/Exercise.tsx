@@ -149,6 +149,7 @@ export const ExerciseItem = ({
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
+
               <Dialog open={openSuperset} onOpenChange={setOpenSuperset}>
                 <DialogContent>
                   <DialogHeader>

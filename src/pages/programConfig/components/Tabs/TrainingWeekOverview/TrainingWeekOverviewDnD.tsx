@@ -378,7 +378,6 @@ const WeekSessions = ({ training_week, filteredIds }: WeekSessionsProps) => {
     [exercisesBySelectedMeso]
   );
 
-  const [open, setOpen] = useState(false);
   return (
     <div className={"flex w-full flex-col"}>
       <Dialog>
