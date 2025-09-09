@@ -505,11 +505,13 @@ const WeightIncrementTuple = {
   bodyweight: [0, 0],
 };
 const getWeightData = (requirements: string[]) => {
-  return Object.entries(WeightIncrementTuple).filter(([key, value]) => {
+  const data = Object.entries(WeightIncrementTuple).filter(([key, value]) => {
     if (requirements.includes(key)) {
       return value;
     }
-  })[0][1];
+  });
+  const first_data_index = data[0];
+  return first_data_index ? first_data_index[1] : [10, 2.5];
 };
 
 const DEFAULT_SET_PROGRESSION_SCHEMA = "ADD_ONE_PER_MICROCYCLE";

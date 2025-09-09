@@ -3,6 +3,8 @@ import { cn } from "~/lib/clsx";
 import { useSessionDurationVariablesContext } from "./sessionDurationVariablesContext";
 import { DurationTimeConstantsKeys } from "./useSessionDurationVariables";
 
+import { MinusIcon, PlusIcon } from "@radix-ui/react-icons";
+import { Button } from "~/components/ui/button";
 import { Breakpoints, Toggles } from "./Breakpoints";
 
 type TimeIncrementFrameProps = {
@@ -61,36 +63,56 @@ const TimeIncrementFrame = ({ label }: TimeIncrementFrameProps) => {
       .padStart(2, "0")}`;
   };
 
+  const capLabel = label.charAt(0).toUpperCase() + label.slice(1);
   return (
-    <div className="flex">
-      <IncrementBtn operation={"-"} onClick={() => onIncrement("-")} />
-      <div className="m-1 flex w-6 items-center justify-center text-xs text-white">
-        {time}
+    <div className="flex items-center justify-center">
+      <SessionDurationButton operation={"-"} onClick={() => onIncrement("-")} />
+      <div className="mx-2 my-1 flex flex-col items-center justify-center text-white">
+        <div className="">{time}</div>
+        <div className="text-xs text-primary-300">{capLabel}</div>
       </div>
-      <IncrementBtn operation={"+"} onClick={() => onIncrement("+")} />
+      <SessionDurationButton operation={"+"} onClick={() => onIncrement("+")} />
     </div>
   );
 };
 
+type SessionDurationButtonProps = {
+  operation: "+" | "-";
+  onClick: (operation: "+" | "-") => void;
+};
+
+function SessionDurationButton({
+  operation,
+  onClick,
+}: SessionDurationButtonProps) {
+  return (
+    <Button
+      size="icon"
+      variant="outline"
+      className="w-6 rounded-full"
+      onClick={() => onClick(operation)}
+    >
+      {operation === "+" ? (
+        <PlusIcon fill="white" />
+      ) : (
+        <MinusIcon fill="white" />
+      )}
+    </Button>
+  );
+}
+
 export default function SessionDurationVariables() {
   return (
     <div className="flex w-96 flex-col">
-      <div className="flex items-center justify-center p-2 text-sm">
+      <div className="flex items-center justify-start px-2 pb-1 pt-2 text-sm">
         Workout Duration Variables
       </div>
+
       <Settings>
-        <Settings.Section title="Warmup">
-          <TimeIncrementFrame label="warmup" />
-        </Settings.Section>
-        <Settings.Section title="Rest">
-          <TimeIncrementFrame label="rest" />
-        </Settings.Section>
-        <Settings.Section title="Superset">
-          <TimeIncrementFrame label="superset" />
-        </Settings.Section>
-        <Settings.Section title="Rep">
-          <TimeIncrementFrame label="rep" />
-        </Settings.Section>
+        <TimeIncrementFrame label="warmup" />
+        <TimeIncrementFrame label="rest" />
+        <TimeIncrementFrame label="superset" />
+        <TimeIncrementFrame label="rep" />
       </Settings>
     </div>
   );
@@ -118,6 +140,7 @@ function Section({ title, variant, children }: SectionProps) {
       >
         {title}
       </div>
+
       <div className={`flex space-x-1`}>{children}</div>
     </div>
   );

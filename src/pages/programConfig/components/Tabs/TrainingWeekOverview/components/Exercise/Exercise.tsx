@@ -1,7 +1,8 @@
+import { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { DotsVerticalIcon, DragHandleDots2Icon } from "@radix-ui/react-icons";
-import { HTMLAttributes, memo, ReactNode } from "react";
+import { HTMLAttributes, memo, ReactNode, useState } from "react";
 import SelectExercise from "~/components/Modals/SelectExercise/SelectExerciseModal";
 import { Button } from "~/components/ui/button";
 import {
@@ -32,7 +33,9 @@ import { getExerciseHighlightClass } from "../Settings/ExerciseFilter/ExerciseFi
 
 type SortableExerciseItemProps = {
   id: string;
-  children: ReactNode | ((listeners: any) => ReactNode);
+  children:
+    | ReactNode
+    | ((listeners: SyntheticListenerMap | undefined) => ReactNode);
 };
 
 export const SortableExerciseItem = ({
@@ -66,7 +69,8 @@ export const ExerciseItem = ({
   filteredIds,
 }: ExerciseItemProps) => {
   const { selectedMicrocycle, selectedMesocycle } = useToggleCyclesContext();
-
+  const [openSuperset, setOpenSuperset] = useState(false);
+  const [openDelete, setOpenDelete] = useState(false);
   const sets = exercise.setProgression
     ? exercise.setProgression[selectedMesocycle][selectedMicrocycle]
     : exercise.sets;
@@ -78,7 +82,7 @@ export const ExerciseItem = ({
 
   return (
     <SortableExerciseItem id={exercise.id}>
-      {(listeners: any) => (
+      {(listeners: SyntheticListenerMap | undefined) => (
         <li className={`flex`}>
           <div className="pr-2 text-sm text-white">{index}</div>
           <div
@@ -116,27 +120,36 @@ export const ExerciseItem = ({
                 </div>
               </div>
 
-              <Dialog>
-                <DropdownMenu>
-                  <DropdownMenuTrigger className="mt-1">
-                    <Button size="icon" variant="ghost" className="">
-                      <DotsVerticalIcon fill="white" />
-                    </Button>
-                  </DropdownMenuTrigger>
+              <DropdownMenu>
+                <DropdownMenuTrigger className="mt-1">
+                  <Button size="icon" variant="ghost" className="">
+                    <DotsVerticalIcon fill="white" />
+                  </Button>
+                </DropdownMenuTrigger>
 
-                  <DropdownMenuContent className="w-44">
-                    <DropdownMenuItem>Rest Period Per Set</DropdownMenuItem>
-                    <DialogTrigger asChild>
-                      <DropdownMenuItem
-                        onSelect={(e) => {
-                          e.preventDefault();
-                        }}
-                      >
-                        Create Superset
-                      </DropdownMenuItem>
-                    </DialogTrigger>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                <DropdownMenuContent className="w-44">
+                  <DropdownMenuItem>Rest Period Per Set</DropdownMenuItem>
+
+                  <DropdownMenuItem
+                    onSelect={(e) => {
+                      e.preventDefault();
+                      setOpenSuperset(true);
+                    }}
+                  >
+                    Create Superset
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem
+                    onSelect={(e) => {
+                      e.preventDefault();
+                      setOpenDelete(true);
+                    }}
+                  >
+                    Delete Exercise
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <Dialog open={openSuperset} onOpenChange={setOpenSuperset}>
                 <DialogContent>
                   <DialogHeader>
                     <DialogTitle>Create Superset</DialogTitle>
@@ -156,6 +169,22 @@ export const ExerciseItem = ({
                   </DialogFooter>
                 </DialogContent>
               </Dialog>
+
+              <Dialog open={openDelete} onOpenChange={setOpenDelete}>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Delete Exercise</DialogTitle>
+                    <DialogDescription>
+                      Make changes to your profile here. Click save when you're
+                      done.
+                    </DialogDescription>
+                  </DialogHeader>
+
+                  <DialogFooter>
+                    <Button type="submit">Save changes</Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
             </div>
           </div>
         </li>
@@ -166,7 +195,7 @@ export const ExerciseItem = ({
 
 interface DraggableExerciseHandleProps extends HTMLAttributes<HTMLDivElement> {
   bgColor: string;
-  listeners?: any;
+  listeners?: SyntheticListenerMap;
 }
 export const DraggableExerciseHandle = ({
   bgColor,
