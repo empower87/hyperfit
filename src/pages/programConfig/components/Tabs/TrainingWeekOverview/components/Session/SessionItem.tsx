@@ -21,6 +21,7 @@ type SortableSessionItemContainerProps = {
   containerId: string;
   container: DraggableSessionType;
   filteredIds: string[];
+  onDeleteExercise: (exerciseId: string) => void;
 };
 
 // NOTE: 4/5/25.
@@ -30,6 +31,7 @@ export const SortableSessionItemContainer = ({
   containerId,
   container,
   filteredIds,
+  onDeleteExercise,
 }: SortableSessionItemContainerProps) => {
   return (
     <SortableContext
@@ -50,6 +52,7 @@ export const SortableSessionItemContainer = ({
               index={index + 1}
               exercise={item}
               filteredIds={filteredIds}
+              onDeleteExercise={onDeleteExercise}
             />
           ))}
         </ul>

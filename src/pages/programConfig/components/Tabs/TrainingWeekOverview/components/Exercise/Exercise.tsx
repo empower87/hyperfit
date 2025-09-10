@@ -61,12 +61,14 @@ type ExerciseItemProps = {
   index: number;
   exercise: ExerciseType;
   filteredIds: string[];
+  onDeleteExercise: (exerciseId: string) => void;
 };
 
 export const ExerciseItem = ({
   index,
   exercise,
   filteredIds,
+  onDeleteExercise,
 }: ExerciseItemProps) => {
   const { selectedMicrocycle, selectedMesocycle } = useToggleCyclesContext();
   const [openSuperset, setOpenSuperset] = useState(false);
@@ -182,7 +184,16 @@ export const ExerciseItem = ({
                   </DialogHeader>
 
                   <DialogFooter>
-                    <Button type="submit">Save changes</Button>
+                    <Button
+                      type="submit"
+                      variant="destructive"
+                      onClick={() => {
+                        onDeleteExercise(exercise.id);
+                        setOpenDelete(false);
+                      }}
+                    >
+                      Delete
+                    </Button>
                   </DialogFooter>
                 </DialogContent>
               </Dialog>

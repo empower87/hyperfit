@@ -16,17 +16,8 @@ import {
   useMemo,
   useState,
 } from "react";
-import SelectExercise from "~/components/Modals/SelectExercise/SelectExerciseModal";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "~/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -132,33 +123,6 @@ function TrainingWeekOverview() {
   const { training_block, prioritized_muscle_list } =
     useTrainingProgramContext();
   const { selectedMesocycle, selectedMicrocycle } = useToggleCyclesContext();
-  // const { microcycles, mesocycles } = training_program_params;
-
-  // const [selectedMesocycleIndex, setSelectedMesocycleIndex] = useState<number>(
-  //   mesocycles - 1
-  // );
-  // const [selectedMicrocycleIndex, setSelectedMicrocycleIndex] =
-  //   useState<number>(microcycles - 1);
-
-  // const mesocycle_titles = Array.from(
-  //   Array(mesocycles),
-  //   (e, i) => `Mesocycle ${i + 1}`
-  // );
-
-  // const microcycle_titles = Array.from(
-  //   Array(microcycles),
-  //   (e, i) => `Week ${i + 1}`
-  // );
-
-  // const onClickHandler = (value: string) => {
-  //   const type = value.split(" ");
-  //   const valueAsNumber = parseInt(type[1]) - 1;
-  //   if (type[0] === "Mesocycle") {
-  //     setSelectedMesocycleIndex(valueAsNumber);
-  //   } else {
-  //     setSelectedMicrocycleIndex(valueAsNumber);
-  //   }
-  // };
 
   const [draggableExercises, setDraggableExercises] = useState<
     DraggableExercises[][]
@@ -172,9 +136,20 @@ function TrainingWeekOverview() {
     setDraggableExercises(hydratedTrainingBlock);
   }, [training_block, prioritized_muscle_list]);
 
-  const memoizedTrainingWeek = useMemo(
-    () => draggableExercises[selectedMesocycle],
-    [draggableExercises, selectedMesocycle]
+  const onDeleteExercise = useCallback(
+    (exerciseId: string) => {
+      const filtered_draggable_exercises = draggableExercises.map((week) => {
+        return week.map((day) => ({
+          ...day,
+          sessions: day.sessions.map((session) => ({
+            ...session,
+            exercises: session.exercises.filter((ex) => ex.id !== exerciseId),
+          })),
+        }));
+      });
+      setDraggableExercises(filtered_draggable_exercises);
+    },
+    [draggableExercises]
   );
 
   const onFilter = (filteredId: string[]) => {
@@ -185,6 +160,10 @@ function TrainingWeekOverview() {
     setFilteredIds(filteredId);
   };
 
+  const memoizedTrainingWeek = useMemo(
+    () => draggableExercises[selectedMesocycle],
+    [draggableExercises, selectedMesocycle]
+  );
   return (
     <SessionDurationVariablesProvider>
       <div id="exercise_editor" className={`flex flex-col space-y-5 rounded`}>
@@ -198,6 +177,7 @@ function TrainingWeekOverview() {
           /> */}
 
           <SessionDurationVariables />
+
           <ExerciseFilter
             trainingWeek={memoizedTrainingWeek}
             onFilter={onFilter}
@@ -207,6 +187,7 @@ function TrainingWeekOverview() {
         <WeekSessions
           training_week={memoizedTrainingWeek}
           filteredIds={filteredIds}
+          onDeleteExercise={onDeleteExercise}
         />
       </div>
     </SessionDurationVariablesProvider>
@@ -216,9 +197,14 @@ function TrainingWeekOverview() {
 type WeekSessionsProps = {
   training_week: DraggableExercises[];
   filteredIds: string[];
+  onDeleteExercise: (exerciseId: string) => void;
 };
 
-const WeekSessions = ({ training_week, filteredIds }: WeekSessionsProps) => {
+const WeekSessions = ({
+  training_week,
+  filteredIds,
+  onDeleteExercise,
+}: WeekSessionsProps) => {
   const [exercisesBySelectedMeso, setExercisesBySelectedMeso] =
     useState<DraggableExercises[]>(training_week);
   const [activeContainer, setActiveContainer] =
@@ -380,48 +366,32 @@ const WeekSessions = ({ training_week, filteredIds }: WeekSessionsProps) => {
 
   return (
     <div className={"flex w-full flex-col"}>
-      <Dialog>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Create Superset</DialogTitle>
-            <DialogDescription>
-              Make changes to your profile here. Click save when you're done.
-            </DialogDescription>
-          </DialogHeader>
-
-          <SelectExercise exerciseId={"exercise.id"} onSelect={() => {}} />
-
-          <DialogFooter>
-            <Button type="submit">Save changes</Button>
-          </DialogFooter>
-        </DialogContent>
-
-        <DndContext
-          collisionDetection={closestCenter}
-          onDragStart={handleDragStart}
-          onDragOver={handleDragOver}
-          onDragEnd={handleDragEnd}
-        >
-          <ul className="flex space-x-2 overflow-x-auto">
-            {memoizedTrainingWeek?.map((each, index) => {
-              return (
-                <DayLayout key={`${each.day}_${index}`} session={each}>
-                  {each.sessions.map((session) => {
-                    return (
-                      <SortableSessionItemContainer
-                        key={`${each.day}_${session.id}`}
-                        containerId={`${each.day}#${session.id}`}
-                        container={session}
-                        filteredIds={filteredIds}
-                      />
-                    );
-                  })}
-                </DayLayout>
-              );
-            })}
-          </ul>
-        </DndContext>
-      </Dialog>
+      <DndContext
+        collisionDetection={closestCenter}
+        onDragStart={handleDragStart}
+        onDragOver={handleDragOver}
+        onDragEnd={handleDragEnd}
+      >
+        <ul className="flex space-x-2 overflow-x-auto">
+          {memoizedTrainingWeek?.map((each, index) => {
+            return (
+              <DayLayout key={`${each.day}_${index}`} session={each}>
+                {each.sessions.map((session) => {
+                  return (
+                    <SortableSessionItemContainer
+                      key={`${each.day}_${session.id}`}
+                      containerId={`${each.day}#${session.id}`}
+                      container={session}
+                      filteredIds={filteredIds}
+                      onDeleteExercise={onDeleteExercise}
+                    />
+                  );
+                })}
+              </DayLayout>
+            );
+          })}
+        </ul>
+      </DndContext>
     </div>
   );
 };
