@@ -108,7 +108,7 @@ type ExerciseSearchFiltersProviderProps = {
   onExerciseChange: (updated_muscle: MusclePriorityType) => void;
   children: ReactNode;
 };
-const ExerciseSearchFiltersProvider = ({
+export const ExerciseSearchFiltersProvider = ({
   muscle,
   exerciseId,
   onExerciseChange,
@@ -122,7 +122,7 @@ const ExerciseSearchFiltersProvider = ({
   );
 };
 
-const useExerciseSearchFiltersContext = () => {
+export const useExerciseSearchFiltersContext = () => {
   return useContext(ExerciseSearchFiltersContext);
 };
 
@@ -199,4 +199,3 @@ function useExerciseSearchFilters(
     onSelectExerciseHandler,
   };
 }
-export { ExerciseSearchFiltersProvider, useExerciseSearchFiltersContext };

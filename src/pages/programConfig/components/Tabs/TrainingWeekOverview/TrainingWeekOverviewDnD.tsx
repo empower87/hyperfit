@@ -34,6 +34,7 @@ import { ExerciseFilter } from "./components/Settings/ExerciseFilter/ExerciseFil
 import SessionDurationVariables from "./components/Settings/SessionDuration/SessionDurationVariables";
 import { SessionDurationVariablesProvider } from "./components/Settings/SessionDuration/sessionDurationVariablesContext";
 import { DraggableExercises } from "./hooks/useExerciseSelection";
+import { SupersetsProvider } from "./hooks/useSupersets";
 import { hydrateTrainingWeek } from "./hooks/useTrainingWeek";
 
 type DropdownListProps = {
@@ -123,10 +124,10 @@ function TrainingWeekOverview() {
   const { training_block, prioritized_muscle_list } =
     useTrainingProgramContext();
   const { selectedMesocycle, selectedMicrocycle } = useToggleCyclesContext();
-
   const [draggableExercises, setDraggableExercises] = useState<
     DraggableExercises[][]
   >([]);
+  const [supersets, setSupersets] = useState();
   const [filteredIds, setFilteredIds] = useState<string[]>([]);
 
   useEffect(() => {
@@ -164,6 +165,7 @@ function TrainingWeekOverview() {
     () => draggableExercises[selectedMesocycle],
     [draggableExercises, selectedMesocycle]
   );
+
   return (
     <SessionDurationVariablesProvider>
       <div id="exercise_editor" className={`flex flex-col space-y-5 rounded`}>
@@ -184,11 +186,13 @@ function TrainingWeekOverview() {
           />
         </div>
 
-        <WeekSessions
-          training_week={memoizedTrainingWeek}
-          filteredIds={filteredIds}
-          onDeleteExercise={onDeleteExercise}
-        />
+        <SupersetsProvider trainingWeek={memoizedTrainingWeek}>
+          <WeekSessions
+            training_week={memoizedTrainingWeek}
+            filteredIds={filteredIds}
+            onDeleteExercise={onDeleteExercise}
+          />
+        </SupersetsProvider>
       </div>
     </SessionDurationVariablesProvider>
   );

@@ -4,7 +4,16 @@ import {
 } from "@dnd-kit/sortable";
 import { ReactNode, useState } from "react";
 import Modal from "~/components/Modals/Modal";
+import { Button } from "~/components/ui/button";
 import { Card } from "~/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "~/components/ui/dialog";
 import {
   ExerciseType,
   SessionSplitType,
@@ -33,6 +42,8 @@ export const SortableSessionItemContainer = ({
   filteredIds,
   onDeleteExercise,
 }: SortableSessionItemContainerProps) => {
+  const [openSuperset, setOpenSuperset] = useState(false);
+
   return (
     <SortableContext
       id={containerId}
@@ -53,6 +64,24 @@ export const SortableSessionItemContainer = ({
               exercise={item}
               filteredIds={filteredIds}
               onDeleteExercise={onDeleteExercise}
+              setOpenSuperset={setOpenSuperset}
+              supersetDialog={
+                <Dialog open={openSuperset} onOpenChange={setOpenSuperset}>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Create Superset</DialogTitle>
+                      <DialogDescription>
+                        Make changes to your profile here. Click save when
+                        you're done.
+                      </DialogDescription>
+                    </DialogHeader>
+
+                    <DialogFooter>
+                      <Button type="submit">Save changes</Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              }
             />
           ))}
         </ul>
@@ -104,8 +133,7 @@ const SessionItem = ({
       {children}
 
       <div className={`m-1 flex justify-between p-1`}>
-        <div className="grid grid-cols-4 grid-rows-2 text-xs">
-          <div>Totals</div>
+        <div className="grid grid-cols-3 grid-rows-2 text-xs">
           <div className=" text-muted-foreground">Sets</div>
           <div className=" text-muted-foreground">Reps</div>
           <div className=" text-muted-foreground">Duration</div>
@@ -154,7 +182,7 @@ const TotalsCard = ({ sessionExercises }: TotalsCardProps) => {
   );
   return (
     <>
-      <div className="col-start-2  text-white">{sets}</div>
+      <div className="text-white">{sets}</div>
       <div className=" text-white">{reps}</div>
       <div className=" text-white">{totalDuration}min</div>
     </>

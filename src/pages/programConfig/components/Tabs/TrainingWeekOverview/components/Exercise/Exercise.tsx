@@ -2,8 +2,14 @@ import { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { DotsVerticalIcon, DragHandleDots2Icon } from "@radix-ui/react-icons";
-import { HTMLAttributes, memo, ReactNode, useState } from "react";
-import SelectExercise from "~/components/Modals/SelectExercise/SelectExerciseModal";
+import {
+  Dispatch,
+  HTMLAttributes,
+  memo,
+  ReactNode,
+  SetStateAction,
+  useState,
+} from "react";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
@@ -62,6 +68,8 @@ type ExerciseItemProps = {
   exercise: ExerciseType;
   filteredIds: string[];
   onDeleteExercise: (exerciseId: string) => void;
+  supersetDialog: ReactNode;
+  setOpenSuperset: Dispatch<SetStateAction<boolean>>;
 };
 
 export const ExerciseItem = ({
@@ -69,9 +77,11 @@ export const ExerciseItem = ({
   exercise,
   filteredIds,
   onDeleteExercise,
+  supersetDialog,
+  setOpenSuperset,
 }: ExerciseItemProps) => {
   const { selectedMicrocycle, selectedMesocycle } = useToggleCyclesContext();
-  const [openSuperset, setOpenSuperset] = useState(false);
+  // const [openSuperset, setOpenSuperset] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
   const sets = exercise.setProgression
     ? exercise.setProgression[selectedMesocycle][selectedMicrocycle]
@@ -132,27 +142,17 @@ export const ExerciseItem = ({
                 <DropdownMenuContent className="w-44">
                   <DropdownMenuItem>Rest Period Per Set</DropdownMenuItem>
 
-                  <DropdownMenuItem
-                    onSelect={(e) => {
-                      e.preventDefault();
-                      setOpenSuperset(true);
-                    }}
-                  >
+                  <DropdownMenuItem onSelect={() => setOpenSuperset(true)}>
                     Create Superset
                   </DropdownMenuItem>
 
-                  <DropdownMenuItem
-                    onSelect={(e) => {
-                      e.preventDefault();
-                      setOpenDelete(true);
-                    }}
-                  >
+                  <DropdownMenuItem onSelect={() => setOpenDelete(true)}>
                     Delete Exercise
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              <Dialog open={openSuperset} onOpenChange={setOpenSuperset}>
+              {/* <Dialog open={openSuperset} onOpenChange={setOpenSuperset}>
                 <DialogContent>
                   <DialogHeader>
                     <DialogTitle>Create Superset</DialogTitle>
@@ -171,8 +171,8 @@ export const ExerciseItem = ({
                     <Button type="submit">Save changes</Button>
                   </DialogFooter>
                 </DialogContent>
-              </Dialog>
-
+              </Dialog> */}
+              {supersetDialog}
               <Dialog open={openDelete} onOpenChange={setOpenDelete}>
                 <DialogContent>
                   <DialogHeader>
@@ -189,7 +189,6 @@ export const ExerciseItem = ({
                       variant="destructive"
                       onClick={() => {
                         onDeleteExercise(exercise.id);
-                        setOpenDelete(false);
                       }}
                     >
                       Delete
