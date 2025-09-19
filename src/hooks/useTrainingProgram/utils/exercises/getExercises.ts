@@ -432,7 +432,7 @@ export const INITIAL_EXERCISE: ExerciseType = {
   rep_range: [8, 12],
 };
 
-const matrixIndexValidator = (index: number, matrix: number[][][]) => {
+const matrixIndexValidator = (index: number, matrix: number[][][]): number => {
   const selectedMatrix = matrix[index];
   if (!selectedMatrix) {
     index--;
