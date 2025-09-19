@@ -15,7 +15,7 @@ export const SupersetsProvider = ({
   children,
 }: SupersetProviderProps) => {
   const values = useSupersets(trainingWeek);
-  if (!values) throw new Error("SupersetsContext not found");
+
   return (
     <SupersetsContext.Provider value={values}>
       {children}
@@ -24,7 +24,9 @@ export const SupersetsProvider = ({
 };
 
 export const useSupersetsContext = () => {
-  return useContext(SupersetsContext);
+  const values =  useContext(SupersetsContext);
+  if (!values) throw new Error("SupersetsContext not found");
+  return values
 };
 
 type SupersetMapType = [string, string, string];

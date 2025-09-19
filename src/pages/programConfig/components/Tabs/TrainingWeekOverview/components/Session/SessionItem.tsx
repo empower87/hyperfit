@@ -4,16 +4,7 @@ import {
 } from "@dnd-kit/sortable";
 import { ReactNode, useState } from "react";
 import Modal from "~/components/Modals/Modal";
-import { Button } from "~/components/ui/button";
 import { Card } from "~/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "~/components/ui/dialog";
 import {
   ExerciseType,
   SessionSplitType,
@@ -22,7 +13,9 @@ import { cn } from "~/lib/clsx";
 import { useToggleCyclesContext } from "~/pages/programConfig/components/MesocycleToggle/hooks/useMesocycleToggle";
 import { getSplitColor } from "~/utils/getIndicatorColors";
 import { DraggableSessionType } from "../../hooks/useExerciseSelection";
+import { useSupersetsContext } from "../../hooks/useSupersets";
 import { ExerciseItem } from "../Exercise/Exercise";
+import { SupersetDialog, SupersetDialogBody } from "../Exercise/SupersetDialog";
 import SessionDurationVariables from "../Settings/SessionDuration/SessionDurationVariables";
 import { useSessionDurationVariablesContext } from "../Settings/SessionDuration/sessionDurationVariablesContext";
 
@@ -43,6 +36,7 @@ export const SortableSessionItemContainer = ({
   onDeleteExercise,
 }: SortableSessionItemContainerProps) => {
   const [openSuperset, setOpenSuperset] = useState(false);
+  const { supersets, addSuperset } = useSupersetsContext();
 
   return (
     <SortableContext
@@ -66,21 +60,15 @@ export const SortableSessionItemContainer = ({
               onDeleteExercise={onDeleteExercise}
               setOpenSuperset={setOpenSuperset}
               supersetDialog={
-                <Dialog open={openSuperset} onOpenChange={setOpenSuperset}>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>Create Superset</DialogTitle>
-                      <DialogDescription>
-                        Make changes to your profile here. Click save when
-                        you're done.
-                      </DialogDescription>
-                    </DialogHeader>
-
-                    <DialogFooter>
-                      <Button type="submit">Save changes</Button>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
+                <SupersetDialog
+                  openSuperset={openSuperset}
+                  setOpenSuperset={setOpenSuperset}
+                >
+                  <SupersetDialogBody
+                    exercises={container.exercises}
+                    selected_exercise_id={item.id}
+                  />
+                </SupersetDialog>
               }
             />
           ))}

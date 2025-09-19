@@ -35,6 +35,7 @@ import {
 import { ExerciseType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { useToggleCyclesContext } from "~/pages/programConfig/components/MesocycleToggle/hooks/useMesocycleToggle";
 import { getRankColor } from "~/utils/getIndicatorColors";
+import { useSupersetsContext } from "../../hooks/useSupersets";
 import { getExerciseHighlightClass } from "../Settings/ExerciseFilter/ExerciseFilter";
 
 type SortableExerciseItemProps = {
@@ -81,7 +82,8 @@ export const ExerciseItem = ({
   setOpenSuperset,
 }: ExerciseItemProps) => {
   const { selectedMicrocycle, selectedMesocycle } = useToggleCyclesContext();
-  // const [openSuperset, setOpenSuperset] = useState(false);
+  const { supersets, addSuperset } = useSupersetsContext();
+
   const [openDelete, setOpenDelete] = useState(false);
   const sets = exercise.setProgression
     ? exercise.setProgression[selectedMesocycle][selectedMicrocycle]
@@ -115,6 +117,7 @@ export const ExerciseItem = ({
 
               <div className="flex w-40 cursor-default flex-col overflow-hidden p-2 text-xs leading-tight">
                 <ExerciseTitle name={exercise.name} />
+
                 <div className="flex flex-col justify-between">
                   <div className="w-16">{exercise.muscle}</div>
                   <div className="flex space-x-2">
@@ -152,7 +155,7 @@ export const ExerciseItem = ({
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              {/* <Dialog open={openSuperset} onOpenChange={setOpenSuperset}>
+              {/* <Dialog open={openSuperseta} onOpenChange={setOpenSuperseta}>
                 <DialogContent>
                   <DialogHeader>
                     <DialogTitle>Create Superset</DialogTitle>
@@ -161,17 +164,14 @@ export const ExerciseItem = ({
                       done.
                     </DialogDescription>
                   </DialogHeader>
-
-                  <SelectExercise
-                    exerciseId={exercise.id}
-                    onSelect={onSelect}
-                  />
-
+   
+                  {supersets}
                   <DialogFooter>
                     <Button type="submit">Save changes</Button>
                   </DialogFooter>
                 </DialogContent>
               </Dialog> */}
+
               {supersetDialog}
               <Dialog open={openDelete} onOpenChange={setOpenDelete}>
                 <DialogContent>
