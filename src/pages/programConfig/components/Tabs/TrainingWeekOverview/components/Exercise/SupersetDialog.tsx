@@ -9,18 +9,21 @@ import {
   DialogTitle,
 } from "~/components/ui/dialog";
 import { ExerciseType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
+import { useSupersetsContext } from "../../hooks/useSupersets";
 
 type SupersetDialogItemProps = {
   exercise_order: number;
   exercise: ExerciseType;
   selected_exercise_id: string;
   isSupersetted: boolean;
+  onClick: () => void;
 };
 function SupersetDialogItem({
   exercise_order,
   exercise,
   selected_exercise_id,
   isSupersetted,
+  onClick,
 }: SupersetDialogItemProps) {
   const exercise_bg =
     selected_exercise_id === exercise.id ? "bg-primary-300" : "";
@@ -42,6 +45,7 @@ export function SupersetDialogBody({
   exercises,
   selected_exercise_id,
 }: SupersetDialogBodyProps) {
+  const { supersets, addSuperset } = useSupersetsContext();
   return (
     <ul className="space-y-1">
       {exercises.map((ex, i) => {
@@ -52,6 +56,7 @@ export function SupersetDialogBody({
             exercise={ex}
             selected_exercise_id={selected_exercise_id}
             isSupersetted={false}
+            onClick={() => addSuperset(selected_exercise_id, ex.id, "")}
           />
         );
       })}
