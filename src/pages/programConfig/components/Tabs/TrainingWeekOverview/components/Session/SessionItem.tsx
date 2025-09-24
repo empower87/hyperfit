@@ -15,7 +15,7 @@ import { getSplitColor } from "~/utils/getIndicatorColors";
 import { DraggableSessionType } from "../../hooks/useExerciseSelection";
 import { useSupersetsContext } from "../../hooks/useSupersets";
 import { ExerciseItem } from "../Exercise/Exercise";
-import { SupersetDialog, SupersetDialogBody } from "../Exercise/SupersetDialog";
+import { SupersetDialog } from "../Exercise/SupersetDialog";
 import SessionDurationVariables from "../Settings/SessionDuration/SessionDurationVariables";
 import { useSessionDurationVariablesContext } from "../Settings/SessionDuration/sessionDurationVariablesContext";
 
@@ -63,12 +63,8 @@ export const SortableSessionItemContainer = ({
                 <SupersetDialog
                   openSuperset={openSuperset}
                   setOpenSuperset={setOpenSuperset}
-                >
-                  <SupersetDialogBody
-                    exercises={container.exercises}
-                    selected_exercise_id={item.id}
-                  />
-                </SupersetDialog>
+                  exercises={container.exercises}
+                />
               }
             />
           ))}

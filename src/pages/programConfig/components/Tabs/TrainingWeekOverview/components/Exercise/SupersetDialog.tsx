@@ -1,3 +1,4 @@
+import { Link1Icon, LinkBreak1Icon } from "@radix-ui/react-icons";
 import { useState } from "react";
 import { Button } from "~/components/ui/button";
 import {
@@ -110,6 +111,7 @@ export function SupersetDialog({
       setSelectedIds([id]);
       return;
     }
+
     // Only allow up to 2 selections
     if (selectedIds.length < 2) {
       setSelectedIds([...selectedIds, id]);
@@ -158,16 +160,20 @@ export function SupersetDialog({
           </DialogDescription>
         </DialogHeader>
         {/* Top-right button */}
-        <div className="absolute right-4 top-4">
+        <div className="flex justify-end">
           {canSuperset ? (
-            <Button variant="default" onClick={handleSuperset}>
-              Superset Selected
+            <Button variant="default" size="icon" onClick={handleSuperset}>
+              <Link1Icon />
             </Button>
           ) : canBreak ? (
-            <Button variant="destructive" onClick={handleBreak}>
-              Break Superset
+            <Button variant="destructive" size="icon" onClick={handleBreak}>
+              <LinkBreak1Icon />
             </Button>
-          ) : null}
+          ) : (
+            <Button variant="default" disabled>
+              Select Superset
+            </Button>
+          )}
         </div>
         <SupersetDialogBody
           exercises={exercises}

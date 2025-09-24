@@ -24,31 +24,49 @@ export const SupersetsProvider = ({
 };
 
 export const useSupersetsContext = () => {
-  const values =  useContext(SupersetsContext);
+  const values = useContext(SupersetsContext);
   if (!values) throw new Error("SupersetsContext not found");
-  return values
+  return values;
 };
 
-type SupersetMapType = [string, string, string];
+type SupersetsMap = Record<string, [string, string]>;
 const useSupersets = (trainingWeek: DraggableExercises[]) => {
-  const [supersets, setSupersets] = useState<SupersetMapType[]>([]);
+  // key: supersetId, value: [exerciseId1, exerciseId2]
+  const [supersets, setSupersets] = useState<SupersetsMap>({});
 
+  // Generate a unique superset key from exercise IDs
+  const getSupersetKey = (id1: string, id2: string) => {
+    return [id1, id2].sort().join("_");
+  };
+
+  // Add or overwrite a superset
   const addSuperset = (
     exercise1Id: string,
     exercise2Id: string,
-    sessionId: string
+    _sessionId?: string
   ) => {
-    const filterOutExistingSuperset = supersets.filter(
-      (superset) => superset[0] !== sessionId
-    );
-    setSupersets([
-      ...filterOutExistingSuperset,
-      [sessionId, exercise1Id, exercise2Id],
-    ]);
+    // Remove any supersets containing either exercise
+    const newSupersets: SupersetsMap = {};
+    Object.entries(supersets).forEach(([key, arr]) => {
+      if (!arr.includes(exercise1Id) && !arr.includes(exercise2Id)) {
+        newSupersets[key] = arr;
+      }
+    });
+    const newKey = getSupersetKey(exercise1Id, exercise2Id);
+    newSupersets[newKey] = [exercise1Id, exercise2Id];
+    setSupersets(newSupersets);
+  };
+
+  // Remove a superset by key
+  const breakSuperset = (supersetKey: string) => {
+    const newSupersets = { ...supersets };
+    delete newSupersets[supersetKey];
+    setSupersets(newSupersets);
   };
 
   return {
     supersets,
     addSuperset,
+    breakSuperset,
   };
 };
