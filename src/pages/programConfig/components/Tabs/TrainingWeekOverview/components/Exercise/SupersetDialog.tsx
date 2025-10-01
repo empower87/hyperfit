@@ -1,4 +1,4 @@
-import { Link1Icon, LinkBreak1Icon } from "@radix-ui/react-icons";
+import { Link2Icon, LinkNone2Icon } from "@radix-ui/react-icons";
 import { useState } from "react";
 import { Button } from "~/components/ui/button";
 import {
@@ -18,6 +18,7 @@ type SupersetDialogItemProps = {
   isSelected: boolean;
   borderColor: string;
   isSupersetted: boolean;
+  supersetColor?: string;
   onClick: () => void;
 };
 function SupersetDialogItem({
@@ -26,17 +27,22 @@ function SupersetDialogItem({
   isSelected,
   borderColor,
   isSupersetted,
+  supersetColor,
   onClick,
 }: SupersetDialogItemProps) {
+  // If in a superset, use supersetColor for border
+  const border =
+    isSupersetted && supersetColor
+      ? supersetColor
+      : isSelected
+      ? borderColor
+      : "border-gray-300";
   return (
     <div
-      className={`flex cursor-pointer items-center rounded border-2 ${
-        isSelected ? borderColor : "border-gray-300"
-      } ${isSelected ? "bg-primary-100" : ""} ${
-        isSupersetted ? "ring-2 ring-purple-400" : ""
+      className={`mb-2 flex cursor-pointer items-center rounded border-2 ${border} ${
+        isSelected ? "bg-primary-300" : ""
       }`}
       onClick={onClick}
-      style={{ marginBottom: 4 }}
     >
       <div className={`p-2 text-xs`}>{exercise_order}</div>
       <div className={`text-sm`}>{exercise.name}</div>
@@ -56,19 +62,48 @@ export function SupersetDialogBody({
   supersets,
   onSelect,
 }: SupersetDialogBodyProps) {
-  // Unique border colors for up to 2 selections
+  // Palette for supersets (cycle through)
+  const supersetColors = [
+    "border-red-500",
+    "border-yellow-500",
+    "border-green-500",
+    "border-blue-500",
+    "border-purple-500",
+    "border-pink-500",
+    "border-orange-500",
+    "border-teal-500",
+    "border-cyan-500",
+    "border-lime-500",
+  ];
+  // Unique border colors for up to 2 selections (not yet supersetted)
   const borderColors = ["border-blue-500", "border-green-500"];
+
+  // Map superset key to color
+  const supersetKeyList = Object.keys(supersets);
+  const supersetColorMap: Record<string, string> = {};
+  supersetKeyList.forEach((key, idx) => {
+    supersetColorMap[key] = supersetColors[idx % supersetColors.length];
+  });
+
   return (
-    <ul className="space-y-1">
+    <ul className="">
       {exercises.map((ex, i) => {
         const isSelected = selectedIds.includes(ex.id);
         const borderColor = isSelected
           ? borderColors[selectedIds.indexOf(ex.id)]
           : "";
-        // Check if this exercise is in any superset
-        const isSupersetted = Object.values(supersets).some((arr) =>
-          arr.includes(ex.id)
-        );
+        // Find superset key for this exercise
+        let supersetKey: string | undefined = undefined;
+        let isSupersetted = false;
+        Object.entries(supersets).forEach(([key, arr]) => {
+          if (arr.includes(ex.id)) {
+            supersetKey = key;
+            isSupersetted = true;
+          }
+        });
+        const supersetColor = supersetKey
+          ? supersetColorMap[supersetKey]
+          : undefined;
         return (
           <SupersetDialogItem
             key={`${ex.id}_SupersetDialogItem`}
@@ -77,6 +112,7 @@ export function SupersetDialogBody({
             isSelected={isSelected}
             borderColor={borderColor}
             isSupersetted={isSupersetted}
+            supersetColor={supersetColor}
             onClick={() => onSelect(ex.id)}
           />
         );
@@ -105,6 +141,7 @@ export function SupersetDialog({
       setSelectedIds(selectedIds.filter((sid) => sid !== id));
       return;
     }
+
     // If already in a superset, overwrite
     const inSuperset = Object.values(supersets).some((arr) => arr.includes(id));
     if (inSuperset) {
@@ -159,28 +196,31 @@ export function SupersetDialog({
             deselect. Supersets will overwrite previous ones.
           </DialogDescription>
         </DialogHeader>
+
         {/* Top-right button */}
         <div className="flex justify-end">
           {canSuperset ? (
-            <Button variant="default" size="icon" onClick={handleSuperset}>
-              <Link1Icon />
+            <Button variant="default" size="iconLg" onClick={handleSuperset}>
+              <Link2Icon />
             </Button>
           ) : canBreak ? (
-            <Button variant="destructive" size="icon" onClick={handleBreak}>
-              <LinkBreak1Icon />
+            <Button variant="default" size="iconLg" onClick={handleBreak}>
+              <LinkNone2Icon />
             </Button>
           ) : (
-            <Button variant="default" disabled>
-              Select Superset
+            <Button variant="default" size="iconLg" disabled>
+              <Link2Icon />
             </Button>
           )}
         </div>
+
         <SupersetDialogBody
           exercises={exercises}
           selectedIds={selectedIds}
           supersets={supersets}
           onSelect={handleSelect}
         />
+
         <DialogFooter>
           <Button type="button" onClick={() => setOpenSuperset(false)}>
             Close
