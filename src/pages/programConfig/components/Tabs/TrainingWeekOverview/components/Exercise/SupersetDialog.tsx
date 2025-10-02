@@ -76,7 +76,7 @@ export function SupersetDialogBody({
     "border-lime-500",
   ];
   // Unique border colors for up to 2 selections (not yet supersetted)
-  const borderColors = ["border-blue-500", "border-green-500"];
+  const borderColors = ["border-primary-600", "border-primary-500"];
 
   // Map superset key to color
   const supersetKeyList = Object.keys(supersets);
