@@ -82,7 +82,7 @@ export const ExerciseItem = ({
   setOpenSuperset,
 }: ExerciseItemProps) => {
   const { selectedMicrocycle, selectedMesocycle } = useToggleCyclesContext();
-  const { supersets, addSuperset } = useSupersetsContext();
+  const { supersets } = useSupersetsContext();
 
   const [openDelete, setOpenDelete] = useState(false);
   const sets = exercise.setProgression
@@ -92,6 +92,37 @@ export const ExerciseItem = ({
 
   const bgColorByRank = getRankColor(exercise.rank).bg;
 
+  // Superset color palette (same as SupersetDialog)
+  const supersetColors = [
+    "border-red-500",
+    "border-yellow-500",
+    "border-green-500",
+    "border-blue-500",
+    "border-purple-500",
+    "border-pink-500",
+    "border-orange-500",
+    "border-teal-500",
+    "border-cyan-500",
+    "border-lime-500",
+  ];
+  // Map superset key to color
+  const supersetKeyList = Object.keys(supersets);
+  const supersetColorMap: Record<string, string> = {};
+  supersetKeyList.forEach((key, idx) => {
+    supersetColorMap[key] = supersetColors[idx % supersetColors.length];
+  });
+
+  // Find superset key for this exercise
+  let supersetKey: string | undefined = undefined;
+  let isSupersetted = false;
+  Object.entries(supersets).forEach(([key, arr]) => {
+    if (arr.includes(exercise.id)) {
+      supersetKey = key;
+      isSupersetted = true;
+    }
+  });
+  const supersetBorderColor = supersetKey ? supersetColorMap[supersetKey] : "border-input";
+
   const onSelect = () => {};
 
   return (
@@ -100,7 +131,7 @@ export const ExerciseItem = ({
         <li className={`flex`}>
           <div className="pr-2 text-sm text-white">{index}</div>
           <div
-            className={`flex w-full rounded-md border border-input bg-background/40 ${getExerciseHighlightClass(
+            className={`flex w-full rounded-md border bg-background/40 ${isSupersetted ? supersetBorderColor : "border-input"} ${getExerciseHighlightClass(
               filteredIds.includes(exercise.id)
             )}`}
           >
@@ -154,23 +185,6 @@ export const ExerciseItem = ({
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-
-              {/* <Dialog open={openSuperseta} onOpenChange={setOpenSuperseta}>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Create Superset</DialogTitle>
-                    <DialogDescription>
-                      Make changes to your profile here. Click save when you're
-                      done.
-                    </DialogDescription>
-                  </DialogHeader>
-   
-                  {supersets}
-                  <DialogFooter>
-                    <Button type="submit">Save changes</Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog> */}
 
               {supersetDialog}
               <Dialog open={openDelete} onOpenChange={setOpenDelete}>
