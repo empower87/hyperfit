@@ -13,6 +13,7 @@ import { cn } from "~/lib/clsx";
 import { useToggleCyclesContext } from "~/pages/programConfig/components/MesocycleToggle/hooks/useMesocycleToggle";
 import { getSplitColor } from "~/utils/getIndicatorColors";
 import { DraggableSessionType } from "../../hooks/useExerciseSelection";
+import { useSupersetsContext } from "../../hooks/useSupersets";
 import { ExerciseItem } from "../Exercise/Exercise";
 import { SupersetDialog } from "../Exercise/SupersetDialog";
 import SessionDurationVariables from "../Settings/SessionDuration/SessionDurationVariables";
@@ -143,6 +144,7 @@ type TotalsCardProps = {
 const TotalsCard = ({ sessionExercises }: TotalsCardProps) => {
   const { selectedMesocycle, selectedMicrocycle } = useToggleCyclesContext();
   const { sessionDurationCalculator } = useSessionDurationVariablesContext();
+  const { supersets } = useSupersetsContext();
 
   const sets = sessionExercises.reduce(
     (acc, exercise) =>
@@ -160,7 +162,8 @@ const TotalsCard = ({ sessionExercises }: TotalsCardProps) => {
   const totalDuration = sessionDurationCalculator(
     sessionExercises,
     selectedMicrocycle,
-    selectedMesocycle
+    selectedMesocycle,
+    supersets
   );
   return (
     <>

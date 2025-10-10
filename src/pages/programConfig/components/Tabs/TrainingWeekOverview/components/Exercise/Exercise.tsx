@@ -100,7 +100,7 @@ export const ExerciseItem = ({
     "border-blue-500",
     "border-purple-500",
     "border-pink-500",
-    "border-orange-500",
+    "border-orange-50`0",
     "border-teal-500",
     "border-cyan-500",
     "border-lime-500",
@@ -121,7 +121,9 @@ export const ExerciseItem = ({
       isSupersetted = true;
     }
   });
-  const supersetBorderColor = supersetKey ? supersetColorMap[supersetKey] : "border-input";
+  const supersetBorderColor = supersetKey
+    ? supersetColorMap[supersetKey]
+    : "border-input";
 
   const onSelect = () => {};
 
@@ -131,9 +133,9 @@ export const ExerciseItem = ({
         <li className={`flex`}>
           <div className="pr-2 text-sm text-white">{index}</div>
           <div
-            className={`flex w-full rounded-md border bg-background/40 ${isSupersetted ? supersetBorderColor : "border-input"} ${getExerciseHighlightClass(
-              filteredIds.includes(exercise.id)
-            )}`}
+            className={`flex w-full rounded-md border bg-background/40 ${
+              isSupersetted ? supersetBorderColor : "border-input"
+            } ${getExerciseHighlightClass(filteredIds.includes(exercise.id))}`}
           >
             <DraggableExerciseHandle
               bgColor={bgColorByRank}

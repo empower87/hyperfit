@@ -98,46 +98,69 @@ export default function useSessionDurationVariables() {
     (
       exercises: ExerciseType[],
       currentMicrocycleIndex: number,
-      currentMesocycleIndex: number
+      currentMesocycleIndex: number,
+      supersets?: Record<string, [string, string]>
     ) => {
       const { warmup, rest, rep, superset } = durationTimeConstants;
-
-      const totalExercises = exercises.length;
-      const restTime = totalExercises * rest.value;
 
       let totalRepTime = 0;
       let totalRestTime = 0;
 
+      // Track which exercises have already had their rest counted (for supersets)
+      const restCounted: Set<string> = new Set();
+
+      // If supersets provided, count only one rest period for each pair
+      if (supersets) {
+        Object.values(supersets).forEach(([id1, id2]) => {
+          // Find exercises
+          const ex1 = exercises.find((e) => e.id === id1);
+          const ex2 = exercises.find((e) => e.id === id2);
+          if (ex1 && ex2) {
+            const sets1 = ex1.setProgression
+              ? ex1.setProgression[currentMesocycleIndex][
+                  currentMicrocycleIndex
+                ]
+              : 0;
+            // Use the max sets between the two for rest calculation
+            const sets = Math.max(
+              sets1,
+              ex2.setProgression
+                ? ex2.setProgression[currentMesocycleIndex][
+                    currentMicrocycleIndex
+                  ]
+                : 0
+            );
+            totalRestTime += sets * superset.value;
+            restCounted.add(id1);
+            restCounted.add(id2);
+          }
+        });
+      }
+
       for (let i = 0; i < exercises.length; i++) {
-        const setProg = exercises[i].setProgression;
-
-        const modality = exercises[i].trainingModality;
-        // const { sets, reps } = exercise[currentMicrocycleIndex];
-
-        // const sets = exercises[i].initialSetsPerMeso[currentMicrocycleIndex];
+        const ex = exercises[i];
+        const setProg = ex.setProgression;
+        const modality = ex.trainingModality;
         const sets = setProg
           ? setProg[currentMesocycleIndex][currentMicrocycleIndex]
           : 0;
-        const reps = exercises[i].reps;
+        const reps = ex.reps;
         const repTime = exerciseModalityRepCalculator(
           modality,
           sets,
           reps,
           rep
         );
-
-        let restTime = 0;
-        if (exercises[i].trainingModality === "superset") {
-          restTime = Math.round(superset.value / 2) * sets;
-        } else {
-          restTime = sets * rest.value;
-        }
-        totalRestTime += restTime;
         totalRepTime += repTime;
+
+        // If not already counted in a superset, add normal rest
+        if (!restCounted.has(ex.id)) {
+          totalRestTime += sets * rest.value;
+        }
       }
 
       const totalTimeInMinutes = Math.round(
-        (warmup.value + restTime + totalRepTime + totalRestTime) / 60
+        (warmup.value + totalRepTime + totalRestTime) / 60
       );
 
       return totalTimeInMinutes;

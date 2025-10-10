@@ -36,11 +36,11 @@ function SupersetDialogItem({
       ? supersetColor
       : isSelected
       ? borderColor
-      : "border-gray-300";
+      : "border-gray-500";
   return (
     <div
       className={`mb-2 flex cursor-pointer items-center rounded border-2 ${border} ${
-        isSelected ? "bg-primary-300" : ""
+        isSelected ? "bg-primary-400" : ""
       }`}
       onClick={onClick}
     >
@@ -76,7 +76,7 @@ export function SupersetDialogBody({
     "border-lime-500",
   ];
   // Unique border colors for up to 2 selections (not yet supersetted)
-  const borderColors = ["border-primary-600", "border-primary-500"];
+  const borderColors = ["border-primary-200", "border-primary-200"];
 
   // Map superset key to color
   const supersetKeyList = Object.keys(supersets);
