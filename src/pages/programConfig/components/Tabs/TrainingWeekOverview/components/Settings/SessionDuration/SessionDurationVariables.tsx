@@ -121,6 +121,7 @@ export default function SessionDurationVariables() {
 type SettingsProps = {
   children: ReactNode;
 };
+
 type SectionProps = SettingsProps & {
   title: string;
   variant?: "dark" | "light";
