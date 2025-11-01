@@ -93,7 +93,14 @@ function Item({ muscle, index, handle, isCollapsed }: ItemProps) {
             </SelectTrigger>
             <SelectContent>
               {["MRV", "MEV", "MV"].map((split, index) => {
-                return <SelectItem value={split}>{split}</SelectItem>;
+                return (
+                  <SelectItem
+                    key={`${split}_${index}_SelectItemMusclePrioritization`}
+                    value={split}
+                  >
+                    {split}
+                  </SelectItem>
+                );
               })}
             </SelectContent>
           </Select>

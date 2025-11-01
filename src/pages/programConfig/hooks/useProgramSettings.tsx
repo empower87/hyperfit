@@ -13,7 +13,10 @@ import {
   SplitSessionsNameType,
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
-import { MUSCLE_PRIORITY_LIST } from "~/hooks/useTrainingProgram/utils/prioritized_muscle_list/musclePriorityListHandlers";
+import {
+  MUSCLE_PRIORITY_LIST,
+  onMusclePrioritization,
+} from "~/hooks/useTrainingProgram/utils/prioritized_muscle_list/musclePriorityListHandlers";
 
 type UseProgramSettingsProps = {
   onSaveSettings: (settings: {
@@ -25,6 +28,11 @@ type UseProgramSettingsProps = {
 };
 
 function useProgramSettings({ onSaveSettings }: UseProgramSettingsProps) {
+  const {
+    mev_breakpoint,
+    mrv_breakpoint,
+    frequency: week_frequency,
+  } = useTrainingProgramContext();
   const [volumeLandmarkBreakpoints, setVolumeLandmarkBreakpoints] = useState<
     [number, number]
   >([4, 9]);
@@ -52,10 +60,15 @@ function useProgramSettings({ onSaveSettings }: UseProgramSettingsProps) {
       const items = structuredClone(musclePrioritization);
       const [removed] = items.splice(source, 1);
       items.splice(destination, 0, removed);
-      setMusclePrioritization(items);
+      const new_items = onMusclePrioritization(
+        items,
+        [mrv_breakpoint, mev_breakpoint],
+        week_frequency[0]
+      );
+      setMusclePrioritization(new_items);
       setDragNdropResults(null);
     }
-  }, [dragNdropResults]);
+  }, [dragNdropResults, musclePrioritization]);
 
   const onPriorityListDragEnd = (result: DropResult) => {
     if (!result.destination) return;

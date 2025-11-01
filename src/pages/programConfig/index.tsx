@@ -103,11 +103,13 @@ const ProgramConfiguration = memo(() => {
       </div>
 
       <div className="flex h-full space-x-3">
-        {isPriorityListCollapsed ? (
-          <></>
-        ) : (
-          <ProgramSettings isCollapsed={isPriorityListCollapsed} />
-        )}
+        <ProgramSettingsProvider>
+          {isPriorityListCollapsed ? (
+            <></>
+          ) : (
+            <ProgramSettings isCollapsed={isPriorityListCollapsed} />
+          )}
+        </ProgramSettingsProvider>
       </div>
     </div>
   );
@@ -201,27 +203,25 @@ type ProgramSettingsProps = {
 };
 function ProgramSettings({ isCollapsed }: ProgramSettingsProps) {
   return (
-    <ProgramSettingsProvider>
-      <div className="flex flex-col">
-        <div className="flex">
-          <div className="p-4 pr-0 pt-0">
-            <ProgramConfigOptionCard title="1. Prioritize">
-              <MusclePrioritizationList isCollapsed={isCollapsed} />
-            </ProgramConfigOptionCard>
-          </div>
-
-          <div className="flex flex-col space-y-3 p-4 pt-0">
-            <ProgramConfigOptionCard title="2. Frequency">
-              <FrequencySelection />
-            </ProgramConfigOptionCard>
-
-            <ProgramConfigOptionCard title="3. Split">
-              <SplitSelect />
-            </ProgramConfigOptionCard>
-          </div>
+    <div className="flex flex-col">
+      <div className="flex">
+        <div className="p-4 pr-0 pt-0">
+          <ProgramConfigOptionCard title="1. Prioritize">
+            <MusclePrioritizationList isCollapsed={isCollapsed} />
+          </ProgramConfigOptionCard>
         </div>
-        <Actions />
+
+        <div className="flex flex-col space-y-3 p-4 pt-0">
+          <ProgramConfigOptionCard title="2. Frequency">
+            <FrequencySelection />
+          </ProgramConfigOptionCard>
+
+          <ProgramConfigOptionCard title="3. Split">
+            <SplitSelect />
+          </ProgramConfigOptionCard>
+        </div>
       </div>
-    </ProgramSettingsProvider>
+      <Actions />
+    </div>
   );
 }

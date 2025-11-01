@@ -273,8 +273,8 @@ export const onMusclePrioritization = (
   breakpoints: [number, number],
   total_sessions: number
 ) => {
-  const updated_list = muscle_priority_list;
-  // const updated_list = structuredClone(muscle_priority_list);
+  // const updated_list = muscle_priority_list;
+  const updated_list = structuredClone(muscle_priority_list);
 
   for (let i = 0; i < updated_list.length; i++) {
     const muscle = updated_list[i].muscle;
