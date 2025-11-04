@@ -5,12 +5,12 @@ export default function Actions() {
   const { onSaveProgramSettings } = useProgramSettingsContext();
   const onResetConfig = () => {};
   return (
-    <div className={`flex w-full justify-end space-x-2 p-3`}>
+    <div className={`flex w-full justify-end px-3 pb-3`}>
       <Button onClick={onResetConfig} variant="outline">
         Reset
       </Button>
 
-      <Button onClick={onSaveProgramSettings} className={`bg-rose-400`}>
+      <Button onClick={onSaveProgramSettings} className={`ml-2 bg-rose-400`}>
         Save Changes
       </Button>
     </div>

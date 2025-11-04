@@ -20,55 +20,6 @@ export default function ProgramConfig() {
   );
 }
 
-// export default function ProgramConfig() {
-//   return (
-//     <div className="flex h-full flex-col pt-10">
-//       <h1 className="mb-5 text-white">Program Configuration</h1>
-//       <TrainingProgramProvider>
-//         <ProgramConfigProvider>
-//           <div className="flex h-full space-x-5">
-//             <div className="h-full">
-//               <MusclePrioritization />
-//             </div>
-
-//             <div className="flex h-full flex-col space-y-3 overflow-y-scroll pb-14 pr-1">
-//               <div className="flex flex-col space-y-3">
-//                 <div className="flex w-full space-x-3">
-//                   <Card>
-//                     <CardHeader>2. Frequency</CardHeader>
-//                     <CardContent>
-//                       <FrequencySelection />
-//                     </CardContent>
-//                   </Card>
-
-//                   <Card className="w-full">
-//                     <CardHeader>3. Split</CardHeader>
-//                     <CardContent>
-//                       <Split />
-//                     </CardContent>
-//                   </Card>
-//                 </div>
-
-//                 <Card>
-//                   <CardHeader>Split Overview</CardHeader>
-//                   <CardContent>
-//                     <TrainingWeek />
-//                     <Actions />
-//                   </CardContent>
-//                 </Card>
-//               </div>
-
-//               <div className="flex flex-col rounded-lg">
-//                 <CustomizationTabs />
-//               </div>
-//             </div>
-//           </div>
-//         </ProgramConfigProvider>
-//       </TrainingProgramProvider>
-//     </div>
-//   );
-// }
-
 const ProgramConfiguration = memo(() => {
   const [isPriorityListCollapsed, setIsPriorityListCollapsed] = useState(false);
 
@@ -102,7 +53,7 @@ const ProgramConfiguration = memo(() => {
         </div>
       </div>
 
-      <div className="flex h-full space-x-3">
+      <div className="flex h-full flex-col justify-between">
         <ProgramSettingsProvider>
           {isPriorityListCollapsed ? (
             <></>
@@ -114,71 +65,6 @@ const ProgramConfiguration = memo(() => {
     </div>
   );
 });
-
-// function ProgramConfiguration() {
-//   const [isPriorityListCollapsed, setIsPriorityListCollapsed] = useState(false);
-
-//   const onCollapsePriorityList = () => setIsPriorityListCollapsed(true);
-//   const onExpandPriorityList = () => setIsPriorityListCollapsed(false);
-//   return (
-//     <ProgramConfigProvider>
-//       <div className="flex h-full space-x-5 bg-primary-600 py-4">
-//         <Card className="border-none bg-primary-600">
-//           <CardHeader>
-//             <div className="flex items-center justify-between space-x-2 pb-2">
-//               <CardTitle>Configuration</CardTitle>
-//               {isPriorityListCollapsed ? (
-//                 <Button
-//                   className="bg-card"
-//                   variant="outline"
-//                   size="icon"
-//                   onClick={onExpandPriorityList}
-//                 >
-//                   <ChevronRightIcon />
-//                 </Button>
-//               ) : (
-//                 <Button
-//                   className="bg-card"
-//                   variant="outline"
-//                   size="icon"
-//                   onClick={onCollapsePriorityList}
-//                 >
-//                   <ChevronLeftIcon />
-//                 </Button>
-//               )}
-//             </div>
-//           </CardHeader>
-
-//           <CardContent>
-//             {isPriorityListCollapsed ? (
-//               <></>
-//             ) : (
-//               <>
-//                 <div className="flex flex-col space-y-3">
-//                   <div className="flex space-x-3">
-//                     <ProgramConfigOptionCard title="1. Frequency">
-//                       <FrequencySelection />
-//                     </ProgramConfigOptionCard>
-
-//                     <ProgramConfigOptionCard title="2. Split">
-//                       <Split />
-//                     </ProgramConfigOptionCard>
-//                   </div>
-//                   <MusclePrioritizationList
-//                     isCollapsed={isPriorityListCollapsed}
-//                   />
-//                 </div>
-//               </>
-//             )}
-//           </CardContent>
-//           <CardFooter>
-//             <Actions />
-//           </CardFooter>
-//         </Card>
-//       </div>
-//     </ProgramConfigProvider>
-//   );
-// }
 
 type ProgramConfigOptionCardProps = {
   title: string;
@@ -203,25 +89,25 @@ type ProgramSettingsProps = {
 };
 function ProgramSettings({ isCollapsed }: ProgramSettingsProps) {
   return (
-    <div className="flex flex-col">
-      <div className="flex">
-        <div className="p-4 pr-0 pt-0">
-          <ProgramConfigOptionCard title="1. Prioritize">
-            <MusclePrioritizationList isCollapsed={isCollapsed} />
-          </ProgramConfigOptionCard>
-        </div>
-
-        <div className="flex flex-col space-y-3 p-4 pt-0">
-          <ProgramConfigOptionCard title="2. Frequency">
+    <>
+      <div className="flex flex-col">
+        <div className="flex space-x-2 p-3 pt-0">
+          <ProgramConfigOptionCard title="1. Frequency">
             <FrequencySelection />
           </ProgramConfigOptionCard>
 
-          <ProgramConfigOptionCard title="3. Split">
+          <ProgramConfigOptionCard title="2. Split">
             <SplitSelect />
+          </ProgramConfigOptionCard>
+        </div>
+
+        <div className="p-3 pr-0 pt-0">
+          <ProgramConfigOptionCard title="3. Prioritize">
+            <MusclePrioritizationList isCollapsed={isCollapsed} />
           </ProgramConfigOptionCard>
         </div>
       </div>
       <Actions />
-    </div>
+    </>
   );
 }
