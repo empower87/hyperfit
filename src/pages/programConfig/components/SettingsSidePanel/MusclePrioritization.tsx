@@ -16,7 +16,7 @@ import { cn } from "~/lib/clsx";
 import StrictModeDroppable from "~/lib/react-beautiful-dnd/StrictModeDroppable";
 import { getRankColor } from "~/utils/getIndicatorColors";
 import getMuscleTitleForUI from "~/utils/getMuscleTitleForUI";
-import { useProgramSettingsContext } from "../hooks/useProgramSettings";
+import { useProgramSettingsContext } from "../../hooks/useProgramSettings";
 
 type ItemProps = {
   muscle: MusclePriorityType;

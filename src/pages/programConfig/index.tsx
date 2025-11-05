@@ -1,11 +1,11 @@
 import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
-import { memo, ReactNode, useState } from "react";
+import { ReactNode, useState } from "react";
 import { Button } from "~/components/ui/button";
 import { TrainingProgramProvider } from "~/hooks/useTrainingProgram/useTrainingProgram";
-import Actions from "./components/Actions";
-import FrequencySelection from "./components/FrequencySelection";
-import { MusclePrioritizationList } from "./components/MusclePrioritization";
-import SplitSelect from "./components/Split/SplitSelect";
+import Actions from "./components/SettingsSidePanel/Actions";
+import FrequencySelection from "./components/SettingsSidePanel/FrequencySelection";
+import { MusclePrioritizationList } from "./components/SettingsSidePanel/MusclePrioritization";
+import SplitSelect from "./components/SettingsSidePanel/SplitSelect";
 import { CustomizationPage } from "./components/Tabs";
 import { ProgramSettingsProvider } from "./hooks/useProgramSettings";
 
@@ -20,7 +20,7 @@ export default function ProgramConfig() {
   );
 }
 
-const ProgramConfiguration = memo(() => {
+const ProgramConfiguration = () => {
   const [isPriorityListCollapsed, setIsPriorityListCollapsed] = useState(false);
 
   const onCollapsePriorityList = () => setIsPriorityListCollapsed(true);
@@ -64,7 +64,7 @@ const ProgramConfiguration = memo(() => {
       </div>
     </div>
   );
-});
+};
 
 type ProgramConfigOptionCardProps = {
   title: string;

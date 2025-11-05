@@ -10,13 +10,8 @@ import {
 import { SplitSessionsNameType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { useProgramSettingsContext } from "../../hooks/useProgramSettings";
 
-type SelectSplitProps = {
-  selectedOption: SplitSessionsNameType;
-  onSelect: (type: SplitSessionsNameType) => void;
-};
-
 const SPLITS = {
-  OPT: "optimized",
+  OPT: "upper / lower - full",
   CUS: "custom",
   PPL: "push / pull / legs",
   UL: "upper / lower",
@@ -25,27 +20,34 @@ const SPLITS = {
   FB: "full body",
 };
 
-function SelectSplit({ selectedOption, onSelect }: SelectSplitProps) {
+function SplitSelect() {
+  const { split, onSplitChange } = useProgramSettingsContext();
+
   const handleSelectChange = (value: string) => {
     const result: SplitSessionsNameType | undefined = (
       Object.keys(SPLITS) as (keyof typeof SPLITS)[]
     ).find((key) => key === value);
     if (!result) return;
-    onSelect(result);
+    onSplitChange(result);
   };
 
-  const options = Object.values(SPLITS);
-  const selected = SPLITS[selectedOption];
   return (
     <div className="flex w-full">
       <Select onValueChange={handleSelectChange}>
         <SelectTrigger className="w-[140px]">
-          <SelectValue placeholder={SPLITS.OPT} />
+          <SelectValue placeholder={SPLITS[split]} />
         </SelectTrigger>
 
         <SelectContent>
           {Object.entries(SPLITS).map((split, index) => {
-            return <SelectItem value={split[0]}>{split[1]}</SelectItem>;
+            return (
+              <SelectItem
+                key={`${split}_${index}_SplitSelectOptions`}
+                value={split[0]}
+              >
+                {split[1]}
+              </SelectItem>
+            );
           })}
         </SelectContent>
       </Select>
@@ -53,13 +55,4 @@ function SelectSplit({ selectedOption, onSelect }: SelectSplitProps) {
   );
 }
 
-function SplitSelect() {
-  const { split, onSplitChange } = useProgramSettingsContext();
-
-  return (
-    <div className={``}>
-      <SelectSplit selectedOption={split} onSelect={onSplitChange} />
-    </div>
-  );
-}
 export default memo(SplitSelect);

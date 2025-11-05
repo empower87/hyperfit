@@ -1,4 +1,4 @@
-import { memo, useCallback } from "react";
+import { memo, useCallback, useState } from "react";
 import {
   Select,
   SelectContent,
@@ -6,12 +6,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
-import { useProgramSettingsContext } from "../hooks/useProgramSettings";
+import { useProgramSettingsContext } from "../../hooks/useProgramSettings";
 
 const OPTIONS = ["1", "2", "3", "4", "5", "6", "7"];
 
 const FrequencySelection = () => {
   const { frequency, onFrequencyChange } = useProgramSettingsContext();
+  const [selectedFrequency, setSelectedFrequency] = useState(frequency[0]);
 
   const handleSelectChange = useCallback(
     (value: string) => {
@@ -26,11 +27,19 @@ const FrequencySelection = () => {
       <div className="flex w-full">
         <Select onValueChange={handleSelectChange}>
           <SelectTrigger className="w-[140px]">
-            <SelectValue placeholder={OPTIONS[2]} />
+            <SelectValue placeholder={selectedFrequency} />
           </SelectTrigger>
+
           <SelectContent>
             {OPTIONS.map((freq, index) => {
-              return <SelectItem value={freq}>{freq}</SelectItem>;
+              return (
+                <SelectItem
+                  key={`${freq}_${index}_FrequencySelectionOption`}
+                  value={freq}
+                >
+                  {freq}
+                </SelectItem>
+              );
             })}
           </SelectContent>
         </Select>
