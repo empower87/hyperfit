@@ -48,13 +48,18 @@ function Item({ muscle, index, handle, isCollapsed }: ItemProps) {
   if (isCollapsed) return <CollapsedItem bgColor={colors.bg} text={title} />;
   return (
     <div className="flex">
-      <div className="flex w-4 items-center text-xs font-semibold text-primary-300">
+      {/* <div className="flex w-4 items-center text-xs font-semibold text-primary-300">
         {index + 1}
-      </div>
+      </div> */}
       <div
-        className={`flex cursor-pointer justify-between overflow-hidden rounded-md border border-input bg-background/50 text-sm text-white hover:scale-x-105 hover:scale-y-110`}
+        className={`flex w-full cursor-pointer overflow-hidden rounded-md border border-input bg-background/50 text-sm text-white hover:scale-x-105 hover:scale-y-110`}
       >
-        <div className="flex">{handle}</div>
+        <div
+          className={`flex w-6 items-center justify-center border-r border-primary-500 text-xs ${colors.bg}`}
+        >
+          {/* {handle} */}
+          {index + 1}
+        </div>
 
         <div className={`flex`}>
           <div className="flex w-24 items-center justify-start p-1 px-2">
@@ -85,6 +90,8 @@ function Item({ muscle, index, handle, isCollapsed }: ItemProps) {
             {muscle.frequency.progression}
           </div> */}
         </div>
+
+        <div>5x</div>
 
         <div className={`flex items-center justify-center pl-3`}>
           <Select onValueChange={handleSelectChange}>
