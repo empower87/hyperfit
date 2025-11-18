@@ -1,4 +1,8 @@
-import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  GearIcon,
+} from "@radix-ui/react-icons";
 import { ReactNode, useState } from "react";
 import { Button } from "~/components/ui/button";
 import { TrainingProgramProvider } from "~/hooks/useTrainingProgram/useTrainingProgram";
@@ -28,9 +32,18 @@ const ProgramConfiguration = () => {
   return (
     <div className="flex h-full flex-col justify-between bg-primary-600">
       <div className="flex items-center justify-between">
-        <h2 className="p-2">Program Settings</h2>
+        {isPriorityListCollapsed ? (
+          <div className="p-3 pr-0">
+            <GearIcon className="h-5 w-5" />
+          </div>
+        ) : (
+          <div className="flex items-center space-x-2 p-3">
+            <GearIcon className="h-5 w-5" />
+            <h2 className="">Program Settings</h2>
+          </div>
+        )}
 
-        <div className="p-2">
+        <div className="mt-0.5 p-3">
           {isPriorityListCollapsed ? (
             <Button
               className="bg-card"
@@ -101,7 +114,7 @@ function ProgramSettings({ isCollapsed }: ProgramSettingsProps) {
           </ProgramConfigOptionCard>
         </div>
 
-        <div className="p-3 pr-0 pt-0">
+        <div className="p-3 pt-0">
           <ProgramConfigOptionCard title="3. Prioritize">
             <MusclePrioritizationList isCollapsed={isCollapsed} />
           </ProgramConfigOptionCard>

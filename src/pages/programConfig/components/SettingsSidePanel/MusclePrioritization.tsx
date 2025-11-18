@@ -91,8 +91,6 @@ function Item({ muscle, index, handle, isCollapsed }: ItemProps) {
           </div> */}
         </div>
 
-        <div>5x</div>
-
         <div className={`flex items-center justify-center pl-3`}>
           <Select onValueChange={handleSelectChange}>
             <SelectTrigger className="h-6 w-[55px] border-none px-1 text-xs">
