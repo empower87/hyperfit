@@ -23,6 +23,7 @@ export default function ToggleMesocycle({}: ToggleMesocycleProps) {
         const isSelectedIndex = index === selectedMesocycleIndex;
         return (
           <MesocycleTab
+            key={`${index}_${meso}_MesocycleTab`}
             mesocycleIndex={index + 1}
             isSelectedIndex={isSelectedIndex}
           />

@@ -83,7 +83,11 @@ export default function EditMuscleProgressionWithProvider() {
       <EditMuscleProgression
         toggleMuscle={
           <div className="w-full overflow-x-auto py-2">
-            <ToggleGroup className="flex-wrap justify-center" type="single">
+            <ToggleGroup
+              className="flex-wrap justify-center"
+              type="single"
+              value={selectedMuscleId}
+            >
               {prioritized_muscle_list.map((muscle, index) => {
                 const rankColor = getRankColor(muscle.volume.landmark);
                 const dataStateOn = `${rankColor.text} data-[state=on]:bg-secondary-400 data-[state=on]:text-white data-[state=on]:border-white`;

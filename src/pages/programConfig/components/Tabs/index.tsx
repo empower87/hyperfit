@@ -21,55 +21,61 @@ export const CustomizationPage = () => {
   return (
     <ToggleCyclesProvider mesocycles={mesocycles} microcycles={microcycles}>
       <div className="flex h-full flex-col space-y-3 overflow-y-scroll pb-14 pr-1 pt-8">
-        <ToggleCycles>
-          <ToggleCycles.Mesocycles />
-          <ToggleCycles.Microcycles />
-        </ToggleCycles>
-
         <div className="flex flex-col rounded-lg">
-          <CustomizationTabs />
+          <CustomizationTabs>
+            <ToggleCycles>
+              <ToggleCycles.Mesocycles />
+              <ToggleCycles.Microcycles />
+            </ToggleCycles>
+          </CustomizationTabs>
         </div>
       </div>
     </ToggleCyclesProvider>
   );
 };
 
-export const CustomizationTabs = memo(() => {
-  const getPresentationalTab = (tab: string) => {
-    const presentationalTab = tab
-      .split("-")
-      .map((tab) => tab.charAt(0).toUpperCase() + tab.slice(1))
-      .join(" ");
-    return presentationalTab;
-  };
+type CustomizationTabsProps = {
+  children: React.ReactNode;
+};
+export const CustomizationTabs = memo(
+  ({ children }: CustomizationTabsProps) => {
+    const getPresentationalTab = (tab: string) => {
+      const presentationalTab = tab
+        .split("-")
+        .map((tab) => tab.charAt(0).toUpperCase() + tab.slice(1))
+        .join(" ");
+      return presentationalTab;
+    };
 
-  return (
-    <Tabs defaultValue={TABS[0]} className="w-full">
-      <TabsList className="flex items-end justify-start rounded-none border-b border-primary-600 bg-background p-0">
+    return (
+      <Tabs defaultValue={TABS[0]} className="w-full">
+        <TabsList className="flex items-end justify-start rounded-none border-b border-primary-600 bg-background p-0">
+          {TABS.map((tab, index) => {
+            const presentationalTab = getPresentationalTab(tab);
+            return (
+              <TabsTrigger
+                key={`TabsTrigger_${tab}_${index}`}
+                className="rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-white"
+                value={tab}
+              >
+                {presentationalTab}
+              </TabsTrigger>
+            );
+          })}
+        </TabsList>
+
+        {children}
         {TABS.map((tab, index) => {
-          const presentationalTab = getPresentationalTab(tab);
           return (
-            <TabsTrigger
-              key={`TabsTrigger_${tab}_${index}`}
-              className="rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-white"
-              value={tab}
-            >
-              {presentationalTab}
-            </TabsTrigger>
+            <TabsContent key={`TabsContent_${tab}_${index}`} value={tab}>
+              <SelectedTabContent selectedTab={tab} />
+            </TabsContent>
           );
         })}
-      </TabsList>
-
-      {TABS.map((tab, index) => {
-        return (
-          <TabsContent key={`TabsContent_${tab}_${index}`} value={tab}>
-            <SelectedTabContent selectedTab={tab} />
-          </TabsContent>
-        );
-      })}
-    </Tabs>
-  );
-});
+      </Tabs>
+    );
+  }
+);
 
 type SelectedTabContentProps = {
   selectedTab: TabKey;
