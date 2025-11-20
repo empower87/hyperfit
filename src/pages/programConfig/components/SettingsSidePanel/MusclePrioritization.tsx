@@ -96,6 +96,7 @@ function Item({ muscle, index, handle, isCollapsed }: ItemProps) {
             <SelectTrigger className="h-6 w-[55px] border-none px-1 text-xs">
               <SelectValue placeholder={muscle.volume.landmark} />
             </SelectTrigger>
+            
             <SelectContent>
               {["MRV", "MEV", "MV"].map((split, index) => {
                 return (

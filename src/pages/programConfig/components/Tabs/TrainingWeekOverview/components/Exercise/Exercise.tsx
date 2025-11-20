@@ -89,6 +89,7 @@ export const ExerciseItem = ({
     ? exercise.setProgression[selectedMesocycle][selectedMicrocycle]
     : exercise.sets;
   const reps = exercise.reps;
+  const weight = exercise.weight;
 
   const bgColorByRank = getRankColor(exercise.rank).bg;
 
@@ -131,25 +132,39 @@ export const ExerciseItem = ({
     <SortableExerciseItem id={exercise.id}>
       {(listeners: SyntheticListenerMap | undefined) => (
         <li className={`flex`}>
-          <div className="pr-2 text-sm text-white">{index}</div>
           <div
             className={`flex w-full rounded-md border bg-background/40 ${
               isSupersetted ? supersetBorderColor : "border-input"
             } ${getExerciseHighlightClass(filteredIds.includes(exercise.id))}`}
           >
-            <DraggableExerciseHandle
+            {/* <DraggableExerciseHandle
               bgColor={bgColorByRank}
               listeners={listeners}
-            />
+            /> */}
+            <div className="p-2 pr-1 text-xs text-white">{index}</div>
             <div className="flex justify-between">
-              <div className="flex w-10 p-2 pr-0">
+              {/* <div className="flex w-10 p-2 pr-0">
                 <div className="text-semibold flex truncate text-xs leading-tight text-secondary-300">
                   {sets} x {reps}
                 </div>
-              </div>
+              </div> */}
 
-              <div className="flex w-40 cursor-default flex-col overflow-hidden p-2 text-xs leading-tight">
-                <ExerciseTitle name={exercise.name} />
+              <div className="flex w-40 cursor-default flex-col overflow-hidden p-2 pr-0 text-xs leading-tight">
+                <div className="flex items-center justify-between">
+                  <ExerciseTitle
+                    tooltipTrigger={
+                      <p className="overflow-hidden text-ellipsis text-white">
+                        {sets} x {reps} {exercise.name}
+                      </p>
+                    }
+                    tooltipContent={
+                      <div className="truncate text-secondary-300">
+                        {exercise.name}
+                      </div>
+                    }
+                  />
+                  <div>{weight} lb</div>
+                </div>
 
                 <div className="flex flex-col justify-between">
                   <div className="w-16">{exercise.muscle}</div>
@@ -242,23 +257,27 @@ export const DraggableExerciseHandle = ({
 };
 
 type ExerciseTitleProps = {
-  name: string;
+  tooltipTrigger: ReactNode;
+  tooltipContent: ReactNode;
 };
-const ExerciseTitle = memo(({ name }: ExerciseTitleProps) => {
-  return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger className="cursor-default" asChild>
-          <div className="truncate text-secondary-300">{name}</div>
-        </TooltipTrigger>
+const ExerciseTitle = memo(
+  ({ tooltipTrigger, tooltipContent }: ExerciseTitleProps) => {
+    return (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger className="cursor-default" asChild>
+            {tooltipTrigger}
+          </TooltipTrigger>
 
-        <TooltipContent className="bg-primary-600">
-          <p>{name}</p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
-  );
-});
+          <TooltipContent className="bg-primary-600">
+            {tooltipContent}
+            {/* <p>{name}</p> */}
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    );
+  }
+);
 
 type DotsMenuProps = {
   children?: ReactNode;
