@@ -91,7 +91,7 @@ export const ExerciseItem = ({
   const reps = exercise.reps;
   const weight = exercise.weight;
 
-  const bgColorByRank = getRankColor(exercise.rank).bg;
+  const textColor = getRankColor(exercise.rank).text;
 
   // Superset color palette (same as SupersetDialog)
   const supersetColors = [
@@ -149,12 +149,12 @@ export const ExerciseItem = ({
                 </div>
               </div> */}
 
-              <div className="flex w-40 cursor-default flex-col overflow-hidden p-2 pr-0 text-xs leading-tight">
-                <div className="flex items-center justify-between">
+              <div className="flex w-44 cursor-default flex-col overflow-hidden p-2 pr-0 text-xs leading-tight">
+                <div className="flex justify-between">
                   <ExerciseTitle
                     tooltipTrigger={
                       <p className="overflow-hidden text-ellipsis text-white">
-                        {sets} x {reps} {exercise.name}
+                        {exercise.name}
                       </p>
                     }
                     tooltipContent={
@@ -163,11 +163,18 @@ export const ExerciseItem = ({
                       </div>
                     }
                   />
-                  <div>{weight} lb</div>
+                  <div
+                    className={`flex h-5 rounded ${textColor} border border-white px-1 py-0.5 text-xxs font-bold`}
+                  >
+                    {exercise.muscle}
+                  </div>
                 </div>
 
                 <div className="flex flex-col justify-between">
-                  <div className="w-16">{exercise.muscle}</div>
+                  <div className="">
+                    {sets} x {reps} reps x {weight} lbs
+                  </div>
+
                   <div className="flex space-x-2">
                     {exercise.data.requirements.map((req) => {
                       return (
