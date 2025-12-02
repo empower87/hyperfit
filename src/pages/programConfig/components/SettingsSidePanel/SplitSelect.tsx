@@ -11,13 +11,13 @@ import { SplitSessionsNameType } from "~/hooks/useTrainingProgram/reducer/traini
 import { useProgramSettingsContext } from "../../hooks/useProgramSettings";
 
 const SPLITS = {
-  OPT: "upper / lower - full",
-  CUS: "custom",
-  PPL: "push / pull / legs",
-  UL: "upper / lower",
-  BRO: "bro",
-  PPLUL: "push / pull / legs - upper / lower",
-  FB: "full body",
+  OPT: "Upper / Lower / Full Body",
+  CUS: "Custom",
+  PPL: "Push / Pull / Legs",
+  UL: "Upper / Lower",
+  BRO: "Bro",
+  PPLUL: "Push / Pull / Legs - Upper / Lower",
+  FB: "Full Body",
 };
 
 function SplitSelect() {
@@ -32,9 +32,9 @@ function SplitSelect() {
   };
 
   return (
-    <div className="flex w-full">
+    <div className="flex">
       <Select onValueChange={handleSelectChange}>
-        <SelectTrigger className="w-[140px]">
+        <SelectTrigger className="w-[120px]">
           <SelectValue placeholder={SPLITS[split]} />
         </SelectTrigger>
 

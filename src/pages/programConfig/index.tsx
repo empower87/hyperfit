@@ -3,13 +3,15 @@ import {
   ChevronRightIcon,
   GearIcon,
 } from "@radix-ui/react-icons";
-import { ReactNode, useState } from "react";
+import { HTMLAttributes, ReactNode, useState } from "react";
 import { Button } from "~/components/ui/button";
 import { TrainingProgramProvider } from "~/hooks/useTrainingProgram/useTrainingProgram";
+import { cn } from "~/lib/utils";
 import Actions from "./components/SettingsSidePanel/Actions";
 import FrequencySelection from "./components/SettingsSidePanel/FrequencySelection";
 import { MusclePrioritizationList } from "./components/SettingsSidePanel/MusclePrioritization";
 import SplitSelect from "./components/SettingsSidePanel/SplitSelect";
+import VolumeSelect from "./components/SettingsSidePanel/VolumeSelect";
 import { CustomizationPage } from "./components/Tabs";
 import { ProgramSettingsProvider } from "./hooks/useProgramSettings";
 
@@ -39,7 +41,7 @@ const ProgramConfiguration = () => {
         ) : (
           <div className="flex items-center space-x-2 p-3">
             <GearIcon className="h-5 w-5" />
-            <h2 className="">Program Settings</h2>
+            <h2 className="text-nowrap">Program Settings</h2>
           </div>
         )}
 
@@ -66,7 +68,7 @@ const ProgramConfiguration = () => {
         </div>
       </div>
 
-      <div className="flex h-full flex-col justify-between">
+      <div className="flex h-full flex-col overflow-y-auto p-3">
         <ProgramSettingsProvider>
           {isPriorityListCollapsed ? (
             <></>
@@ -79,17 +81,21 @@ const ProgramConfiguration = () => {
   );
 };
 
-type ProgramConfigOptionCardProps = {
+interface ProgramConfigOptionCardProps extends HTMLAttributes<HTMLDivElement> {
   title: string;
   children: ReactNode;
-};
+}
 function ProgramConfigOptionCard({
   title,
   children,
+  ...props
 }: ProgramConfigOptionCardProps) {
   return (
-    <div className="flex flex-col">
-      <h2 className="p-2 text-xs font-semibold text-muted-foreground">
+    <div
+      {...props}
+      className={cn("flex w-full justify-between", props.className)}
+    >
+      <h2 className="text-nowrap p-2 text-xs font-semibold text-muted-foreground">
         {title}
       </h2>
       {children}
@@ -102,9 +108,9 @@ type ProgramSettingsProps = {
 };
 function ProgramSettings({ isCollapsed }: ProgramSettingsProps) {
   return (
-    <>
-      <div className="flex flex-col">
-        <div className="flex space-x-2 p-3 pt-0">
+    <div className="flex h-full overflow-y-auto">
+      <div className="flex h-full w-60 flex-col">
+        <div className="flex flex-col space-y-3 p-3">
           <ProgramConfigOptionCard title="1. Frequency">
             <FrequencySelection />
           </ProgramConfigOptionCard>
@@ -112,15 +118,19 @@ function ProgramSettings({ isCollapsed }: ProgramSettingsProps) {
           <ProgramConfigOptionCard title="2. Split">
             <SplitSelect />
           </ProgramConfigOptionCard>
+
+          <ProgramConfigOptionCard title="3. Volume">
+            <VolumeSelect />
+          </ProgramConfigOptionCard>
         </div>
 
         <div className="p-3 pt-0">
-          <ProgramConfigOptionCard title="3. Prioritize">
+          <ProgramConfigOptionCard title="4. Prioritize" className="flex-col">
             <MusclePrioritizationList isCollapsed={isCollapsed} />
           </ProgramConfigOptionCard>
         </div>
+        <Actions />
       </div>
-      <Actions />
-    </>
+    </div>
   );
 }

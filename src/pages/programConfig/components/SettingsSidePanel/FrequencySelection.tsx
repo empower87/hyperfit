@@ -23,27 +23,25 @@ const FrequencySelection = () => {
   );
 
   return (
-    <div className="flex flex-col items-center">
-      <div className="flex w-full">
-        <Select onValueChange={handleSelectChange}>
-          <SelectTrigger className="w-[140px]">
-            <SelectValue placeholder={selectedFrequency} />
-          </SelectTrigger>
+    <div className="flex">
+      <Select onValueChange={handleSelectChange}>
+        <SelectTrigger className="w-[120px]">
+          <SelectValue placeholder={selectedFrequency} />
+        </SelectTrigger>
 
-          <SelectContent>
-            {OPTIONS.map((freq, index) => {
-              return (
-                <SelectItem
-                  key={`${freq}_${index}_FrequencySelectionOption`}
-                  value={freq}
-                >
-                  {freq}
-                </SelectItem>
-              );
-            })}
-          </SelectContent>
-        </Select>
-      </div>
+        <SelectContent>
+          {OPTIONS.map((freq, index) => {
+            return (
+              <SelectItem
+                key={`${freq}_${index}_FrequencySelectionOption`}
+                value={freq}
+              >
+                {freq}
+              </SelectItem>
+            );
+          })}
+        </SelectContent>
+      </Select>
     </div>
   );
 };
