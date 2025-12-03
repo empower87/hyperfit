@@ -1,11 +1,5 @@
 import { memo, useState } from "react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "~/components/ui/select";
+import { ProgramSettingsSelect } from "./SplitSelect";
 
 const VOLUMES = {
   LOW: "Low - 5-10 sets/week",
@@ -26,27 +20,46 @@ function VolumeSelect() {
   };
 
   return (
-    <div className="flex">
-      <Select onValueChange={handleSelectChange}>
-        <SelectTrigger className="w-[120px]">
-          <SelectValue placeholder={VOLUMES[volume]} />
-        </SelectTrigger>
-
-        <SelectContent>
-          {Object.entries(VOLUMES).map((volume, index) => {
-            return (
-              <SelectItem
-                key={`${volume}_${index}_VolumeSelectOptions`}
-                value={volume[0]}
-              >
-                {volume[1]}
-              </SelectItem>
-            );
-          })}
-        </SelectContent>
-      </Select>
-    </div>
+    <ProgramSettingsSelect
+      onChange={handleSelectChange}
+      placeholder={VOLUMES[volume]}
+      items={VOLUMES}
+    />
   );
 }
+// function VolumeSelect() {
+//   const [volume, setVolume] = useState<VolumesKeyType>("MOD");
+
+//   const handleSelectChange = (value: string) => {
+//     const result: VolumesKeyType | undefined = (
+//       Object.keys(VOLUMES) as (keyof typeof VOLUMES)[]
+//     ).find((key) => key === value);
+//     if (!result) return;
+//     setVolume(result);
+//   };
+
+//   return (
+//     <div className="flex">
+//       <Select onValueChange={handleSelectChange}>
+//         <SelectTrigger className="w-[50px]">
+//           <SelectValue placeholder={VOLUMES[volume]} />
+//         </SelectTrigger>
+
+//         <SelectContent>
+//           {Object.entries(VOLUMES).map((volume, index) => {
+//             return (
+//               <SelectItem
+//                 key={`${volume}_${index}_VolumeSelectOptions`}
+//                 value={volume[0]}
+//               >
+//                 {volume[1]}
+//               </SelectItem>
+//             );
+//           })}
+//         </SelectContent>
+//       </Select>
+//     </div>
+//   );
+// }
 
 export default memo(VolumeSelect);

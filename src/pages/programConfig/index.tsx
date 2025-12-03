@@ -93,7 +93,7 @@ function ProgramConfigOptionCard({
   return (
     <div
       {...props}
-      className={cn("flex w-full justify-between", props.className)}
+      className={cn("flex w-full flex-col justify-between", props.className)}
     >
       <h2 className="text-nowrap p-2 text-xs font-semibold text-muted-foreground">
         {title}

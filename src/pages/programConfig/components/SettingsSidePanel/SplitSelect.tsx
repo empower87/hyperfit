@@ -11,14 +11,52 @@ import { SplitSessionsNameType } from "~/hooks/useTrainingProgram/reducer/traini
 import { useProgramSettingsContext } from "../../hooks/useProgramSettings";
 
 const SPLITS = {
-  OPT: "Upper / Lower / Full Body",
-  CUS: "Custom",
-  PPL: "Push / Pull / Legs",
-  UL: "Upper / Lower",
-  BRO: "Bro",
-  PPLUL: "Push / Pull / Legs - Upper / Lower",
-  FB: "Full Body",
+  OPT: "ULF: Upper / Lower / Full Body",
+  CUS: "CUS: Custom",
+  PPL: "PPL: Push / Pull / Legs",
+  UL: "UL: Upper / Lower",
+  BRO: "BRO: Bro Split",
+  PPLUL: "PPLUL: Push / Pull / Legs - Upper / Lower",
+  FB: "FB: Full Body",
 };
+
+export type SelectObjectType = { [key: string]: string };
+
+type ProgramSettingsSelectProps<T> = {
+  onChange: (value: string) => void;
+  placeholder: keyof T;
+  items: T;
+};
+
+export function ProgramSettingsSelect({
+  onChange,
+  placeholder,
+  items,
+}: ProgramSettingsSelectProps<SelectObjectType>) {
+  return (
+    <div>
+      <Select onValueChange={onChange}>
+        <SelectTrigger className="w-[60px]">
+          <SelectValue placeholder={placeholder} />
+        </SelectTrigger>
+
+        <SelectContent>
+          {Object.entries(items).map((item, index) => {
+            console.log(item, "SLECT ITEM");
+            return (
+              <SelectItem
+                key={`${item}_${index}_SplitSelectOptions`}
+                value={item[0]}
+              >
+                {item[1]}
+              </SelectItem>
+            );
+          })}
+        </SelectContent>
+      </Select>
+    </div>
+  );
+}
 
 function SplitSelect() {
   const { split, onSplitChange } = useProgramSettingsContext();
@@ -32,27 +70,46 @@ function SplitSelect() {
   };
 
   return (
-    <div className="flex">
-      <Select onValueChange={handleSelectChange}>
-        <SelectTrigger className="w-[120px]">
-          <SelectValue placeholder={SPLITS[split]} />
-        </SelectTrigger>
-
-        <SelectContent>
-          {Object.entries(SPLITS).map((split, index) => {
-            return (
-              <SelectItem
-                key={`${split}_${index}_SplitSelectOptions`}
-                value={split[0]}
-              >
-                {split[1]}
-              </SelectItem>
-            );
-          })}
-        </SelectContent>
-      </Select>
-    </div>
+    <ProgramSettingsSelect
+      onChange={handleSelectChange}
+      placeholder={SPLITS[split]}
+      items={SPLITS}
+    />
   );
 }
+// function SplitSelect() {
+//   const { split, onSplitChange } = useProgramSettingsContext();
+
+//   const handleSelectChange = (value: string) => {
+//     const result: SplitSessionsNameType | undefined = (
+//       Object.keys(SPLITS) as (keyof typeof SPLITS)[]
+//     ).find((key) => key === value);
+//     if (!result) return;
+//     onSplitChange(result);
+//   };
+
+//   return (
+//     <div className="flex">
+//       <Select onValueChange={handleSelectChange}>
+//         <SelectTrigger className="w-[60px]">
+//           <SelectValue placeholder={SPLITS[split]} />
+//         </SelectTrigger>
+
+//         <SelectContent>
+//           {Object.entries(SPLITS).map((split, index) => {
+//             return (
+//               <SelectItem
+//                 key={`${split}_${index}_SplitSelectOptions`}
+//                 value={split[0]}
+//               >
+//                 {split[1]}
+//               </SelectItem>
+//             );
+//           })}
+//         </SelectContent>
+//       </Select>
+//     </div>
+//   );
+// }
 
 export default memo(SplitSelect);
