@@ -11,7 +11,7 @@ import { SplitSessionsNameType } from "~/hooks/useTrainingProgram/reducer/traini
 import { useProgramSettingsContext } from "../../hooks/useProgramSettings";
 
 const SPLITS = {
-  OPT: "ULF: Upper / Lower / Full Body",
+  OPT: "ULFB: Upper / Lower / Full Body",
   CUS: "CUS: Custom",
   PPL: "PPL: Push / Pull / Legs",
   UL: "UL: Upper / Lower",
@@ -42,7 +42,6 @@ export function ProgramSettingsSelect({
 
         <SelectContent>
           {Object.entries(items).map((item, index) => {
-            console.log(item, "SLECT ITEM");
             return (
               <SelectItem
                 key={`${item}_${index}_SplitSelectOptions`}
@@ -77,6 +76,7 @@ function SplitSelect() {
     />
   );
 }
+
 // function SplitSelect() {
 //   const { split, onSplitChange } = useProgramSettingsContext();
 
