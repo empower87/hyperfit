@@ -33,6 +33,7 @@ const FrequencySelection = () => {
     />
   );
 };
+
 // const FrequencySelection = () => {
 //   const { frequency, onFrequencyChange } = useProgramSettingsContext();
 //   const [selectedFrequency, setSelectedFrequency] = useState(frequency[0]);

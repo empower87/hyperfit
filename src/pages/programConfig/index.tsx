@@ -5,6 +5,13 @@ import {
 } from "@radix-ui/react-icons";
 import { HTMLAttributes, ReactNode, useState } from "react";
 import { Button } from "~/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "~/components/ui/select";
 import { TrainingProgramProvider } from "~/hooks/useTrainingProgram/useTrainingProgram";
 import { cn } from "~/lib/utils";
 import Actions from "./components/SettingsSidePanel/Actions";
@@ -148,7 +155,8 @@ function ProgramSettings({ isCollapsed }: ProgramSettingsProps) {
     <div className="flex h-full overflow-y-auto">
       <div className="flex h-full w-64 flex-col">
         <div className="flex flex-col">
-          <h2 className="">Program Name</h2>
+          <ProgramConfigurationPanel />
+
           <div className="flex space-x-2">
             <ProgramConfigOptionCard title="Mesocycles">
               <MesosyclesSelect placeholder="3" items={MESOCYCLES} />
@@ -158,31 +166,68 @@ function ProgramSettings({ isCollapsed }: ProgramSettingsProps) {
             </ProgramConfigOptionCard>
           </div>
           <div className="my-2 h-px w-full bg-gray-300"></div>
-        </div>
-        <div className="flex space-x-2 p-3">
-          <ProgramConfigOptionCard title="1. Frequency">
-            <FrequencySelection />
-          </ProgramConfigOptionCard>
 
-          <ProgramConfigOptionCard title="2. Split">
-            <SplitSelect />
-          </ProgramConfigOptionCard>
+          <div className="flex space-x-2 p-3">
+            <ProgramConfigOptionCard title="1. Frequency">
+              <FrequencySelection />
+            </ProgramConfigOptionCard>
 
-          <ProgramConfigOptionCard title="3. Volume">
-            <VolumeSelect />
-          </ProgramConfigOptionCard>
-        </div>
+            <ProgramConfigOptionCard title="2. Split">
+              <SplitSelect />
+            </ProgramConfigOptionCard>
 
-        <div className="p-3 pt-0">
-          <ProgramConfigOptionCard
-            title="4. Prioritize"
-            className="items-start"
-          >
-            <MusclePrioritizationList isCollapsed={isCollapsed} />
-          </ProgramConfigOptionCard>
+            <ProgramConfigOptionCard title="3. Volume">
+              <VolumeSelect />
+            </ProgramConfigOptionCard>
+          </div>
+
+          <div className="p-3 pt-0">
+            <ProgramConfigOptionCard
+              title="4. Prioritize"
+              className="items-start"
+            >
+              <MusclePrioritizationList isCollapsed={isCollapsed} />
+            </ProgramConfigOptionCard>
+          </div>
+          <Actions />
         </div>
-        <Actions />
       </div>
     </div>
   );
 }
+
+const NEW_PROGRAM = {
+  id: "new_program",
+  name: "New Program",
+};
+
+type ProgramConfigurationPanelProps = {
+  savedTrainingPrograms?: Record<string, string>[];
+};
+const ProgramConfigurationPanel = ({
+  savedTrainingPrograms,
+}: ProgramConfigurationPanelProps) => {
+  const programs = savedTrainingPrograms || [NEW_PROGRAM];
+  return (
+    <div>
+      <Select>
+        <SelectTrigger className="w-[100px]">
+          <SelectValue placeholder={programs[0]?.id} />
+        </SelectTrigger>
+
+        <SelectContent>
+          {programs.map((item, index) => {
+            return (
+              <SelectItem
+                key={`${item}_${index}_SavedTrainingPrograms`}
+                value={item.id}
+              >
+                {item.name}
+              </SelectItem>
+            );
+          })}
+        </SelectContent>
+      </Select>
+    </div>
+  );
+};
