@@ -161,10 +161,12 @@ function ProgramSettings({ isCollapsed }: ProgramSettingsProps) {
             <ProgramConfigOptionCard title="Mesocycles">
               <MesosyclesSelect placeholder="3" items={MESOCYCLES} />
             </ProgramConfigOptionCard>
+
             <ProgramConfigOptionCard title="Microcycles">
-              <MesosyclesSelect placeholder="8" items={MICROCYCLES} />
+              <MesosyclesSelect placeholder="4" items={MICROCYCLES} />
             </ProgramConfigOptionCard>
           </div>
+
           <div className="my-2 h-px w-full bg-gray-300"></div>
 
           <div className="flex space-x-2 p-3">
@@ -209,9 +211,9 @@ const ProgramConfigurationPanel = ({
 }: ProgramConfigurationPanelProps) => {
   const programs = savedTrainingPrograms || [NEW_PROGRAM];
   return (
-    <div>
+    <div className="p-2">
       <Select>
-        <SelectTrigger className="w-[100px]">
+        <SelectTrigger className="w-[150px]">
           <SelectValue placeholder={programs[0]?.id} />
         </SelectTrigger>
 
