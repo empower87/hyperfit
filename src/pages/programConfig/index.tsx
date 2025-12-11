@@ -5,6 +5,7 @@ import {
 } from "@radix-ui/react-icons";
 import { HTMLAttributes, ReactNode, useState } from "react";
 import { Button } from "~/components/ui/button";
+import { Input } from "~/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -155,7 +156,7 @@ function ProgramSettings({ isCollapsed }: ProgramSettingsProps) {
     <div className="flex h-full overflow-y-auto">
       <div className="flex h-full w-64 flex-col">
         <div className="flex flex-col">
-          <ProgramConfigurationPanel />
+          <SavedTrainingPrograms />
 
           <div className="flex space-x-2">
             <ProgramConfigOptionCard title="Mesocycles">
@@ -198,22 +199,59 @@ function ProgramSettings({ isCollapsed }: ProgramSettingsProps) {
   );
 }
 
-const NEW_PROGRAM = {
-  id: "new_program",
-  name: "New Program",
+const PROGRAM_DUMMY = {
+  id: "program_1",
+  name: "Program 1",
+  mesocycles: {
+    1: {
+      id: "mesocycle_1",
+      name: "Mesocycle 1",
+      data: [],
+    },
+    2: {
+      id: "mesocycle_2",
+      name: "Mesocycle 2",
+      data: [],
+    },
+  },
+};
+
+const SAVED_PROGRAMS_DUMMY = [
+  { ...PROGRAM_DUMMY },
+  { ...PROGRAM_DUMMY, id: "program_2", name: "Program 2" },
+  { ...PROGRAM_DUMMY, id: "program_3", name: "Program 3" },
+];
+
+const SavedTrainingPrograms = () => {
+  const [selectedProgram, setSelectedProgram] = useState<string | undefined>();
+  const untitled_program = "Untitled Program";
+  return (
+    <div className="flex flex-col border-b border-primary-400 p-2 pt-0">
+      <h2 className="p-2">Training Program</h2>
+      <div className="flex items-center">
+        <Input
+          placeholder={selectedProgram ? selectedProgram : untitled_program}
+          className="mb-2 w-full"
+        />
+        <ProgramConfigurationPanel />
+      </div>
+    </div>
+  );
 };
 
 type ProgramConfigurationPanelProps = {
   savedTrainingPrograms?: Record<string, string>[];
+  selectedProgramId?: string;
 };
 const ProgramConfigurationPanel = ({
   savedTrainingPrograms,
+  selectedProgramId,
 }: ProgramConfigurationPanelProps) => {
-  const programs = savedTrainingPrograms || [NEW_PROGRAM];
+  const programs = savedTrainingPrograms || SAVED_PROGRAMS_DUMMY;
   return (
     <div className="p-2">
       <Select>
-        <SelectTrigger className="w-[150px]">
+        <SelectTrigger className="w-[100px]">
           <SelectValue placeholder={programs[0]?.id} />
         </SelectTrigger>
 
