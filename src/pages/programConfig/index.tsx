@@ -15,26 +15,50 @@ import {
 } from "~/components/ui/select";
 import { TrainingProgramProvider } from "~/hooks/useTrainingProgram/useTrainingProgram";
 import { cn } from "~/lib/utils";
-import Actions from "./components/SettingsSidePanel/Actions";
-import FrequencySelection from "./components/SettingsSidePanel/FrequencySelection";
-import { MusclePrioritizationList } from "./components/SettingsSidePanel/MusclePrioritization";
+import Actions from "./components/ProgramConfiguration/Actions";
+import FrequencySelection from "./components/ProgramConfiguration/FrequencySelection";
+import { MusclePrioritizationList } from "./components/ProgramConfiguration/MusclePrioritization";
+import { ProgramConfigurationSettings } from "./components/ProgramConfiguration/ProgramConfiguration";
 import SplitSelect, {
   ProgramSettingsSelect,
-} from "./components/SettingsSidePanel/SplitSelect";
-import VolumeSelect from "./components/SettingsSidePanel/VolumeSelect";
+} from "./components/ProgramConfiguration/SplitSelect";
+import VolumeSelect from "./components/ProgramConfiguration/VolumeSelect";
 import { CustomizationPage } from "./components/Tabs";
 import { ProgramSettingsProvider } from "./hooks/useProgramSettings";
 
 export default function ProgramConfig() {
+  const [isPriorityListCollapsed, setIsPriorityListCollapsed] = useState(false);
+
+  const onCollapsePriorityList = () => setIsPriorityListCollapsed(true);
+  const onExpandPriorityList = () => setIsPriorityListCollapsed(false);
+
+  const onClickHandler = isPriorityListCollapsed
+    ? onExpandPriorityList
+    : onCollapsePriorityList;
   return (
     <TrainingProgramProvider>
-      <div className="flex h-full space-x-5">
-        <ProgramConfiguration />
-        <CustomizationPage />
+      <div className={`flex h-full flex-col overflow-scroll`}>
+        <ProgramConfigurationSettings
+          isPriorityListCollapsed={isPriorityListCollapsed}
+          onClick={onClickHandler}
+        />
+        <CustomizationPage className={isPriorityListCollapsed ? "mt-24" : ""} />
       </div>
     </TrainingProgramProvider>
   );
 }
+
+// Side Panel Version
+// export default function ProgramConfig() {
+//   return (
+//     <TrainingProgramProvider>
+//       <div className="flex h-full space-x-5">
+//         <ProgramConfigurationSettings />
+//         <CustomizationPage />
+//       </div>
+//     </TrainingProgramProvider>
+//   );
+// }
 
 const ProgramConfiguration = () => {
   const [isPriorityListCollapsed, setIsPriorityListCollapsed] = useState(false);
@@ -95,7 +119,7 @@ interface ProgramConfigOptionCardProps extends HTMLAttributes<HTMLDivElement> {
   title: string;
   children: ReactNode;
 }
-function ProgramConfigOptionCard({
+export function ProgramConfigOptionCard({
   title,
   children,
   ...props
@@ -104,7 +128,7 @@ function ProgramConfigOptionCard({
     <div
       {...props}
       className={cn(
-        "flex w-full flex-col items-center justify-between",
+        "flex w-full items-center justify-between",
         props.className
       )}
     >
@@ -134,6 +158,7 @@ const MICROCYCLES = {
   11: "11",
   12: "12",
 };
+
 type MesocyclesSelectProps = {
   placeholder: string;
   items: Record<string, string>;

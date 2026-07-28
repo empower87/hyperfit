@@ -376,7 +376,7 @@ const WeekSessions = ({
         onDragOver={handleDragOver}
         onDragEnd={handleDragEnd}
       >
-        <ul className="flex space-x-2 overflow-x-auto">
+        <div className="flex space-x-2 overflow-x-auto">
           {memoizedTrainingWeek?.map((each, index) => {
             return (
               <DayLayout key={`${each.day}_${index}`} session={each}>
@@ -394,7 +394,7 @@ const WeekSessions = ({
               </DayLayout>
             );
           })}
-        </ul>
+        </div>
       </DndContext>
     </div>
   );

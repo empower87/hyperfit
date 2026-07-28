@@ -197,6 +197,9 @@ function useTrainingProgram() {
   };
 }
 
+// Re-export the new Redux-based hook for gradual migration
+export { useTrainingProgramRedux } from "./useTrainingProgramRedux";
+
 export {
   TrainingProgramProvider,
   useTrainingProgram,

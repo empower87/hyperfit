@@ -36,7 +36,7 @@ export function ProgramSettingsSelect({
   return (
     <div>
       <Select onValueChange={onChange}>
-        <SelectTrigger className="w-[60px]">
+        <SelectTrigger className="w-[100px] py-1">
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
 

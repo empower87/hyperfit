@@ -100,6 +100,7 @@ type ToggleButtonProps = {
   onClick: () => void;
   children: ReactNode;
 };
+
 const ToggleButton = ({ isToggled, onClick, children }: ToggleButtonProps) => {
   const isToggledClasses =
     "scale-105 border-secondary-300 bg-card text-secondary-300";

@@ -33,7 +33,6 @@ export type FBSessionsType = {
   arms?: never;
   shoulders?: never;
 };
-
 export type BROSessionsType = {
   upper?: never;
   lower?: never;

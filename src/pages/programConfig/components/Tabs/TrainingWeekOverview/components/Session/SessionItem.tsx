@@ -100,7 +100,7 @@ const SessionItem = ({
   const onCloseDurationModal = () => setIsDurationModalOpen(false);
 
   return (
-    <li className={``}>
+    <div className={``}>
       <div className={"flex flex-col"}>
         <div
           className={cn(
@@ -134,7 +134,7 @@ const SessionItem = ({
           </Modal>
         ) : null}
       </div>
-    </li>
+    </div>
   );
 };
 

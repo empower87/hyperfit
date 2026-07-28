@@ -11,7 +11,7 @@ export default function Actions() {
       </Button>
 
       <Button onClick={onSaveProgramSettings} className={`ml-2 bg-rose-400`}>
-        Save Changes
+        Build Program
       </Button>
     </div>
   );

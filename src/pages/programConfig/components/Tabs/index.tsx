@@ -1,6 +1,7 @@
-import { memo } from "react";
+import { HTMLAttributes, memo } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { useTrainingProgramContext } from "~/hooks/useTrainingProgram/useTrainingProgram";
+import { cn } from "~/lib/utils";
 import { ToggleCyclesProvider } from "../MesocycleToggle/hooks/useMesocycleToggle";
 import { ToggleCycles } from "../MesocycleToggle/MesocycleToggle";
 import EditMuscleProgressionWithProvider from "./EditMuscleProgression/EditMuscleProgression";
@@ -14,13 +15,23 @@ const TABS = [
 ] as const;
 type TabKey = (typeof TABS)[number];
 
-export const CustomizationPage = () => {
+interface CustomizationPageProps extends HTMLAttributes<HTMLDivElement> {}
+export const CustomizationPage = ({
+  className,
+  ...props
+}: CustomizationPageProps) => {
   const { training_program_params } = useTrainingProgramContext();
   const { mesocycles, microcycles } = training_program_params;
 
   return (
     <ToggleCyclesProvider mesocycles={mesocycles} microcycles={microcycles}>
-      <div className="flex h-full flex-col space-y-3 overflow-y-scroll pb-14 pr-1 pt-8">
+      <div
+        {...props}
+        className={cn(
+          "flex h-full flex-col space-y-3 px-4 pb-14 pt-8",
+          className
+        )}
+      >
         <div className="flex flex-col rounded-lg">
           <CustomizationTabs>
             <ToggleCycles>
@@ -65,6 +76,7 @@ export const CustomizationTabs = memo(
         </TabsList>
 
         {children}
+
         {TABS.map((tab, index) => {
           return (
             <TabsContent key={`TabsContent_${tab}_${index}`} value={tab}>

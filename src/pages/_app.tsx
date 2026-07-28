@@ -3,11 +3,11 @@ import { SessionProvider } from "next-auth/react";
 import { type AppType } from "next/app";
 import Head from "next/head";
 import { ReactNode } from "react";
+import { Provider } from "react-redux";
 import Navbar from "~/components/Navbar";
+import { store } from "~/store/store";
 import "~/styles/globals.css";
 import { api } from "~/utils/api";
-import { Provider } from "react-redux"
-import { store } from "~/store/store"
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -23,7 +23,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
         />
         <script src="https://unpkg.com/react-scan/dist/auto.global.js"></script>
       </Head>
-      
+
       <Provider store={store}>
         <Layout>
           <Component {...pageProps} />
