@@ -10,10 +10,10 @@ import {
   SessionSplitType,
 } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { cn } from "~/lib/clsx";
-import { useToggleCyclesContext } from "~/pages/programConfig/components/MesocycleToggle/hooks/useMesocycleToggle";
+import { useToggleCyclesContext } from "~/components/programConfig/MesocycleToggle/hooks/useMesocycleToggle";
 import { getSplitColor } from "~/utils/getIndicatorColors";
-import { DraggableSessionType } from "../../hooks/useExerciseSelection";
-import { useSupersetsContext } from "../../hooks/useSupersets";
+import { DraggableSessionType } from "~/components/programConfig/Tabs/TrainingWeekOverview/hooks/useExerciseSelection";
+import { useSupersetsContext } from "~/components/programConfig/Tabs/TrainingWeekOverview/hooks/useSupersets";
 import { ExerciseItem } from "../Exercise/Exercise";
 import { SupersetDialog } from "../Exercise/SupersetDialog";
 import SessionDurationVariables from "../Settings/SessionDuration/SessionDurationVariables";

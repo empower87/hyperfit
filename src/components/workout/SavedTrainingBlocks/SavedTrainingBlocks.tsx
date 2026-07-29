@@ -11,7 +11,7 @@ import { TrainingDayType } from "~/hooks/useTrainingProgram/reducer/trainingProg
 import { NewTrainingWeek } from "~/hooks/useTrainingProgram/utils/training_block/trainingBlockHelpers";
 import { cn } from "~/lib/utils";
 import { getSplitColor } from "~/utils/getIndicatorColors";
-import { useActiveWorkoutContext } from "../../hooks/useActiveWorkoutContext";
+import { useActiveWorkoutContext } from "~/hooks/workout/useActiveWorkoutContext";
 
 export default function SavedTrainingBlocks() {
   const { savedTrainingBlocks } = useActiveWorkoutContext();

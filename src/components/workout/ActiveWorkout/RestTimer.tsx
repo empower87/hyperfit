@@ -17,8 +17,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog";
-import useRestTimer from "../../hooks/useRestTimer";
-import { useRestTimerControlsContext } from "../../hooks/useRestTimerControlsContext";
+import useRestTimer from "~/hooks/workout/useRestTimer";
+import { useRestTimerControlsContext } from "~/hooks/workout/useRestTimerControlsContext";
 
 export default function RestTimer() {
   const {

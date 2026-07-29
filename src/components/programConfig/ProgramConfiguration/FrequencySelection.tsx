@@ -1,5 +1,5 @@
 import { memo, useCallback, useState } from "react";
-import { useProgramSettingsContext } from "../../hooks/useProgramSettings";
+import { useProgramSettingsContext } from "~/hooks/programConfig/useProgramSettings";
 import { ProgramSettingsSelect } from "./SplitSelect";
 
 // const OPTIONS = ["1", "2", "3", "4", "5", "6", "7"];

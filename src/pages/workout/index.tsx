@@ -1,12 +1,12 @@
-import ActiveWorkout from "./components/ActiveWorkout/ActiveWorkout";
-import { ExerciseItem } from "./components/ActiveWorkout/Exercises";
-import { ExerciseHistory } from "./components/ExerciseHistory/ExerciseHistory";
-import SavedTrainingBlocks from "./components/SavedTrainingBlocks/SavedTrainingBlocks";
+import ActiveWorkout from "~/components/workout/ActiveWorkout/ActiveWorkout";
+import { ExerciseItem } from "~/components/workout/ActiveWorkout/Exercises";
+import { ExerciseHistory } from "~/components/workout/ExerciseHistory/ExerciseHistory";
+import SavedTrainingBlocks from "~/components/workout/SavedTrainingBlocks/SavedTrainingBlocks";
 import {
   ActiveWorkoutProvider,
   useActiveWorkoutContext,
-} from "./hooks/useActiveWorkoutContext";
-import { RestTimerControlsProvider } from "./hooks/useRestTimerControlsContext";
+} from "~/hooks/workout/useActiveWorkoutContext";
+import { RestTimerControlsProvider } from "~/hooks/workout/useRestTimerControlsContext";
 
 export default function Workout() {
   return (

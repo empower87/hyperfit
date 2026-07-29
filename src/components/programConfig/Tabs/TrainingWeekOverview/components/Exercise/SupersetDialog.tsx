@@ -10,7 +10,7 @@ import {
   DialogTitle,
 } from "~/components/ui/dialog";
 import { ExerciseType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
-import { useSupersetsContext } from "../../hooks/useSupersets";
+import { useSupersetsContext } from "~/components/programConfig/Tabs/TrainingWeekOverview/hooks/useSupersets";
 
 type SupersetDialogItemProps = {
   exercise_order: number;

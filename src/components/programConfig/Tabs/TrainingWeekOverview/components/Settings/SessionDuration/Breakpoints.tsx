@@ -1,5 +1,5 @@
 import { cn } from "~/lib/clsx";
-import { useProgramConfigContext } from "~/pages/programConfig/hooks/useProgramConfig";
+import { useProgramConfigContext } from "~/hooks/programConfig/useProgramConfig";
 import { getRankColor } from "~/utils/getIndicatorColors";
 
 type VolumeSettingFrameProps = {

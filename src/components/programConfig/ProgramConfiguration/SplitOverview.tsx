@@ -18,7 +18,7 @@ import { cn } from "~/lib/clsx";
 import StrictModeDroppable from "~/lib/react-beautiful-dnd/StrictModeDroppable";
 import { getSplitColor } from "~/utils/getIndicatorColors";
 import { capitalizeFirstCharInString } from "~/utils/uiHelpers";
-import { useProgramConfigContext } from "../../hooks/useProgramConfig";
+import { useProgramConfigContext } from "~/hooks/programConfig/useProgramConfig";
 
 const DAYS: DayType[] = [
   "Sunday",

@@ -8,7 +8,7 @@ import {
   SelectValue,
 } from "~/components/ui/select";
 import { SplitSessionsNameType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
-import { useProgramSettingsContext } from "../../hooks/useProgramSettings";
+import { useProgramSettingsContext } from "~/hooks/programConfig/useProgramSettings";
 
 const SPLITS = {
   OPT: "ULFB: Upper / Lower / Full Body",

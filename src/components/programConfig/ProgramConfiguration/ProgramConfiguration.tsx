@@ -17,7 +17,7 @@ import { useTrainingProgram } from "~/hooks/useTrainingProgram/useTrainingProgra
 import { cn } from "~/lib/utils";
 import { getRankColor } from "~/utils/getIndicatorColors";
 import getMuscleTitleForUI from "~/utils/getMuscleTitleForUI";
-import { ProgramSettingsProvider } from "../../hooks/useProgramSettings";
+import { ProgramSettingsProvider } from "~/hooks/programConfig/useProgramSettings";
 import Actions from "./Actions";
 import FrequencySelection from "./FrequencySelection";
 import { MusclePrioritizationList } from "./MusclePrioritization";

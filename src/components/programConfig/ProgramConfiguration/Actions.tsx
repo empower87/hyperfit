@@ -1,5 +1,5 @@
 import { Button } from "~/components/ui/button";
-import { useProgramSettingsContext } from "../../hooks/useProgramSettings";
+import { useProgramSettingsContext } from "~/hooks/programConfig/useProgramSettings";
 
 export default function Actions() {
   const { onSaveProgramSettings } = useProgramSettingsContext();

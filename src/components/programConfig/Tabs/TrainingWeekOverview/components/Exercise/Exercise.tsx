@@ -33,9 +33,9 @@ import {
   TooltipTrigger,
 } from "~/components/ui/tooltip";
 import { ExerciseType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
-import { useToggleCyclesContext } from "~/pages/programConfig/components/MesocycleToggle/hooks/useMesocycleToggle";
+import { useToggleCyclesContext } from "~/components/programConfig/MesocycleToggle/hooks/useMesocycleToggle";
 import { getRankColor } from "~/utils/getIndicatorColors";
-import { useSupersetsContext } from "../../hooks/useSupersets";
+import { useSupersetsContext } from "~/components/programConfig/Tabs/TrainingWeekOverview/hooks/useSupersets";
 import { getExerciseHighlightClass } from "../Settings/ExerciseFilter/ExerciseFilter";
 
 type SortableExerciseItemProps = {

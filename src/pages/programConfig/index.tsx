@@ -15,16 +15,16 @@ import {
 } from "~/components/ui/select";
 import { TrainingProgramProvider } from "~/hooks/useTrainingProgram/useTrainingProgram";
 import { cn } from "~/lib/utils";
-import Actions from "./components/ProgramConfiguration/Actions";
-import FrequencySelection from "./components/ProgramConfiguration/FrequencySelection";
-import { MusclePrioritizationList } from "./components/ProgramConfiguration/MusclePrioritization";
-import { ProgramConfigurationSettings } from "./components/ProgramConfiguration/ProgramConfiguration";
+import Actions from "~/components/programConfig/ProgramConfiguration/Actions";
+import FrequencySelection from "~/components/programConfig/ProgramConfiguration/FrequencySelection";
+import { MusclePrioritizationList } from "~/components/programConfig/ProgramConfiguration/MusclePrioritization";
+import { ProgramConfigurationSettings } from "~/components/programConfig/ProgramConfiguration/ProgramConfiguration";
 import SplitSelect, {
   ProgramSettingsSelect,
-} from "./components/ProgramConfiguration/SplitSelect";
-import VolumeSelect from "./components/ProgramConfiguration/VolumeSelect";
-import { CustomizationPage } from "./components/Tabs";
-import { ProgramSettingsProvider } from "./hooks/useProgramSettings";
+} from "~/components/programConfig/ProgramConfiguration/SplitSelect";
+import VolumeSelect from "~/components/programConfig/ProgramConfiguration/VolumeSelect";
+import { CustomizationPage } from "~/components/programConfig/Tabs";
+import { ProgramSettingsProvider } from "~/hooks/programConfig/useProgramSettings";
 
 export default function ProgramConfig() {
   const [isPriorityListCollapsed, setIsPriorityListCollapsed] = useState(false);
