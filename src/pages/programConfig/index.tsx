@@ -4,17 +4,6 @@ import {
   GearIcon,
 } from "@radix-ui/react-icons";
 import { HTMLAttributes, ReactNode, useState } from "react";
-import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "~/components/ui/select";
-import { TrainingProgramProvider } from "~/hooks/useTrainingProgram/useTrainingProgram";
-import { cn } from "~/lib/utils";
 import Actions from "~/components/programConfig/ProgramConfiguration/Actions";
 import FrequencySelection from "~/components/programConfig/ProgramConfiguration/FrequencySelection";
 import { MusclePrioritizationList } from "~/components/programConfig/ProgramConfiguration/MusclePrioritization";
@@ -24,7 +13,18 @@ import SplitSelect, {
 } from "~/components/programConfig/ProgramConfiguration/SplitSelect";
 import VolumeSelect from "~/components/programConfig/ProgramConfiguration/VolumeSelect";
 import { CustomizationPage } from "~/components/programConfig/Tabs";
+import { Button } from "~/components/ui/button";
+import { Input } from "~/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "~/components/ui/select";
 import { ProgramSettingsProvider } from "~/hooks/programConfig/useProgramSettings";
+import { TrainingProgramProvider } from "~/hooks/useTrainingProgram/useTrainingProgram";
+import { cn } from "~/lib/utils";
 
 export default function ProgramConfig() {
   const [isPriorityListCollapsed, setIsPriorityListCollapsed] = useState(false);
@@ -75,7 +75,7 @@ const ProgramConfiguration = () => {
         ) : (
           <div className="flex items-center space-x-2 p-3">
             <GearIcon className="h-5 w-5" />
-            <h2 className="text-nowrap">Create Program</h2>
+            <h2 className="text-nowrap">Build Training Program</h2>
           </div>
         )}
 

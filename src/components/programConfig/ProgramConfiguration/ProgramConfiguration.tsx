@@ -5,6 +5,7 @@ import {
 } from "@radix-ui/react-icons";
 import { HTMLAttributes, ReactNode, useState } from "react";
 import { Button } from "~/components/ui/button";
+import { Card, CardHeader } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import {
   Select,
@@ -13,12 +14,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
+import { ProgramSettingsProvider } from "~/hooks/programConfig/useProgramSettings";
 import { useTrainingProgram } from "~/hooks/useTrainingProgram/useTrainingProgram";
 import { cn } from "~/lib/utils";
 import { getRankColor } from "~/utils/getIndicatorColors";
 import getMuscleTitleForUI from "~/utils/getMuscleTitleForUI";
-import { ProgramSettingsProvider } from "~/hooks/programConfig/useProgramSettings";
-import Actions from "./Actions";
 import FrequencySelection from "./FrequencySelection";
 import { MusclePrioritizationList } from "./MusclePrioritization";
 import SplitSelect from "./SplitSelect";
@@ -79,45 +79,59 @@ function ProgramSettings({ isCollapsed }: ProgramSettingsProps) {
   const onCollapsePriorityList = () => setIsPriorityListCollapsed(true);
   const onExpandPriorityList = () => setIsPriorityListCollapsed(false);
   return (
-    <div className="flex w-full">
-      <div className="flex flex-col justify-between">
+    <div className="flex w-full space-x-4 px-4 pt-3">
+      <Card className="border-none bg-primary-700/50">
+        <CardHeader>Training Program</CardHeader>
         <SavedTrainingPrograms />
         <div className="px-4 pb-3">
           <ToggleMesocycle mesocycles={4} />
         </div>
-        <Actions />
-      </div>
+      </Card>
 
-      <div className="flex p-3 pt-0">
-        <div className="w-54 flex flex-col space-y-2 p-3 pt-0">
-          <ProgramConfigOptionCard
-            title="1. Frequency"
-            className="flex-col items-start"
-          >
-            <FrequencySelection />
-          </ProgramConfigOptionCard>
+      <Card className="border-none bg-primary-700/50">
+        <CardHeader>Build Mesocycle</CardHeader>
+        <div className="flex flex-col px-4 pt-2">
+          {/* <h3 className="p-2 pb-0 text-sm font-semibold text-primary-300">
+            Build Mesocycle
+          </h3> */}
+          <div className="flex items-center">
+            <Input placeholder={"Untitled Mesocycle"} className="mb-2 w-full" />
+          </div>
+        </div>
+
+        <div className="flex-col">
+          <div className="flex space-x-2 p-4">
+            <ProgramConfigOptionCard
+              title="1. Frequency"
+              className="flex-col items-start"
+            >
+              <FrequencySelection />
+            </ProgramConfigOptionCard>
+
+            <ProgramConfigOptionCard
+              title="2. Split"
+              className="flex-col items-start"
+            >
+              <SplitSelect />
+            </ProgramConfigOptionCard>
+            <ProgramConfigOptionCard
+              title="3. Volume"
+              className="flex-col items-start"
+            >
+              <VolumeSelect />
+            </ProgramConfigOptionCard>
+          </div>
 
           <ProgramConfigOptionCard
-            title="2. Split"
-            className="flex-col items-start"
+            title="3. Prioritize"
+            className="flex-col items-start p-4 pt-1"
           >
-            <SplitSelect />
-          </ProgramConfigOptionCard>
-
-          <ProgramConfigOptionCard
-            title="3. Volume"
-            className="flex-col items-start"
-          >
-            <VolumeSelect />
+            <div className="h-60 w-full overflow-auto">
+              <MusclePrioritizationList isCollapsed={isCollapsed} />
+            </div>
           </ProgramConfigOptionCard>
         </div>
-        <ProgramConfigOptionCard
-          title="3. Prioritize"
-          className="flex-col items-start"
-        >
-          <MusclePrioritizationList isCollapsed={isCollapsed} />
-        </ProgramConfigOptionCard>
-      </div>
+      </Card>
     </div>
   );
 }
@@ -304,9 +318,10 @@ export const ProgramConfigurationSettings = ({
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2 p-3">
                 <GearIcon className="h-5 w-5" />
-                <h2 className="text-nowrap">Create Program</h2>
+                <h2 className="text-nowrap">Build Training Program</h2>
               </div>
             </div>
+
             <ProgramSettings isCollapsed={isPriorityListCollapsed} />
           </>
         )}

@@ -11,12 +11,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
+import { useProgramSettingsContext } from "~/hooks/programConfig/useProgramSettings";
 import type { MusclePriorityType } from "~/hooks/useTrainingProgram/reducer/trainingProgramReducer";
 import { cn } from "~/lib/clsx";
 import StrictModeDroppable from "~/lib/react-beautiful-dnd/StrictModeDroppable";
 import { getRankColor } from "~/utils/getIndicatorColors";
 import getMuscleTitleForUI from "~/utils/getMuscleTitleForUI";
-import { useProgramSettingsContext } from "~/hooks/programConfig/useProgramSettings";
 
 type ItemProps = {
   muscle: MusclePriorityType;
@@ -108,7 +108,7 @@ export const MusclePrioritizationList = ({
         {(provided, snapshot) => (
           <div
             id="droppable"
-            className="grid h-64 w-full grid-flow-col grid-cols-2 grid-rows-7"
+            className="h-64 w-full"
             {...provided.droppableProps}
             ref={provided.innerRef}
           >
