@@ -2,6 +2,7 @@ import {
   ChevronDownIcon,
   ChevronUpIcon,
   GearIcon,
+  PlusIcon,
 } from "@radix-ui/react-icons";
 import { HTMLAttributes, ReactNode, useState } from "react";
 import { Button } from "~/components/ui/button";
@@ -75,14 +76,39 @@ type ProgramSettingsProps = {
 };
 function ProgramSettings({ isCollapsed }: ProgramSettingsProps) {
   const [isPriorityListCollapsed, setIsPriorityListCollapsed] = useState(false);
+  const [selectedProgram, setSelectedProgram] = useState<string | undefined>();
 
   const onCollapsePriorityList = () => setIsPriorityListCollapsed(true);
   const onExpandPriorityList = () => setIsPriorityListCollapsed(false);
   return (
     <div className="flex w-full space-x-4 px-4 pt-3">
       <Card className="border-none bg-primary-700/50">
-        <CardHeader>Training Program</CardHeader>
-        <SavedTrainingPrograms />
+        <CardHeader>Training Program Settings</CardHeader>
+        {/* -- new training program or saved training programs -- */}
+        {/* <SavedTrainingPrograms /> */}
+
+        <div className="flex flex-col px-4 pb-3">
+          <h3 className="p-2 pb-0 text-sm font-semibold text-primary-300">
+            Training Program
+          </h3>
+          <div className="flex-col items-center">
+            <SavedTrainingPrograms />
+
+            <div className="flex w-full space-x-4">
+              <Input
+                placeholder={
+                  selectedProgram ? selectedProgram : "untitled program"
+                }
+                className="mb-2 h-8 w-full"
+              />
+              <Button size="sm">
+                Create New
+                <PlusIcon />
+              </Button>
+            </div>
+          </div>
+        </div>
+
         <div className="px-4 pb-3">
           <ToggleMesocycle mesocycles={4} />
         </div>
@@ -90,36 +116,39 @@ function ProgramSettings({ isCollapsed }: ProgramSettingsProps) {
 
       <Card className="border-none bg-primary-700/50">
         <CardHeader>Build Mesocycle</CardHeader>
-        <div className="flex flex-col px-4 pt-2">
-          {/* <h3 className="p-2 pb-0 text-sm font-semibold text-primary-300">
+
+        <div className="flex">
+          <div className="flex-col">
+            {/* <h3 className="p-2 pb-0 text-sm font-semibold text-primary-300">
             Build Mesocycle
           </h3> */}
-          <div className="flex items-center">
-            <Input placeholder={"Untitled Mesocycle"} className="mb-2 w-full" />
-          </div>
-        </div>
+            <div className="flex items-center p-4 pt-2">
+              <Input
+                placeholder={"Untitled Mesocycle"}
+                className="mb-2 w-full"
+              />
+            </div>
+            <div className="flex-col space-y-2 p-4 pt-0">
+              <ProgramConfigOptionCard
+                title="1. Frequency"
+                className="flex-col items-start"
+              >
+                <FrequencySelection />
+              </ProgramConfigOptionCard>
 
-        <div className="flex-col">
-          <div className="flex space-x-2 p-4">
-            <ProgramConfigOptionCard
-              title="1. Frequency"
-              className="flex-col items-start"
-            >
-              <FrequencySelection />
-            </ProgramConfigOptionCard>
-
-            <ProgramConfigOptionCard
-              title="2. Split"
-              className="flex-col items-start"
-            >
-              <SplitSelect />
-            </ProgramConfigOptionCard>
-            <ProgramConfigOptionCard
-              title="3. Volume"
-              className="flex-col items-start"
-            >
-              <VolumeSelect />
-            </ProgramConfigOptionCard>
+              <ProgramConfigOptionCard
+                title="2. Split"
+                className="flex-col items-start"
+              >
+                <SplitSelect />
+              </ProgramConfigOptionCard>
+              <ProgramConfigOptionCard
+                title="3. Volume"
+                className="flex-col items-start"
+              >
+                <VolumeSelect />
+              </ProgramConfigOptionCard>
+            </div>
           </div>
 
           <ProgramConfigOptionCard
@@ -159,33 +188,14 @@ const SAVED_PROGRAMS_DUMMY = [
   { ...PROGRAM_DUMMY, id: "program_3", name: "Program 3" },
 ];
 
-const SavedTrainingPrograms = () => {
-  const [selectedProgram, setSelectedProgram] = useState<string | undefined>();
-  const untitled_program = "Untitled Program";
-  return (
-    <div className="flex flex-col px-4 pb-3">
-      <h3 className="p-2 pb-0 text-sm font-semibold text-primary-300">
-        Training Program
-      </h3>
-      <div className="flex items-center">
-        <Input
-          placeholder={selectedProgram ? selectedProgram : untitled_program}
-          className="mb-2 w-full"
-        />
-        <ProgramConfigurationPanel />
-      </div>
-    </div>
-  );
-};
-
-type ProgramConfigurationPanelProps = {
+type SavedTrainingProgramProps = {
   savedTrainingPrograms?: Record<string, string>[];
   selectedProgramId?: string;
 };
-const ProgramConfigurationPanel = ({
+const SavedTrainingPrograms = ({
   savedTrainingPrograms,
   selectedProgramId,
-}: ProgramConfigurationPanelProps) => {
+}: SavedTrainingProgramProps) => {
   const programs = savedTrainingPrograms || SAVED_PROGRAMS_DUMMY;
   return (
     <div className="p-2">
