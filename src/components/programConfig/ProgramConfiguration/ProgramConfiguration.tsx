@@ -84,28 +84,26 @@ function ProgramSettings({ isCollapsed }: ProgramSettingsProps) {
     <div className="flex w-full space-x-4 px-4 pt-3">
       <Card className="border-none bg-primary-700/50">
         <CardHeader>Training Program Settings</CardHeader>
-        {/* -- new training program or saved training programs -- */}
-        {/* <SavedTrainingPrograms /> */}
 
         <div className="flex flex-col px-4 pb-3">
-          <h3 className="p-2 pb-0 text-sm font-semibold text-primary-300">
-            Training Program
-          </h3>
-          <div className="flex-col items-center">
+          <h4 className="p-2 pb-0 text-sm font-semibold text-primary-300">
+            Select Training Program
+          </h4>
+          <div className="flex items-center">
             <SavedTrainingPrograms />
-
-            <div className="flex w-full space-x-4">
+            <Button size="sm">
+              Create New
+              <PlusIcon />
+            </Button>
+            {/* <div className="flex w-full space-x-4">
               <Input
                 placeholder={
-                  selectedProgram ? selectedProgram : "untitled program"
+                  selectedProgram ? selectedProgram : "Untitle Training Program"
                 }
                 className="mb-2 h-8 w-full"
               />
-              <Button size="sm">
-                Create New
-                <PlusIcon />
-              </Button>
-            </div>
+
+            </div> */}
           </div>
         </div>
 
@@ -167,7 +165,7 @@ function ProgramSettings({ isCollapsed }: ProgramSettingsProps) {
 
 const PROGRAM_DUMMY = {
   id: "program_1",
-  name: "Program 1",
+  name: "8 week Upper Specialization",
   mesocycles: {
     1: {
       id: "mesocycle_1",
@@ -197,6 +195,7 @@ const SavedTrainingPrograms = ({
   selectedProgramId,
 }: SavedTrainingProgramProps) => {
   const programs = savedTrainingPrograms || SAVED_PROGRAMS_DUMMY;
+
   return (
     <div className="p-2">
       <Select>
