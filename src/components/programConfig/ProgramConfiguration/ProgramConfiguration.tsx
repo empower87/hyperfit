@@ -86,24 +86,16 @@ function ProgramSettings({ isCollapsed }: ProgramSettingsProps) {
         <CardHeader>Training Program Settings</CardHeader>
 
         <div className="flex flex-col px-4 pb-3">
-          <h4 className="p-2 pb-0 text-sm font-semibold text-primary-300">
+          <h4 className="p-2 pb-0 text-sm text-primary-400">
             Select Training Program
           </h4>
+
           <div className="flex items-center">
             <SavedTrainingPrograms />
             <Button size="sm">
               Create New
               <PlusIcon />
             </Button>
-            {/* <div className="flex w-full space-x-4">
-              <Input
-                placeholder={
-                  selectedProgram ? selectedProgram : "Untitle Training Program"
-                }
-                className="mb-2 h-8 w-full"
-              />
-
-            </div> */}
           </div>
         </div>
 
@@ -115,17 +107,16 @@ function ProgramSettings({ isCollapsed }: ProgramSettingsProps) {
       <Card className="border-none bg-primary-700/50">
         <CardHeader>Build Mesocycle</CardHeader>
 
+        <div className="flex-col items-center p-4 pt-2">
+          <h4 className="p-1 text-sm text-primary-400">Name</h4>
+          <Input placeholder={"Name This Mesocycle"} className="mb-2" />
+        </div>
+
         <div className="flex">
           <div className="flex-col">
             {/* <h3 className="p-2 pb-0 text-sm font-semibold text-primary-300">
             Build Mesocycle
           </h3> */}
-            <div className="flex items-center p-4 pt-2">
-              <Input
-                placeholder={"Untitled Mesocycle"}
-                className="mb-2 w-full"
-              />
-            </div>
             <div className="flex-col space-y-2 p-4 pt-0">
               <ProgramConfigOptionCard
                 title="1. Frequency"
