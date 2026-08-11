@@ -92,7 +92,7 @@ function ProgramSettings({ isCollapsed }: ProgramSettingsProps) {
 
           <div className="flex items-center">
             <SavedTrainingPrograms />
-            <Button size="sm">
+            <Button size="lg">
               Create New
               <PlusIcon />
             </Button>
