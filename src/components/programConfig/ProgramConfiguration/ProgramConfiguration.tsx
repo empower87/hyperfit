@@ -80,6 +80,7 @@ function ProgramSettings({ isCollapsed }: ProgramSettingsProps) {
 
   const onCollapsePriorityList = () => setIsPriorityListCollapsed(true);
   const onExpandPriorityList = () => setIsPriorityListCollapsed(false);
+
   return (
     <div className="flex w-full space-x-4 px-4 pt-3">
       <Card className="border-none bg-primary-700/50">
@@ -100,7 +101,21 @@ function ProgramSettings({ isCollapsed }: ProgramSettingsProps) {
         </div>
 
         <div className="px-4 pb-3">
-          <ToggleMesocycle mesocycles={4} />
+          <Card className="">
+            <CardHeader>Configure Selected Training Program</CardHeader>
+            <div className="px-4">
+              <div>
+                <Input
+                  placeholder={"Untitled Training Program"}
+                  className="mb-2"
+                />
+              </div>
+            </div>
+
+            <div className="px-4 pb-3">
+              <ToggleMesocycle mesocycles={4} />
+            </div>
+          </Card>
         </div>
       </Card>
 
