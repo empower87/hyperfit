@@ -76,6 +76,7 @@ type ProgramSettingsProps = {
 };
 function ProgramSettings({ isCollapsed }: ProgramSettingsProps) {
   const [isPriorityListCollapsed, setIsPriorityListCollapsed] = useState(false);
+  const [savedTrainingPrograms, setSavedTrainingPrograms] = useState(SAVED_PROGRAMS_DUMMY)
   const [selectedProgram, setSelectedProgram] = useState<string | undefined>();
 
   const onCollapsePriorityList = () => setIsPriorityListCollapsed(true);
@@ -92,31 +93,32 @@ function ProgramSettings({ isCollapsed }: ProgramSettingsProps) {
           </h4>
 
           <div className="flex items-center">
-            <SavedTrainingPrograms />
+            <SavedTrainingPrograms savedTrainingPrograms={savedTrainingPrograms} selectedProgramId={selectedProgram} onSelectProgramId={setSelectedProgram} />
             <Button size="lg">
               Create New
               <PlusIcon />
             </Button>
           </div>
         </div>
-
-        <div className="px-4 pb-3">
-          <Card className="">
-            <CardHeader>Configure Selected Training Program</CardHeader>
-            <div className="px-4">
-              <div>
-                <Input
-                  placeholder={"Untitled Training Program"}
-                  className="mb-2"
-                />
+        {selectedProgram ? (
+          <div className="px-4 pb-3">
+            <Card className="">
+              <CardHeader>Configure Selected Training Program</CardHeader>
+              <div className="px-4">
+                <div>
+                  <Input
+                    placeholder={"Untitled Training Program"}
+                    className="mb-2"
+                  />
+                </div>
               </div>
-            </div>
 
-            <div className="px-4 pb-3">
-              <ToggleMesocycle mesocycles={4} />
-            </div>
-          </Card>
-        </div>
+              <div className="px-4 pb-3">
+                <ToggleMesocycle mesocycles={4} />
+              </div>
+            </Card>
+          </div>
+        ) : null}
       </Card>
 
       <Card className="border-none bg-primary-700/50">
@@ -169,7 +171,12 @@ function ProgramSettings({ isCollapsed }: ProgramSettingsProps) {
   );
 }
 
-const PROGRAM_DUMMY = {
+type SavedProgramDummyType = {
+  id: string;
+  name: string;
+  mesocycles: { [key: number]: { id: string; name: string; data: any[] } };
+}
+const PROGRAM_DUMMY: SavedProgramDummyType = {
   id: "program_1",
   name: "8 week Upper Specialization",
   mesocycles: {
@@ -190,23 +197,31 @@ const SAVED_PROGRAMS_DUMMY = [
   { ...PROGRAM_DUMMY },
   { ...PROGRAM_DUMMY, id: "program_2", name: "Program 2" },
   { ...PROGRAM_DUMMY, id: "program_3", name: "Program 3" },
-];
-
+] 
 type SavedTrainingProgramProps = {
-  savedTrainingPrograms?: Record<string, string>[];
-  selectedProgramId?: string;
+  savedTrainingPrograms?: SavedProgramDummyType[];
+  selectedProgramId: string | undefined
+  onSelectProgramId: (programId: string) => void;
 };
 const SavedTrainingPrograms = ({
   savedTrainingPrograms,
   selectedProgramId,
+  onSelectProgramId
+
 }: SavedTrainingProgramProps) => {
-  const programs = savedTrainingPrograms || SAVED_PROGRAMS_DUMMY;
+  const programs: SavedProgramDummyType[] = savedTrainingPrograms || SAVED_PROGRAMS_DUMMY;
+  const [selectedProgram, setSelectedProgram] = useState<string | undefined>(selectedProgramId)
+
+  const handleSelectProgram = (programId: string) => {
+    setSelectedProgram(programId);
+    onSelectProgramId(programId)
+  };
 
   return (
     <div className="p-2">
-      <Select>
+      <Select onValueChange={handleSelectProgram} value={selectedProgram}>
         <SelectTrigger className="w-[100px]">
-          <SelectValue placeholder={programs[0]?.id} />
+          <SelectValue placeholder={selectedProgram} />
         </SelectTrigger>
 
         <SelectContent>
