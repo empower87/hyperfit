@@ -71,17 +71,62 @@ const MICROCYCLES = {
   12: "12",
 };
 
+type SavedProgramDummyType = {
+  id: string;
+  name: string;
+  mesocycles: { [key: number]: { id: string; name: string; data: any[] } };
+};
+const PROGRAM_DUMMY: SavedProgramDummyType = {
+  id: "program_1",
+  name: "8 week Upper Specialization",
+  mesocycles: {
+    1: {
+      id: "mesocycle_1",
+      name: "Mesocycle 1",
+      data: [],
+    },
+    2: {
+      id: "mesocycle_2",
+      name: "Mesocycle 2",
+      data: [],
+    },
+  },
+};
+
+const SAVED_PROGRAMS_DUMMY = [
+  { ...PROGRAM_DUMMY },
+  { ...PROGRAM_DUMMY, id: "program_2", name: "Program 2" },
+  { ...PROGRAM_DUMMY, id: "program_3", name: "Program 3" },
+];
 type ProgramSettingsProps = {
   isCollapsed: boolean;
 };
 function ProgramSettings({ isCollapsed }: ProgramSettingsProps) {
   const [isPriorityListCollapsed, setIsPriorityListCollapsed] = useState(false);
-  const [savedTrainingPrograms, setSavedTrainingPrograms] = useState(SAVED_PROGRAMS_DUMMY)
-  const [selectedProgram, setSelectedProgram] = useState<string | undefined>();
+  const [savedTrainingPrograms, setSavedTrainingPrograms] =
+    useState(SAVED_PROGRAMS_DUMMY);
+  const [selectedProgramId, setSelectedProgramId] = useState<
+    string | undefined
+  >();
 
   const onCollapsePriorityList = () => setIsPriorityListCollapsed(true);
   const onExpandPriorityList = () => setIsPriorityListCollapsed(false);
 
+  const onCreateNewProgram = () => {
+    const newTrainingProgram = {
+      ...PROGRAM_DUMMY,
+      id: `program_${savedTrainingPrograms.length + 1}`,
+      name: "Untitled Program",
+    };
+    setSavedTrainingPrograms((prevPrograms) => {
+      return [...prevPrograms, newTrainingProgram];
+    });
+    setSelectedProgramId(newTrainingProgram.id);
+  };
+
+  const selectedProgram = savedTrainingPrograms.find(
+    (program) => program.id === selectedProgramId
+  );
   return (
     <div className="flex w-full space-x-4 px-4 pt-3">
       <Card className="border-none bg-primary-700/50">
@@ -93,13 +138,18 @@ function ProgramSettings({ isCollapsed }: ProgramSettingsProps) {
           </h4>
 
           <div className="flex items-center">
-            <SavedTrainingPrograms savedTrainingPrograms={savedTrainingPrograms} selectedProgramId={selectedProgram} onSelectProgramId={setSelectedProgram} />
-            <Button size="lg">
+            <SavedTrainingPrograms
+              savedTrainingPrograms={savedTrainingPrograms}
+              selectedProgramId={selectedProgram?.id}
+              onSelectProgramId={setSelectedProgramId}
+            />
+            <Button size="lg" onClick={onCreateNewProgram}>
               Create New
               <PlusIcon />
             </Button>
           </div>
         </div>
+
         {selectedProgram ? (
           <div className="px-4 pb-3">
             <Card className="">
@@ -107,7 +157,9 @@ function ProgramSettings({ isCollapsed }: ProgramSettingsProps) {
               <div className="px-4">
                 <div>
                   <Input
-                    placeholder={"Untitled Training Program"}
+                    placeholder={
+                      selectedProgram.name || "Untitled Training Program"
+                    }
                     className="mb-2"
                   />
                 </div>
@@ -171,50 +223,25 @@ function ProgramSettings({ isCollapsed }: ProgramSettingsProps) {
   );
 }
 
-type SavedProgramDummyType = {
-  id: string;
-  name: string;
-  mesocycles: { [key: number]: { id: string; name: string; data: any[] } };
-}
-const PROGRAM_DUMMY: SavedProgramDummyType = {
-  id: "program_1",
-  name: "8 week Upper Specialization",
-  mesocycles: {
-    1: {
-      id: "mesocycle_1",
-      name: "Mesocycle 1",
-      data: [],
-    },
-    2: {
-      id: "mesocycle_2",
-      name: "Mesocycle 2",
-      data: [],
-    },
-  },
-};
-
-const SAVED_PROGRAMS_DUMMY = [
-  { ...PROGRAM_DUMMY },
-  { ...PROGRAM_DUMMY, id: "program_2", name: "Program 2" },
-  { ...PROGRAM_DUMMY, id: "program_3", name: "Program 3" },
-] 
 type SavedTrainingProgramProps = {
   savedTrainingPrograms?: SavedProgramDummyType[];
-  selectedProgramId: string | undefined
+  selectedProgramId: string | undefined;
   onSelectProgramId: (programId: string) => void;
 };
 const SavedTrainingPrograms = ({
   savedTrainingPrograms,
   selectedProgramId,
-  onSelectProgramId
-
+  onSelectProgramId,
 }: SavedTrainingProgramProps) => {
-  const programs: SavedProgramDummyType[] = savedTrainingPrograms || SAVED_PROGRAMS_DUMMY;
-  const [selectedProgram, setSelectedProgram] = useState<string | undefined>(selectedProgramId)
+  const programs: SavedProgramDummyType[] =
+    savedTrainingPrograms || SAVED_PROGRAMS_DUMMY;
+  const [selectedProgram, setSelectedProgram] = useState<string | undefined>(
+    selectedProgramId
+  );
 
   const handleSelectProgram = (programId: string) => {
     setSelectedProgram(programId);
-    onSelectProgramId(programId)
+    onSelectProgramId(programId);
   };
 
   return (
