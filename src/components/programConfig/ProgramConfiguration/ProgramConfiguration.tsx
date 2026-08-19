@@ -1,10 +1,12 @@
 import {
+  CheckIcon,
   ChevronDownIcon,
   ChevronUpIcon,
   GearIcon,
+  Pencil1Icon,
   PlusIcon,
 } from "@radix-ui/react-icons";
-import { HTMLAttributes, ReactNode, useState } from "react";
+import { HTMLAttributes, ReactNode, useCallback, useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Card, CardHeader } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
@@ -52,24 +54,42 @@ function ProgramConfigOptionCard({
   );
 }
 
-const MESOCYCLES = {
-  1: "1",
-  2: "2",
-  3: "3",
-  4: "4",
+type TrainingProgramNameProps = {
+  savedTrainingPrograms: SavedProgramDummyType[];
+  selectedProgram: SavedProgramDummyType | undefined;
+  isEditing: boolean;
+  onClick: () => void;
 };
-const MICROCYCLES = {
-  3: "3",
-  4: "4",
-  5: "5",
-  6: "6",
-  7: "7",
-  8: "8",
-  9: "9",
-  10: "10",
-  11: "11",
-  12: "12",
-};
+function TrainingProgramName({
+  savedTrainingPrograms,
+  selectedProgram,
+  isEditing,
+  onClick,
+}: TrainingProgramNameProps) {
+  return (
+    <div className="flex w-full items-center justify-between">
+      {isEditing ? (
+        <>
+          <div className="pr-3">
+            <Input
+              placeholder={selectedProgram?.name || "Untitled Training Program"}
+            />
+          </div>
+          <Button size="sm" className="bg-primary-700" onClick={onClick}>
+            <CheckIcon />
+          </Button>
+        </>
+      ) : (
+        <>
+          <h3>{selectedProgram?.name}</h3>
+          <Button size="sm" className="bg-primary-700" onClick={onClick}>
+            <Pencil1Icon />
+          </Button>
+        </>
+      )}
+    </div>
+  );
+}
 
 type SavedProgramDummyType = {
   id: string;
@@ -108,6 +128,7 @@ function ProgramSettings({ isCollapsed }: ProgramSettingsProps) {
   const [selectedProgramId, setSelectedProgramId] = useState<
     string | undefined
   >();
+  const [isEditingProgramName, setIsEditingProgramName] = useState(false);
 
   const onCollapsePriorityList = () => setIsPriorityListCollapsed(true);
   const onExpandPriorityList = () => setIsPriorityListCollapsed(false);
@@ -123,6 +144,15 @@ function ProgramSettings({ isCollapsed }: ProgramSettingsProps) {
     });
     setSelectedProgramId(newTrainingProgram.id);
   };
+
+  const onProgramNameButtonClick = useCallback(() => {
+    if (isEditingProgramName) {
+      // Save the program name changes here
+      setIsEditingProgramName(false);
+    } else {
+      setIsEditingProgramName(true);
+    }
+  }, [isEditingProgramName]);
 
   const selectedProgram = savedTrainingPrograms.find(
     (program) => program.id === selectedProgramId
@@ -155,14 +185,12 @@ function ProgramSettings({ isCollapsed }: ProgramSettingsProps) {
             <Card className="">
               <CardHeader>Configure Selected Training Program</CardHeader>
               <div className="px-4">
-                <div>
-                  <Input
-                    placeholder={
-                      selectedProgram.name || "Untitled Training Program"
-                    }
-                    className="mb-2"
-                  />
-                </div>
+                <TrainingProgramName
+                  savedTrainingPrograms={savedTrainingPrograms}
+                  selectedProgram={selectedProgram}
+                  isEditing={isEditingProgramName}
+                  onClick={onProgramNameButtonClick}
+                />
               </div>
 
               <div className="px-4 pb-3">
